@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ErrorResponseData handleError(MissingServletRequestParameterException e) {
         log.warn("Missing Request Parameter", e);
-        String message = String.format("Missing Request Parameter: %s", e.getParameterName());
+        String message = String.format("%s: 不能为空", e.getParameterName());
         return new ErrorResponseData(400, message);
     }
 

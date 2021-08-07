@@ -32,26 +32,25 @@ public class UserDto {
     @NotNull(groups = BaseEntity.Update.class)
     private Long userId;
 
-    @NotBlank
+    @NotBlank(groups = {BaseEntity.Create.class,BaseEntity.Update.class})
     private String account;
 
-    @NotBlank
+    @NotBlank(groups = {BaseEntity.Create.class,BaseEntity.Update.class})
     private String password;
 
-    @NotBlank
+    @NotBlank(groups = {BaseEntity.Create.class,BaseEntity.Update.class})
     private String name;
 
-
-    @NotBlank
     private String email;
 
     private String phone;
 
-    @NotNull
+    @NotNull(groups = {BaseEntity.Create.class,BaseEntity.Update.class})
     private Long userGroupId;
 
     private String status;
 
+    @NotNull(groups = {BaseEntity.Create.class,BaseEntity.Update.class})
     private Long roleId;
 
     private String roleName;

@@ -16,9 +16,13 @@ import java.util.stream.Collectors;
 @Data
 public class Pager<T> {
 
-    private Integer code = 200;
+    private Integer code    = 200;
+    /**
+     * 请求是否成功
+     */
+    private Boolean success = true;
 
-    private String msg = "请求成功";
+    private String message = "请求成功";
 
     private List<T> data = new ArrayList<>();
 

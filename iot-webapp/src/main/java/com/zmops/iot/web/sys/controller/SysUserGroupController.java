@@ -57,7 +57,7 @@ public class SysUserGroupController {
      */
     @PostMapping("/create")
     @BussinessLog(value = "创建用户组")
-    public ResponseData createUserGroup(@Valid @RequestBody UserGroupDto userGroup) {
+    public ResponseData createUserGroup(@Validated @RequestBody UserGroupDto userGroup) {
         return ResponseData.success(sysUserGroupService.createUserGroup(userGroup));
     }
 
@@ -80,7 +80,7 @@ public class SysUserGroupController {
      */
     @PostMapping("/delete")
     @BussinessLog(value = "删除用户组")
-    public ResponseData deleteUserGroup(@Valid @RequestBody UserGroupParam userGroup) {
+    public ResponseData deleteUserGroup(@Validated @RequestBody UserGroupParam userGroup) {
         sysUserGroupService.deleteUserGroup(userGroup);
         return ResponseData.success();
     }

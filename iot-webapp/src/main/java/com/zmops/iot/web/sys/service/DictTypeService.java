@@ -1,15 +1,16 @@
 package com.zmops.iot.web.sys.service;
 
-import com.zmops.iot.domain.sys.DictType;
-import com.zmops.iot.domain.sys.query.QDict;
-import com.zmops.iot.domain.sys.query.QDictType;
+import com.zmops.iot.domain.sys.SysDictType;
+import com.zmops.iot.domain.sys.query.QSysDict;
+import com.zmops.iot.domain.sys.query.QSysDictType;
 import com.zmops.iot.enums.CommonStatus;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.sys.dto.param.DictTypeParam;
-import io.ebean.*;
+import io.ebean.DB;
+import io.ebean.PagedList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,16 +29,15 @@ public class DictTypeService {
     /**
      * 新增
      */
-    public DictType add(DictTypeParam param) {
+    public SysDictType add(DictTypeParam param) {
 
         //判断是否已经存在同编码或同名称字典
-        Expression or    = Expr.or(Expr.eq("code", param.getCode()), Expr.eq("name", param.getName()));
-        int        count = DB.find(DictType.class).where().add(or).findCount();
+        int count = new QSysDictType().or().code.eq(param.getCode()).name.eq(param.getName()).findCount();
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.DICT_EXISTED);
         }
 
-        DictType entity = getEntity(param);
+        SysDictType entity = getEntity(param);
 
         //设置状态
         entity.setStatus(CommonStatus.ENABLE.getCode());
@@ -53,25 +53,28 @@ public class DictTypeService {
     public void delete(DictTypeParam param) {
 
         //删除字典类型
-        new QDictType().dictTypeId.in(param.getDictTypeIds()).delete();
+        new QSysDictType().dictTypeId.in(param.getDictTypeIds()).delete();
 
         //删除字典
-        new QDict().dictTypeId.in(param.getDictTypeIds()).delete();
+        new QSysDict().dictTypeId.in(param.getDictTypeIds()).delete();
     }
 
     /**
      * 更新
      */
-    public DictType update(DictTypeParam param) {
+    public SysDictType update(DictTypeParam param) {
+        SysDictType oldEntity = new QSysDictType().dictTypeId.eq(param.getDictTypeId()).findOne();
+        if (null == oldEntity) {
+            throw new ServiceException(BizExceptionEnum.DICT_NOT_EXIST);
+        }
         //判断编码是否重复
-        Expression or    = Expr.or(Expr.eq("code", param.getCode()), Expr.eq("name", param.getName()));
-        int        count = DB.find(DictType.class).where().add(or).add(Expr.ne("dict_type_id", param.getDictTypeId())).findCount();
+        int count = new QSysDictType().dictTypeId.ne(param.getDictTypeId())
+                .or().code.eq(param.getCode()).name.eq(param.getName()).findCount();
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.DICT_EXISTED);
         }
 
-        DictType oldEntity = new QDictType().dictTypeId.eq(param.getDictTypeId()).findOne();
-        DictType newEntity = getEntity(param);
+        SysDictType newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
 
         DB.update(newEntity);
@@ -83,10 +86,9 @@ public class DictTypeService {
      * 查询分页数据
      */
     public Pager findPageBySpec(DictTypeParam param) {
-        ExpressionList<DictType> where = DB.find(DictType.class).where();
+        QSysDictType qSysDictType = new QSysDictType();
         if (ToolUtil.isNotEmpty(param.getCondition())) {
-            Expression or = Expr.or(Expr.eq("code", param.getCode()), Expr.eq("name", param.getName()));
-            where.add(or);
+            qSysDictType.or().code.eq(param.getCondition()).name.eq(param.getCondition());
         }
 //        if (ToolUtil.isNotEmpty(param.getStatus())) {
 //            objectQueryWrapper.and(i -> i.eq("status", param.getStatus()));
@@ -94,14 +96,14 @@ public class DictTypeService {
 //        if (ToolUtil.isNotEmpty(param.getSystemFlag())) {
 //            objectQueryWrapper.and(i -> i.eq("system_flag", param.getSystemFlag()));
 //        }
-        where.orderBy().desc("sort");
-        where.setFirstRow((param.getPage() - 1) * param.getMaxRow()).setMaxRows(param.getMaxRow());
-        PagedList<DictType> pagedList = where.findPagedList();
+        qSysDictType.orderBy().dictTypeId.desc();
+        qSysDictType.setFirstRow((param.getPage() - 1) * param.getMaxRow()).setMaxRows(param.getMaxRow());
+        PagedList<SysDictType> pagedList = qSysDictType.findPagedList();
         return new Pager<>(pagedList.getList(), pagedList.getTotalCount());
     }
 
-    private DictType getEntity(DictTypeParam param) {
-        DictType entity = new DictType();
+    private SysDictType getEntity(DictTypeParam param) {
+        SysDictType entity = new SysDictType();
         ToolUtil.copyProperties(param, entity);
         return entity;
     }

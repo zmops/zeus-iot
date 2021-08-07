@@ -29,7 +29,8 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     DICT_EXISTED(400, "字典已经存在"),
     ERROR_CREATE_DICT(500, "创建字典失败"),
     ERROR_WRAPPER_FIELD(500, "包装字典属性失败"),
-    ERROR_CODE_EMPTY(500, "字典类型不能为空"),
+    ERROR_CODE_EMPTY(500, "字典类型不存在"),
+    DICT_NOT_EXIST(400, "字典项不存在"),
 
     /**
      * 文件上传
@@ -51,6 +52,7 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     CANT_CHANGE_ADMIN(600, "不能修改超级管理员角色"),
     ROLE_HAS_EXIST(601, "角色已存在"),
     ROLE_HAS_BIND_USER(602, "角色绑定了用户,请先解除绑定!"),
+    MENU_NOT_EXIST_OR_NO_PRERMISSION(603,"菜单不存在或无权授权此菜单"),
 
     /**
      * 账户问题
@@ -125,6 +127,15 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
      */
     PRODUCT_HAS_EXIST(1301, "该产品ID已存在"),
     PRODUCT_NOT_EXISTS(1302, "该产品不存在"),
+    PRODUCT_TYPE_EXIST(1303, "产品分类已存在"),
+    PRODUCT_TYPE_NOT_EXIST(1303, "产品分类不存在"),
+    PRODUCT_TYPE_HAS_BIND(1304, "产品分类已绑定产品"),
+    PRODUCT_TYPE_PID_NOT_EXIST(1305,"父节点不存在"),
+
+    /**
+     * 属性相关
+     */
+    PRODUCT_ATTR_KEY_EXISTS(1401, "该属性Key已存在"),
 
     /**
      * 租户相关的异常

@@ -1,5 +1,6 @@
 package com.zmops.iot.web.sys.controller;
 
+import com.zmops.iot.core.log.BussinessLog;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
@@ -21,26 +22,28 @@ public class DictTypeController {
     private DictTypeService dictTypeService;
 
     /**
-     * 新增接口
+     * 新增字典
      */
-    @RequestMapping("/addItem")
+    @RequestMapping("/create")
+    @BussinessLog("新增字典")
     public ResponseData addItem(@Validated(BaseEntity.Create.class) @RequestBody DictTypeParam dictTypeParam) {
         return ResponseData.success(dictTypeService.add(dictTypeParam));
     }
 
     /**
-     * 编辑接口
+     * 编辑字典
      */
-    @RequestMapping("/editItem")
+    @RequestMapping("/update")
+    @BussinessLog("编辑字典")
     public ResponseData editItem(@Validated(BaseEntity.Update.class) @RequestBody DictTypeParam dictTypeParam) {
         return ResponseData.success(dictTypeService.update(dictTypeParam));
     }
 
     /**
-     * 删除接口
+     * 删除字典
      */
     @RequestMapping("/delete")
-    @ResponseBody
+    @BussinessLog("删除字典")
     public ResponseData delete(@Validated(BaseEntity.MassRemove.class) @RequestBody DictTypeParam dictTypeParam) {
         this.dictTypeService.delete(dictTypeParam);
         return ResponseData.success();
@@ -59,7 +62,6 @@ public class DictTypeController {
     //    /**
 //     * 查看详情接口
 //     *
-//     * @author stylefeng
 //     */
 //    @RequestMapping("/detail")
 //    @ResponseBody

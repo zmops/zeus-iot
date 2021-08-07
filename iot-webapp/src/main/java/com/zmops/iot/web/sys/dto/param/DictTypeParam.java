@@ -47,7 +47,7 @@ public class DictTypeParam extends BaseQueryParam {
     /**
      * 字典描述
      */
-    private String description;
+    private String remark;
 
     /**
      * 状态(字典)

@@ -40,7 +40,7 @@ public class SysRoleController {
      */
     @RequestMapping("/create")
     @BussinessLog(value = "角色新增")
-    public ResponseData create(@RequestBody SysRoleDto sysRoleDto) {
+    public ResponseData create(@Validated(BaseEntity.Create.class) @RequestBody SysRoleDto sysRoleDto) {
         return ResponseData.success(sysRoleService.create(sysRoleDto));
     }
 

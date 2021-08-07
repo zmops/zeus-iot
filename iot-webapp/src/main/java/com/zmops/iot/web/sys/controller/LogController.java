@@ -22,7 +22,7 @@ public class LogController {
     /**
      * 查询操作日志列表
      */
-    @RequestMapping("/list")
+    @RequestMapping("/getOperationLogByPage")
     @ResponseBody
     public Pager<SysOperationLog> list(@RequestParam(required = false) Long beginTime,
                                        @RequestParam(required = false) Long endTime,

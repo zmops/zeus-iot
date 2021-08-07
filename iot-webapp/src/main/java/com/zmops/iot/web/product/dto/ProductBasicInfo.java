@@ -1,6 +1,7 @@
 package com.zmops.iot.web.product.dto;
 
 import com.zmops.iot.domain.BaseEntity;
+import com.zmops.iot.web.sys.dto.param.BaseQueryParam;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -10,7 +11,7 @@ import javax.validation.constraints.Pattern;
  * @author nantian created at 2021/8/3 19:46
  */
 @Data
-public class ProductBasicInfo {
+public class ProductBasicInfo extends BaseQueryParam {
 
     @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Delete.class})
     private Long productId;

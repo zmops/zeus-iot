@@ -7,7 +7,7 @@
         "hostid": "${hostId}",
         "type": 2,  <#--zabbix trapper-->
         "value_type": ${valueType},
-        <#if valueType == 0 || valueType == 3>
+        <#if valueType == '0' || valueType == '3'>
             "units": "${units}",
         </#if>
         "preprocessing": [

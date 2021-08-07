@@ -6,9 +6,11 @@ import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.domain.product.Product;
 import com.zmops.iot.domain.product.query.QProduct;
 import com.zmops.iot.model.exception.ServiceException;
+import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductBasicInfo;
+import com.zmops.iot.web.product.dto.ProductDto;
 import com.zmops.iot.web.product.dto.ProductTag;
 import com.zmops.iot.web.product.dto.ValueMap;
 import com.zmops.iot.web.product.service.ProductService;
@@ -16,12 +18,10 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author nantian created at 2021/8/3 19:44
@@ -36,6 +36,29 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    /**
+     * 产品分页列表
+     */
+    @PostMapping("/getProductByPage")
+    public Pager<ProductDto> getProductByPage(@RequestBody ProductBasicInfo prodBasicInfo) {
+        return productService.getProductByPage(prodBasicInfo);
+    }
+
+    /**
+     * 产品列表
+     */
+    @PostMapping("/list")
+    public ResponseData prodList(@RequestBody ProductBasicInfo prodBasicInfo) {
+        return ResponseData.success(productService.prodList(prodBasicInfo));
+    }
+
+    /**
+     * 产品详情
+     */
+    @GetMapping("/detail")
+    public ResponseData prodDetail(@RequestParam("prodId") Long prodId){
+        return ResponseData.success(productService.prodDetail(prodId));
+    }
 
     /**
      * 创建产品

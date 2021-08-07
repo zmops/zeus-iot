@@ -1,6 +1,7 @@
 package com.zmops.iot.web.sys.service;
 
 import com.zmops.iot.core.auth.context.LoginContextHolder;
+import com.zmops.iot.core.auth.exception.enums.AuthExceptionEnum;
 import com.zmops.iot.core.auth.model.LoginUser;
 import com.zmops.iot.core.tree.DefaultTreeBuildFactory;
 import com.zmops.iot.domain.sys.SysRole;
@@ -12,10 +13,9 @@ import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.sys.dto.SysRoleDto;
-import com.zmops.iot.web.sys.dto.node.MenuTreeNode;
+import com.zmops.iot.web.sys.dto.node.TreeNode;
 import com.zmops.iot.web.sys.dto.param.RoleParam;
 import io.ebean.DB;
-import io.ebean.SqlRow;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,6 +94,7 @@ public class SysRoleService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void bindMenu(RoleParam roleParam) {
+        checkMenuId(roleParam.getMenuIds());
         new QSysRoleMenu().roleId.eq(roleParam.getRoleId()).delete();
         List<SysRoleMenu> sysRoleMenuList = new ArrayList<>();
         for (Long menuId : roleParam.getMenuIds()) {
@@ -103,6 +104,22 @@ public class SysRoleService {
             sysRoleMenuList.add(sysRoleMenu);
         }
         DB.saveAll(sysRoleMenuList);
+    }
+
+    /**
+     * 检查授权的菜单 是否存在或是否有权授权此菜单
+     */
+    private void checkMenuId(List<Long> menuIds) {
+        List<Long> paramMuenuIds = new ArrayList<>(menuIds);
+        LoginUser  user         = LoginContextHolder.getContext().getUser();
+        if (null == user) {
+            throw new ServiceException(AuthExceptionEnum.NOT_LOGIN_ERROR);
+        }
+        List<Long> lists = new QSysRoleMenu().select(QSysRoleMenu.Alias.menuId).menuId.in(menuIds).roleId.in(user.getRoleList()).findSingleAttributeList();
+        paramMuenuIds.removeAll(lists);
+        if (ToolUtil.isNotEmpty(paramMuenuIds)) {
+            throw new ServiceException(BizExceptionEnum.MENU_NOT_EXIST_OR_NO_PRERMISSION);
+        }
     }
 
     /**
@@ -122,7 +139,7 @@ public class SysRoleService {
         }
     }
 
-    public List<MenuTreeNode> bindedMenu(Long roleId) {
+    public List<TreeNode> bindedMenu(Long roleId) {
         LoginUser user = LoginContextHolder.getContext().getUser();
         if (null == user) {
             return Collections.emptyList();
@@ -142,16 +159,16 @@ public class SysRoleService {
                 " AND m1.menu_id in (select menu_id from sys_role_menu where role_id in (:roleIds) )" +
                 " ORDER BY" +
                 "       m1.sort ASC";
-        List<MenuTreeNode> allMenuList = DB.findDto(MenuTreeNode.class, sql).setParameter("roleIds", user.getRoleList()).findList();
+        List<TreeNode> allMenuList = DB.findDto(TreeNode.class, sql).setParameter("roleIds", user.getRoleList()).findList();
 
         //取被授权用户 已授权的菜单
         List<Long> selectMenuIdList = new QSysRoleMenu().select(QSysRoleMenu.Alias.menuId).roleId.eq(roleId).findSingleAttributeList();
-        for (MenuTreeNode menuTreeNode : allMenuList) {
+        for (TreeNode menuTreeNode : allMenuList) {
             if (selectMenuIdList.contains(menuTreeNode.getId())) {
                 menuTreeNode.setIsChecked(true);
             }
         }
-        DefaultTreeBuildFactory<MenuTreeNode> treeBuildFactory = new DefaultTreeBuildFactory<>();
+        DefaultTreeBuildFactory<TreeNode> treeBuildFactory = new DefaultTreeBuildFactory<>();
         treeBuildFactory.setRootParentId("0");
         return treeBuildFactory.doTreeBuild(allMenuList);
     }

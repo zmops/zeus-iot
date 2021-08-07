@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 
 /**
  * @author yefei
+ *
+ * 用户管理
  **/
 @Service
 public class SysUserService {

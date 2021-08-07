@@ -35,7 +35,7 @@ public class SysUserController {
      *
      * @return
      */
-    @RequestMapping("/list")
+    @PostMapping("/getUserByPage")
     public Pager<UserDto> userList(@RequestBody UserParam userParam) {
         return sysUserService.userList(userParam);
     }
@@ -47,7 +47,7 @@ public class SysUserController {
      */
     @PostMapping("/create")
     @BussinessLog(value = "创建用户")
-    public ResponseData createUser(@RequestBody UserDto sysUser) {
+    public ResponseData createUser(@Validated(BaseEntity.Create.class) @RequestBody UserDto sysUser) {
         return ResponseData.success(sysUserService.createUser(sysUser));
     }
 

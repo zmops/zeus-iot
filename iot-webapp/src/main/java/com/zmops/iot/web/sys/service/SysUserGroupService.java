@@ -131,7 +131,7 @@ public class SysUserGroupService {
     public void deleteUserGroup(UserGroupParam userGroupParam) {
         List<SysUserGroup> list = new QSysUserGroup().userGroupId.in(userGroupParam.getUserGroupIds()).findList();
         if (ToolUtil.isEmpty(list)) {
-            throw new ServiceException(BizExceptionEnum.USER_NOT_EXIST);
+            throw new ServiceException(BizExceptionEnum.USERGROUP_NOT_EXIST);
         }
 
         int count = new QSysUser().userGroupId.in(userGroupParam.getUserGroupIds()).findCount();

@@ -71,7 +71,7 @@ public class SysMenu extends BaseEntity {
     /**
      * 备注
      */
-    private String description;
+    private String remark;
 
     /**
      * 菜单状态(字典)

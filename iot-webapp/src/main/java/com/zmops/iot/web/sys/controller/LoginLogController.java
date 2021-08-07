@@ -22,7 +22,7 @@ public class LoginLogController {
     /**
      * 登录日志列表
      */
-    @RequestMapping("/list")
+    @RequestMapping("/getLoginLogByPage")
     @ResponseBody
     public Pager<SysLoginLog> list(@RequestParam(required = false) Long beginTime,
                                    @RequestParam(required = false) Long endTime,

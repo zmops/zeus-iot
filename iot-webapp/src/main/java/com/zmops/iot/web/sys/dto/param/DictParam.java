@@ -60,7 +60,7 @@ public class DictParam implements Serializable {
     /**
      * 字典的描述
      */
-    private String description;
+    private String remark;
 
     /**
      * 查询条件

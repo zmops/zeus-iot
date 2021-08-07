@@ -1,16 +1,14 @@
 package com.zmops.iot.web.sys.service;
 
-import com.zmops.iot.domain.sys.Dict;
-import com.zmops.iot.domain.sys.DictType;
-import com.zmops.iot.domain.sys.query.QDict;
+import com.zmops.iot.domain.sys.SysDict;
+import com.zmops.iot.domain.sys.query.QSysDict;
+import com.zmops.iot.domain.sys.query.QSysDictType;
 import com.zmops.iot.enums.CommonStatus;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.sys.dto.param.DictParam;
 import io.ebean.DB;
-import io.ebean.Expr;
-import io.ebean.Expression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,16 +28,25 @@ public class DictService {
     /**
      * 新增
      */
-    public Dict add(DictParam param) {
+    public SysDict add(DictParam param) {
 
         //判断是否已经存在同编码或同名称字典
-        Expression or    = Expr.or(Expr.eq("code", param.getCode()), Expr.eq("name", param.getName()));
-        int        count = DB.find(DictType.class).where().add(or).eq("dict_type_id", param.getDictTypeId()).findCount();
+        int count = new QSysDict()
+                .dictTypeId.eq(param.getDictTypeId()).or()
+                .code.ieq(param.getCode())
+                .name.ieq(param.getName()).findCount();
+
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.DICT_EXISTED);
         }
 
-        Dict entity = getEntity(param);
+        //判断字典是否存在
+        count = new QSysDictType().dictTypeId.eq(param.getDictTypeId()).findCount();
+        if (count <= 0) {
+            throw new ServiceException(BizExceptionEnum.ERROR_CODE_EMPTY);
+        }
+
+        SysDict entity = getEntity(param);
 
         //设置状态
         entity.setStatus(CommonStatus.ENABLE.getCode());
@@ -53,33 +60,51 @@ public class DictService {
      * 删除
      */
     public void delete(DictParam param) {
-        new QDict().dictId.in(param.getDictIds()).delete();
+        new QSysDict().dictId.in(param.getDictIds()).delete();
     }
 
     /**
      * 更新
      */
-    public Dict update(DictParam param) {
-        Dict oldEntity = new QDict().dictId.eq(param.getDictId()).findOne();
-        Dict newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
+    public SysDict update(DictParam param) {
+        SysDict oldEntity = new QSysDict().dictId.eq(param.getDictId()).findOne();
+        if (null == oldEntity) {
+            throw new ServiceException(BizExceptionEnum.DICT_NOT_EXIST);
+        }
 
         //判断编码是否重复
-        Expression or    = Expr.or(Expr.eq("code", param.getCode()), Expr.eq("name", param.getName()));
-        int        count = DB.find(Dict.class).where().add(or).ne("dict_id", newEntity.getDictId()).eq("dict_type_id", param.getDictTypeId()).findCount();
+        int count = new QSysDict().or().code.ieq(param.getCode()).name.ieq(param.getName()).endOr()
+                .dictId.ne(param.getDictId()).dictTypeId.eq(param.getDictTypeId()).findCount();
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.DICT_EXISTED);
         }
+        //判断字典是否存在
+        count = new QSysDictType().dictTypeId.eq(param.getDictTypeId()).findCount();
+        if (count <= 0) {
+            throw new ServiceException(BizExceptionEnum.ERROR_CODE_EMPTY);
+        }
+
+        SysDict newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+
 
         DB.update(newEntity);
         return newEntity;
     }
 
     /**
-     * 查询字典列表，通过字典类型
+     * 查询字典列表，通过字典ID
      */
-    public List<Dict> listDicts(Long dictTypeId) {
-        return new QDict().dictTypeId.eq(dictTypeId).findList();
+    public List<SysDict> listDicts(Long dictTypeId) {
+        return new QSysDict().dictTypeId.eq(dictTypeId).findList();
+    }
+
+    /**
+     * 查询字典列表，通过字典编码
+     */
+    public List<SysDict> listDicts(String dictTypeCode) {
+        Long dictTypeId = new QSysDictType().select(QSysDictType.alias().dictTypeId).code.eq(dictTypeCode).findSingleAttribute();
+        return listDicts(dictTypeId);
     }
 
     //    /**
@@ -227,8 +252,8 @@ public class DictService {
 //        return this.getById(getKey(param));
 //    }
 //
-    private Dict getEntity(DictParam param) {
-        Dict entity = new Dict();
+    private SysDict getEntity(DictParam param) {
+        SysDict entity = new SysDict();
         ToolUtil.copyProperties(param, entity);
         return entity;
     }

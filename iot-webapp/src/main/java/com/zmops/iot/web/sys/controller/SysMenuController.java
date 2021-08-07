@@ -39,7 +39,6 @@ public class SysMenuController {
         if (ToolUtil.isEmpty(roleList)) {
             throw new ServiceException(BizExceptionEnum.USER_NOT_BIND_ROLE);
         }
-        String roleIds = Joiner.on(",").join(roleList);
         String sql = "select " +
                 "       m1.menu_id AS id," +
                 "       ( CASE WHEN ( m2.menu_id = 0 OR m2.menu_id IS NULL ) THEN 0 ELSE m2.menu_id END ) AS pId," +
@@ -52,11 +51,11 @@ public class SysMenuController {
                 "       LEFT JOIN sys_menu m2 ON m1.pcode = m2.CODE " +
                 " WHERE" +
                 "       m1.status = 'ENABLE' " +
-                " AND m1.menu_id in (select menu_id from sys_role_menu where role_id in (" + roleIds + "))" +
+                " AND m1.menu_id in (select menu_id from sys_role_menu where role_id in (:roleIds))" +
                 " ORDER BY" +
                 "       m1.menu_id ASC";
 
-        List<SqlRow>      menuList = DB.sqlQuery(sql).findList();
+        List<SqlRow>      menuList = DB.sqlQuery(sql).setParameter("roleIds",roleList).findList();
         Map<String, List> map      = new HashMap<>(2);
         map.put("menu", menuList.parallelStream().filter(x -> "Y".equals(x.getString("menu_flag"))).collect(Collectors.toList()));
         map.put("button", menuList.parallelStream().filter(x -> "N".equals(x.getString("menu_flag"))).map(x -> x.getString("url")).collect(Collectors.toList()));
