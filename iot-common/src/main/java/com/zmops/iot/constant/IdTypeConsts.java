@@ -6,4 +6,5 @@ package com.zmops.iot.constant;
 public interface IdTypeConsts {
 
     String ID_SNOW = "IdSnow";
+    
 }
