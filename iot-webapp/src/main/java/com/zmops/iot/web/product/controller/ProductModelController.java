@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -55,6 +56,16 @@ public class ProductModelController {
     }
 
     /**
+     * 产品物模型 属性详情
+     *
+     * @return ResponseData
+     */
+    @RequestMapping("/detail")
+    public ResponseData detail(@RequestParam(value = "attrId") Long attrId) {
+        return ResponseData.success(productModelService.detail(attrId));
+    }
+
+    /**
      * 创建 产品物模型 属性
      *
      * @return ResponseData
@@ -72,9 +83,7 @@ public class ProductModelController {
         String  response = productModelService.createTrapperItem(productAttr);
         Integer zbxId    = JSON.parseObject(response, TemplateIds.class).getItemids()[0];
 
-        productAttr.setZbxId(zbxId);
-
-        productModelService.createProductAttr(productAttr);
+        productModelService.createProductAttr(productAttr,zbxId);
 
         return ResponseData.success(productAttr);
     }

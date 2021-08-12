@@ -9,7 +9,6 @@ import lombok.Setter;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author nantian created at 2021/8/5 13:53
@@ -79,14 +78,24 @@ public class ProductAttr {
         @Setter
         private String[] params;
 
+        @Getter
+        @Setter
+        private String errorHandler;
+
+        @Getter
+        @Setter
+        private String errorHandlerParams;
+
         public String getParams() {
             StringBuilder paramStr = new StringBuilder();
             if (null != params && params.length > 0) {
                 for (String param : params) {
                     paramStr.append(param).append("\\\\n");
                 }
+                return paramStr.substring(0, paramStr.length() - 3);
+            } else {
+                return "";
             }
-            return paramStr.substring(0, paramStr.length() - 3);
         }
     }
 }

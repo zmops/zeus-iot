@@ -25,13 +25,15 @@ public class ProductAttribute extends BaseEntity {
 
     private String key; // 属性唯一Key
 
-    private String uints; // 单位 0 3 才有
+    private String units; // 单位 0 3 才有
 
     private String source; // 来源
 
     private String remark; // 备注
 
     private String valueType;
+
+    private Long depAttrId;
 
     private Long productId; // 产品ID
 

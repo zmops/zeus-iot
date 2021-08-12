@@ -1,5 +1,7 @@
 package com.zmops.iot.web.product.service;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.product.Product;
 import com.zmops.iot.domain.product.ProductAttribute;
 import com.zmops.iot.domain.product.query.QProduct;
@@ -18,10 +20,7 @@ import io.ebean.DtoQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -41,13 +40,8 @@ public class ProductModelService {
      */
     public Pager<ProductAttr> prodModelAttributeList(ProductAttrParam productAttr) {
         QProductAttribute qProductAttribute = new QProductAttribute();
-        StringBuilder sql = new StringBuilder("select attr.attr_id, attr.name attrName, attr.key, attr.units, attr.source, attr.remark, attr.product_id, attr.create_user, " +
-                "attr.create_time, attr.update_user, attr.update_time, attr.zbx_id, attr.value_type," +
-                "u.name unit_name,v.name value_type_name,s.name source_name from product_attribute attr");
-        sql.append(" left join (select code,name from sys_dict where dict_type_id=1160532886713155589) u on u.code = attr.units ");
-        sql.append(" left join (select code,name from sys_dict where dict_type_id=1160532886713155590) v on v.code = attr.value_type ");
-        sql.append(" left join (select code,name from sys_dict where dict_type_id=1160532886713155588) s on s.code = attr.source where 1=1 ");
-
+        StringBuilder     sql               = generateBasSql();
+        sql.append(" where 1=1 ");
         if (null != productAttr.getProdId()) {
             sql.append(" and attr.product_id = :productId");
         }
@@ -100,13 +94,63 @@ public class ProductModelService {
     }
 
     /**
+     * 产品属性详情
+     *
+     * @param attrId
+     * @return
+     */
+    public ProductAttr detail(Long attrId) {
+        StringBuilder sql = generateBasSql();
+        sql.append(" where attr_id = :attrId");
+        ProductAttr attr = DB.findDto(ProductAttr.class, sql.toString()).setParameter("attrId", attrId).findOne();
+
+        if (null == attr.getZbxId()) {
+            return attr;
+        }
+        JSONArray itemInfo = JSONObject.parseArray(zbxItem.getItemInfo(attr.getZbxId()));
+        attr.setTags(JSONObject.parseArray(itemInfo.getJSONObject(0).getString("tags"), ProductTag.Tag.class));
+        attr.setProcessStepList(formatProcessStep(itemInfo.getJSONObject(0).getString("preprocessing")));
+        String valuemap = itemInfo.getJSONObject(0).getString("valuemap");
+        if (ToolUtil.isNotEmpty(valuemap) && !"[]".equals(valuemap)) {
+            attr.setValuemapid(JSONObject.parseObject(valuemap).getLong("valuemapid"));
+        }
+        return attr;
+    }
+
+    private List<ProductAttr.ProcessingStep> formatProcessStep(String preprocessing) {
+        if(ToolUtil.isEmpty(preprocessing)){
+            return Collections.emptyList();
+        }
+        List<ProductAttr.ProcessingStep> processingSteps = new ArrayList<>();
+        JSONArray jsonArray = JSONObject.parseArray(preprocessing);
+        for (Object object : jsonArray) {
+            ProductAttr.ProcessingStep processingStep = new ProductAttr.ProcessingStep();
+            processingStep.setType(((JSONObject) object).getString("type"));
+            processingStep.setParams(((JSONObject) object).getString("params").split("\\n"));
+            processingSteps.add(processingStep);
+        }
+
+        return processingSteps;
+    }
+
+    private StringBuilder generateBasSql() {
+        return new StringBuilder("select attr.attr_id, attr.name attrName, attr.key, attr.units, attr.source, attr.remark, attr.product_id, attr.create_user, " +
+                "attr.create_time, attr.update_user, attr.update_time, attr.zbx_id, attr.value_type,attr.dep_attr_id," +
+                "u.name unit_name,v.name value_type_name,s.name source_name from product_attribute attr")
+                .append(" left join (select code,name from sys_dict where dict_type_id=1160532886713155589) u on u.code = attr.units ")
+                .append(" left join (select code,name from sys_dict where dict_type_id=1160532886713155590) v on v.code = attr.value_type ")
+                .append(" left join (select code,name from sys_dict where dict_type_id=1160532886713155588) s on s.code = attr.source ");
+    }
+
+    /**
      * 创建 产品属性
      *
      * @param productAttr 产品属性DTO
      */
-    public void createProductAttr(ProductAttr productAttr) {
+    public void createProductAttr(ProductAttr productAttr, Integer zbxId) {
         ProductAttribute productAttribute = new ProductAttribute();
         buildProdAttribute(productAttribute, productAttr);
+        productAttribute.setZbxId(zbxId);
         productAttribute.save();
     }
 
@@ -115,11 +159,11 @@ public class ProductModelService {
         prodAttribute.setName(productAttr.getAttrName());
         prodAttribute.setKey(productAttr.getKey());
         prodAttribute.setSource(productAttr.getSource());
-        prodAttribute.setUints(productAttr.getUnits());
+        prodAttribute.setUnits(productAttr.getUnits());
         prodAttribute.setRemark(productAttr.getRemark());
-
+        prodAttribute.setValueType(productAttr.getValueType());
         prodAttribute.setAttrId(productAttr.getAttrId());
-
+        prodAttribute.setDepAttrId(productAttr.getDepAttrId());
         return prodAttribute;
     }
 
