@@ -84,5 +84,5 @@ public interface ZbxItem {
      */
     @Post
     @JsonPath("/item/item.get")
-    String getItemInfo(@ParamName("itemId") String itemId);
+    String getItemInfo(@ParamName("itemId") Integer itemId);
 }

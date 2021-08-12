@@ -38,12 +38,6 @@ public class FeishuSettingService {
                 .webhooks(Arrays.asList(new FeishuSettings.WebHookUrl(secret, url))).build();
     }
 
-
-    public void updateSettings(MediaTypeSetting WechatSetting) {
-
-
-    }
-
     public void test() {
 
     }

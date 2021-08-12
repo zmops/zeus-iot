@@ -39,11 +39,6 @@ public class WechatSettingService {
     }
 
 
-    public void updateSettings(MediaTypeSetting WechatSetting) {
-
-
-    }
-
     public void test() {
 
     }

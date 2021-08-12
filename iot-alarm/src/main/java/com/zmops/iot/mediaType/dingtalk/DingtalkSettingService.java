@@ -38,11 +38,6 @@ public class DingtalkSettingService {
     }
 
 
-    public void updateSettings(MediaTypeSetting WechatSetting) {
-
-
-    }
-
     public void test() {
 
     }
