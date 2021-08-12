@@ -1,18 +1,15 @@
 package com.zmops.iot.web.product.service;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.zmops.iot.constant.ConstantsContext;
 import com.zmops.iot.domain.product.Product;
-import com.zmops.iot.domain.product.ProductAttribute;
 import com.zmops.iot.domain.product.query.QProduct;
-import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
-import com.zmops.iot.web.exception.enums.BizExceptionEnum;
-import com.zmops.iot.web.product.dto.ProductAttr;
 import com.zmops.iot.web.product.dto.ProductBasicInfo;
 import com.zmops.iot.web.product.dto.ProductDto;
 import com.zmops.iot.web.product.dto.ProductTag;
-import com.zmops.zeus.driver.entity.ZbxProcessingStep;
-import com.zmops.zeus.driver.service.ZbxItem;
 import com.zmops.zeus.driver.service.ZbxTemplate;
 import com.zmops.zeus.driver.service.ZbxValueMap;
 import io.ebean.DB;
@@ -20,10 +17,11 @@ import io.ebean.DtoQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.zmops.iot.web.init.DeviceSatusScriptInit.GLOBAL_HOST_GROUP_CODE;
 
 /**
  * @author nantian created at 2021/8/3 20:41
@@ -32,15 +30,11 @@ import java.util.stream.Collectors;
 @Service
 public class ProductService {
 
-
     @Autowired
     private ZbxTemplate zbxTemplate;
 
     @Autowired
     private ZbxValueMap zbxValueMap;
-
-    @Autowired
-    private ZbxItem zbxItem;
 
     /**
      * 产品列表
@@ -63,24 +57,9 @@ public class ProductService {
      * 产品分页列表
      */
     public Pager<ProductDto> getProductByPage(ProductBasicInfo prodBasicInfo) {
-        QProduct qProduct = new QProduct();
-        StringBuilder sql = new StringBuilder("SELECT " +
-                " p.product_id," +
-                " p.group_id," +
-                " p.name," +
-                " p.type," +
-                " p.manufacturer," +
-                " p.model," +
-                " p.remark," +
-                " p.create_time," +
-                " p.create_user," +
-                " p.update_time," +
-                " p.update_user," +
-                " p.product_code," +
-                " pt.name group_name " +
-                "FROM" +
-                " product p" +
-                " LEFT JOIN product_type pt ON pt.ID = p.group_id where 1=1 ");
+        QProduct      qProduct = new QProduct();
+        StringBuilder sql      = generateBasSql();
+        sql.append(" where 1=1 ");
         if (null != prodBasicInfo.getGroupId()) {
             sql.append(" and p.group_id = :groupId");
         }
@@ -91,7 +70,6 @@ public class ProductService {
             sql.append(" and p.name like :name");
         }
         DtoQuery<ProductDto> query = DB.findDto(ProductDto.class, sql.toString());
-
 
         if (null != prodBasicInfo.getGroupId()) {
             query.setParameter("groupId", prodBasicInfo.getGroupId());
@@ -112,62 +90,26 @@ public class ProductService {
         return new Pager<>(list, qProduct.findCount());
     }
 
-    /**
-     * 创建 产品属性
-     *
-     * @param productAttr 产品属性DTO
-     */
-    public void createProductAttr(ProductAttr productAttr) {
-        ProductAttribute productAttribute = buildProdAttribute(productAttr);
-        productAttribute.save();
-    }
-
-
-    /**
-     * 创建 Trapper 类型 ITEM
-     *
-     * @param productAttr 属性
-     * @return String
-     */
-    public String createTrapperItem(ProductAttr productAttr) {
-
-        String itemName = productAttr.getAttrId() + "";
-
-        Product prod = new QProduct().productId.eq(productAttr.getProductId()).findOne();
-        if (null == prod) {
-            throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
-        }
-        Integer hostId = prod.getZbxId();
-
-        List<ZbxProcessingStep> processingSteps = new ArrayList<>();
-        productAttr.getProcessStepList().forEach(i -> {
-            ZbxProcessingStep step = new ZbxProcessingStep();
-
-            step.setType(i.getType());
-            step.setParams(i.getParams());
-
-            processingSteps.add(step);
-        });
-
-        return zbxItem.createTrapperItem(itemName, productAttr.getKey(),
-                hostId, productAttr.getValueType(), productAttr.getUints(), processingSteps);
-    }
-
-
-    private ProductAttribute buildProdAttribute(ProductAttr productAttr) {
-        ProductAttribute prodAttribute = new ProductAttribute();
-
-        prodAttribute.setProductId(productAttr.getProductId());
-        prodAttribute.setName(productAttr.getAttrName());
-        prodAttribute.setKey(productAttr.getKey());
-        prodAttribute.setSource(productAttr.getSource());
-        prodAttribute.setUints(productAttr.getUints());
-        prodAttribute.setRemark(productAttr.getRemark());
-
-        prodAttribute.setAttrId(productAttr.getAttrId());
-        prodAttribute.setZbxId(productAttr.getZbxId());
-
-        return prodAttribute;
+    private StringBuilder generateBasSql() {
+        return new StringBuilder("SELECT " +
+                " p.product_id," +
+                " p.group_id," +
+                " p.name," +
+                " p.type," +
+                " p.manufacturer," +
+                " p.model," +
+                " p.remark," +
+                " p.create_time," +
+                " p.create_user," +
+                " p.update_time," +
+                " p.update_user," +
+                " p.product_code," +
+                " pt.name group_name," +
+                " dt.name prodTypeName " +
+                "FROM" +
+                " product p" +
+                " LEFT JOIN product_type pt ON pt.ID = p.group_id " +
+                " LEFT JOIN ( SELECT code, NAME FROM sys_dict WHERE dict_type_id = 1160532886713155586 ) dt ON dt.code = p.type ");
     }
 
 
@@ -178,7 +120,9 @@ public class ProductService {
      * @return
      */
     public String zbxTemplateCreate(String templateName) {
-        return zbxTemplate.templateCreate(templateName, "27"); //TODO
+        // 全局分组
+        String hostGroupId = ConstantsContext.getConstntsMap().get(GLOBAL_HOST_GROUP_CODE).toString();
+        return zbxTemplate.templateCreate(templateName, hostGroupId);
     }
 
 
@@ -220,7 +164,7 @@ public class ProductService {
     public String updateTemplateTags(Integer templateId, ProductTag tag) {
 
         Map<String, String> tagMap = tag.getProductTag().stream()
-                .collect(Collectors.toMap(ProductTag.Tag::getKey, ProductTag.Tag::getValue, (k1, k2) -> k2));
+                .collect(Collectors.toMap(ProductTag.Tag::getTag, ProductTag.Tag::getValue, (k1, k2) -> k2));
 
         return zbxTemplate.templateTagUpdate(templateId, tagMap);
     }
@@ -236,6 +180,29 @@ public class ProductService {
      */
     public String valueMapCreate(String hostid, String valueMapName, Map<String, String> valueMaps) {
         return zbxValueMap.valueMapCreate(hostid, valueMapName, valueMaps);
+    }
+
+    /**
+     * 修改 产品值映射
+     *
+     * @param hostid       产品模板ID
+     * @param valueMapName 名称
+     * @param valueMaps    KV
+     * @param valueMapId    映射ID
+     * @return
+     */
+    public String valueMapUpdate(String hostid, String valueMapName, Map<String, String> valueMaps, String valueMapId) {
+        return zbxValueMap.valueMapUpdate(hostid, valueMapName, valueMaps,valueMapId);
+    }
+
+    /**
+     * 删除值映射
+     *
+     * @param valueMapId 值映射ID
+     * @return String
+     */
+    public String valueMapDelete(String valueMapId) {
+        return zbxValueMap.valueMapDelete(valueMapId);
     }
 
 
@@ -271,7 +238,38 @@ public class ProductService {
 
 
     public ProductDto prodDetail(Long prodId) {
+        StringBuilder sql = generateBasSql();
+        sql.append(" where product_id = :prodId");
+        ProductDto prod = DB.findDto(ProductDto.class, sql.toString()).setParameter("prodId", prodId).findOne();
 
-        return null;
+        //查询ZBX 主机宏
+//        List<Macr> tags      = JSONObject.parseArray(jsonArray.getJSONObject(0).getString("tags"), ProductTag.Tag.class);
+
+        return prod;
     }
+
+    public JSONArray prodTagList(Long prodId) {
+
+        JSONArray zbxTemplateInfo = getZbxTemplateInfo(prodId);
+
+        //查询ZBX tag
+        return JSONObject.parseArray(zbxTemplateInfo.getJSONObject(0).getString("tags"));
+    }
+
+    public JSONArray valueMapList(Long prodId) {
+        JSONArray zbxTemplateInfo = getZbxTemplateInfo(prodId);
+
+        //查询ZBX valueMap
+        return JSONObject.parseArray(zbxTemplateInfo.getJSONObject(0).getString("valuemaps"));
+    }
+
+    private JSONArray getZbxTemplateInfo(Long prodId) {
+        Integer zbxId = new QProduct().select(QProduct.alias().zbxId).productId.eq(prodId).findSingleAttribute();
+        if (null == zbxId) {
+            return new JSONArray();
+        }
+        return JSONObject.parseArray(zbxTemplate.templateDetail(zbxId));
+    }
+
+
 }

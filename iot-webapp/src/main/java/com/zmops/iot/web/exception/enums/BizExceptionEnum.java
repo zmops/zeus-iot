@@ -31,7 +31,7 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     ERROR_WRAPPER_FIELD(500, "包装字典属性失败"),
     ERROR_CODE_EMPTY(500, "字典类型不存在"),
     DICT_NOT_EXIST(400, "字典项不存在"),
-
+    SYSTEM_DICT_CANNOT_DELETE(400, "系统字典不能删除"),
     /**
      * 文件上传
      */
@@ -130,7 +130,8 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     PRODUCT_TYPE_EXIST(1303, "产品分类已存在"),
     PRODUCT_TYPE_NOT_EXIST(1303, "产品分类不存在"),
     PRODUCT_TYPE_HAS_BIND(1304, "产品分类已绑定产品"),
-    PRODUCT_TYPE_PID_NOT_EXIST(1305,"父节点不存在"),
+    PRODUCT_TYPE_PID_NOT_EXIST(1305, "父节点不存在"),
+    PRODUCT_TYPE_PID_ERR(1306, "父节点不可以是自已或子节点"),
 
     /**
      * 属性相关

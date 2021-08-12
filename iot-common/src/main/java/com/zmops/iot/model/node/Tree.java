@@ -15,6 +15,11 @@ public interface Tree {
     String getNodeParentId();
 
     /**
+     * 获取子节点
+     */
+    List<TreeNode> getChildrenNodes();
+
+    /**
      * 设置children
      */
     void setChildrenNodes(List childrenNodes);

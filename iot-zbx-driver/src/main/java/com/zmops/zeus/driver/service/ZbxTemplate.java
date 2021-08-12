@@ -19,7 +19,7 @@ public interface ZbxTemplate {
      *
      * @param templateName 模板名称
      * @param groupId      模板分组ID
-     * @return
+     * @return String
      */
     @Post
     @JsonPath("/template/template.create")
@@ -31,7 +31,7 @@ public interface ZbxTemplate {
      * 删除模板
      *
      * @param templateid 模板ID
-     * @return
+     * @return String
      */
     @Post
     @JsonPath("/template/template.delete")
@@ -42,11 +42,19 @@ public interface ZbxTemplate {
      * 更新模板标签
      *
      * @param tagMap 标签Map
-     * @return
+     * @return String
      */
     @Post
     @JsonPath("/template/template.tag.update")
     String templateTagUpdate(@ParamName("templateId") Integer templateId,
                              @ParamName("tagMap") Map<String, String> tagMap);
 
+    /**
+     * 查询模板详情
+     *
+     * @param templateid 模板ID
+     */
+    @Post
+    @JsonPath("/template/template.get")
+    String templateDetail(@ParamName("templateid") Integer templateid);
 }

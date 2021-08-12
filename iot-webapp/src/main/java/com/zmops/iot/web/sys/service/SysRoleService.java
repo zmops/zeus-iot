@@ -10,10 +10,10 @@ import com.zmops.iot.domain.sys.query.QSysRole;
 import com.zmops.iot.domain.sys.query.QSysRoleMenu;
 import com.zmops.iot.domain.sys.query.QSysUser;
 import com.zmops.iot.model.exception.ServiceException;
+import com.zmops.iot.model.node.TreeNode;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.sys.dto.SysRoleDto;
-import com.zmops.iot.web.sys.dto.node.TreeNode;
 import com.zmops.iot.web.sys.dto.param.RoleParam;
 import io.ebean.DB;
 import org.springframework.beans.BeanUtils;
@@ -111,7 +111,7 @@ public class SysRoleService {
      */
     private void checkMenuId(List<Long> menuIds) {
         List<Long> paramMuenuIds = new ArrayList<>(menuIds);
-        LoginUser  user         = LoginContextHolder.getContext().getUser();
+        LoginUser  user          = LoginContextHolder.getContext().getUser();
         if (null == user) {
             throw new ServiceException(AuthExceptionEnum.NOT_LOGIN_ERROR);
         }
@@ -156,10 +156,11 @@ public class SysRoleService {
                 "       LEFT JOIN sys_menu m2 ON m1.pcode = m2.CODE " +
                 " WHERE" +
                 "       m1.status = 'ENABLE' " +
-                " AND m1.menu_id in (select menu_id from sys_role_menu where role_id in (:roleIds) )" +
+//                " AND " +
+//                "       m1.menu_id in (select menu_id from sys_role_menu where role_id in (:roleIds) )" +
                 " ORDER BY" +
                 "       m1.sort ASC";
-        List<TreeNode> allMenuList = DB.findDto(TreeNode.class, sql).setParameter("roleIds", user.getRoleList()).findList();
+        List<TreeNode> allMenuList = DB.findDto(TreeNode.class, sql).findList();
 
         //取被授权用户 已授权的菜单
         List<Long> selectMenuIdList = new QSysRoleMenu().select(QSysRoleMenu.Alias.menuId).roleId.eq(roleId).findSingleAttributeList();

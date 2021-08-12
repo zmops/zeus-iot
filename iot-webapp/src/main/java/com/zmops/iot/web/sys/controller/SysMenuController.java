@@ -55,7 +55,7 @@ public class SysMenuController {
                 " ORDER BY" +
                 "       m1.menu_id ASC";
 
-        List<SqlRow>      menuList = DB.sqlQuery(sql).setParameter("roleIds",roleList).findList();
+        List<SqlRow>      menuList = DB.sqlQuery(sql).setParameter("roleIds", roleList).findList();
         Map<String, List> map      = new HashMap<>(2);
         map.put("menu", menuList.parallelStream().filter(x -> "Y".equals(x.getString("menu_flag"))).collect(Collectors.toList()));
         map.put("button", menuList.parallelStream().filter(x -> "N".equals(x.getString("menu_flag"))).map(x -> x.getString("url")).collect(Collectors.toList()));

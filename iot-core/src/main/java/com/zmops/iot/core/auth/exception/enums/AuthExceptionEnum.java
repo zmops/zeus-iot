@@ -13,6 +13,8 @@ public enum AuthExceptionEnum implements AbstractBaseExceptionEnum {
 
     NOT_LOGIN_ERROR(1401, "用户未登录"),
 
+    NOT_EXIST_ERROR(1408, "用户不存在"),
+
     USERNAME_PWD_ERROR(1402, "账号密码错误"),
 
     LOGIN_EXPPIRED(1403, "登录已过期，请重新登录"),

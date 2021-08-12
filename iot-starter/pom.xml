@@ -19,6 +19,11 @@
     <dependencies>
         <dependency>
             <groupId>com.zmops</groupId>
+            <artifactId>iot-rest</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zmops</groupId>
             <artifactId>iot-common</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -35,6 +40,11 @@
         <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>iot-zbx-driver</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>iot-alarm</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

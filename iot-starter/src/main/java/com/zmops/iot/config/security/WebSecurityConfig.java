@@ -76,7 +76,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers(HttpMethod.POST, "/login")
+        web.ignoring().antMatchers(HttpMethod.POST, NoneAuthedResources.NO_AUTH_API)
 
                 // 静态资源放开过滤
                 .and().ignoring().antMatchers(HttpMethod.GET,

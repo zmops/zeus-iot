@@ -22,6 +22,7 @@
         <module>iot-rest</module>
         <module>iot-starter</module>
         <module>iot-core</module>
+        <module>iot-alarm</module>
     </modules>
 
     <properties>

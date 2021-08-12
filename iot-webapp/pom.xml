@@ -23,6 +23,11 @@
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>
+            <artifactId>iot-alarm</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zmops</groupId>
             <artifactId>iot-zbx-driver</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
@@ -30,7 +35,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>22.0</version>
+            <version>25.1-jre</version>
         </dependency>
     </dependencies>
 
@@ -38,5 +43,22 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
+
+    <!-- EBean 自动生成查询Bean  -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.repaint.maven</groupId>
+                <artifactId>tiles-maven-plugin</artifactId>
+                <version>2.23</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <tiles>
+                        <tile>io.ebean.tile:enhancement:12.9.3</tile>
+                    </tiles>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

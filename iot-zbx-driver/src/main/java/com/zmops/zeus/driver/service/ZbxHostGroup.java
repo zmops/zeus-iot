@@ -14,11 +14,33 @@ import java.util.List;
 @BaseRequest(baseURL = "${zbxApiUrl}")
 public interface ZbxHostGroup {
 
+
+    /**
+     * 获取 全局 主机组
+     *
+     * @param userAuth api token
+     * @return String
+     */
+    @Post(headers = "authTag: noAuth")
+    @JsonPath("/hostgroup/hostgroup.global.get")
+    String getGlobalHostGroup(@ParamName("userAuth") String userAuth);
+
+
+    /**
+     * 创建默认全局主机组
+     *
+     * @param userAuth userToken
+     * @return String
+     */
+    @Post(headers = "authTag: noAuth")
+    @JsonPath("/hostgroup/hostgroup.init.create")
+    String createGlobalHostGroup(@ParamName("userAuth") String userAuth);
+
     /**
      * 创建主机组
      *
      * @param hostGroupName 主机组名称
-     * @return
+     * @return String
      */
     @Post
     @JsonPath("/hostgroup/hostgroup.create")
@@ -29,7 +51,7 @@ public interface ZbxHostGroup {
      * 删除主机组
      *
      * @param hostGrpIds 主机组IDS
-     * @return
+     * @return String
      */
     @Post
     @JsonPath("/hostgroup/hostgroup.delete")

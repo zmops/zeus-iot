@@ -56,8 +56,24 @@ public class ProductController {
      * 产品详情
      */
     @GetMapping("/detail")
-    public ResponseData prodDetail(@RequestParam("prodId") Long prodId){
+    public ResponseData prodDetail(@RequestParam("prodId") Long prodId) {
         return ResponseData.success(productService.prodDetail(prodId));
+    }
+
+    /**
+     * 产品标签列表
+     */
+    @GetMapping("/prodTag/list")
+    public ResponseData prodTagList(@RequestParam("prodId") Long prodId) {
+        return ResponseData.success(productService.prodTagList(prodId));
+    }
+
+    /**
+     * 值映射列表
+     */
+    @GetMapping("/valueMap/list")
+    public ResponseData valueMapList(@RequestParam("prodId") Long prodId) {
+        return ResponseData.success(productService.valueMapList(prodId));
     }
 
     /**
@@ -169,14 +185,34 @@ public class ProductController {
      * @param valueMap
      * @return
      */
-    @PostMapping("/valuemap/create")
-    public ResponseData prodValueMapCreate(@RequestBody @Valid ValueMap valueMap) {
+    @PostMapping("/valuemap/update")
+    public ResponseData prodValueMapCreate(@RequestBody @Validated(BaseEntity.Create.class) ValueMap valueMap) {
 
         Product product = new QProduct().productId.eq(valueMap.getProductId()).findOne();
         if (null == product) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }
-        String response   = productService.valueMapCreate(product.getZbxId() + "", valueMap.getValueMapName(), valueMap.getValueMaps());
+        String response   ="";
+        if(null == valueMap.getValuemapid()){
+             response   = productService.valueMapCreate(product.getZbxId() + "", valueMap.getValueMapName(), valueMap.getValueMaps());
+        }else{
+            response   = productService.valueMapUpdate(product.getZbxId() + "", valueMap.getValueMapName(), valueMap.getValueMaps(),valueMap.getValuemapid());
+        }
+
+        int    valuemapid = JSON.parseObject(response, TemplateIds.class).getValuemapids()[0];
+        return ResponseData.success(valuemapid);
+    }
+
+
+    /**
+     * 删除值映射
+     *
+     * @param valueMap
+     * @return
+     */
+    @PostMapping("/valuemap/delete")
+    public ResponseData prodValueMapDelete(@RequestBody @Validated(BaseEntity.Delete.class) ValueMap valueMap) {
+        String response   = productService.valueMapDelete(valueMap.getValuemapid());
         int    valuemapid = JSON.parseObject(response, TemplateIds.class).getValuemapids()[0];
         return ResponseData.success(valuemapid);
     }

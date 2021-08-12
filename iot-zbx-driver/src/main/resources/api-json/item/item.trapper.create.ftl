@@ -7,6 +7,9 @@
         "hostid": "${hostId}",
         "type": 2,  <#--zabbix trapper-->
         "value_type": ${valueType},
+        <#if valuemapid??>
+            "valuemapid":${valuemapid},
+        </#if>
         <#if valueType == '0' || valueType == '3'>
             "units": "${units}",
         </#if>
@@ -19,6 +22,16 @@
                 "error_handler": "0",
                 "error_handler_params": ""
             }<#if process_has_next>,</#if>
+            </#list>
+        </#if>
+        ],
+        "tags": [
+        <#if tagMap??>
+            <#list tagMap? keys as key>
+                {
+                "tag": "${key}",
+                "value": "${tagMap[key]}"
+                }<#if key_has_next>,</#if>
             </#list>
         </#if>
         ]

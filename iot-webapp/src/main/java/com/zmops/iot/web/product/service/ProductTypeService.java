@@ -5,10 +5,10 @@ import com.zmops.iot.domain.product.ProductType;
 import com.zmops.iot.domain.product.query.QProduct;
 import com.zmops.iot.domain.product.query.QProductType;
 import com.zmops.iot.model.exception.ServiceException;
+import com.zmops.iot.model.node.TreeNode;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.param.ProductTypeParam;
-import com.zmops.iot.web.sys.dto.node.TreeNode;
 import io.ebean.DB;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +22,11 @@ import java.util.List;
 @Service
 public class ProductTypeService {
 
-
     /**
      * 产品分类树
      */
     public List<TreeNode> tree() {
-        String                            sql              = "select id,pid pId,name from product_type";
+        String                            sql              = "select id,pid pId,name,pids from product_type";
         List<TreeNode>                    list             = DB.findDto(TreeNode.class, sql).findList();
         DefaultTreeBuildFactory<TreeNode> treeBuildFactory = new DefaultTreeBuildFactory<>();
         treeBuildFactory.setRootParentId("0");
@@ -107,10 +106,16 @@ public class ProductTypeService {
         } else {
             Long        pid  = productType.getPid();
             ProductType temp = new QProductType().id.eq(pid).findOne();
-            if(null == temp){
+            if (null == temp) {
                 throw new ServiceException(BizExceptionEnum.PRODUCT_TYPE_PID_NOT_EXIST);
             }
-            String      pids = temp.getPids();
+            if (productType.getPid().equals(temp.getId())) {
+                throw new ServiceException(BizExceptionEnum.PRODUCT_TYPE_PID_ERR);
+            }
+            if (null != productType.getId() && temp.getPids().contains("[" + productType.getId() + "]")) {
+                throw new ServiceException(BizExceptionEnum.PRODUCT_TYPE_PID_ERR);
+            }
+            String pids = temp.getPids();
             productType.setPids(pids + "[" + pid + "],");
         }
     }

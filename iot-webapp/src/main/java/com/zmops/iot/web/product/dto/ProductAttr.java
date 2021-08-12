@@ -1,12 +1,15 @@
 package com.zmops.iot.web.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.zmops.iot.domain.BaseEntity;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author nantian created at 2021/8/5 13:53
@@ -17,18 +20,23 @@ import java.util.List;
 @Data
 public class ProductAttr {
 
+    @NotNull(groups = BaseEntity.Update.class)
     private Long attrId;
 
-    @NotNull
-    private String attrName; //属性名 非 item name
+    //属性名 非 item name
+    @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
+    private String attrName;
 
-    @NotNull
+    @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private String key;
 
-    private String uints;
+    private String units;
+    private String unitName;
 
-    @NotNull
-    private String source; //来源：设备 trapper ，属性依赖 dependent
+    //来源：设备 trapper ，属性依赖 dependent
+    @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
+    private String source;
+    private String sourceName;
 
     private String remark;
 
@@ -37,14 +45,27 @@ public class ProductAttr {
     @JsonIgnore
     private Integer zbxId;
 
-    @NotNull
+    @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private Long productId;
 
-    @NotNull
+    @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private String valueType;
+    private String valueTypeName;
 
-    private List<ProcessingStep> processStepList; //预处理
+    private Long valuemapid;
 
+    private List<ProductTag.Tag> tags;
+
+    //预处理
+    private List<ProcessingStep> processStepList;
+
+    @NotNull(groups = BaseEntity.Delete.class)
+    private List<Long> attrIds;
+
+    LocalDateTime createTime;
+    LocalDateTime updateTime;
+    Long          createUser;
+    Long          updateUser;
 
     /**
      * 预处理步骤

@@ -1,22 +1,23 @@
 package com.zmops.iot.web.sys.controller;
 
+import com.zmops.iot.constant.ConstantsContext;
 import com.zmops.iot.core.log.BussinessLog;
+import com.zmops.iot.core.util.SaltUtil;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.domain.sys.SysUser;
+import com.zmops.iot.domain.sys.query.QSysUser;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.web.sys.dto.UserDto;
 import com.zmops.iot.web.sys.dto.param.UserParam;
 import com.zmops.iot.web.sys.service.SysUserService;
-import io.ebean.SqlRow;
+import io.ebean.DB;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 /**
  * @author nantian created at 2021/8/1 21:56
@@ -70,8 +71,31 @@ public class SysUserController {
      */
     @PostMapping("/delete")
     @BussinessLog(value = "删除用户")
-    public ResponseData deleteUser(@Valid @RequestBody UserParam user) {
-            sysUserService.deleteUser(user);
-            return ResponseData.success();
+    public ResponseData deleteUser(@Validated(BaseEntity.Delete.class) @RequestBody UserParam user) {
+        sysUserService.deleteUser(user);
+        return ResponseData.success();
+    }
+
+    /**
+     * 修改密码
+     */
+    @PostMapping("/changePwd")
+    @BussinessLog(value = "修改密码")
+    public ResponseData changePwd(@Valid @RequestBody UserParam user) {
+        sysUserService.changePwd(user.getOldPassword(), user.getNewPassword());
+        return ResponseData.success();
+    }
+
+    /**
+     * 重置管理员的密码
+     */
+    @RequestMapping("/reset")
+    @BussinessLog(value = "重置密码")
+    public ResponseData reset(@RequestParam("userId") Long userId) {
+        SysUser user = new QSysUser().userId.eq(userId).findOne();
+        user.setSalt(SaltUtil.getRandomSalt());
+        user.setPassword(SaltUtil.md5Encrypt(ConstantsContext.getDefaultPassword(), user.getSalt()));
+        DB.update(user);
+        return ResponseData.success();
     }
 }

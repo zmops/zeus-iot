@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class SysParamService {
 
     public List<SysConfig> list() {
-        return new QSysConfig().findList();
+        return new QSysConfig().orderBy().id.desc().findList();
     }
 
     public void update(SysParamDto sysParamDto) {

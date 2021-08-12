@@ -33,7 +33,7 @@ public interface ZbxUser {
      * 用户创建
      *
      * @param name     账号
-     * @param password   密码
+     * @param password 密码
      * @param usrGrpId 用户组ID
      * @return 用户信息
      */

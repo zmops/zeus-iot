@@ -31,6 +31,8 @@ public class ProductAttribute extends BaseEntity {
 
     private String remark; // 备注
 
+    private String valueType;
+
     private Long productId; // 产品ID
 
     private Integer zbxId;  // Zabbix itemId

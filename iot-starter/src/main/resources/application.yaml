@@ -26,7 +26,7 @@ spring:
       driver-class-name: org.postgresql.Driver
       username: postgres
       password: postgres
-      url: jdbc:postgresql://172.16.3.72:5432/zeus-iot
+      url: jdbc:postgresql://172.16.60.98:5432/zeus-iot
   servlet:
     multipart:
       max-request-size: 200MB
@@ -37,9 +37,15 @@ spring:
 
 forest:
   variables:
-    zbxApiUrl: http://172.16.3.72/zabbix/api_jsonrpc.php
-    zbxServerIp: 172.16.3.72
+    ## Zabbix API IP 和 端口
+    zbxApiUrl: http://172.16.60.98:8871/zabbix/api_jsonrpc.php
+    zbxServerIp: 172.16.60.98
     zbxServerPort: 10051
+    zbxApiToken: e39f259dc2b5a5deb583531380a56d85
+
+    ## 设备状态变更 等回调地址
+    zeusServerIp: 172.16.60.98
+    zeusServerPort: 9090
   interceptors:
     - com.zmops.zeus.driver.inteceptor.JsonBodyBuildInterceptor
   log-enabled: false
