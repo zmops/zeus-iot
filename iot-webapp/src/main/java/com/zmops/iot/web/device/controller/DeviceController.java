@@ -1,6 +1,11 @@
 package com.zmops.iot.web.device.controller;
 
 import com.zmops.iot.model.response.ResponseData;
+import com.zmops.iot.web.device.dto.DeviceDto;
+import com.zmops.iot.web.device.dto.param.DeviceParam;
+import com.zmops.iot.web.device.service.DeviceService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,13 +18,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/device")
 public class DeviceController {
 
+    @Autowired
+    DeviceService deviceService;
+
     /**
      * 设备分页列表
      *
      * @return
      */
-    @RequestMapping("/pagelist")
-    public ResponseData devicePageList() {
-        return ResponseData.success();
+    @RequestMapping("/getDeviceByPage")
+    public ResponseData devicePageList(@RequestBody DeviceParam deviceParam) {
+        return ResponseData.success(deviceService.devicePageList(deviceParam));
     }
+
+
+
+
+
+
+
 }

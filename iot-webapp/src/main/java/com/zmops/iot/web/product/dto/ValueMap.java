@@ -1,5 +1,6 @@
 package com.zmops.iot.web.product.dto;
 
+import com.zmops.iot.domain.BaseEntity;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -12,12 +13,16 @@ import java.util.Map;
 @Data
 public class ValueMap {
 
-    @NotNull
+    @NotNull(groups = BaseEntity.Create.class)
     private Long productId;
 
-    @NotNull
+    @NotNull(groups = BaseEntity.Create.class)
     private String valueMapName;
 
-    @NotNull
+    @NotNull(groups = BaseEntity.Create.class)
     private Map<String, String> valueMaps;
+
+
+    @NotNull(groups = BaseEntity.Delete.class)
+    private String valuemapid;
 }

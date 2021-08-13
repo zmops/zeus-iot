@@ -24,7 +24,7 @@ public class ProductTag {
     public static class Tag {
 
         @Max(20)
-        private String key;
+        private String tag;
 
         @Max(50)
         private String value;

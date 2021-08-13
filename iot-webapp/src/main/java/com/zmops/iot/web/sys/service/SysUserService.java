@@ -2,12 +2,16 @@ package com.zmops.iot.web.sys.service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.zmops.iot.core.auth.context.LoginContextHolder;
+import com.zmops.iot.core.auth.exception.enums.AuthExceptionEnum;
+import com.zmops.iot.core.auth.model.LoginUser;
 import com.zmops.iot.core.util.RsaUtil;
 import com.zmops.iot.core.util.SaltUtil;
 import com.zmops.iot.domain.sys.SysUser;
 import com.zmops.iot.domain.sys.query.QSysUser;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
+import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.sys.dto.UserDto;
@@ -17,6 +21,8 @@ import com.zmops.zeus.driver.service.ZbxUser;
 import io.ebean.DB;
 import io.ebean.DtoQuery;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,11 +31,12 @@ import java.util.stream.Collectors;
 
 /**
  * @author yefei
- *
+ * <p>
  * 用户管理
  **/
 @Service
-public class SysUserService {
+@Order(Integer.MAX_VALUE)
+public class SysUserService implements CommandLineRunner {
 
     @Autowired
     private ZbxUser zbxUser;
@@ -75,9 +82,11 @@ public class SysUserService {
         checkByAccount(user.getAccount());
 
         // 完善账号信息
-        String password = user.getPassword();
+        String password   = user.getPassword();
+        String decryptPwd = "";
         try {
             password = RsaUtil.decryptPwd(password);
+            decryptPwd = password;
         } catch (Exception e) {
             throw new ServiceException(BizExceptionEnum.PWD_DECRYPT_ERR);
         }
@@ -88,7 +97,7 @@ public class SysUserService {
         SysUser newUser = UserFactory.createUser(user, password, salt);
         //取对应的ZBX用户组ID
         Long       usrZbxId = sysUserGroupService.getZabUsrGrpId(user.getUserGroupId());
-        JSONObject result   = JSONObject.parseObject(zbxUser.userAdd(user.getAccount(), password, usrZbxId));
+        JSONObject result   = JSONObject.parseObject(zbxUser.userAdd(user.getAccount(), decryptPwd, usrZbxId));
         JSONArray  userids  = result.getJSONArray("userids");
         newUser.setZbxId(String.valueOf(userids.get(0)));
         DB.save(newUser);
@@ -145,5 +154,44 @@ public class SysUserService {
         }
     }
 
+    /**
+     * 修改密码
+     *
+     * @param oldPassword
+     * @param newPassword
+     */
+    public void changePwd(String oldPassword, String newPassword) {
+        LoginUser loginUser = LoginContextHolder.getContext().getUser();
 
+        if (null == loginUser) {
+            throw new ServiceException(AuthExceptionEnum.NOT_LOGIN_ERROR);
+        }
+        SysUser user = new QSysUser().userId.eq(loginUser.getId()).findOne();
+
+        try {
+            oldPassword = RsaUtil.decryptPwd(oldPassword);
+            newPassword = RsaUtil.decryptPwd(newPassword);
+        } catch (Exception e) {
+            throw new ServiceException(BizExceptionEnum.PWD_DECRYPT_ERR);
+        }
+
+        oldPassword = SaltUtil.md5Encrypt(oldPassword, user.getSalt());
+
+        if (user.getPassword().equals(oldPassword)) {
+            newPassword = SaltUtil.md5Encrypt(newPassword, user.getSalt());
+            user.setPassword(newPassword);
+            DB.update(user);
+        } else {
+            throw new ServiceException(BizExceptionEnum.OLD_PWD_NOT_RIGHT);
+        }
+    }
+
+    public void updateUserCache() {
+        DefinitionsUtil.updateSysUser(new QSysUser().findList());
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        updateUserCache();
+    }
 }

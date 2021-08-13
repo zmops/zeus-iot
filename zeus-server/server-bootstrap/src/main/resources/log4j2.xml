@@ -1,0 +1,20 @@
+<Configuration status="DEBUG">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout charset="UTF-8" pattern="%d - %c - %L [%t] %-5p %x - %m%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <logger name="org.eclipse.jetty" level="INFO"/>
+        <logger name="org.apache.zookeeper" level="INFO"/>
+        <logger name="org.elasticsearch.common.network.IfConfig" level="INFO"/>
+        <logger name="org.elasticsearch.client.RestClient" level="INFO"/>
+        <logger name="io.grpc.netty" level="INFO"/>
+        <logger name="io.netty" level="INFO"/>
+        <logger name="org.apache.http" level="INFO"/>
+        <logger name="com.zmops.zeus.iot" level="DEBUG"/>
+        <Root level="DEBUG">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>

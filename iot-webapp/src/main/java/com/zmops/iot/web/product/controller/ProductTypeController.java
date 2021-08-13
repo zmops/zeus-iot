@@ -29,7 +29,7 @@ public class ProductTypeController {
      * 产品分类树
      */
     @RequestMapping("/tree")
-    public ResponseData tree(){
+    public ResponseData tree() {
         return ResponseData.success(productTypeService.tree());
     }
 

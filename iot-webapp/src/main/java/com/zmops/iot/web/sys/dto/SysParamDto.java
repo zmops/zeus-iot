@@ -2,6 +2,7 @@ package com.zmops.iot.web.sys.dto;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -21,13 +22,13 @@ public class SysParamDto {
         /**
          * 名称
          */
-        @NotNull
+        @NotBlank
         private String name;
 
         /**
          * 属性值，如果是字典中的类型，则为dict的code
          */
-        @NotNull
+        @NotBlank
         private String value;
 
         /**

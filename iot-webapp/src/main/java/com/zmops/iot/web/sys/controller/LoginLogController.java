@@ -29,6 +29,6 @@ public class LoginLogController {
                                    @RequestParam(required = false) String logName,
                                    @RequestParam(required = false, defaultValue = "1") int page,
                                    @RequestParam(required = false, defaultValue = "20") int maxRow) {
-        return loginLogService.list(beginTime, endTime, logName, page,maxRow);
+        return loginLogService.list(beginTime, endTime, logName, page, maxRow);
     }
 }

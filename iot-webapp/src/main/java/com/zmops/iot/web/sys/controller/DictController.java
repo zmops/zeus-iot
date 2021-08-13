@@ -14,11 +14,10 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * 基础字典控制器
- *
  */
 @RestController
 @RequestMapping("/dict")
-public class DictController  {
+public class DictController {
 
     @Autowired
     private DictService dictService;
@@ -27,10 +26,8 @@ public class DictController  {
     private DictTypeService dictTypeService;
 
 
-
     /**
      * 新增字典项
-     *
      */
     @RequestMapping("/create")
     @BussinessLog("新增字典项")
@@ -40,7 +37,6 @@ public class DictController  {
 
     /**
      * 编辑字典项
-     *
      */
     @RequestMapping("/update")
     @BussinessLog("编辑字典项")
@@ -62,7 +58,6 @@ public class DictController  {
 
     /**
      * 获取某个字典类型下的所有字典
-     *
      */
     @ResponseBody
     @RequestMapping("/listDicts")
@@ -72,12 +67,20 @@ public class DictController  {
 
     /**
      * 获取某个字典类型下的所有字典
-     *
      */
     @ResponseBody
     @RequestMapping("/listDictByCode")
     public ResponseData listDictByCode(@RequestParam("dictTypeCode") String dictTypeCode) {
         return ResponseData.success(dictService.listDicts(dictTypeCode));
+    }
+
+    /**
+     * 获取某个字典类型下的所有字典
+     */
+    @ResponseBody
+    @RequestMapping("/groupDictByCode")
+    public ResponseData groupDictByCode(@RequestParam("dictTypeCode") String dictTypeCode) {
+        return ResponseData.success(dictService.groupDictByCode(dictTypeCode));
     }
 
     /**
@@ -100,7 +103,6 @@ public class DictController  {
 //    public LayuiPageInfo list(DictParam dictParam) {
 //        return this.dictService.findPageBySpec(dictParam);
 //    }
-
 
 
     /**

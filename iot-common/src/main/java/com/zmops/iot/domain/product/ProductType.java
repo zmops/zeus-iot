@@ -16,9 +16,9 @@ import javax.persistence.Table;
 @Table(name = "product_type")
 public class ProductType {
     @Id
-    private Long   id;
+    private Long id;
 
-    private Long   pid;
+    private Long pid = 0L;
 
     private String pids;
 

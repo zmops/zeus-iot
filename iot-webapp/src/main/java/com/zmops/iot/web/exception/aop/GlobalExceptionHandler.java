@@ -65,7 +65,7 @@ public class GlobalExceptionHandler {
      * 参数校验错误
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData handleError(MissingServletRequestParameterException e) {
         log.warn("Missing Request Parameter", e);
@@ -77,7 +77,7 @@ public class GlobalExceptionHandler {
      * 参数校验错误
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData handleError(MethodArgumentTypeMismatchException e) {
         log.warn("Method Argument Type Mismatch", e);
@@ -89,7 +89,7 @@ public class GlobalExceptionHandler {
      * 参数校验错误
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData handleError(MethodArgumentNotValidException e) {
         log.warn("Method Argument Not Valid", e);
@@ -103,7 +103,7 @@ public class GlobalExceptionHandler {
      * 参数校验错误异常
      */
     @ExceptionHandler(BindException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData handleError(BindException e) {
         log.warn("Bind Exception", e);
@@ -116,7 +116,7 @@ public class GlobalExceptionHandler {
      * 参数校验错误异常
      */
     @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData handleError(ConstraintViolationException e) {
         log.warn("Constraint Violation", e);
@@ -131,7 +131,7 @@ public class GlobalExceptionHandler {
      * 参数校验错误异常
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData handleError(HttpMessageNotReadableException e) {
         log.warn("HttpMessageNotReadableException ", e);
@@ -143,7 +143,7 @@ public class GlobalExceptionHandler {
      * 认证异常--认证失败（账号密码错误，账号被冻结，token过期等）
      */
     @ExceptionHandler(AuthException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData unAuth(AuthException e) {
         return new ErrorResponseData(e.getCode(), e.getMessage());
@@ -153,7 +153,7 @@ public class GlobalExceptionHandler {
      * 认证异常--没有访问权限
      */
     @ExceptionHandler(PermissionException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData permissionExpection(PermissionException e) {
         LogManager.me().executeLog(LogTaskFactory.loginLog("username", "验证码错误", getIp()));
@@ -164,7 +164,7 @@ public class GlobalExceptionHandler {
      * 验证码错误异常
      */
     @ExceptionHandler(InvalidKaptchaException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData credentials(InvalidKaptchaException e) {
         String username = getRequest().getParameter("username");
@@ -176,7 +176,7 @@ public class GlobalExceptionHandler {
      * 拦截业务异常
      */
     @ExceptionHandler(ServiceException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData bussiness(ServiceException e) {
         log.error("业务异常:", e);
@@ -192,7 +192,7 @@ public class GlobalExceptionHandler {
      * 拦截 Zabbix 接口异常
      */
     @ExceptionHandler(ZbxApiException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData bussiness(ZbxApiException e) {
         log.error("Zabbix接口调用出错:", e);
@@ -207,7 +207,7 @@ public class GlobalExceptionHandler {
      * 拦截未知的运行时异常
      */
     @ExceptionHandler(Throwable.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData notFount(Throwable e) {
         log.error("运行时异常:", e);

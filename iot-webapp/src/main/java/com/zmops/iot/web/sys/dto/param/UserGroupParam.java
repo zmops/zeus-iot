@@ -27,7 +27,7 @@ import java.util.List;
  * @author yefei
  */
 @Data
-public class UserGroupParam extends BaseQueryParam{
+public class UserGroupParam extends BaseQueryParam {
 
     private String groupName;
 

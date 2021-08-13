@@ -30,6 +30,6 @@ public class LogController {
                                        @RequestParam(required = false) String logType,
                                        @RequestParam(required = false, defaultValue = "1") int page,
                                        @RequestParam(required = false, defaultValue = "20") int maxRow) {
-        return operationLogService.list(beginTime, endTime, logName, logType, page,maxRow);
+        return operationLogService.list(beginTime, endTime, logName, logType, page, maxRow);
     }
 }

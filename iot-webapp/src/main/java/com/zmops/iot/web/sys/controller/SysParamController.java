@@ -33,7 +33,7 @@ public class SysParamController {
      */
     @PostMapping("/update")
     @BussinessLog(value = "系统参数修改")
-    public ResponseData update(@Validated @RequestBody SysParamDto sysParamDto){
+    public ResponseData update(@Validated @RequestBody SysParamDto sysParamDto) {
         sysParamService.update(sysParamDto);
         return ResponseData.success();
     }

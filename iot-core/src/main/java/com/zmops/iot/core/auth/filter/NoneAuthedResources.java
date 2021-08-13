@@ -18,6 +18,15 @@ public class NoneAuthedResources {
 
 
     /**
+     * 不走 filter 调用链 API
+     */
+    public static final String[] NO_AUTH_API = {
+            "/login",
+            "/rest/device/webhook"
+    };
+
+
+    /**
      * 不要权限校验的后端接口资源
      * <p>
      * ANT风格的接口正则表达式：

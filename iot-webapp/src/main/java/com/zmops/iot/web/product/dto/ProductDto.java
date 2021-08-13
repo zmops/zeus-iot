@@ -1,5 +1,7 @@
 package com.zmops.iot.web.product.dto;
 
+import com.alibaba.fastjson.JSONArray;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.List;
@@ -14,8 +16,10 @@ public class ProductDto {
 
     private Long groupId;
 
+    @JsonProperty("prodName")
     private String name;
 
+    @JsonProperty("prodType")
     private String type;
 
     private String manufacturer;
@@ -24,6 +28,7 @@ public class ProductDto {
 
     private String remark;
 
+    @JsonProperty("prodCode")
     private String productCode;
 
     private Integer zbxId;
@@ -33,8 +38,9 @@ public class ProductDto {
     private String createTime;
     private String updateUser;
     private String updateTime;
+    private String prodTypeName;
 
-    private List<ProductTag.Tag> productTag;
-
+//    private List<ProductTag.Tag> productTag;
+//    private JSONArray            valueMaps;
 
 }

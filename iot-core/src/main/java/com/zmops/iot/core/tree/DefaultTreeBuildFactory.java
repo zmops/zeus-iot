@@ -1,6 +1,7 @@
 package com.zmops.iot.core.tree;
 
 import com.zmops.iot.model.node.Tree;
+import com.zmops.iot.util.ToolUtil;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class DefaultTreeBuildFactory<T extends Tree> extends AbstractTreeBuildFa
     /**
      * 顶级节点的父节点id(默认-1)
      */
-    private String rootParentId = "-1";
+    private String rootParentId = "0";
 
     /**
      * 查询子节点的集合
@@ -87,6 +88,9 @@ public class DefaultTreeBuildFactory<T extends Tree> extends AbstractTreeBuildFa
         for (T node : nodes) {
             if (node.getNodeParentId().equals(rootParentId)) {
                 results.add(node);
+            }
+            if (ToolUtil.isEmpty(node.getChildrenNodes())) {
+                node.setChildrenNodes(null);
             }
         }
         return results;

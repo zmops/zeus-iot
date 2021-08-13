@@ -2,7 +2,6 @@ package com.zmops.iot.web.auth;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.convert.Convert;
-import com.alibaba.fastjson.JSON;
 import com.zmops.iot.core.auth.cache.SessionManager;
 import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.core.auth.exception.AuthException;
@@ -16,7 +15,6 @@ import com.zmops.iot.core.util.SaltUtil;
 import com.zmops.iot.domain.sys.SysUser;
 import com.zmops.iot.domain.sys.query.QSysUser;
 import com.zmops.iot.model.exception.ServiceException;
-import com.zmops.iot.util.SpringContextHolder;
 import com.zmops.iot.web.constant.state.ManagerStatus;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.log.LogManager;
@@ -27,7 +25,6 @@ import com.zmops.zeus.driver.service.ZbxUser;
 import io.ebean.DB;
 import io.ebean.SqlRow;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +40,6 @@ import static com.zmops.iot.constant.ConstantsContext.getTokenHeaderName;
 import static com.zmops.iot.core.util.HttpContext.getIp;
 
 @Service
-@DependsOn("springContextHolder")
 @Transactional(readOnly = true)
 public class AuthService {
 
@@ -52,10 +48,6 @@ public class AuthService {
 
     @Autowired
     private ZbxUser zbxUser;
-
-    public static AuthService me() {
-        return SpringContextHolder.getBean(AuthService.class);
-    }
 
 
     /**
@@ -70,7 +62,7 @@ public class AuthService {
 
         // 账号不存在
         if (null == user) {
-            throw new AuthException(AuthExceptionEnum.USERNAME_PWD_ERROR);
+            throw new AuthException(AuthExceptionEnum.NOT_EXIST_ERROR);
         }
 
         // 账号被冻结

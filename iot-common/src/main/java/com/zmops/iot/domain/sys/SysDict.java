@@ -15,7 +15,6 @@ import java.io.Serializable;
  * <p>
  * 基础字典
  * </p>
- *
  */
 @EqualsAndHashCode(callSuper = false)
 @Table(name = "sys_dict")
@@ -61,4 +60,6 @@ public class SysDict extends BaseEntity implements Serializable {
      * 字典的描述
      */
     private String remark;
+
+    private String group;
 }

@@ -15,8 +15,10 @@
  */
 package com.zmops.iot.web.sys.dto.param;
 
+import com.zmops.iot.domain.BaseEntity;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -26,12 +28,18 @@ import java.util.List;
  * @author yefei
  */
 @Data
-public class UserParam extends BaseQueryParam{
+public class UserParam extends BaseQueryParam {
 
     private String name;
 
     private String status;
 
-    @NotNull
+    @NotBlank(groups = BaseEntity.Update.class)
+    private String oldPassword;
+
+    @NotBlank(groups = BaseEntity.Update.class)
+    private String newPassword;
+
+    @NotNull(groups = BaseEntity.Delete.class)
     private List<Long> userIds;
 }

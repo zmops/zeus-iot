@@ -30,7 +30,7 @@ public class DictTypeParam extends BaseQueryParam {
      * 是否是系统字典，Y-是，N-否
      */
     @NotBlank(groups = {BaseEntity.Create.class})
-    private String systemFlag;
+    private String systemFlag = "N";
 
     /**
      * 字典类型编码

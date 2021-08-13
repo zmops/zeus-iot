@@ -51,7 +51,10 @@ public class DictTypeService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void delete(DictTypeParam param) {
-
+        String systemFlag = new QSysDictType().select(QSysDictType.alias().systemFlag).dictTypeId.eq(param.getDictTypeId()).findSingleAttribute();
+        if ("Y".equals(systemFlag)) {
+            throw new ServiceException(BizExceptionEnum.SYSTEM_DICT_CANNOT_DELETE);
+        }
         //删除字典类型
         new QSysDictType().dictTypeId.in(param.getDictTypeIds()).delete();
 

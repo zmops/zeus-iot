@@ -18,10 +18,11 @@
     <modules>
         <module>iot-webapp</module>
         <module>iot-common</module>
-        <module>iot-zbx-driver</module>
+        <module>iot-driver</module>
         <module>iot-rest</module>
         <module>iot-starter</module>
         <module>iot-core</module>
+        <module>iot-alarm</module>
     </modules>
 
     <properties>

@@ -12,7 +12,10 @@ import io.ebean.DB;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -60,6 +63,10 @@ public class DictService {
      * 删除
      */
     public void delete(DictParam param) {
+        String systemFlag = new QSysDictType().select(QSysDictType.alias().systemFlag).dictTypeId.eq(param.getDictTypeId()).findSingleAttribute();
+        if ("Y".equals(systemFlag)) {
+            throw new ServiceException(BizExceptionEnum.SYSTEM_DICT_CANNOT_DELETE);
+        }
         new QSysDict().dictId.in(param.getDictIds()).delete();
     }
 
@@ -105,6 +112,18 @@ public class DictService {
     public List<SysDict> listDicts(String dictTypeCode) {
         Long dictTypeId = new QSysDictType().select(QSysDictType.alias().dictTypeId).code.eq(dictTypeCode).findSingleAttribute();
         return listDicts(dictTypeId);
+    }
+
+    /**
+     * 分组查询字典列表，通过字典编码
+     */
+    public Map<String,List<SysDict>> groupDictByCode(String dictTypeCode) {
+        Long dictTypeId = new QSysDictType().select(QSysDictType.alias().dictTypeId).code.eq(dictTypeCode).findSingleAttribute();
+        List<SysDict> sysDicts = listDicts(dictTypeId);
+        if(ToolUtil.isEmpty(sysDicts)){
+            return new HashMap<>();
+        }
+        return sysDicts.parallelStream().collect(Collectors.groupingBy(SysDict::getGroup));
     }
 
     //    /**
@@ -257,6 +276,8 @@ public class DictService {
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
+
 //
 //    private List<Long> getSubIds(Long dictId) {
 //

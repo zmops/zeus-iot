@@ -1,11 +1,13 @@
 package com.zmops.iot.web.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.zmops.iot.domain.BaseEntity;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -17,18 +19,23 @@ import java.util.List;
 @Data
 public class ProductAttr {
 
+    @NotNull(groups = BaseEntity.Update.class)
     private Long attrId;
 
-    @NotNull
-    private String attrName; //属性名 非 item name
+    //属性名 非 item name
+    @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
+    private String attrName;
 
-    @NotNull
+    @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private String key;
 
-    private String uints;
+    private String units;
+    private String unitName;
 
-    @NotNull
-    private String source; //来源：设备 trapper ，属性依赖 dependent
+    //来源：设备 trapper ，属性依赖 dependent
+    @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
+    private String source;
+    private String sourceName;
 
     private String remark;
 
@@ -37,14 +44,27 @@ public class ProductAttr {
     @JsonIgnore
     private Integer zbxId;
 
-    @NotNull
+    @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private Long productId;
 
-    @NotNull
+    @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private String valueType;
+    private String valueTypeName;
 
-    private List<ProcessingStep> processStepList; //预处理
+    private Long valuemapid;
 
+    private List<ProductTag.Tag> tags;
+
+    //预处理
+    private List<ProcessingStep> processStepList;
+
+    @NotNull(groups = BaseEntity.Delete.class)
+    private List<Long> attrIds;
+
+    LocalDateTime createTime;
+    LocalDateTime updateTime;
+    Long          createUser;
+    Long          updateUser;
 
     /**
      * 预处理步骤
@@ -58,14 +78,28 @@ public class ProductAttr {
         @Setter
         private String[] params;
 
+        @Getter
+        @Setter
+        private String errorHandler;
+
+        @Getter
+        @Setter
+        private String errorHandlerParams;
+
         public String getParams() {
             StringBuilder paramStr = new StringBuilder();
             if (null != params && params.length > 0) {
                 for (String param : params) {
                     paramStr.append(param).append("\\\\n");
                 }
+                return paramStr.substring(0, paramStr.length() - 3);
+            } else {
+                return "";
             }
-            return paramStr.substring(0, paramStr.length() - 3);
         }
+
+//        public void setParams(String params){
+//            this.params = params.split("\\n");
+//        }
     }
 }

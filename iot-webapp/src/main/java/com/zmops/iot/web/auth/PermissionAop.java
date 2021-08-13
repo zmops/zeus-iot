@@ -51,7 +51,7 @@ public class PermissionAop {
         Method          method      = ms.getMethod();
         Permission      permission  = method.getAnnotation(Permission.class);
         String[]        permissions = permission.value();
-        String code = permission.code();
+        String          code        = permission.code();
         if (permissions.length == 0 && StringUtils.isNotBlank(code)) {
             //检查全体角色
             boolean result = authService.checkAll(code);
