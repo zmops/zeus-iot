@@ -37,5 +37,7 @@ public class ProductAttribute extends BaseEntity {
 
     private Long productId; // 产品ID
 
-    private Integer zbxId;  // Zabbix itemId
+    private String zbxId;  // Zabbix itemId
+
+    private Long templateId;//继承的ID
 }

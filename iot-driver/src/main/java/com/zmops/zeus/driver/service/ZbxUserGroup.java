@@ -35,7 +35,7 @@ public interface ZbxUserGroup {
      */
     @Post
     @JsonPath("/usergroup/userGroupDelete")
-    String userGrpDelete(@ParamName("usrgrpids") List<Long> usrGrpIds);
+    String userGrpDelete(@ParamName("usrgrpids") List<String> usrGrpIds);
 
 
     /**
@@ -47,6 +47,6 @@ public interface ZbxUserGroup {
      */
     @Post
     @JsonPath("/usergroup/userGroupBindHostGroup")
-    String userGrpBindHostGroup(@ParamName("hostGroupIds") List<Long> hostGroupIds,
-                                @ParamName("userGroupId") Long userGroupId);
+    String userGrpBindHostGroup(@ParamName("hostGroupIds") List<String> hostGroupIds,
+                                @ParamName("userGroupId") String userGroupId);
 }

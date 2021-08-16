@@ -96,7 +96,7 @@ public class SysUserService implements CommandLineRunner {
 
         SysUser newUser = UserFactory.createUser(user, password, salt);
         //取对应的ZBX用户组ID
-        Long       usrZbxId = sysUserGroupService.getZabUsrGrpId(user.getUserGroupId());
+        String       usrZbxId = sysUserGroupService.getZabUsrGrpId(user.getUserGroupId());
         JSONObject result   = JSONObject.parseObject(zbxUser.userAdd(user.getAccount(), decryptPwd, usrZbxId));
         JSONArray  userids  = result.getJSONArray("userids");
         newUser.setZbxId(String.valueOf(userids.get(0)));
@@ -118,7 +118,7 @@ public class SysUserService implements CommandLineRunner {
         }
         SysUser sysUser = UserFactory.editUser(user, oldUser);
         //取对应的ZBX用户组ID
-        Long usrZbxId = sysUserGroupService.getZabUsrGrpId(user.getUserGroupId());
+        String usrZbxId = sysUserGroupService.getZabUsrGrpId(user.getUserGroupId());
         zbxUser.userUpdate(oldUser.getZbxId(), usrZbxId);
 
         DB.save(sysUser);

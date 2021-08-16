@@ -107,12 +107,12 @@ public class ProductModelService {
         if (null == attr.getZbxId()) {
             return attr;
         }
-        JSONArray itemInfo = JSONObject.parseArray(zbxItem.getItemInfo(attr.getZbxId()));
+        JSONArray itemInfo = JSONObject.parseArray(zbxItem.getItemInfo(attr.getZbxId(), null));
         attr.setTags(JSONObject.parseArray(itemInfo.getJSONObject(0).getString("tags"), ProductTag.Tag.class));
         attr.setProcessStepList(formatProcessStep(itemInfo.getJSONObject(0).getString("preprocessing")));
         String valuemap = itemInfo.getJSONObject(0).getString("valuemap");
         if (ToolUtil.isNotEmpty(valuemap) && !"[]".equals(valuemap)) {
-            attr.setValuemapid(JSONObject.parseObject(valuemap).getLong("valuemapid"));
+            attr.setValuemapid(JSONObject.parseObject(valuemap).getString("valuemapid"));
         }
         return attr;
     }
@@ -164,7 +164,7 @@ public class ProductModelService {
      *
      * @param productAttr 产品属性DTO
      */
-    public void createProductAttr(ProductAttr productAttr, Integer zbxId) {
+    public void createProductAttr(ProductAttr productAttr, String zbxId) {
         ProductAttribute productAttribute = new ProductAttribute();
         buildProdAttribute(productAttribute, productAttr);
         productAttribute.setZbxId(zbxId);
@@ -198,7 +198,7 @@ public class ProductModelService {
         if (null == prod) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }
-        Integer hostId = prod.getZbxId();
+        String hostId = prod.getZbxId();
 
         List<ZbxProcessingStep> processingSteps = new ArrayList<>();
         if (ToolUtil.isNotEmpty(productAttr.getProcessStepList())) {
@@ -234,7 +234,7 @@ public class ProductModelService {
         if (null == prod) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }
-        Integer                 hostId          = prod.getZbxId();
+        String                  hostId          = prod.getZbxId();
         List<ZbxProcessingStep> processingSteps = new ArrayList<>();
         if (ToolUtil.isNotEmpty(productAttr.getProcessStepList())) {
             productAttr.getProcessStepList().forEach(i -> {
@@ -270,7 +270,7 @@ public class ProductModelService {
      */
     public void deleteTrapperItem(ProductAttr productAttr) {
 
-        List<Integer> zbxIds = new QProductAttribute().select(QProductAttribute.alias().zbxId).attrId.in(productAttr.getAttrIds()).findSingleAttributeList();
+        List<String> zbxIds = new QProductAttribute().select(QProductAttribute.alias().zbxId).attrId.in(productAttr.getAttrIds()).findSingleAttributeList();
 
         zbxItem.deleteTrapperItem(zbxIds);
 

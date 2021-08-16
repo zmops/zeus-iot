@@ -1,4 +1,4 @@
-package com.zmops.zeus.iot.rest;
+package com.zmops.iot.rest;
 
 /**
  * @author nantian created at 2021/7/23 23:55

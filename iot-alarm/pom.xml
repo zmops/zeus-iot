@@ -5,7 +5,7 @@
     <parent>
         <artifactId>zeus-iot</artifactId>
         <groupId>com.zmops</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0-beta</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -14,7 +14,7 @@
         <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>iot-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0-beta</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -25,7 +25,7 @@
         <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>iot-driver</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0-beta</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

@@ -56,7 +56,7 @@ public class ProductStatusTriggerController {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }
 
-        List<ZbxItemInfo> itemInfo = JSON.parseObject(zbxItem.getItemInfo(prodAttr.getZbxId()), List.class);
+        List<ZbxItemInfo> itemInfo = JSON.parseObject(zbxItem.getItemInfo(prodAttr.getZbxId(), null), List.class);
 
         String key = itemInfo.get(0).getKey_(); // item key
 

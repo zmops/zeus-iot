@@ -35,6 +35,6 @@ public class Product extends BaseEntity {
 
     private String productCode;
 
-    private Integer zbxId;
+    private String zbxId;
 
 }

@@ -34,11 +34,11 @@ public interface ZbxItem {
     @JsonPath("/item/item.trapper.create")
     String createTrapperItem(@ParamName("itemName") String itemName,
                              @ParamName("itemKey") String itemKey,
-                             @ParamName("hostId") Integer hostId,
+                             @ParamName("hostId") String hostId,
                              @ParamName("valueType") String valueType,
                              @ParamName("units") String units,
                              @ParamName("processList") List<ZbxProcessingStep> processingStepList,
-                             @ParamName("valuemapid") Long valuemapid,
+                             @ParamName("valuemapid") String valuemapid,
                              @ParamName("tagMap") Map<String, String> tagMap);
 
     /**
@@ -52,19 +52,19 @@ public interface ZbxItem {
      * @param units              单位
      * @param processingStepList 预处理步骤
      * @param valuemapid         值映射ID
-     * @param tagMap              标签
+     * @param tagMap             标签
      * @return String
      */
     @Post
     @JsonPath("/item/item.trapper.update")
-    String updateTrapperItem(@ParamName("itemid") Integer itemid,
+    String updateTrapperItem(@ParamName("itemid") String itemid,
                              @ParamName("itemName") String itemName,
                              @ParamName("itemKey") String itemKey,
-                             @ParamName("hostId") Integer hostId,
+                             @ParamName("hostId") String hostId,
                              @ParamName("valueType") String valueType,
                              @ParamName("units") String units,
                              @ParamName("processList") List<ZbxProcessingStep> processingStepList,
-                             @ParamName("valuemapid") Long valuemapid,
+                             @ParamName("valuemapid") String valuemapid,
                              @ParamName("tagMap") Map<String, String> tagMap);
 
     /**
@@ -74,7 +74,7 @@ public interface ZbxItem {
      */
     @Post
     @JsonPath("/item/item.trapper.delete")
-    String deleteTrapperItem(@ParamName("itemIds") List<Integer> itemIds);
+    String deleteTrapperItem(@ParamName("itemIds") List<String> itemIds);
 
     /**
      * 根据itemid 获取 ITEM 基本信息
@@ -84,5 +84,5 @@ public interface ZbxItem {
      */
     @Post
     @JsonPath("/item/item.get")
-    String getItemInfo(@ParamName("itemId") Integer itemId);
+    String getItemInfo(@ParamName("itemId") String itemId, @ParamName("hostid") String hostid);
 }

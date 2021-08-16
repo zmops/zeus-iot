@@ -14,3 +14,16 @@ telemetry:
     sslEnabled: ${SW_TELEMETRY_PROMETHEUS_SSL_ENABLED:false}
     sslKeyPath: ${SW_TELEMETRY_PROMETHEUS_SSL_KEY_PATH:""}
     sslCertChainPath: ${SW_TELEMETRY_PROMETHEUS_SSL_CERT_CHAIN_PATH:""}
+
+# Zabbix Trapper Sender
+zabbix-sender:
+  selector: default
+  default:
+    host: 172.16.3.72
+    port: 10051
+
+# Http 协议
+receiver-http:
+  selector: default
+  default:
+    port: 8088

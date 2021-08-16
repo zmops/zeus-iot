@@ -18,12 +18,12 @@
 
 package com.zmops.zeus.iot.server.telemetry.prometheus;
 
-import io.prometheus.client.hotspot.DefaultExports;
 import com.zmops.zeus.iot.server.library.module.*;
 import com.zmops.zeus.iot.server.telemetry.TelemetryModule;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsCollector;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsCreator;
 import com.zmops.zeus.iot.server.telemetry.prometheus.httpserver.HttpServer;
+import io.prometheus.client.hotspot.DefaultExports;
 
 /**
  * Start the Prometheus

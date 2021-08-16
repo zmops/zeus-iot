@@ -81,7 +81,7 @@ public class ProductModelController {
         productAttr.setAttrId(attrId);
 
         String  response = productModelService.createTrapperItem(productAttr);
-        Integer zbxId    = JSON.parseObject(response, TemplateIds.class).getItemids()[0];
+        String zbxId    = JSON.parseObject(response, TemplateIds.class).getItemids()[0];
 
         productModelService.createProductAttr(productAttr,zbxId);
 
@@ -118,6 +118,6 @@ public class ProductModelController {
 
     @Data
     static class TemplateIds {
-        private Integer[] itemids;
+        private String[] itemids;
     }
 }

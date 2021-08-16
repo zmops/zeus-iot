@@ -5,14 +5,13 @@
     <parent>
         <artifactId>zeus-server</artifactId>
         <groupId>com.zmops</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0-beta</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>server-receiver-plugin</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>zabbix-receiver-plugin</module>
         <module>http-receiver-plugin</module>
         <module>udp-receiver-plugin</module>
         <module>mqtt-receiver-plugin</module>

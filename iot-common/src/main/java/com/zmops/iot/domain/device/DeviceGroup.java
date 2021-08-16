@@ -23,7 +23,7 @@ public class DeviceGroup extends BaseEntity {
 
     String name;
 
-    Long zbxId;
+    String zbxId;
 
     String remark;
 

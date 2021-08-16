@@ -5,7 +5,7 @@
     <parent>
         <artifactId>server-receiver-plugin</artifactId>
         <groupId>com.zmops</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0-beta</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -14,13 +14,24 @@
         <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>library-module</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0-beta</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.camel</groupId>
-            <artifactId>camel-netty-http</artifactId>
+            <artifactId>camel-netty4-http</artifactId>
             <version>${camel.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-example</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>server-sender</artifactId>
+            <version>1.0-beta</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

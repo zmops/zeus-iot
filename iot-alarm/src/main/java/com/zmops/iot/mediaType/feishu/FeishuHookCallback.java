@@ -93,7 +93,7 @@ public class FeishuHookCallback implements AlarmCallback {
                     String requestBody = String.format(
                             feishuSettings.getTextTemplate(), alarmMessage.getAlarmMessage()
                     );
-                    requestBody = getRequestBody(webHookUrl, alarmMessage,requestBody);
+                    requestBody = getRequestBody(webHookUrl, alarmMessage, requestBody);
                     sendAlarmMessage(httpClient, webHookUrl.getUrl(), requestBody);
                 });
             });
@@ -109,7 +109,7 @@ public class FeishuHookCallback implements AlarmCallback {
     /**
      * deal requestBody,if has sign set the sign
      */
-    private String getRequestBody(FeishuSettings.WebHookUrl webHookUrl, AlarmMessage alarmMessage,String requestBody) {
+    private String getRequestBody(FeishuSettings.WebHookUrl webHookUrl, AlarmMessage alarmMessage, String requestBody) {
 
         JSONObject          jsonObject = JSONObject.parseObject(requestBody);
         Map<String, Object> content    = buildContent(jsonObject);

@@ -21,7 +21,7 @@ package com.zmops.zeus.iot.server.core;
 import com.google.common.base.Strings;
 
 /**
- * The running mode of the IOT server.
+ * The running mode of the zeus-server.
  */
 public class RunningMode {
     private static String MODE = "";
@@ -46,7 +46,7 @@ public class RunningMode {
     }
 
     /**
-     * No-init mode, the oap just starts up, but wouldn't do storage init.
+     * No-init mode, the zeus-server just starts up, but wouldn't do storage init.
      *
      * @return true if in this status.
      */

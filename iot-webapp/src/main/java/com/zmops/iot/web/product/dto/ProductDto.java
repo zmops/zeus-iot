@@ -31,7 +31,7 @@ public class ProductDto {
     @JsonProperty("prodCode")
     private String productCode;
 
-    private Integer zbxId;
+    private String zbxId;
 
     private String groupName;
     private String createUser;

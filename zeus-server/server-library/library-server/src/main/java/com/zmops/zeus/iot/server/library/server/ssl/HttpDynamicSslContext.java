@@ -57,9 +57,9 @@ public class HttpDynamicSslContext extends AbstractSslContext {
     protected void updateContext(final String privateKeyFile, final String certChainFile) {
         try {
             setCtx(SslContextBuilder
-                .forServer(
-                    new FileInputStream(Paths.get(certChainFile).toFile()),
-                    PrivateKeyUtil.loadDecryptionKey(privateKeyFile)).build());
+                    .forServer(
+                            new FileInputStream(Paths.get(certChainFile).toFile()),
+                            PrivateKeyUtil.loadDecryptionKey(privateKeyFile)).build());
         } catch (GeneralSecurityException | IOException e) {
             throw new IllegalArgumentException(e);
         }

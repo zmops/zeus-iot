@@ -55,5 +55,5 @@ public interface ZbxHostGroup {
      */
     @Post
     @JsonPath("/hostgroup/hostgroup.delete")
-    String hostGroupDelete(@ParamName("hostgGroupIds") List<Long> hostGrpIds);
+    String hostGroupDelete(@ParamName("hostgGroupIds") List<String> hostGrpIds);
 }

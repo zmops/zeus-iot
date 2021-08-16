@@ -1,9 +1,9 @@
 package com.zmops.iot.domain.device;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
@@ -11,9 +11,16 @@ import javax.persistence.Table;
  **/
 @EqualsAndHashCode(callSuper = false)
 @Data
-@Table(name = "sys_usrgrp_devicegrp")
+@Table(name = "devices_groups")
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DevicesGroups {
-    Long userGroupId;
-    Long deviceGroupId;
+    @Id
+    private Long id;
+
+    private Long deviceId;
+
+    private Long deviceGroupId;
 }

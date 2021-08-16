@@ -42,7 +42,7 @@ public class ProductAttr {
     private Long depAttrId;
 
     @JsonIgnore
-    private Integer zbxId;
+    private String zbxId;
 
     @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private Long productId;
@@ -51,7 +51,7 @@ public class ProductAttr {
     private String valueType;
     private String valueTypeName;
 
-    private Long valuemapid;
+    private String valuemapid;
 
     private List<ProductTag.Tag> tags;
 

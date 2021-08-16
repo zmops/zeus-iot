@@ -5,7 +5,7 @@
     <parent>
         <artifactId>zeus-server-pom</artifactId>
         <groupId>com.zmops</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0-beta</version>
         <relativePath>../zeus-server-pom</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -20,6 +20,8 @@
         <module>server-health-checker</module>
         <module>server-telemetry</module>
         <module>server-receiver-plugin</module>
+        <module>server-datacarrier</module>
+        <module>server-sender</module>
     </modules>
 
 

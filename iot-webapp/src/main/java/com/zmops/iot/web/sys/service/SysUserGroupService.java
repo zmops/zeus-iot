@@ -4,8 +4,9 @@ import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.device.DeviceGroup;
-import com.zmops.iot.domain.device.DevicesGroups;
+import com.zmops.iot.domain.device.SysUserGrpDevGrp;
 import com.zmops.iot.domain.device.query.QDeviceGroup;
+import com.zmops.iot.domain.device.query.QSysUserGrpDevGrp;
 import com.zmops.iot.domain.sys.SysUserGroup;
 import com.zmops.iot.domain.sys.query.QSysUser;
 import com.zmops.iot.domain.sys.query.QSysUserGroup;
@@ -83,7 +84,7 @@ public class SysUserGroupService {
         //回填 ZBX用户组ID
         JSONObject result     = JSONObject.parseObject(zbxUserGroup.userGrpAdd(String.valueOf(usrGrpId)));
         JSONArray  userGrpids = result.getJSONArray("usrgrpids");
-        newUserGroup.setZbxId(Long.parseLong(userGrpids.get(0).toString()));
+        newUserGroup.setZbxId(userGrpids.get(0).toString());
         DB.save(newUserGroup);
 
         return newUserGroup;
@@ -139,16 +140,18 @@ public class SysUserGroupService {
             throw new ServiceException(BizExceptionEnum.USERGROUP_HAS_BIND_USER);
         }
 
-        List<Long> zbxUsrGrpIds = list.parallelStream().map(SysUserGroup::getZbxId).collect(Collectors.toList());
+        List<String> zbxUsrGrpIds = list.parallelStream().map(SysUserGroup::getZbxId).collect(Collectors.toList());
         zbxUserGroup.userGrpDelete(zbxUsrGrpIds);
 
+        // 删除 与设备组关联
+        new QSysUserGrpDevGrp().userGroupId.in(userGroupParam.getUserGroupIds()).delete();
         new QSysUserGroup().userGroupId.in(userGroupParam.getUserGroupIds()).delete();
     }
 
     /**
      * 根据用户组ID 取zabbix用户组ID
      */
-    public Long getZabUsrGrpId(Long usrGrpId) {
+    public String getZabUsrGrpId(Long usrGrpId) {
         SysUserGroup usrGrp = new QSysUserGroup().userGroupId.eq(usrGrpId).findOne();
         if (null == usrGrp) {
             throw new ServiceException(BizExceptionEnum.USERGROUP_NOT_EXIST);
@@ -163,13 +166,13 @@ public class SysUserGroupService {
      */
     public void bindHostGrp(UserGroupParam userGroup) {
         //修改ZBX 用户组绑定主机组
-        Long              usrGrpZbxId   = getZabUsrGrpId(userGroup.getUserGroupId());
+        String              usrGrpZbxId   = getZabUsrGrpId(userGroup.getUserGroupId());
         List<DeviceGroup> list          = new QDeviceGroup().deviceGroupId.in(userGroup.getDeviceGroupIds()).findList();
-        List<Long>        hostGrpZbxIds = list.parallelStream().map(DeviceGroup::getZbxId).collect(Collectors.toList());
+        List<String>        hostGrpZbxIds = list.parallelStream().map(DeviceGroup::getZbxId).collect(Collectors.toList());
         zbxUserGroup.userGrpBindHostGroup(hostGrpZbxIds, usrGrpZbxId);
-        List<DevicesGroups> lists = new ArrayList<>();
+        List<SysUserGrpDevGrp> lists = new ArrayList<>();
         for (Long deviceGroupId : userGroup.getDeviceGroupIds()) {
-            DevicesGroups devicesGroups = new DevicesGroups();
+            SysUserGrpDevGrp devicesGroups = new SysUserGrpDevGrp();
             devicesGroups.setUserGroupId(userGroup.getUserGroupId());
             devicesGroups.setDeviceGroupId(deviceGroupId);
             lists.add(devicesGroups);

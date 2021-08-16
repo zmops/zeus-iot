@@ -30,14 +30,14 @@ public enum TelemetryRelatedContext {
     }
 
     /**
-     * Set a global ID to represent the current oap instance
+     * Set a global ID to represent the current iot instance
      */
     public void setId(String id) {
         this.id = id;
     }
 
     /**
-     * Get the oap instance ID, if be set before.
+     * Get the iot instance ID, if be set before.
      *
      * @return id or null.
      */

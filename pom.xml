@@ -7,7 +7,7 @@
     <groupId>com.zmops</groupId>
     <artifactId>zeus-iot</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-beta</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -23,6 +23,7 @@
         <module>iot-starter</module>
         <module>iot-core</module>
         <module>iot-alarm</module>
+        <module>iot-application-toolkit</module>
     </modules>
 
     <properties>

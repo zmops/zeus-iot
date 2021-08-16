@@ -144,7 +144,7 @@ public class ProductService {
      * @param prodBasicInfo 产品基本信息
      * @return
      */
-    public Product createProduct(Integer zbxId, Long productId, ProductBasicInfo prodBasicInfo) {
+    public Product createProduct(String zbxId, Long productId, ProductBasicInfo prodBasicInfo) {
         Product product = buildPord(prodBasicInfo);
         product.setProductId(productId);
         product.setZbxId(zbxId);
@@ -161,7 +161,7 @@ public class ProductService {
      * @param tag 标签列表
      * @return
      */
-    public String updateTemplateTags(Integer templateId, ProductTag tag) {
+    public String updateTemplateTags(String templateId, ProductTag tag) {
 
         Map<String, String> tagMap = tag.getProductTag().stream()
                 .collect(Collectors.toMap(ProductTag.Tag::getTag, ProductTag.Tag::getValue, (k1, k2) -> k2));
@@ -264,7 +264,7 @@ public class ProductService {
     }
 
     private JSONArray getZbxTemplateInfo(Long prodId) {
-        Integer zbxId = new QProduct().select(QProduct.alias().zbxId).productId.eq(prodId).findSingleAttribute();
+        String zbxId = new QProduct().select(QProduct.alias().zbxId).productId.eq(prodId).findSingleAttribute();
         if (null == zbxId) {
             return new JSONArray();
         }

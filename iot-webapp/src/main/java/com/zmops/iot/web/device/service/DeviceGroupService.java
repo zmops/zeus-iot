@@ -4,8 +4,10 @@ import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.device.DeviceGroup;
+import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.device.query.QDeviceGroup;
 import com.zmops.iot.domain.device.query.QDevicesGroups;
+import com.zmops.iot.domain.device.query.QSysUserGrpDevGrp;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
@@ -85,7 +87,7 @@ public class DeviceGroupService {
         //回填 ZBX主机组ID
         JSONObject result = JSONObject.parseObject(zbxHostGroup.hostGroupCreate(String.valueOf(devGrpId)));
         JSONArray  grpids = result.getJSONArray("groupids");
-        newDeviceGroup.setZbxId(Long.parseLong(grpids.get(0).toString()));
+        newDeviceGroup.setZbxId(grpids.get(0).toString());
         DB.save(newDeviceGroup);
 
         return newDeviceGroup;
@@ -136,19 +138,20 @@ public class DeviceGroupService {
         if (ToolUtil.isEmpty(list)) {
             throw new ServiceException(BizExceptionEnum.DEVICEGROUP_NOT_EXIST);
         }
-        //TODO 检查是否关联设备
-//        int count = new QDevicesGroups().GroupId.in(deviceGroupParam.getDeviceGroupIds()).findCount();
-//        if (count > 0) {
-//            throw new ServiceException(BizExceptionEnum.USERGROUP_HAS_BIND_USER);
-//        }
+
+        //检查是否关联设备
+        int count = new QDevicesGroups().deviceGroupId.in(deviceGroupParam.getDeviceGroupIds()).findCount();
+        if (count > 0) {
+            throw new ServiceException(BizExceptionEnum.DEVICEGROUP_HAS_BIND_DEVICE);
+        }
 
         //删除ZBX中主机组
-        List<Long> zbxHostGrpIds = list.parallelStream().map(DeviceGroup::getZbxId).collect(Collectors.toList());
+        List<String> zbxHostGrpIds = list.parallelStream().map(DeviceGroup::getZbxId).collect(Collectors.toList());
         zbxHostGroup.hostGroupDelete(zbxHostGrpIds);
 
 
         // 删除 与用户组关联
-        new QDevicesGroups().deviceGroupId.in(deviceGroupParam.getDeviceGroupIds()).delete();
+        new QSysUserGrpDevGrp().deviceGroupId.in(deviceGroupParam.getDeviceGroupIds()).delete();
         new QDeviceGroup().deviceGroupId.in(deviceGroupParam.getDeviceGroupIds()).delete();
     }
 

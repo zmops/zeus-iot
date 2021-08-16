@@ -46,7 +46,7 @@ public interface ZbxTemplate {
      */
     @Post
     @JsonPath("/template/template.tag.update")
-    String templateTagUpdate(@ParamName("templateId") Integer templateId,
+    String templateTagUpdate(@ParamName("templateId") String templateId,
                              @ParamName("tagMap") Map<String, String> tagMap);
 
     /**
@@ -56,5 +56,5 @@ public interface ZbxTemplate {
      */
     @Post
     @JsonPath("/template/template.get")
-    String templateDetail(@ParamName("templateid") Integer templateid);
+    String templateDetail(@ParamName("templateid") String templateid);
 }

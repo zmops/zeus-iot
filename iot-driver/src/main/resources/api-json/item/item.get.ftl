@@ -16,7 +16,12 @@
             "valuemapid",
             "interfaceid"
         ],
+    <#if itemId??>
         "itemids": "${itemId}"
+    </#if>
+    <#if hostid??>
+        "hostids": "${hostid}"
+    </#if>
     },
     "auth": "${userAuth}",
     "id": 1

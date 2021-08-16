@@ -21,7 +21,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 /**
  * @author nantian created at 2021/8/3 19:44
@@ -95,7 +94,7 @@ public class ProductController {
         String result = productService.zbxTemplateCreate(prodId + "");
 
         // 第二步：创建产品
-        int     zbxId = JSON.parseObject(result, TemplateIds.class).getTemplateids()[0];
+        String  zbxId = JSON.parseObject(result, TemplateIds.class).getTemplateids()[0];
         Product prod  = productService.createProduct(zbxId, prodId, prodBasicInfo);
         return ResponseData.success(prod);
     }
@@ -142,8 +141,8 @@ public class ProductController {
 
         //第二步：删除Zabbix对应的模板
         String response   = productService.zbxTemplateDelete(product.getZbxId() + "");
-        int    templateId = JSON.parseObject(response, TemplateIds.class).getTemplateids()[0];
-        if (templateId == product.getZbxId()) {
+        String templateId = JSON.parseObject(response, TemplateIds.class).getTemplateids()[0];
+        if (templateId.equals(product.getZbxId())) {
             log.info("产品模板删除成功，ID：{}", templateId);
         }
 
@@ -170,8 +169,8 @@ public class ProductController {
         }
 
         String response   = productService.updateTemplateTags(product.getZbxId(), productTag);
-        int    templateId = JSON.parseObject(response, TemplateIds.class).getTemplateids()[0];
-        if (templateId == product.getZbxId()) {
+        String templateId = JSON.parseObject(response, TemplateIds.class).getTemplateids()[0];
+        if (templateId.equals(product.getZbxId())) {
             log.info("产品标签修改成功，ID：{}", templateId);
         }
 
@@ -192,14 +191,14 @@ public class ProductController {
         if (null == product) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }
-        String response   ="";
-        if(null == valueMap.getValuemapid()){
-             response   = productService.valueMapCreate(product.getZbxId() + "", valueMap.getValueMapName(), valueMap.getValueMaps());
-        }else{
-            response   = productService.valueMapUpdate(product.getZbxId() + "", valueMap.getValueMapName(), valueMap.getValueMaps(),valueMap.getValuemapid());
+        String response = "";
+        if (null == valueMap.getValuemapid()) {
+            response = productService.valueMapCreate(product.getZbxId() + "", valueMap.getValueMapName(), valueMap.getValueMaps());
+        } else {
+            response = productService.valueMapUpdate(product.getZbxId() + "", valueMap.getValueMapName(), valueMap.getValueMaps(), valueMap.getValuemapid());
         }
 
-        int    valuemapid = JSON.parseObject(response, TemplateIds.class).getValuemapids()[0];
+        String valuemapid = JSON.parseObject(response, TemplateIds.class).getValuemapids()[0];
         return ResponseData.success(valuemapid);
     }
 
@@ -213,15 +212,15 @@ public class ProductController {
     @PostMapping("/valuemap/delete")
     public ResponseData prodValueMapDelete(@RequestBody @Validated(BaseEntity.Delete.class) ValueMap valueMap) {
         String response   = productService.valueMapDelete(valueMap.getValuemapid());
-        int    valuemapid = JSON.parseObject(response, TemplateIds.class).getValuemapids()[0];
+        String valuemapid = JSON.parseObject(response, TemplateIds.class).getValuemapids()[0];
         return ResponseData.success(valuemapid);
     }
 
 
     @Data
     static class TemplateIds {
-        private Integer[] templateids;
-        private Integer[] valuemapids;
+        private String[] templateids;
+        private String[] valuemapids;
     }
 }
 

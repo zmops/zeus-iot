@@ -23,7 +23,7 @@ public class SysUserGroup extends BaseEntity {
 
     String groupName;
 
-    Long zbxId;
+    String zbxId;
 
     String status;
 

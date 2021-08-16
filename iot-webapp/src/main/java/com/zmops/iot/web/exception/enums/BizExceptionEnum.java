@@ -115,12 +115,12 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
 
 
     /**
-     * 用户组相关
+     * 设备组相关
      */
     DEVICEGROUP_HAS_EXIST(1201, "设备组已存在"),
     DEVICEGROUP_NOT_EXIST(1203, "设备组不存在"),
     DEVICEGROUP_HAS_BIND_USERGRP(1202, "设备组绑定了用户组,请先解除绑定!"),
-
+    DEVICEGROUP_HAS_BIND_DEVICE(1203, "设备组绑定了设备,请先解除绑定!"),
 
     /**
      * 产品相关
@@ -137,6 +137,12 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
      * 属性相关
      */
     PRODUCT_ATTR_KEY_EXISTS(1401, "该属性Key已存在"),
+
+    /**
+     * 设备相关
+     */
+    DEVICE_EXISTS(1501, "设备名称已存在"),
+    DEVICE_NOT_EXISTS(1502, "设备不存在"),
 
     /**
      * 租户相关的异常

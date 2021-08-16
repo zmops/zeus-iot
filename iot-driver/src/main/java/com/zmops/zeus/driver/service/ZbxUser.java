@@ -39,7 +39,7 @@ public interface ZbxUser {
      */
     @Post
     @JsonPath("/user/userAdd")
-    String userAdd(@ParamName("name") String name, @ParamName("password") String password, @ParamName("usrGrpId") Long usrGrpId);
+    String userAdd(@ParamName("name") String name, @ParamName("password") String password, @ParamName("usrGrpId") String usrGrpId);
 
     /**
      * 用户修改
@@ -50,7 +50,7 @@ public interface ZbxUser {
      */
     @Post
     @JsonPath("/user/userUpdate")
-    String userUpdate(@ParamName("userId") String userId, @ParamName("usrGrpId") Long usrGrpId);
+    String userUpdate(@ParamName("userId") String userId, @ParamName("usrGrpId") String usrGrpId);
 
     /**
      * 用户删除

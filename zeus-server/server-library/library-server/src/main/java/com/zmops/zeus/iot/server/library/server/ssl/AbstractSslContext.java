@@ -39,18 +39,18 @@ public abstract class AbstractSslContext extends SslContext {
     protected AbstractSslContext(final String privateKeyFile, final String certChainFile) {
         updateContext(privateKeyFile, certChainFile);
         monitor = new MultipleFilesChangeMonitor(
-            10,
-            readableContents -> updateContext(privateKeyFile, certChainFile),
-            certChainFile,
-            privateKeyFile);
+                10,
+                readableContents -> updateContext(privateKeyFile, certChainFile),
+                certChainFile,
+                privateKeyFile);
     }
 
     protected AbstractSslContext(final String caFile) {
         updateContext(caFile);
         monitor = new MultipleFilesChangeMonitor(
-            10,
-            readableContents -> updateContext(caFile),
-            caFile);
+                10,
+                readableContents -> updateContext(caFile),
+                caFile);
     }
 
     protected abstract void updateContext(String caFile);

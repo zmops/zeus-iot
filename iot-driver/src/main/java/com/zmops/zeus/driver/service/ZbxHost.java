@@ -25,11 +25,24 @@ public interface ZbxHost {
      * @return
      */
     @Post
-    @JsonPath("/history/host.create")
+    @JsonPath("/host/host.create")
     String hostCreate(@ParamName("hostName") String hostName,
                       @ParamName("groupids") List<String> groupids,
                       @ParamName("templateid") String templateid);
 
+    /**
+     * 修改主机
+     *
+     * @param hostid   主机ID
+     * @param groupids   主机分组IDs
+     * @param templateid 主机模板ID，对应产品物模型ID
+     * @return
+     */
+    @Post
+    @JsonPath("/host/host.update")
+    String hostUpdate(@ParamName("hostid") String hostid,
+                    @ParamName("groupids") List<String> groupids,
+                    @ParamName("templateid") String templateid);
 
     /**
      * 更新主机宏
@@ -39,9 +52,11 @@ public interface ZbxHost {
      * @return
      */
     @Post
-    @JsonPath("/history/host.macro.update")
+    @JsonPath("/host/host.macro.update")
     String hostMacroUpdate(@ParamName("hostId") String hostId,
                            @ParamName("macros") List<Macro> macroList);
+
+
 
 
     @Data
