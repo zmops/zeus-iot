@@ -3,6 +3,15 @@ core:
   selector: ${ZS_CORE:default}
   default:
     prepareThreads: ${ZS_CORE_PREPARE_THREADS:2}
+    restHost: ${ZS_CORE_REST_HOST:0.0.0.0}
+    restPort: ${ZS_CORE_REST_PORT:12800}
+    restContextPath: ${ZS_CORE_REST_CONTEXT_PATH:/}
+    restMinThreads: ${ZS_CORE_REST_JETTY_MIN_THREADS:1}
+    restMaxThreads: ${ZS_CORE_REST_JETTY_MAX_THREADS:200}
+    restIdleTimeOut: ${ZS_CORE_REST_JETTY_IDLE_TIMEOUT:30000}
+    restAcceptorPriorityDelta: ${ZS_CORE_REST_JETTY_DELTA:0}
+    restAcceptQueueSize: ${ZS_CORE_REST_JETTY_QUEUE_SIZE:0}
+    httpMaxRequestHeaderSize: ${ZS_CORE_HTTP_MAX_REQUEST_HEADER_SIZE:8192}
 
 # 健康检查
 health-checker:

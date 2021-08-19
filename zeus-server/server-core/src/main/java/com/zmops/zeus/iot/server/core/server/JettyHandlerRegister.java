@@ -16,24 +16,13 @@
  *
  */
 
-package com.zmops.zeus.iot.server.library.server.jetty;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
-public class JettyDefaultHandler extends JettyHandler {
-    @Override
-    public String pathSpec() {
-        return "/";
-    }
-
-    @Override
-    protected final void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-    }
+package com.zmops.zeus.iot.server.core.server;
 
 
+import com.zmops.zeus.iot.server.library.module.Service;
+import com.zmops.zeus.iot.server.library.server.jetty.JettyHandler;
 
+public interface JettyHandlerRegister extends Service {
 
+    void addHandler(JettyHandler serverHandler);
 }
