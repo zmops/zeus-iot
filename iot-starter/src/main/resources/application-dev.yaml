@@ -1,0 +1,65 @@
+#  =========== 宙斯物联网采集分析基础平台 ===========
+server:
+  port: 9090
+  max-http-header-size: 10240
+  shutdown: graceful
+  undertow:
+    threads:
+      worker: 256
+    buffer-size: 1024
+    direct-buffers: true
+management:
+  endpoint:
+    shutdown:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: shutdown
+
+# EBean Database 配置
+spring:
+  application:
+    name: ZEUS-IOT
+  datasource:
+    druid:
+      driver-class-name: org.postgresql.Driver
+      username: postgres
+      password: postgres
+      url: jdbc:postgresql://172.16.60.98:5432/zeus-iot
+      max-active: 20
+      max-wait: -1
+  servlet:
+    multipart:
+      max-request-size: 200MB
+      max-file-size: 200MB
+  jackson:
+    generator:
+      write_numbers_as_strings: true
+
+
+forest:
+  variables:
+    ## Zabbix API IP 和 端口
+    zbxApiUrl: http://172.16.60.98:8871/zabbix/api_jsonrpc.php
+    zbxServerIp: 172.16.60.98
+    zbxServerPort: 10051
+    zbxApiToken: e39f259dc2b5a5deb583531380a56d85
+
+    ## 设备状态变更 等回调地址
+    zeusServerIp: 172.16.60.98
+    zeusServerPort: 9090
+  interceptors:
+    - com.zmops.zeus.driver.inteceptor.JsonBodyBuildInterceptor
+  log-enabled: false
+  timeout: 5000
+
+logging:
+  level:
+    ROOT: INFO
+    com.zmops: DEBUG
+    org.apache: WARN
+    org.springframework: WARN
+    io.ebean: DEBUG
+    com.zmops.argus.app.**.mapper: DEBUG
+
