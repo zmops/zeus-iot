@@ -24,9 +24,9 @@ spring:
   datasource:
     druid:
       driver-class-name: org.postgresql.Driver
-      username: postgres
-      password: postgres
-      url: jdbc:postgresql://172.16.60.98:5432/zeus-iot
+      username: ${ZEUS_DB_USERNAME:postgres}
+      password: ${ZEUS_DB_PASSWORD:postgres}
+      url: jdbc:postgresql://${ZEUS_DB_HOST:0.0.0.0}:${ZEUS_DB_PORT:5432}/zeus-iot
   servlet:
     multipart:
       max-request-size: 200MB
@@ -38,9 +38,9 @@ spring:
 forest:
   variables:
     ## Zabbix API IP 和 端口
-    zbxApiUrl: http://172.16.60.98:8871/zabbix/api_jsonrpc.php
-    zbxServerIp: 172.16.60.98
-    zbxServerPort: 10051
+    zbxApiUrl: http://${ZEUS_ZABBIX_HOST:0.0.0.0}:${ZEUS_ZABBIX_API_PORT:80}/zabbix/api_jsonrpc.php
+    zbxServerIp: ${ZEUS_ZABBIX_HOST:0.0.0.0}
+    zbxServerPort: ${ZEUS_ZABBIX_PORT:10051}
     zbxApiToken: e39f259dc2b5a5deb583531380a56d85
 
     ## 设备状态变更 等回调地址
