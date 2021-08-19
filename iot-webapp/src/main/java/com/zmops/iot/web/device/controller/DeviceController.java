@@ -1,12 +1,9 @@
 package com.zmops.iot.web.device.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.query.QDevice;
-import com.zmops.iot.domain.product.Product;
-import com.zmops.iot.domain.product.query.QProduct;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
@@ -15,7 +12,6 @@ import com.zmops.iot.web.device.dto.DeviceDto;
 import com.zmops.iot.web.device.dto.param.DeviceParam;
 import com.zmops.iot.web.device.service.DeviceService;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
-import com.zmops.iot.web.product.controller.ProductController;
 import com.zmops.iot.web.product.dto.ProductTag;
 import com.zmops.iot.web.product.dto.ValueMap;
 import org.springframework.beans.factory.annotation.Autowired;
