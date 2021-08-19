@@ -6,17 +6,15 @@ import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.query.QTag;
 import com.zmops.iot.web.device.dto.DeviceDto;
-import com.zmops.zeus.driver.service.ZbxHost;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 /**
  * @author yefei
- *
+ * <p>
  * 设备标签处理步骤
  */
 @Slf4j

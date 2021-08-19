@@ -3,7 +3,6 @@ package com.zmops.iot.web.product.controller;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSON;
 import com.zmops.iot.domain.BaseEntity;
-import com.zmops.iot.domain.product.ProductAttribute;
 import com.zmops.iot.domain.product.query.QProductAttribute;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;

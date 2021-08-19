@@ -7,7 +7,6 @@ import com.zmops.iot.web.sys.dto.param.DictParam;
 import com.zmops.iot.web.sys.service.DictService;
 import com.zmops.iot.web.sys.service.DictTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 

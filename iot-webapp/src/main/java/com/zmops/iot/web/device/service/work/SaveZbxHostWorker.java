@@ -9,7 +9,6 @@ import com.zmops.iot.domain.device.query.QDeviceGroup;
 import com.zmops.iot.domain.product.query.QProduct;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.dto.DeviceDto;
-import com.zmops.iot.web.init.DeviceSatusScriptInit;
 import com.zmops.zeus.driver.service.ZbxHost;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

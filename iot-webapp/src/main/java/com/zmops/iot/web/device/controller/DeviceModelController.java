@@ -12,7 +12,6 @@ import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductAttr;
 import com.zmops.iot.web.product.dto.ProductAttrDto;
 import com.zmops.iot.web.product.dto.param.ProductAttrParam;
-import com.zmops.iot.web.product.service.ProductModelService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -23,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author yefei
- *
+ * <p>
  * 设备物模型
  */
 

@@ -19,9 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.List;
 
-import static com.zmops.iot.web.product.dto.ProductStatusJudgeRule.ON_LINE;
-import static com.zmops.iot.web.product.dto.ProductStatusJudgeRule.OFF_LINE;
-
 /**
  * @author nantian created at 2021/8/3 19:45
  * <p>

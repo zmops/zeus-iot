@@ -4,7 +4,6 @@ import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.device.DeviceGroup;
-import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.device.query.QDeviceGroup;
 import com.zmops.iot.domain.device.query.QDevicesGroups;
 import com.zmops.iot.domain.device.query.QSysUserGrpDevGrp;
