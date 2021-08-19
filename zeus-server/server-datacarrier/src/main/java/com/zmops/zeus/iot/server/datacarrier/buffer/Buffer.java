@@ -29,7 +29,7 @@ import java.util.List;
 public class Buffer<T> implements QueueBuffer<T> {
     private final Object[]           buffer;
     private       BufferStrategy     strategy;
-    private       AtomicRangeInteger index;
+    private final AtomicRangeInteger index;
 
     Buffer(int bufferSize, BufferStrategy strategy) {
         buffer = new Object[bufferSize];
@@ -46,10 +46,8 @@ public class Buffer<T> implements QueueBuffer<T> {
     public boolean save(T data) {
         int i = index.getAndIncrement();
         if (buffer[i] != null) {
-            switch (strategy) {
-                case IF_POSSIBLE:
-                    return false;
-                default:
+            if (strategy == BufferStrategy.IF_POSSIBLE) {
+                return false;
             }
         }
         buffer[i] = data;
