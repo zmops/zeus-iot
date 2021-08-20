@@ -1,5 +1,6 @@
 package com.zmops.iot.model.cache.filter;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -42,13 +43,20 @@ public class CachedValueFilter extends JsonSerializer<Object> {
             if (value == null) {
                 continue;
             }
-            CachedValue[] cachedValues = field.getAnnotationsByType(CachedValue.class);
+            CachedValue[] cachedValues   = field.getAnnotationsByType(CachedValue.class);
+            JsonProperty  jsonProperties = field.getDeclaredAnnotation(JsonProperty.class);
+            String        fieldName      = field.getName();
+            if (null != jsonProperties) {
+                fieldName = jsonProperties.value();
+            }
+
+            if (value instanceof LocalDateTime) {
+                jsonGenerator.writeStringField(fieldName, LocalDateTimeUtils.dateToStr(value.toString()));
+            } else {
+                jsonGenerator.writeStringField(fieldName, value.toString());
+            }
+
             if (cachedValues.length == 0) {
-                if (value instanceof LocalDateTime) {
-                    jsonGenerator.writeStringField(field.getName(), LocalDateTimeUtils.dateToStr(value.toString()));
-                } else {
-                    jsonGenerator.writeStringField(field.getName(), value.toString());
-                }
                 continue;
             }
 
@@ -57,14 +65,14 @@ public class CachedValueFilter extends JsonSerializer<Object> {
                 String res = getCachedValue(cachedValue, value);
                 if (res != null) {
                     exists = true;
-                    jsonGenerator.writeStringField(field.getName() + Optional.of(cachedValue.suffix()).orElse(SUFFIX), res);
+                    jsonGenerator.writeStringField(fieldName + Optional.of(cachedValue.suffix()).orElse(SUFFIX), res);
                 } else {
                     exists = exists || cachedValue.type().isNullable();
                 }
             }
             // 只要有一个存在 就不置为 null
             if (!exists) {
-                jsonGenerator.writeStringField(field.getName(), null);
+                jsonGenerator.writeStringField(fieldName, null);
             }
         }
         jsonGenerator.writeEndObject();
