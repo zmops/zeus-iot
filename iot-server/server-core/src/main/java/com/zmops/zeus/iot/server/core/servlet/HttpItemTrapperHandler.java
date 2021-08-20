@@ -18,15 +18,12 @@ import java.io.InputStreamReader;
  */
 public class HttpItemTrapperHandler extends JettyJsonHandler {
 
-
     private final Gson gson = new Gson();
 
     @Override
     public String pathSpec() {
         return "/device/attr/send";
     }
-
-
 
     @Override
     protected JsonElement doPost(HttpServletRequest req) throws ArgumentsParseException, IOException {
