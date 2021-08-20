@@ -2,6 +2,8 @@ package com.zmops.iot.web.device.service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.zmops.iot.domain.device.Device;
+import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.Product;
 import com.zmops.iot.domain.product.ProductAttribute;
 import com.zmops.iot.domain.product.query.QProduct;
@@ -152,11 +154,11 @@ public class DeviceModelService {
 
         String itemName = productAttr.getAttrId() + "";
 
-        Product prod = new QProduct().productId.eq(productAttr.getProductId()).findOne();
-        if (null == prod) {
-            throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
+        Device device = new QDevice().deviceId.eq(productAttr.getProductId()).findOne();
+        if (null == device) {
+            throw new ServiceException(BizExceptionEnum.DEVICE_NOT_EXISTS);
         }
-        String hostId = prod.getZbxId();
+        String hostId = device.getZbxId();
 
         List<ZbxProcessingStep> processingSteps = new ArrayList<>();
         if (ToolUtil.isNotEmpty(productAttr.getProcessStepList())) {
@@ -188,11 +190,11 @@ public class DeviceModelService {
     public ProductAttr updateTrapperItem(ProductAttr productAttr) {
         ProductAttribute productAttribute = new QProductAttribute().attrId.eq(productAttr.getAttrId()).findOne();
         buildProdAttribute(productAttribute, productAttr);
-        Product prod = new QProduct().productId.eq(productAttr.getProductId()).findOne();
-        if (null == prod) {
-            throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
+        Device device = new QDevice().deviceId.eq(productAttr.getProductId()).findOne();
+        if (null == device) {
+            throw new ServiceException(BizExceptionEnum.DEVICE_NOT_EXISTS);
         }
-        String                  hostId          = prod.getZbxId();
+        String                  hostId          = device.getZbxId();
         List<ZbxProcessingStep> processingSteps = new ArrayList<>();
         if (ToolUtil.isNotEmpty(productAttr.getProcessStepList())) {
             productAttr.getProcessStepList().forEach(i -> {
