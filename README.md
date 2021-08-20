@@ -12,3 +12,9 @@
 
 **Zeus-IOT**是
 
+## Introduction
+
+As distributed systems become increasingly popular, the reliability between services is becoming more important than ever before.
+Sentinel takes "flow" as breakthrough point, and works on multiple fields including **flow control**,
+**traffic shaping**, **circuit breaking** and **system adaptive protection**, to guarantee reliability and resilience for microservices.
+
