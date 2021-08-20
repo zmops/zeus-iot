@@ -4,6 +4,7 @@ import com.zmops.zeus.iot.server.core.camel.CamelContextHolderService;
 import com.zmops.zeus.iot.server.core.camel.ZabbixSenderComponent;
 import com.zmops.zeus.iot.server.core.server.JettyHandlerRegister;
 import com.zmops.zeus.iot.server.core.server.JettyHandlerRegisterImpl;
+import com.zmops.zeus.iot.server.core.servlet.HostInfoServletHandler;
 import com.zmops.zeus.iot.server.core.servlet.HttpItemTrapperHandler;
 import com.zmops.zeus.iot.server.library.module.*;
 import com.zmops.zeus.iot.server.library.server.jetty.JettyServer;
@@ -89,6 +90,7 @@ public class CoreModuleProvider extends ModuleProvider {
     public void notifyAfterCompleted() throws ServiceNotProvidedException, ModuleStartException {
         JettyHandlerRegister service = getManager().find(CoreModule.NAME).provider().getService(JettyHandlerRegister.class);
         service.addHandler(new HttpItemTrapperHandler());
+        service.addHandler(new HostInfoServletHandler());
     }
 
     @Override

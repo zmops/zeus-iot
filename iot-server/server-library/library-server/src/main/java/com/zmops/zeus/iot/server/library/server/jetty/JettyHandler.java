@@ -36,7 +36,9 @@ public abstract class JettyHandler extends HttpServlet implements ServerHandler 
     protected final void service(HttpServletRequest req,
                                  HttpServletResponse resp) throws ServletException, IOException {
         String method = req.getMethod();
-        if (method.equals("POST")) {
+
+        // 只支持 Post 和 Get
+        if (method.equals("POST") || method.equals("GET")) {
             super.service(req, resp);
         } else {
             resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -46,11 +48,6 @@ public abstract class JettyHandler extends HttpServlet implements ServerHandler 
     @Override
     public final void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
         super.service(req, res);
-    }
-
-    @Override
-    protected final void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        super.doGet(req, resp);
     }
 
     @Override

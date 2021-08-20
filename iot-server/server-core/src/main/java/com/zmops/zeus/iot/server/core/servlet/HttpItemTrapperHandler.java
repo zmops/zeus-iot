@@ -26,6 +26,8 @@ public class HttpItemTrapperHandler extends JettyJsonHandler {
         return "/device/attr/send";
     }
 
+
+
     @Override
     protected JsonElement doPost(HttpServletRequest req) throws ArgumentsParseException, IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(req.getInputStream()));
