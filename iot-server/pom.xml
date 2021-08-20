@@ -20,7 +20,6 @@
         <module>server-health-checker</module>
         <module>server-telemetry</module>
         <module>server-receiver-plugin</module>
-        <module>server-datacarrier</module>
         <module>server-sender</module>
     </modules>
 
