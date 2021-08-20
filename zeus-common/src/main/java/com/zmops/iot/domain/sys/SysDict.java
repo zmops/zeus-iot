@@ -1,5 +1,6 @@
 package com.zmops.iot.domain.sys;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.zmops.iot.constant.IdTypeConsts;
 import com.zmops.iot.domain.BaseEntity;
 import lombok.Data;
@@ -61,5 +62,5 @@ public class SysDict extends BaseEntity implements Serializable {
      */
     private String remark;
 
-    private String group;
+    private String groups;
 }

@@ -26,11 +26,6 @@ public class DictTypeParam extends BaseQueryParam {
     @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Get.class})
     private Long dictTypeId;
 
-    /**
-     * 是否是系统字典，Y-是，N-否
-     */
-    @NotBlank(groups = {BaseEntity.Create.class})
-    private String systemFlag = "N";
 
     /**
      * 字典类型编码

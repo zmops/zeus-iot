@@ -49,7 +49,7 @@ public class SysDictType extends BaseEntity implements Serializable {
     /**
      * 是否是系统字典，Y-是，N-否
      */
-    private String systemFlag;
+    private String systemFlag = "N";
 
     /**
      * 状态

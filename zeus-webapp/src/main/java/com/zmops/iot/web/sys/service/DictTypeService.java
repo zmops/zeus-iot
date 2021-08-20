@@ -91,14 +91,8 @@ public class DictTypeService {
     public Pager findPageBySpec(DictTypeParam param) {
         QSysDictType qSysDictType = new QSysDictType();
         if (ToolUtil.isNotEmpty(param.getCondition())) {
-            qSysDictType.or().code.eq(param.getCondition()).name.eq(param.getCondition());
+            qSysDictType.or().code.contains(param.getCondition()).name.contains(param.getCondition());
         }
-//        if (ToolUtil.isNotEmpty(param.getStatus())) {
-//            objectQueryWrapper.and(i -> i.eq("status", param.getStatus()));
-//        }
-//        if (ToolUtil.isNotEmpty(param.getSystemFlag())) {
-//            objectQueryWrapper.and(i -> i.eq("system_flag", param.getSystemFlag()));
-//        }
         qSysDictType.orderBy("create_time desc");
         qSysDictType.setFirstRow((param.getPage() - 1) * param.getMaxRow()).setMaxRows(param.getMaxRow());
         PagedList<SysDictType> pagedList = qSysDictType.findPagedList();

@@ -130,7 +130,7 @@ public class DictService implements CommandLineRunner {
         if (ToolUtil.isEmpty(sysDicts)) {
             return new HashMap<>();
         }
-        return sysDicts.parallelStream().collect(Collectors.groupingBy(SysDict::getGroup));
+        return sysDicts.parallelStream().collect(Collectors.groupingBy(SysDict::getGroups));
     }
 
     @Override
