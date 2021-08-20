@@ -9,6 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <!--事件总线-->
     <artifactId>iot-eventbus</artifactId>
 
     <properties>

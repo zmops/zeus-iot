@@ -18,6 +18,7 @@
 
 package com.zmops.zeus.iot.server.library.util;
 
+import com.zmops.zeus.iot.server.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,7 +34,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * MultipleFilesChangeMonitor provides the capability to detect file or multiple files changed. It provide second level
  * change detection and feedback mechanism.
- *
+ * <p>
  * Due to memory cost, this monitor mechanism is not suitable for small files and usually being changed on the runtime
  * by user manually or 3rd party tool. Typical, these files are config information or authentication files.
  */
@@ -42,23 +43,23 @@ public class MultipleFilesChangeMonitor {
     /**
      * The backend scheduler to trigger all file monitoring.
      */
-    private static ScheduledFuture<?> FILE_MONITOR_TASK_SCHEDULER;
-    private static ReentrantLock SCHEDULER_CHANGE_LOCK = new ReentrantLock();
+    private static       ScheduledFuture<?>               FILE_MONITOR_TASK_SCHEDULER;
+    private static final ReentrantLock                    SCHEDULER_CHANGE_LOCK = new ReentrantLock();
     /**
      * The list contains all monitors.
      */
-    private static List<MultipleFilesChangeMonitor> MONITOR_INSTANCES = new ArrayList<>();
+    private static final List<MultipleFilesChangeMonitor> MONITOR_INSTANCES     = new ArrayList<>();
 
     /**
      * The timestamp when last time do status checked.
      */
-    private long lastCheckTimestamp = 0;
+    private       long                 lastCheckTimestamp = 0;
     /**
      * The period of watching thread checking the file status. Unit is the second.
      */
-    private final long watchingPeriodInSec;
-    private List<WatchedFile> watchedFiles;
-    private FilesChangedNotifier notifier;
+    private final long                 watchingPeriodInSec;
+    private final List<WatchedFile>    watchedFiles;
+    private final FilesChangedNotifier notifier;
 
     /**
      * Create a new monitor for the given files
@@ -132,10 +133,10 @@ public class MultipleFilesChangeMonitor {
         try {
             if (FILE_MONITOR_TASK_SCHEDULER == null) {
                 FILE_MONITOR_TASK_SCHEDULER = Executors.newSingleThreadScheduledExecutor()
-                                                       .scheduleAtFixedRate(
-                                                           MultipleFilesChangeMonitor::scanChanges, 1, 200,
-                                                           TimeUnit.MILLISECONDS
-                                                       );
+                        .scheduleAtFixedRate(
+                                MultipleFilesChangeMonitor::scanChanges, 1, 200,
+                                TimeUnit.MILLISECONDS
+                        );
             }
 
             if (MONITOR_INSTANCES.contains(this)) {
@@ -164,8 +165,8 @@ public class MultipleFilesChangeMonitor {
     @Override
     public String toString() {
         return "MultipleFilesChangeMonitor{" +
-            "watchedFiles=" + watchedFiles +
-            '}';
+                "watchedFiles=" + watchedFiles +
+                '}';
     }
 
     /**
@@ -194,11 +195,11 @@ public class MultipleFilesChangeMonitor {
         /**
          * The last modify time of the {@link #filePath}
          */
-        private long lastModifiedTimestamp = 0;
+        private       long   lastModifiedTimestamp = 0;
         /**
          * File content at the latest status.
          */
-        private byte[] fileContent;
+        private       byte[] fileContent;
 
         /**
          * Detect the file content change, if yes, reload the file content into the memory as cached data.
@@ -221,9 +222,9 @@ public class MultipleFilesChangeMonitor {
                 if (lastModified != lastModifiedTimestamp) {
                     // File modified timestamp changed. Need to read the file content.
                     try (FileInputStream fileInputStream = new FileInputStream(targetFile)) {
-                        byte[] b = new byte[1024];
+                        byte[]                b  = new byte[1024];
                         ByteArrayOutputStream os = new ByteArrayOutputStream();
-                        int c;
+                        int                   c;
                         while ((c = fileInputStream.read(b)) != -1) {
                             os.write(b, 0, c);
                         }

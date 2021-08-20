@@ -16,7 +16,7 @@
  *
  */
 
-package com.zmops.zeus.iot.server.library.util;
+package com.zmops.zeus.iot.server.util;
 
 import java.util.*;
 
