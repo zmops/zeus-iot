@@ -6,9 +6,7 @@
     </Appenders>
     <Loggers>
         <logger name="org.eclipse.jetty" level="INFO"/>
-        <logger name="org.apache.zookeeper" level="INFO"/>
-        <logger name="org.elasticsearch.common.network.IfConfig" level="INFO"/>
-        <logger name="org.elasticsearch.client.RestClient" level="INFO"/>
+        <logger name="org.apache.logging" level="INFO"/>
         <logger name="io.grpc.netty" level="INFO"/>
         <logger name="io.netty" level="INFO"/>
         <logger name="org.apache.http" level="INFO"/>

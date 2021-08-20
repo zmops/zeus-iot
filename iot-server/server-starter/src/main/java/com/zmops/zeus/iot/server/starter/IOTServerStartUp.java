@@ -5,7 +5,7 @@ package com.zmops.zeus.iot.server.starter;
  * <p>
  * 宙斯服务 协议层启动
  */
-public class ZeusServerStartUp {
+public class IOTServerStartUp {
 
     public static void main(String[] args) {
         IOTServerBootstrap.start();
