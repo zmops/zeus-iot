@@ -110,7 +110,7 @@ public class DictService implements CommandLineRunner {
      * 查询字典列表，通过字典ID
      */
     public List<SysDict> listDicts(Long dictTypeId) {
-        return new QSysDict().dictTypeId.eq(dictTypeId).findList();
+        return new QSysDict().dictTypeId.eq(dictTypeId).orderBy(" sort desc").findList();
     }
 
     /**

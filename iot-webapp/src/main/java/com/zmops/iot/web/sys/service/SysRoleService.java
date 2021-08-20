@@ -40,7 +40,7 @@ public class SysRoleService {
         if (ToolUtil.isNotEmpty(name)) {
             qSysRole.name.contains(name);
         }
-        return qSysRole.findList();
+        return qSysRole.orderBy("create_time desc").findList();
     }
 
     /**

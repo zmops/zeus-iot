@@ -65,7 +65,7 @@ public class ProductService {
         if (ToolUtil.isNotEmpty(prodBasicInfo.getProdName())) {
             qProduct.name.contains(prodBasicInfo.getProdName());
         }
-        return qProduct.findList();
+        return qProduct.orderBy(" create_time desc").findList();
     }
 
     /**
@@ -85,7 +85,7 @@ public class ProductService {
         }
 
         List<ProductDto> list = qProduct.setFirstRow((prodBasicInfo.getPage() - 1) * prodBasicInfo.getMaxRow())
-                .setMaxRows(prodBasicInfo.getMaxRow()).asDto(ProductDto.class).findList();
+                .setMaxRows(prodBasicInfo.getMaxRow()).orderBy(" create_time desc").asDto(ProductDto.class).findList();
 
         if (ToolUtil.isNotEmpty(list)) {
             List<Long>      productIds = list.parallelStream().map(ProductDto::getProductId).collect(Collectors.toList());
@@ -243,7 +243,7 @@ public class ProductService {
      */
     public List<Tag> prodTagList(Long prodId) {
         QTag tag = QTag.alias();
-        return new QTag().select(tag.id, tag.sid, tag.tag, tag.value).sid.eq(prodId).findList();
+        return new QTag().select(tag.id, tag.sid, tag.tag, tag.value).sid.eq(prodId).orderBy(" create_time desc").findList();
     }
 
     /**

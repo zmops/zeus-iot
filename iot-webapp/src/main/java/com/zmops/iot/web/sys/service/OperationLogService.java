@@ -29,7 +29,7 @@ public class OperationLogService {
             qSysOperationLog.logType.eq(logType);
         }
         qSysOperationLog.setFirstRow((page - 1) * maxRow).setMaxRows(maxRow);
-        PagedList<SysOperationLog> pagedList = qSysOperationLog.findPagedList();
+        PagedList<SysOperationLog> pagedList = qSysOperationLog.orderBy("create_time desc").findPagedList();
         return new Pager<>(pagedList.getList(), pagedList.getTotalCount());
     }
 }

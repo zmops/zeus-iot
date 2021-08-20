@@ -53,8 +53,9 @@ public class DeviceModelService {
             qProductAttribute.key.contains(productAttr.getKey());
         }
 
-        List<ProductAttrDto> pagedList = qProductAttribute.setFirstRow((productAttr.getPage() - 1) * productAttr.getMaxRow()).setMaxRows(productAttr.getMaxRow()).asDto(ProductAttrDto.class).findList();
-        int                  count     = qProductAttribute.findCount();
+        List<ProductAttrDto> pagedList = qProductAttribute.setFirstRow((productAttr.getPage() - 1) * productAttr.getMaxRow())
+                .setMaxRows(productAttr.getMaxRow()).orderBy(" create_time desc").asDto(ProductAttrDto.class).findList();
+        int count = qProductAttribute.findCount();
         return new Pager<>(pagedList, count);
     }
 

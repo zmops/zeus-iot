@@ -49,7 +49,7 @@ public class DeviceGroupService {
         qDeviceGroup.order().createTime.desc()
                 .setFirstRow((devGroupParam.getPage() - 1) * devGroupParam.getMaxRow())
                 .setMaxRows(devGroupParam.getMaxRow());
-        PagedList<DeviceGroup> pagedList = qDeviceGroup.findPagedList();
+        PagedList<DeviceGroup> pagedList = qDeviceGroup.orderBy(" create_time desc").findPagedList();
         return new Pager<>(pagedList.getList(), pagedList.getTotalCount());
     }
 

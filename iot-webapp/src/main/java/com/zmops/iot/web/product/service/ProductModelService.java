@@ -87,7 +87,7 @@ public class ProductModelService implements CommandLineRunner {
         if (ToolUtil.isNotEmpty(productAttr.getKey())) {
             qProductAttribute.key.contains(productAttr.getKey());
         }
-        return qProductAttribute.findList();
+        return qProductAttribute.orderBy(" create_time desc").findList();
     }
 
     /**

@@ -51,7 +51,7 @@ public class SysUserGroupService {
             qSysUserGroup.groupName.contains(userGroupParam.getGroupName());
         }
         qSysUserGroup.setFirstRow((userGroupParam.getPage() - 1) * userGroupParam.getMaxRow()).setMaxRows(userGroupParam.getMaxRow());
-        PagedList<SysUserGroup> pagedList = qSysUserGroup.findPagedList();
+        PagedList<SysUserGroup> pagedList = qSysUserGroup.orderBy("create_time desc").findPagedList();
         return new Pager<>(pagedList.getList(), pagedList.getTotalCount());
     }
 
@@ -166,9 +166,9 @@ public class SysUserGroupService {
      */
     public void bindHostGrp(UserGroupParam userGroup) {
         //修改ZBX 用户组绑定主机组
-        String              usrGrpZbxId   = getZabUsrGrpId(userGroup.getUserGroupId());
+        String            usrGrpZbxId   = getZabUsrGrpId(userGroup.getUserGroupId());
         List<DeviceGroup> list          = new QDeviceGroup().deviceGroupId.in(userGroup.getDeviceGroupIds()).findList();
-        List<String>        hostGrpZbxIds = list.parallelStream().map(DeviceGroup::getZbxId).collect(Collectors.toList());
+        List<String>      hostGrpZbxIds = list.parallelStream().map(DeviceGroup::getZbxId).collect(Collectors.toList());
         zbxUserGroup.userGrpBindHostGroup(hostGrpZbxIds, usrGrpZbxId);
         List<SysUserGrpDevGrp> lists = new ArrayList<>();
         for (Long deviceGroupId : userGroup.getDeviceGroupIds()) {

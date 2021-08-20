@@ -99,7 +99,7 @@ public class DictTypeService {
 //        if (ToolUtil.isNotEmpty(param.getSystemFlag())) {
 //            objectQueryWrapper.and(i -> i.eq("system_flag", param.getSystemFlag()));
 //        }
-        qSysDictType.orderBy().dictTypeId.desc();
+        qSysDictType.orderBy("create_time desc");
         qSysDictType.setFirstRow((param.getPage() - 1) * param.getMaxRow()).setMaxRows(param.getMaxRow());
         PagedList<SysDictType> pagedList = qSysDictType.findPagedList();
         return new Pager<>(pagedList.getList(), pagedList.getTotalCount());

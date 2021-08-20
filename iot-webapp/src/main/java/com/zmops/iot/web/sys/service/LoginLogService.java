@@ -26,7 +26,7 @@ public class LoginLogService {
             qSysLoginLog.logName.eq(logName);
         }
         qSysLoginLog.setFirstRow((page - 1) * maxRow).setMaxRows(maxRow);
-        PagedList<SysLoginLog> pagedList = qSysLoginLog.findPagedList();
+        PagedList<SysLoginLog> pagedList = qSysLoginLog.orderBy("create_time desc").findPagedList();
         return new Pager<>(pagedList.getList(), pagedList.getTotalCount());
     }
 }
