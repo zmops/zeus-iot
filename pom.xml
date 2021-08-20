@@ -16,14 +16,14 @@
     </parent>
 
     <modules>
-        <module>iot-webapp</module>
-        <module>iot-common</module>
-        <module>iot-driver</module>
-        <module>iot-rest</module>
-        <module>iot-starter</module>
-        <module>iot-core</module>
-        <module>iot-alarm</module>
-        <module>iot-application-toolkit</module>
+        <module>zeus-webapp</module>
+        <module>zeus-common</module>
+        <module>zeus-driver</module>
+        <module>zeus-rest</module>
+        <module>zeus-starter</module>
+        <module>zeus-core</module>
+        <module>zeus-alarm</module>
+        <module>zeus-application-toolkit</module>
     </modules>
 
     <properties>

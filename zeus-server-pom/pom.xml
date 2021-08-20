@@ -11,8 +11,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>../zeus-server</module>
-        <module>../zeus-server-dist</module>
+        <module>../iot-server</module>
+        <module>../iot-server-dist</module>
     </modules>
 
     <properties>
