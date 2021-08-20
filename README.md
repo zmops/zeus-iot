@@ -9,3 +9,7 @@ Zeus IOT 宙斯物联网分布式采集平台
 ![Version](https://img.shields.io/badge/version-1.0.0--RELEASE-brightgreen)
 [![QQ群736541577](https://img.shields.io/badge/QQ群-736541577-brightgreen)](https://qm.qq.com/cgi-bin/qm/qr?k=CcWBdkXjkgt99bBu5d_-1TeS36DhCkU4&jump_from=webapi)
 ![zeus-iot](https://visitor-badge.glitch.me/badge?page_id=zeus-iot)
+
+
+[![ZMOPS's GitHub stats](https://github-readme-stats.vercel.app/api?username=cxntsh)](https://github.com/zmops/zeus-iot)
+
