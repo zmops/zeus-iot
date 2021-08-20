@@ -32,9 +32,9 @@ import com.zmops.zeus.iot.server.datacarrier.partition.SimpleRollingPartitioner;
  * DataCarrier main class. use this instance to set Producer/Consumer Model.
  */
 public class DataCarrier<T> {
-    private Channels<T> channels;
-    private IDriver     driver;
-    private String      name;
+    private final Channels<T> channels;
+    private       IDriver     driver;
+    private final String      name;
 
     public DataCarrier(int channelSize, int bufferSize) {
         this("DEFAULT", channelSize, bufferSize);
