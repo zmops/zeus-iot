@@ -36,6 +36,10 @@ public class Device extends BaseEntity {
 
     private String zbxId;
 
+    private String addr;
+
+    private String position;
+
     @Aggregation("count(*)")
     Long totalCount;
 }

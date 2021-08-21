@@ -142,6 +142,8 @@ public class DeviceService {
                 " d.update_time, " +
                 " d.update_user, " +
                 " d.TYPE, " +
+                " d.addr, " +
+                " d.position, " +
                 " P.NAME product_name, " +
                 " ds.group_name, " +
                 " ds.groupIds  " +

@@ -59,4 +59,8 @@ public class DeviceDto implements BaseDto {
 
     private String groupName;
 
+    private String addr;
+
+    private String position;
+
 }
