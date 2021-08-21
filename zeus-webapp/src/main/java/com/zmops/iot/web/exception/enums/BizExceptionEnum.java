@@ -53,6 +53,7 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     ROLE_HAS_EXIST(601, "角色已存在"),
     ROLE_HAS_BIND_USER(602, "角色绑定了用户,请先解除绑定!"),
     MENU_NOT_EXIST_OR_NO_PRERMISSION(603, "菜单不存在或无权授权此菜单"),
+    ROLE_NOT_EXIST(604, "角色不存在"),
 
     /**
      * 账户问题

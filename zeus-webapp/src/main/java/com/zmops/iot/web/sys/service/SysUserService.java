@@ -8,6 +8,7 @@ import com.zmops.iot.core.auth.model.LoginUser;
 import com.zmops.iot.core.util.RsaUtil;
 import com.zmops.iot.core.util.SaltUtil;
 import com.zmops.iot.domain.sys.SysUser;
+import com.zmops.iot.domain.sys.query.QSysRole;
 import com.zmops.iot.domain.sys.query.QSysUser;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
@@ -80,6 +81,8 @@ public class SysUserService implements CommandLineRunner {
     public SysUser createUser(UserDto user) {
         // 判断账号是否重复
         checkByAccount(user.getAccount());
+        //判断角色是否存在
+        checkByRole(user.getRoleId());
 
         // 完善账号信息
         String password   = user.getPassword();
@@ -117,6 +120,9 @@ public class SysUserService implements CommandLineRunner {
         if (null == oldUser) {
             throw new ServiceException(BizExceptionEnum.USER_NOT_EXIST);
         }
+        //判断角色是否存在
+        checkByRole(user.getRoleId());
+
         SysUser sysUser = UserFactory.editUser(user, oldUser);
         //取对应的ZBX用户组ID
         String usrZbxId = sysUserGroupService.getZabUsrGrpId(user.getUserGroupId());
@@ -154,6 +160,18 @@ public class SysUserService implements CommandLineRunner {
         int count = new QSysUser().account.equalTo(account).findCount();
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.USER_ALREADY_REG);
+        }
+    }
+
+    /**
+     * 检查所选角色是否存在
+     *
+     * @param roleId
+     */
+    private void checkByRole(Long roleId) {
+        int count = new QSysRole().roleId.eq(roleId).findCount();
+        if (count > 0) {
+            throw new ServiceException(BizExceptionEnum.ROLE_NOT_EXIST);
         }
     }
 

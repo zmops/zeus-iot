@@ -23,7 +23,7 @@ public class OperationLogService {
             qSysOperationLog.createTime.le(LocalDateTimeUtils.getLDTByMilliSeconds(endTime));
         }
         if (ToolUtil.isNotEmpty(logName)) {
-            qSysOperationLog.logName.eq(logName);
+            qSysOperationLog.logName.contains(logName);
         }
         if (ToolUtil.isNotEmpty(logType)) {
             qSysOperationLog.logType.eq(logType);
