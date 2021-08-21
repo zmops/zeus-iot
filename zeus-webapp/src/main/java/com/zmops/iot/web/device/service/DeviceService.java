@@ -326,6 +326,7 @@ public class DeviceService {
         if (ToolUtil.isEmpty(productTag.getProductTag())) {
             return;
         }
+        new QTag().sid.eq(productTag.getProductId()).delete();
         List<Tag> tags = new ArrayList<>();
         for (ProductTag.Tag tag : productTag.getProductTag()) {
             tags.add(

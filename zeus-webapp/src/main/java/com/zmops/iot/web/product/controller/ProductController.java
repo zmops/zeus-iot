@@ -4,6 +4,7 @@ import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSON;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.domain.device.Tag;
+import com.zmops.iot.domain.device.query.QTag;
 import com.zmops.iot.domain.product.Product;
 import com.zmops.iot.domain.product.query.QProduct;
 import com.zmops.iot.model.exception.ServiceException;
@@ -172,7 +173,7 @@ public class ProductController {
         if (null == product) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }
-
+        new QTag().sid.eq(productTag.getProductId()).delete();
         List<Tag> tags = new ArrayList<>();
         for (ProductTag.Tag tag : productTag.getProductTag()) {
             tags.add(
