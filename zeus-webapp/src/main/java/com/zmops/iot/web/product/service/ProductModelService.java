@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  * @author yefei
  **/
 @Service
-public class ProductModelService implements CommandLineRunner {
+public class ProductModelService {
 
     @Autowired
     private ZbxItem zbxItem;
@@ -265,14 +265,5 @@ public class ProductModelService implements CommandLineRunner {
 
         //删除 设备 继承的属性
         new QProductAttribute().templateId.in(productAttr.getAttrIds()).delete();
-    }
-
-    @Override
-    public void run(String... args) throws Exception {
-        List<ProductType> list = new QProductType().findList();
-        if(ToolUtil.isEmpty(list)){
-            return;
-        }
-        DefinitionsUtil.updateProductType(list.parallelStream().collect(Collectors.toMap(ProductType::getId,ProductType::getName)));
     }
 }

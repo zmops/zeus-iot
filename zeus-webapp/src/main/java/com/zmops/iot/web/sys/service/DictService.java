@@ -62,6 +62,7 @@ public class DictService implements CommandLineRunner {
         entity.setStatus(CommonStatus.ENABLE.getCode());
 
         DB.save(entity);
+        updateDictionaries();
         return entity;
     }
 
@@ -75,6 +76,7 @@ public class DictService implements CommandLineRunner {
             throw new ServiceException(BizExceptionEnum.SYSTEM_DICT_CANNOT_DELETE);
         }
         new QSysDict().dictId.in(param.getDictIds()).delete();
+        updateDictionaries();
     }
 
     /**
@@ -103,6 +105,7 @@ public class DictService implements CommandLineRunner {
 
 
         DB.update(newEntity);
+        updateDictionaries();
         return newEntity;
     }
 
@@ -133,8 +136,7 @@ public class DictService implements CommandLineRunner {
         return sysDicts.parallelStream().collect(Collectors.groupingBy(SysDict::getGroups));
     }
 
-    @Override
-    public void run(String... args) throws Exception {
+    private void updateDictionaries() {
         List<SysDictType>             dictTypes        = new QSysDictType().findList();
         Map<Long, String>             map              = dictTypes.parallelStream().collect(Collectors.toMap(SysDictType::getDictTypeId, SysDictType::getCode));
         List<Long>                    collect          = dictTypes.stream().map(SysDictType::getDictTypeId).collect(Collectors.toList());
@@ -144,6 +146,11 @@ public class DictService implements CommandLineRunner {
             dictionaryValues.put(map.get(dict.getDictTypeId()), dict.getCode(), dict.getName());
         }
         DefinitionsUtil.updateDictionaries(dictionaryValues);
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        updateDictionaries();
     }
 
     //    /**

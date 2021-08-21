@@ -6,13 +6,16 @@ import com.zmops.iot.domain.product.query.QProduct;
 import com.zmops.iot.domain.product.query.QProductType;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.node.TreeNode;
+import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.param.ProductTypeParam;
 import io.ebean.DB;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author yefei
@@ -20,7 +23,7 @@ import java.util.List;
  * 产品分类管理
  **/
 @Service
-public class ProductTypeService {
+public class ProductTypeService implements CommandLineRunner {
 
     /**
      * 产品分类树
@@ -51,6 +54,7 @@ public class ProductTypeService {
         ToolUtil.copyProperties(productTypeParam, productType);
         setPids(productType);
         DB.save(productType);
+        updateProductType();
         return productType;
     }
 
@@ -77,8 +81,8 @@ public class ProductTypeService {
         ToolUtil.copyProperties(productTypeParam, productType);
         setPids(productType);
         DB.update(productType);
+        updateProductType();
         return productType;
-
     }
 
     /**
@@ -94,6 +98,7 @@ public class ProductTypeService {
         }
 
         new QProductType().id.in(productTypeParam.getIds()).delete();
+        updateProductType();
     }
 
 
@@ -120,4 +125,16 @@ public class ProductTypeService {
         }
     }
 
+    private void updateProductType() {
+        List<ProductType> list = new QProductType().findList();
+        if (ToolUtil.isEmpty(list)) {
+            return;
+        }
+        DefinitionsUtil.updateProductType(list.parallelStream().collect(Collectors.toMap(ProductType::getId, ProductType::getName)));
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        updateProductType();
+    }
 }

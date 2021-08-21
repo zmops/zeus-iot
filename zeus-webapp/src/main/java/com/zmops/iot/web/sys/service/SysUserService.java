@@ -101,6 +101,7 @@ public class SysUserService implements CommandLineRunner {
         JSONArray  userids  = result.getJSONArray("userids");
         newUser.setZbxId(String.valueOf(userids.get(0)));
         DB.save(newUser);
+        updateUserCache();
         return newUser;
     }
 
@@ -122,6 +123,7 @@ public class SysUserService implements CommandLineRunner {
         zbxUser.userUpdate(oldUser.getZbxId(), usrZbxId);
 
         DB.save(sysUser);
+        updateUserCache();
         return sysUser;
     }
 
@@ -140,6 +142,7 @@ public class SysUserService implements CommandLineRunner {
         zbxUser.userDelete(zbxIds);
 
         new QSysUser().userId.in(user.getUserIds()).delete();
+        updateUserCache();
     }
 
     /**
