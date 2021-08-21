@@ -16,7 +16,7 @@
 Zeus-IOT 支持 Centos 7、Ubuntu 20.04、Debain 10 、Kylin、UOS 等基于x86_64平台的 Linux 操作系统。
 
 ```shell
-curl https://github.com/zmops/zeus-iot/tree/develop/docs/quick-install.sh | bash
+curl -L https://github.com/zmops/zeus-iot/blob/develop/docs/quick-install.sh | bash
 ```
 
 访问 `http://<your-host-ip>` 登录 Zeus-IOT 系统。[快速开始](./docs/quick-start.rst)
