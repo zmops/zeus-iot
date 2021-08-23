@@ -43,7 +43,7 @@ forest:
     zbxServerPort: ${ZEUS_ZABBIX_PORT:10051}
     zbxApiToken: e39f259dc2b5a5deb583531380a56d85
 
-    ## 设备状态变更 等回调地址
+    ## 设备触发告警，执行动作回调 IOT-SERVER 处理
     zeusServerIp: ${ZEUS_CALLBACK_HOST:127.0.0.1}
     zeusServerPort: ${ZEUS_CALLBACK_PORT:9090}
   interceptors:
