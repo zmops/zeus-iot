@@ -16,10 +16,15 @@
 package com.zmops.iot.web.sys.dto;
 
 import com.zmops.iot.domain.BaseEntity;
+import io.ebean.annotation.WhenModified;
+import io.ebean.annotation.WhoCreated;
+import io.ebean.annotation.WhoModified;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 用户组传输bean
@@ -39,4 +44,16 @@ public class UserGroupDto {
 
     private String remark;
 
+    private List<Long> deviceGroupIds;
+
+    //列表返回的设备组ID
+    private String groupIds;
+
+    LocalDateTime createTime;
+
+    LocalDateTime updateTime;
+
+    Long createUser;
+
+    Long updateUser;
 }

@@ -19,10 +19,11 @@ import com.zmops.iot.web.sys.dto.UserGroupDto;
 import com.zmops.iot.web.sys.dto.param.UserGroupParam;
 import com.zmops.zeus.driver.service.ZbxUserGroup;
 import io.ebean.DB;
-import io.ebean.PagedList;
+import io.ebean.DtoQuery;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,15 +45,27 @@ public class SysUserGroupService {
      * @param userGroupParam
      * @return
      */
-    public Pager<SysUserGroup> userGroupPageList(UserGroupParam userGroupParam) {
-
+    public Pager<UserGroupDto> userGroupPageList(UserGroupParam userGroupParam) {
         QSysUserGroup qSysUserGroup = new QSysUserGroup();
+        StringBuilder sql = new StringBuilder("SELECT " +
+                " sug.group_name, sug.remark, sug.create_time, sug.create_user, sug.update_time, sug.update_user, sug.status, sug.user_group_id, " +
+                " dg.groupIds  " +
+                "FROM " +
+                " sys_user_group sug " +
+                " LEFT JOIN ( SELECT user_group_id, array_to_string( ARRAY_AGG ( device_group_id ), ',' ) groupIds FROM sys_usrgrp_devicegrp GROUP BY user_group_id ) dg " +
+                " ON dg.user_group_id = sug.user_group_id");
         if (ToolUtil.isNotEmpty(userGroupParam.getGroupName())) {
+            sql.append(" where sug.group_name like  :groupName");
+        }
+        sql.append(" order by sug.create_time desc ");
+        DtoQuery<UserGroupDto> dto = DB.findDto(UserGroupDto.class, sql.toString());
+        if (ToolUtil.isNotEmpty(userGroupParam.getGroupName())) {
+            dto.setParameter("groupName", "%" + userGroupParam.getGroupName() + "%");
             qSysUserGroup.groupName.contains(userGroupParam.getGroupName());
         }
-        qSysUserGroup.setFirstRow((userGroupParam.getPage() - 1) * userGroupParam.getMaxRow()).setMaxRows(userGroupParam.getMaxRow());
-        PagedList<SysUserGroup> pagedList = qSysUserGroup.orderBy("create_time desc").findPagedList();
-        return new Pager<>(pagedList.getList(), pagedList.getTotalCount());
+        List<UserGroupDto> list = dto.setFirstRow((userGroupParam.getPage() - 1) * userGroupParam.getMaxRow())
+                .setMaxRows(userGroupParam.getMaxRow()).findList();
+        return new Pager<>(list, qSysUserGroup.findCount());
     }
 
     /**
@@ -72,6 +85,7 @@ public class SysUserGroupService {
     /**
      * 添加用戶組
      */
+    @Transactional(rollbackFor = Exception.class)
     public SysUserGroup createUserGroup(UserGroupDto userGroup) {
         // 判断用户组是否重复
         checkByGroupName(userGroup.getGroupName(), -1L);
@@ -86,6 +100,10 @@ public class SysUserGroupService {
         JSONArray  userGrpids = result.getJSONArray("usrgrpids");
         newUserGroup.setZbxId(userGrpids.get(0).toString());
         DB.save(newUserGroup);
+
+        if (ToolUtil.isNotEmpty(userGroup.getDeviceGroupIds())) {
+            bindHostGrp(UserGroupParam.builder().userGroupId(usrGrpId).deviceGroupIds(userGroup.getDeviceGroupIds()).build());
+        }
 
         return newUserGroup;
     }
@@ -103,6 +121,11 @@ public class SysUserGroupService {
         SysUserGroup newUserGroup = new SysUserGroup();
         BeanUtils.copyProperties(userGroup, newUserGroup);
         DB.update(newUserGroup);
+
+        if (ToolUtil.isNotEmpty(userGroup.getDeviceGroupIds())) {
+            bindHostGrp(UserGroupParam.builder().userGroupId(userGroup.getUserGroupId()).deviceGroupIds(userGroup.getDeviceGroupIds()).build());
+        }
+
         return newUserGroup;
     }
 

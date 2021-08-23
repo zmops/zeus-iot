@@ -2,7 +2,6 @@ package com.zmops.iot.web.sys.controller;
 
 import com.zmops.iot.core.log.BussinessLog;
 import com.zmops.iot.domain.BaseEntity;
-import com.zmops.iot.domain.sys.SysUserGroup;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.web.sys.dto.UserGroupDto;
@@ -33,7 +32,7 @@ public class SysUserGroupController {
      * @return
      */
     @PostMapping("/getUsrGrpByPage")
-    public Pager<SysUserGroup> getUsrGrpByPage(@RequestBody UserGroupParam userGroupParam) {
+    public Pager<UserGroupDto> getUsrGrpByPage(@RequestBody UserGroupParam userGroupParam) {
         return sysUserGroupService.userGroupPageList(userGroupParam);
     }
 

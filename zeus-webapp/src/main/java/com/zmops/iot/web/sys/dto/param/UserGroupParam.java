@@ -16,7 +16,10 @@
 package com.zmops.iot.web.sys.dto.param;
 
 import com.zmops.iot.domain.BaseEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -27,6 +30,9 @@ import java.util.List;
  * @author yefei
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserGroupParam extends BaseQueryParam {
 
     private String groupName;
