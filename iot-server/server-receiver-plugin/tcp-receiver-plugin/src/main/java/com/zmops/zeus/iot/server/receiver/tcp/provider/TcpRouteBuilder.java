@@ -1,6 +1,7 @@
 package com.zmops.zeus.iot.server.receiver.tcp.provider;
 
-import com.zmops.zeus.iot.server.receiver.tcp.process.TcpPacketProcess;
+import com.zmops.zeus.iot.server.core.camel.process.ByteArrayToItemValueProcess;
+import com.zmops.zeus.iot.server.core.camel.process.StringItemValueProcess;
 import org.apache.camel.builder.RouteBuilder;
 
 /**
@@ -17,6 +18,8 @@ public class TcpRouteBuilder extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        fromF("netty4:tcp://0.0.0.0:%d", tcpReceiverConfig.getPort()).process(new TcpPacketProcess());
+        fromF("netty4:tcp://0.0.0.0:%d", tcpReceiverConfig.getPort())
+                .process(new StringItemValueProcess())
+                .to("Zabbix");
     }
 }

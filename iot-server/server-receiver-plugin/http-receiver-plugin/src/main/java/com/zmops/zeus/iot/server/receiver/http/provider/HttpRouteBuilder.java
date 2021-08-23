@@ -1,7 +1,8 @@
 package com.zmops.zeus.iot.server.receiver.http.provider;
 
+
+import com.zmops.zeus.iot.server.core.camel.process.JsonToItemValueProcess;
 import com.zmops.zeus.iot.server.receiver.http.predicate.HeaderPredicate;
-import com.zmops.zeus.iot.server.receiver.http.process.JsonToItemValueProcess;
 import org.apache.camel.builder.RouteBuilder;
 
 /**
@@ -19,9 +20,11 @@ public class HttpRouteBuilder extends RouteBuilder {
     public void configure() throws Exception {
         fromF("netty4-http:http://0.0.0.0:%d/data/receiver?sync=true", config.getPort())
                 .threads(10)
-                .process(new JsonToItemValueProcess())
                 .choice()
+
                 .when(new HeaderPredicate())
+
+                .process(new JsonToItemValueProcess())
                 .to("Zabbix");
     }
 }
