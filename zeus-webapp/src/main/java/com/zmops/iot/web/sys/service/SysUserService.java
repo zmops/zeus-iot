@@ -170,7 +170,7 @@ public class SysUserService implements CommandLineRunner {
      */
     private void checkByRole(Long roleId) {
         int count = new QSysRole().roleId.eq(roleId).findCount();
-        if (count > 0) {
+        if (count <= 0) {
             throw new ServiceException(BizExceptionEnum.ROLE_NOT_EXIST);
         }
     }

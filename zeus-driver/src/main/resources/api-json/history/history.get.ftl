@@ -3,7 +3,7 @@
     "method": "history.get",
     "params": {
         "output": "extend",
-        "history": 0,
+        "history": ${valueType},
         <#if hostid??>
             "hostids": "${hostid}",
         </#if>
