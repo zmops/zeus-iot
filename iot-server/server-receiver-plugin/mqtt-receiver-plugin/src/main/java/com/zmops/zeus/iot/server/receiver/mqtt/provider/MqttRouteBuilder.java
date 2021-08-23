@@ -1,7 +1,6 @@
 package com.zmops.zeus.iot.server.receiver.mqtt.provider;
 
 import com.zmops.zeus.iot.server.core.camel.process.ByteArrayToItemValueProcess;
-import com.zmops.zeus.iot.server.core.camel.process.JsonToItemValueProcess;
 import org.apache.camel.builder.RouteBuilder;
 
 /**

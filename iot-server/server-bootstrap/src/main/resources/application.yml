@@ -1,3 +1,32 @@
+# Zabbix Trapper Sender
+zabbix-sender:
+  selector: ${ZS_RECEIVER_ZABBIX_SENDER:default}
+  default:
+    port: ${ZS_RECEIVER_ZABBIX_POST:10051}
+    host: ${ZS_RECEIVER_ZABBIX_HOST:127.0.0.1}
+
+# Http Server
+receiver-http:
+  selector: ${ZS_RECEIVER_HTTP:-}
+  default:
+    port: ${ZS_RECEIVER_HTTP_PORT:9010}
+    host: ${ZS_RECEIVER_HTTP_HOST:0.0.0.0}
+
+# TCP Server
+receiver-tcp:
+  selector: ${ZS_RECEIVER_TCP:-}
+  default:
+    port: ${ZS_RECEIVER_TCP_PORT:9020}
+    host: ${ZS_RECEIVER_TCP_HOST:0.0.0.0}
+
+#  MQTT Client
+receiver-mqtt:
+  selector: ${ZS_RECEIVER_MQTT:-}
+  default:
+    port: ${ZS_RECEIVER_MQTT_PORT:1883}
+    host: ${ZS_RECEIVER_MQTT_HOST:127.0.0.1}
+
+
 # 核心模块
 core:
   selector: ${ZS_CORE:default}
@@ -29,28 +58,3 @@ telemetry:
     sslEnabled: ${ZS_TELEMETRY_PROMETHEUS_SSL_ENABLED:false}
     sslKeyPath: ${ZS_TELEMETRY_PROMETHEUS_SSL_KEY_PATH:""}
     sslCertChainPath: ${ZS_TELEMETRY_PROMETHEUS_SSL_CERT_CHAIN_PATH:""}
-
-# Zabbix Trapper Sender
-zabbix-sender:
-  selector: ${ZS_RECEIVER_ZABBIX_SENDER:default}
-  default:
-    host: 172.16.3.72
-    port: 10051
-
-# Http Server
-receiver-http:
-  selector: ${ZS_RECEIVER_HTTP:-}
-  default:
-    port: 9010
-
-# TCP Server
-receiver-tcp:
-  selector: ${ZS_RECEIVER_TCP:-}
-  default:
-    port: 9020
-
-#  MQTT Client
-receiver-mqtt:
-  selector: ${ZS_RECEIVER_MQTT:-}
-  default:
-    port: 1883

@@ -14,7 +14,12 @@ public class MqttReceiverConfig extends ModuleConfig {
 
 
     /**
-     * Export http port
+     * Export mqtt port
      */
     private int port = 9020;
+
+    /**
+     * Export mqtt ip address
+     */
+    private String host = "127.0.0.1";
 }

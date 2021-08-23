@@ -17,4 +17,9 @@ public class HttpReceiverConfig extends ModuleConfig {
      * Export http port
      */
     private int port = 8080;
+
+    /**
+     * Export http host ip
+     */
+    private String host = "0.0.0.0";
 }

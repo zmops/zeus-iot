@@ -14,7 +14,13 @@ public class TcpReceiverConfig extends ModuleConfig {
 
 
     /**
-     * Export http port
+     * Export tcp port
      */
     private int port = 9020;
+
+
+    /**
+     * Export tcp host ip
+     */
+    private String host = "0.0.0.0";
 }
