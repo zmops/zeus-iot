@@ -1,6 +1,7 @@
 package com.zmops.zeus.iot.server.receiver.mqtt.provider;
 
-import com.zmops.zeus.iot.server.receiver.mqtt.process.MqttPacketProcess;
+import com.zmops.zeus.iot.server.core.camel.process.ByteArrayToItemValueProcess;
+import com.zmops.zeus.iot.server.core.camel.process.JsonToItemValueProcess;
 import org.apache.camel.builder.RouteBuilder;
 
 /**
@@ -17,8 +18,8 @@ public class MqttRouteBuilder extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        fromF("mqtt://127.0.0.1:%d?subscribeTopicNames=test.mqtt.topic", mqttReceiverConfig.getPort())
-                .process(new MqttPacketProcess())
+        fromF("mqtt:zeus-iot-mqtt?host=tcp://172.16.3.72:%d&subscribeTopicNames=test.mqtt.topic", mqttReceiverConfig.getPort())
+                .process(new ByteArrayToItemValueProcess())
                 .to("Zabbix");
     }
 }
