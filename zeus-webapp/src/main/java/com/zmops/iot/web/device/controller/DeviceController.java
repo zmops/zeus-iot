@@ -54,8 +54,9 @@ public class DeviceController {
         }
 
         deviceService.checkProductExist(deviceDto);
-
-        return ResponseData.success(deviceService.create(deviceDto));
+        Long deviceId = deviceService.create(deviceDto);
+        deviceDto.setDeviceId(deviceId);
+        return ResponseData.success(deviceDto);
     }
 
     /**
@@ -69,9 +70,9 @@ public class DeviceController {
         }
 
         deviceService.checkProductExist(deviceDto);
+        deviceService.update(deviceDto);
 
-
-        return ResponseData.success(deviceService.update(deviceDto));
+        return ResponseData.success(deviceDto);
     }
 
 

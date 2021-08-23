@@ -101,8 +101,9 @@ public class ProductController {
 
         // 第二步：创建产品
         String  zbxId = JSON.parseObject(result, TemplateIds.class).getTemplateids()[0];
-        Product prod  = productService.createProduct(zbxId, prodId, prodBasicInfo);
-        return ResponseData.success(prod);
+        productService.createProduct(zbxId, prodId, prodBasicInfo);
+        prodBasicInfo.setProductId(prodId);
+        return ResponseData.success(prodBasicInfo);
     }
 
 
@@ -123,7 +124,7 @@ public class ProductController {
 
         Product product = productService.updateProduct(prodBasicInfo);
 
-        return ResponseData.success(product);
+        return ResponseData.success(prodBasicInfo);
     }
 
 

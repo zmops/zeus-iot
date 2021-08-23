@@ -169,7 +169,7 @@ public class DeviceService {
      * @param deviceDto
      * @return
      */
-    public Object create(DeviceDto deviceDto) {
+    public Long create(DeviceDto deviceDto) {
 
         WorkerWrapper<DeviceDto, Boolean> saveTagWork = WorkerWrapper.<DeviceDto, Boolean>builder().id("saveTagWork")
                 .worker(saveTagWorker).param(deviceDto).build();
@@ -206,7 +206,7 @@ public class DeviceService {
             e.printStackTrace();
         }
 
-        return deviceWork.getWorkResult().getResult();
+        return deviceWork.getWorkResult().getResult().getDeviceId();
     }
 
     /**
@@ -215,7 +215,7 @@ public class DeviceService {
      * @param deviceDto
      * @return
      */
-    public Device update(DeviceDto deviceDto) {
+    public Long update(DeviceDto deviceDto) {
         Device device = new QDevice().deviceId.eq(deviceDto.getDeviceId()).findOne();
         if (null == device) {
             throw new ServiceException(BizExceptionEnum.DEVICE_NOT_EXISTS);
@@ -254,7 +254,7 @@ public class DeviceService {
             e.printStackTrace();
         }
 
-        return deviceWork.getWorkResult().getResult();
+        return deviceWork.getWorkResult().getResult().getDeviceId();
     }
 
     /**
