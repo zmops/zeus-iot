@@ -1,9 +1,9 @@
-package com.zmops.zeus.iot.server.sender.provider.service;
+package com.zmops.zeus.iot.server.sender.service;
 
 import com.google.gson.Gson;
 import com.zmops.zeus.iot.server.library.module.ModuleManager;
 import com.zmops.zeus.iot.server.library.module.Service;
-import com.zmops.zeus.iot.server.sender.provider.protocol.ZabbixSenderClient;
+import com.zmops.zeus.iot.server.sender.provider.ZabbixSenderClient;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -31,6 +31,25 @@ public class ZabbixSenderService implements Service {
         this.moduleManager = moduleManager;
     }
 
+    /**
+     * 指定格式的 JSON
+     *
+     * @param message see
+     *                https://www.zabbix.com/documentation/current/manual/appendix/items/trapper
+     *
+     * {
+     * 	"request":"sender data",
+     * 	"data":[
+     *      {
+     *          "host":"device.info",
+     *          "key":"device.temp",
+     * 	        "value":"86"
+     *      }
+     * 	]
+     * }
+     * @return String
+     * @throws IOException ex
+     */
     public String sendData(String message) throws IOException {
 
         Socket trapperSocket = ZabbixSenderClient.getSocket();

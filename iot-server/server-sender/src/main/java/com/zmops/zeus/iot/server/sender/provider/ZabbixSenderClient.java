@@ -1,4 +1,4 @@
-package com.zmops.zeus.iot.server.sender.provider.protocol;
+package com.zmops.zeus.iot.server.sender.provider;
 
 import com.zmops.zeus.iot.server.sender.provider.ZabbixSenderModuleConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +8,8 @@ import java.net.Socket;
 
 /**
  * @author nantian created at 2021/8/14 14:46
+ * <p>
+ * Zabbix 发送 Socket Client
  */
 
 @Slf4j
@@ -23,8 +25,7 @@ public class ZabbixSenderClient {
      * 启动 TCP Sender 客户端
      */
     public void start() {
-        log.debug("Zabbix Sender 模块已经启动，Trapper 服务地址：{}:{}",
-                socketConfig.getHost(), socketConfig.getPort());
+        log.debug("Zabbix Sender 模块已经启动，Trapper 服务地址：{}:{}", socketConfig.getHost(), socketConfig.getPort());
     }
 
 
@@ -41,7 +42,6 @@ public class ZabbixSenderClient {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return trapperSocket;
     }
 }
