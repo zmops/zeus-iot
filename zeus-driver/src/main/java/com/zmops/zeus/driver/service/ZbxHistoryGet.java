@@ -18,5 +18,6 @@ public interface ZbxHistoryGet {
     @JsonPath("/history/history.get")
     String historyGet(@ParamName("hostid") String hostid,
                       @ParamName("itemids") List<String> itemids,
-                      @ParamName("hisNum") String hisNum);
+                      @ParamName("hisNum") Integer hisNum,
+                      @ParamName("valueType") Integer valueType);
 }
