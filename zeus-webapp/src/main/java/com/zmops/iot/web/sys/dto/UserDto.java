@@ -32,10 +32,10 @@ public class UserDto {
     @NotNull(groups = BaseEntity.Update.class)
     private Long userId;
 
-    @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
+    @NotBlank(groups = {BaseEntity.Create.class})
     private String account;
 
-    @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
+    @NotBlank(groups = {BaseEntity.Create.class})
     private String password;
 
     @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
