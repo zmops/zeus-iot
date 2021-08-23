@@ -12,7 +12,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
-    public final class EventControllerFactory {
+/**
+ * 事件控制器 工厂类
+ *
+ * @author nantian
+ */
+public final class EventControllerFactory {
 
     private final ThreadPoolFactory threadPoolFactory;
 
