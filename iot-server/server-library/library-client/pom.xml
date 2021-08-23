@@ -3,20 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>iot-server</artifactId>
+        <artifactId>server-library</artifactId>
         <groupId>com.zmops</groupId>
         <version>1.0-beta</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>server-library</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>library-module</module>
-        <module>library-util</module>
-        <module>library-server</module>
-        <module>library-client</module>
-    </modules>
+    <artifactId>library-client</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

@@ -31,13 +31,11 @@
             <groupId>com.zmops</groupId>
             <artifactId>server-sender</artifactId>
             <version>1.0-beta</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>server-core</artifactId>
             <version>1.0-beta</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 
