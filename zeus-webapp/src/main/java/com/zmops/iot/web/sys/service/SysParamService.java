@@ -2,6 +2,7 @@ package com.zmops.iot.web.sys.service;
 
 import com.zmops.iot.domain.sys.SysConfig;
 import com.zmops.iot.domain.sys.query.QSysConfig;
+import com.zmops.iot.enums.CommonStatus;
 import com.zmops.iot.web.sys.dto.SysParamDto;
 import io.ebean.DB;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 public class SysParamService {
 
     public List<SysConfig> list() {
-        return new QSysConfig().orderBy().id.desc().findList();
+        return new QSysConfig().status.eq(CommonStatus.ENABLE.getCode()).orderBy().id.desc().findList();
     }
 
     public void update(SysParamDto sysParamDto) {

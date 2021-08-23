@@ -97,9 +97,5 @@ public class ProductAttr {
                 return "";
             }
         }
-
-//        public void setParams(String params){
-//            this.params = params.split("\\n");
-//        }
     }
 }
