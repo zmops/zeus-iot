@@ -61,7 +61,7 @@ public class ProductController {
      * 产品详情
      */
     @GetMapping("/detail")
-    public ResponseData prodDetail(@RequestParam("prodId") Long prodId) {
+    public ResponseData prodDetail(@RequestParam("productId") Long prodId) {
         return ResponseData.success(productService.prodDetail(prodId));
     }
 
@@ -69,7 +69,7 @@ public class ProductController {
      * 产品标签列表
      */
     @GetMapping("/prodTag/list")
-    public ResponseData prodTagList(@RequestParam("prodId") Long prodId) {
+    public ResponseData prodTagList(@RequestParam("productId") Long prodId) {
         return ResponseData.success(productService.prodTagList(prodId));
     }
 
@@ -77,7 +77,7 @@ public class ProductController {
      * 值映射列表
      */
     @GetMapping("/valueMap/list")
-    public ResponseData valueMapList(@RequestParam("prodId") Long prodId) {
+    public ResponseData valueMapList(@RequestParam("productId") Long prodId) {
         return ResponseData.success(productService.valueMapList(prodId));
     }
 
