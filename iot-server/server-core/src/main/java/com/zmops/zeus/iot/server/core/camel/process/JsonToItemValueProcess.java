@@ -1,4 +1,4 @@
-package com.zmops.zeus.iot.server.receiver.http.process;
+package com.zmops.zeus.iot.server.core.camel.process;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
