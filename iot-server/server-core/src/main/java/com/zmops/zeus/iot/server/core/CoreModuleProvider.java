@@ -1,10 +1,18 @@
 package com.zmops.zeus.iot.server.core;
 
+import com.zmops.zeus.iot.server.action.ActionRouteIdentifier;
+import com.zmops.zeus.iot.server.action.HelloWorldAction;
 import com.zmops.zeus.iot.server.core.camel.CamelContextHolderService;
 import com.zmops.zeus.iot.server.core.camel.ZabbixSenderComponent;
+import com.zmops.zeus.iot.server.core.eventbus.EventBusService;
 import com.zmops.zeus.iot.server.core.server.JettyHandlerRegister;
 import com.zmops.zeus.iot.server.core.server.JettyHandlerRegisterImpl;
+import com.zmops.zeus.iot.server.core.servlet.DeviceTriggerActionHandler;
 import com.zmops.zeus.iot.server.core.servlet.HttpItemTrapperHandler;
+import com.zmops.zeus.iot.server.eventbus.core.EventControllerFactory;
+import com.zmops.zeus.iot.server.eventbus.thread.ThreadPoolFactory;
+import com.zmops.zeus.iot.server.eventbus.thread.entity.ThreadCustomization;
+import com.zmops.zeus.iot.server.eventbus.thread.entity.ThreadParameter;
 import com.zmops.zeus.iot.server.library.module.*;
 import com.zmops.zeus.iot.server.library.server.jetty.JettyServer;
 import com.zmops.zeus.iot.server.library.server.jetty.JettyServerConfig;
@@ -21,7 +29,9 @@ public class CoreModuleProvider extends ModuleProvider {
     private final CoreModuleConfig  moduleConfig;
     private       ModelCamelContext camelContext;
 
-    private JettyServer jettyServer;
+    private JettyServer            jettyServer;
+    private ThreadPoolFactory      threadPoolFactory;
+    private EventControllerFactory eventControllerFactory;
 
 
     public CoreModuleProvider() {
@@ -48,6 +58,9 @@ public class CoreModuleProvider extends ModuleProvider {
     @Override
     public void prepare() throws ServiceNotProvidedException, ModuleStartException {
 
+        threadPoolFactory = new ThreadPoolFactory(new ThreadCustomization(), new ThreadParameter());
+        eventControllerFactory = new EventControllerFactory(threadPoolFactory);
+
         JettyServerConfig jettyServerConfig = JettyServerConfig.builder()
                 .host(moduleConfig.getRestHost())
                 .port(moduleConfig.getRestPort())
@@ -66,11 +79,11 @@ public class CoreModuleProvider extends ModuleProvider {
 
         this.registerServiceImplementation(JettyHandlerRegister.class, new JettyHandlerRegisterImpl(jettyServer));
 
-
         camelContext = new DefaultCamelContext();
         camelContext.addComponent(Const.CAMEL_ZABBIX_COMPONENT_NAME, new ZabbixSenderComponent(getManager()));
 
         this.registerServiceImplementation(CamelContextHolderService.class, new CamelContextHolderService(camelContext, getManager()));
+        this.registerServiceImplementation(EventBusService.class, new EventBusService(eventControllerFactory));
     }
 
     @Override
@@ -85,10 +98,20 @@ public class CoreModuleProvider extends ModuleProvider {
         }
     }
 
+    public void shutdown() {
+        threadPoolFactory.shutdown();
+    }
+
     @Override
     public void notifyAfterCompleted() throws ServiceNotProvidedException, ModuleStartException {
         JettyHandlerRegister service = getManager().find(CoreModule.NAME).provider().getService(JettyHandlerRegister.class);
         service.addHandler(new HttpItemTrapperHandler());
+        service.addHandler(new DeviceTriggerActionHandler(getManager()));
+
+
+        // ### 可以自定义添加 Action 的动作异步处理，指定 ID
+        eventControllerFactory.getAsyncController(ActionRouteIdentifier.helloworld).register(new HelloWorldAction());
+
     }
 
     @Override

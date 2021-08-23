@@ -21,6 +21,7 @@
         <module>server-telemetry</module>
         <module>server-receiver-plugin</module>
         <module>server-sender</module>
+        <module>server-action</module>
     </modules>
 
 

@@ -41,6 +41,16 @@
             <artifactId>iot-datacarrier</artifactId>
             <version>1.0-beta</version>
         </dependency>
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>iot-eventbus</artifactId>
+            <version>1.0-beta</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>server-action</artifactId>
+            <version>1.0-beta</version>
+        </dependency>
     </dependencies>
 
     <properties>

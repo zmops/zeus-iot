@@ -1,6 +1,11 @@
 package com.zmops.zeus.iot.server.core.servlet;
 
 import com.google.gson.JsonElement;
+import com.zmops.zeus.iot.server.action.ActionRouteIdentifier;
+import com.zmops.zeus.iot.server.action.bean.ActionParam;
+import com.zmops.zeus.iot.server.core.CoreModule;
+import com.zmops.zeus.iot.server.core.eventbus.EventBusService;
+import com.zmops.zeus.iot.server.library.module.ModuleManager;
 import com.zmops.zeus.iot.server.library.server.jetty.ArgumentsParseException;
 import com.zmops.zeus.iot.server.library.server.jetty.JettyJsonHandler;
 
@@ -14,6 +19,11 @@ import java.io.IOException;
  */
 public class DeviceTriggerActionHandler extends JettyJsonHandler {
 
+    private final ModuleManager moduleManager;
+
+    public DeviceTriggerActionHandler(ModuleManager moduleManager) {
+        this.moduleManager = moduleManager;
+    }
 
     @Override
     public String pathSpec() {
@@ -21,16 +31,22 @@ public class DeviceTriggerActionHandler extends JettyJsonHandler {
     }
 
 
+    /**
+     * 动作触发Http入口，可在设备 上面设置 宏 定义，动态传入 identifier
+     *
+     * @param req
+     * @return JsonElement
+     * @throws ArgumentsParseException ex
+     * @throws IOException             ex
+     */
     @Override
     protected JsonElement doPost(HttpServletRequest req) throws ArgumentsParseException, IOException {
+        EventBusService eventBusService = moduleManager.find(CoreModule.NAME).provider().getService(EventBusService.class);
+
+        ActionParam actionParam = new ActionParam();
+        actionParam.setTriggerDevice("10084");
+        eventBusService.postExecuteActionMsg(ActionRouteIdentifier.helloworld, actionParam);
+
         return null;
-    }
-
-
-    /**
-     * 执行 Action，进 EventBus，方便订阅处理
-     */
-    private void execute() {
-
     }
 }
