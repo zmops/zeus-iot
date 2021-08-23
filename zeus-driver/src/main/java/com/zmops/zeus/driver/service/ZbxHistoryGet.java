@@ -19,5 +19,7 @@ public interface ZbxHistoryGet {
     String historyGet(@ParamName("hostid") String hostid,
                       @ParamName("itemids") List<String> itemids,
                       @ParamName("hisNum") Integer hisNum,
-                      @ParamName("valueType") Integer valueType);
+                      @ParamName("valueType") Integer valueType,
+                      @ParamName("timeFrom") Long timeFrom,
+                      @ParamName("timeTill") Long timeTill);
 }

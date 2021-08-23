@@ -12,6 +12,8 @@ public class LatestDto {
 
     private String itemid;
 
+    private Long attrId;
+
     private String clock;
 
     private String value;
