@@ -47,7 +47,7 @@ public class ZabbixTrapperProducer extends DefaultProducer {
                     || StringUtil.isEmpty(itemValue.getKey())
                     || StringUtil.isEmpty(itemValue.getValue())) {
                 log.error(" process item data error，{}", new Gson().toJson(itemValue));
-                break;
+                continue;
             }
 
             itemValueThread.submit(() -> {
