@@ -14,6 +14,12 @@
             </#list>
             ],
         </#if>
+        <#if timeFrom??>
+            "time_from":${timeFrom},
+        </#if>
+        <#if timeTill??>
+            "time_till":${timeTill},
+        </#if>
         "sortfield": "clock",
         "sortorder": "DESC",
         "limit": ${hisNum}
