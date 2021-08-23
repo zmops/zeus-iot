@@ -52,8 +52,10 @@ public class CachedValueFilter extends JsonSerializer<Object> {
 
             if (value instanceof LocalDateTime) {
                 jsonGenerator.writeStringField(fieldName, LocalDateTimeUtils.dateToStr(value.toString()));
-            } else {
+            } else if (value instanceof String) {
                 jsonGenerator.writeStringField(fieldName, value.toString());
+            } else {
+                jsonGenerator.writeObjectField(fieldName, value);
             }
 
             if (cachedValues.length == 0) {
