@@ -138,9 +138,9 @@ public class SysUserGroupService {
     private void checkByGroupName(String groupName, Long userGroupId) {
         int count;
         if (userGroupId > 0) {
-            count = new QSysUserGroup().groupName.equalTo(groupName).userGroupId.ne(userGroupId).findCount();
+            count = new QSysUserGroup().groupName.eq(groupName).userGroupId.ne(userGroupId).findCount();
         } else {
-            count = new QSysUserGroup().groupName.equalTo(groupName).findCount();
+            count = new QSysUserGroup().groupName.eq(groupName).findCount();
         }
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.USERGROUP_HAS_EXIST);
@@ -181,7 +181,7 @@ public class SysUserGroupService {
         }
         return usrGrp.getZbxId();
     }
-
+ 
     /**
      * 用户组绑定设备组
      *
