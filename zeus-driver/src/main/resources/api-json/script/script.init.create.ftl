@@ -3,9 +3,9 @@
     "method": "script.create",
     "params": {
         "name": "__offline_status__",
-        "command": "curl -H \\"Content-Type:application/json\\" -X POST --data '{\\"hostname\\":\\"{HOST.HOST}\\",\\"deviceStatus\\":\\"{EVENT.ID}\\"}' http://${zeusServerIp}:${zeusServerPort}/rest/device/webhook",
+        "command": "curl -H \\"Content-Type:application/json\\" -X POST --data '{\\"hostname\\":\\"{HOST.HOST}\\",\\"deviceStatus\\":\\"{EVENT.ID}\\"}' http://${zeusServerIp}:${zeusServerPort}/device/action/exec",
         "type": 0,
-        "execute_on": 2
+        "execute_on": 1
     },
     "auth": "${userAuth}",
     "id": 1

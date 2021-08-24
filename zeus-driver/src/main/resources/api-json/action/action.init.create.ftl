@@ -19,9 +19,22 @@
         "operations": [
             {
                 "operationtype": 1,
-                "opcommand_grp": [
+                "opcommand_hst": [
                     {
-                        "groupid": "${groupId}"
+                        "hostid": "0"
+                    }
+                ],
+                "opcommand": {
+                    "scriptid": "${scriptId}"
+                }
+            }
+        ],
+        "recovery_operations": [
+            {
+                "operationtype": "1",
+                "opcommand_hst": [
+                    {
+                        "hostid": "0"
                     }
                 ],
                 "opcommand": {
