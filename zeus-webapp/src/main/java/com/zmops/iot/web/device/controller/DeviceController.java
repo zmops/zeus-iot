@@ -37,11 +37,20 @@ public class DeviceController {
      *
      * @return
      */
-    @RequestMapping("/getDeviceByPage")
+    @PostMapping("/getDeviceByPage")
     public Pager<DeviceDto> devicePageList(@RequestBody DeviceParam deviceParam) {
         return deviceService.devicePageList(deviceParam);
     }
 
+    /**
+     * 设备列表
+     *
+     * @return
+     */
+    @PostMapping("/list")
+    public ResponseData deviceList(@RequestBody DeviceParam deviceParam) {
+        return ResponseData.success(deviceService.deviceList(deviceParam));
+    }
 
     /**
      * 设备创建

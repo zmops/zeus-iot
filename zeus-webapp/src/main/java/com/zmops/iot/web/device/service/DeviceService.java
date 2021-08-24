@@ -64,6 +64,20 @@ public class DeviceService {
     private ZbxValueMap zbxValueMap;
 
     /**
+     * 设备列表
+     *
+     * @param deviceParam
+     * @return
+     */
+    public List<Device> deviceList(DeviceParam deviceParam) {
+        QDevice qDevice = new QDevice();
+        if (ToolUtil.isNotEmpty(deviceParam.getName())) {
+            qDevice.name.contains(deviceParam.getName());
+        }
+        return qDevice.findList();
+    }
+
+    /**
      * 设备分页列表
      *
      * @param deviceParam
@@ -432,4 +446,5 @@ public class DeviceService {
         }
         return JSONObject.parseArray(zbxHost.hostDetail(zbxId));
     }
+
 }
