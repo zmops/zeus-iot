@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.zmops</groupId>
-    <artifactId>zeus-server-pom</artifactId>
+    <artifactId>iot-server-pom</artifactId>
     <version>1.0-beta</version>
 
     <packaging>pom</packaging>
