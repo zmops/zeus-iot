@@ -6,11 +6,11 @@
 ⚠️ : 自定义安装是在本身已有 zabbix 或 分开部署zabbix 和 zeus。
 ```
 
-- zabbix 安装可参照[zabbix官网](https://www.zabbix.com/download) 。或者[快速安装](../README.md)。这里就不做详细介绍。
+- **zabbix 安装可参照[zabbix官网](https://www.zabbix.com/download) 。或者[快速安装](../README.md)。这里就不做详细介绍。**
 
-- zeus iot 安装
+- **zeus iot 安装**
 
-  - 前端 UI 部署
+  - **前端 UI 部署**
 
     可采用 nginx 做为web服务器来部署 ui。
 
@@ -47,7 +47,21 @@
       EOL
       ```
 
-  - zeus-iot 安装
+    - 获取 zeus-ui
+
+      - 直接下载[release]()包
+
+      - 从源码编译
+
+        ```shell
+        git clone http://code.zmops.cn/zeus-iot/zeus-iot-ui/zeus-iot-ui.git
+        cd zeus-iot-ui/ && npm install && npm run build
+        mv dist /opt/zeus/web
+        ```
+
+        
+
+  - **zeus-iot 安装**
 
     > zeus server 是以 jar 包的形式部署在服务器上。
 
