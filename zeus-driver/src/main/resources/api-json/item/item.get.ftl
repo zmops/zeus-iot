@@ -5,6 +5,17 @@
         "selectTags":"extend",
         "selectValueMap":"extend",
         "selectPreprocessing":"extend",
+        <#if key??>
+            "search":{
+                "key_":"${key}"
+            },
+        </#if>
+        <#if itemId??>
+            "itemids": "${itemId}",
+        </#if>
+        <#if hostid??>
+            "hostids": "${hostid}",
+        </#if>
         "output": [
             "itemid",
             "hostid",
@@ -15,13 +26,7 @@
             "units",
             "valuemapid",
             "interfaceid"
-        ],
-    <#if itemId??>
-        "itemids": "${itemId}"
-    </#if>
-    <#if hostid??>
-        "hostids": "${hostid}"
-    </#if>
+        ]
     },
     "auth": "${userAuth}",
     "id": 1

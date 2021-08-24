@@ -23,6 +23,6 @@ public class HistoryController {
 
     @RequestMapping("/query")
     public ResponseData qeuryHistory(@Validated @RequestBody HistoryParam historyParam) {
-        return ResponseData.success(historyService.qeuryHistory(historyParam));
+        return ResponseData.success(historyService.queryHistory(historyParam));
     }
 }

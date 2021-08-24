@@ -85,4 +85,14 @@ public interface ZbxItem {
     @Post
     @JsonPath("/item/item.get")
     String getItemInfo(@ParamName("itemId") String itemId, @ParamName("hostid") String hostid);
+
+    /**
+     * 根据item name 获取 ITEM 信息
+     *
+     * @param key key
+     * @return String
+     */
+    @Post
+    @JsonPath("/item/item.get")
+    String getItemList(@ParamName("key") String key, @ParamName("hostid") String hostid);
 }

@@ -65,6 +65,15 @@ public interface ZbxHost {
     String hostDetail(@ParamName("hostid") String hostid);
 
     /**
+     * 查询主机
+     *
+     * @param host 主机ID
+     */
+    @Post
+    @JsonPath("/host/host.get")
+    String hostGet(@ParamName("host") String host);
+
+    /**
      * 更新主机宏
      *
      * @param hostId    主机ID

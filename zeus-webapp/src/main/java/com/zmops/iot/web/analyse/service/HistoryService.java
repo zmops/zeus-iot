@@ -14,7 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -28,11 +31,11 @@ public class HistoryService {
     @Autowired
     ZbxHistoryGet zbxHistoryGet;
 
-    public List<LatestDto> qeuryHistory(HistoryParam historyParam) {
-        return qeuryHistory(historyParam.getDeviceId(), historyParam.getAttrIds(), historyParam.getTimeFrom(), historyParam.getTimeTill());
+    public List<LatestDto> queryHistory(HistoryParam historyParam) {
+        return queryHistory(historyParam.getDeviceId(), historyParam.getAttrIds(), historyParam.getTimeFrom(), historyParam.getTimeTill());
     }
 
-    public List<LatestDto> qeuryHistory(Long deviceId, List<Long> attrIds, Long timeFrom, Long timeTill) {
+    public List<LatestDto> queryHistory(Long deviceId, List<Long> attrIds, Long timeFrom, Long timeTill) {
         //查询出设备
         Device one = new QDevice().deviceId.eq(deviceId).findOne();
         if (null == one || ToolUtil.isEmpty(one.getZbxId())) {
@@ -57,8 +60,7 @@ public class HistoryService {
         }
         //根据属性值类型 分组查询历史数据
         for (Map.Entry<String, List<ProductAttribute>> map : valueTypeMap.entrySet()) {
-            String res = zbxHistoryGet.historyGet(one.getZbxId(), zbxIds, 1000, Integer.parseInt(map.getKey()), timeFrom, timeTill);
-            latestDtos.addAll(JSONObject.parseArray(res, LatestDto.class));
+            latestDtos.addAll(queryHitoryData(one.getZbxId(), zbxIds, Integer.parseInt(map.getKey()), timeFrom, timeTill));
         }
 
         latestDtos.forEach(latestDto -> {
@@ -69,4 +71,10 @@ public class HistoryService {
 
         return latestDtos;
     }
+
+    public List<LatestDto> queryHitoryData(String hostId, List<String> itemIds, Integer valueType, Long timeFrom, Long timeTill) {
+        String res = zbxHistoryGet.historyGet(hostId, itemIds, 1000, valueType, timeFrom, timeTill);
+        return JSONObject.parseArray(res, LatestDto.class);
+    }
+
 }
