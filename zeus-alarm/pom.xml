@@ -9,13 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>iot-alarm</artifactId>
+    <artifactId>zeus-alarm</artifactId>
     <dependencies>
         <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>zeus-common</artifactId>
             <version>1.0-beta</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
@@ -26,7 +25,6 @@
             <groupId>com.zmops</groupId>
             <artifactId>zeus-driver</artifactId>
             <version>1.0-beta</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 
