@@ -85,7 +85,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().ignoring().antMatchers(HttpMethod.GET,
                 "/assets/**",
                 "/favicon.ico",
-                "/activiti-editor/**"
+                "/activiti-editor/**","/websocket/alarm/**"
         );
 
     }

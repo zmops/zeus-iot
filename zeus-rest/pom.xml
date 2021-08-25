@@ -17,6 +17,12 @@
             <version>1.0-beta</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>zeus-webapp</artifactId>
+            <version>1.0-beta</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <properties>
