@@ -53,7 +53,7 @@ public class HistoryService {
         //取出属性对应的ItemID
         List<String>                        zbxIds       = list.parallelStream().map(ProductAttribute::getZbxId).collect(Collectors.toList());
         Map<String, List<ProductAttribute>> valueTypeMap = list.parallelStream().collect(Collectors.groupingBy(ProductAttribute::getValueType));
-        Map<String, String>                 itemIdMap    = list.parallelStream().collect(Collectors.toMap(ProductAttribute::getZbxId, ProductAttribute::getName));
+        Map<String, ProductAttribute>       itemIdMap    = list.parallelStream().collect(Collectors.toMap(ProductAttribute::getZbxId, o -> o));
         List<LatestDto>                     latestDtos   = new ArrayList<>();
         if (null == timeFrom) {
             timeFrom = LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.getDayStart(LocalDateTime.now()));
@@ -65,7 +65,9 @@ public class HistoryService {
 
         latestDtos.forEach(latestDto -> {
             if (null != itemIdMap.get(latestDto.getItemid())) {
-                latestDto.setName(itemIdMap.get(latestDto.getItemid()));
+                latestDto.setName(itemIdMap.get(latestDto.getItemid()).getName());
+                latestDto.setAttrId(itemIdMap.get(latestDto.getItemid()).getAttrId());
+                latestDto.setUnits(itemIdMap.get(latestDto.getItemid()).getUnits());
             }
         });
 

@@ -36,7 +36,8 @@ public class LatestService {
      * @return
      */
     public List<LatestDto> qeuryLatest(LatestParam latestParam) {
-        return qeuryLatest(latestParam.getDeviceId(), latestParam.getAttrIds());
+        List<LatestDto> latestDtos = qeuryLatest(latestParam.getDeviceId(), latestParam.getAttrIds());
+        return latestDtos;
     }
 
     public List<LatestDto> qeuryLatest(Long deviceId, List<Long> attrIds) {
@@ -69,6 +70,7 @@ public class LatestService {
             if (null != itemIdMap.get(latestDto.getItemid())) {
                 latestDto.setName(itemIdMap.get(latestDto.getItemid()).getName());
                 latestDto.setAttrId(itemIdMap.get(latestDto.getItemid()).getAttrId());
+                latestDto.setUnits(itemIdMap.get(latestDto.getItemid()).getUnits());
             }
         });
 
