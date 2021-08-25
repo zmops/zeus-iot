@@ -44,7 +44,7 @@
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>
-            <artifactId>iot-alarm</artifactId>
+            <artifactId>zeus-alarm</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
