@@ -77,11 +77,10 @@ public class CoreModuleProvider extends ModuleProvider {
         jettyServer = new JettyServer(jettyServerConfig);
         jettyServer.initialize();
 
-        this.registerServiceImplementation(JettyHandlerRegister.class, new JettyHandlerRegisterImpl(jettyServer));
-
         camelContext = new DefaultCamelContext();
         camelContext.addComponent(Const.CAMEL_ZABBIX_COMPONENT_NAME, new ZabbixSenderComponent(getManager()));
 
+        this.registerServiceImplementation(JettyHandlerRegister.class, new JettyHandlerRegisterImpl(jettyServer));
         this.registerServiceImplementation(CamelContextHolderService.class, new CamelContextHolderService(camelContext, getManager()));
         this.registerServiceImplementation(EventBusService.class, new EventBusService(eventControllerFactory));
     }
