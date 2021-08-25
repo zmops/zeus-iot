@@ -7,7 +7,7 @@
                 "host":${host}
             },
         </#if>
-        <#if groupids??>
+        <#if hostid??>
             "hostids":${hostid},
         </#if>
         "output": "extend",
