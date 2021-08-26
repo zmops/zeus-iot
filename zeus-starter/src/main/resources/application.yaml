@@ -41,7 +41,7 @@ forest:
     zbxApiUrl: http://${ZEUS_ZABBIX_HOST:127.0.0.1}:${ZEUS_ZABBIX_API_PORT:80}/zabbix/api_jsonrpc.php
     zbxServerIp: ${ZEUS_ZABBIX_HOST:127.0.0.1}
     zbxServerPort: ${ZEUS_ZABBIX_PORT:10051}
-    zbxApiToken: 5fb3c3b5cc8a2e9c0606db59c5d4c65bddcdfc8f8a74640cb367e4a27f6180f1
+    zbxApiToken: 0fc68dae932f185a22901cd7d3f1ee55d70353ff03f2a2cdea795043aa4ca2a7
 
     ## 设备触发告警，执行动作回调 IOT-SERVER 处理
     zeusServerIp: ${ZEUS_CALLBACK_HOST:127.0.0.1}
