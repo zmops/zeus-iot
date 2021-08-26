@@ -2,6 +2,7 @@ package com.zmops.iot.web.sys.service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.zmops.iot.constant.ConstantsContext;
 import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.core.auth.exception.enums.AuthExceptionEnum;
 import com.zmops.iot.core.auth.model.LoginUser;
@@ -29,6 +30,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.zmops.iot.web.init.DeviceSatusScriptInit.GLOBAL_ADMIN_ROLE_CODE;
+import static com.zmops.iot.web.init.DeviceSatusScriptInit.GLOBAL_HOST_GROUP_CODE;
 
 /**
  * @author yefei
@@ -100,7 +104,7 @@ public class SysUserService implements CommandLineRunner {
         SysUser newUser = UserFactory.createUser(user, password, salt);
         //取对应的ZBX用户组ID
         String       usrZbxId = sysUserGroupService.getZabUsrGrpId(user.getUserGroupId());
-        JSONObject result   = JSONObject.parseObject(zbxUser.userAdd(user.getAccount(), decryptPwd, usrZbxId));
+        JSONObject result   = JSONObject.parseObject(zbxUser.userAdd(user.getAccount(), decryptPwd, usrZbxId, ConstantsContext.getConstntsMap().get(GLOBAL_ADMIN_ROLE_CODE).toString()));
         JSONArray  userids  = result.getJSONArray("userids");
         newUser.setZbxId(String.valueOf(userids.get(0)));
         DB.save(newUser);

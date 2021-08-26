@@ -18,6 +18,7 @@ public class DeviceSatusScriptInit implements CommandLineRunner {
 
     public static final String GLOBAL_HOST_GROUP_CODE = "ZEUS_HOST_GROUP_ID";
     public static final String GLOBAL_ACTION_CODE     = "ZEUS_ACTION_ID";
+    public static final String GLOBAL_ADMIN_ROLE_CODE     = "ZEUS_ADMIN_ROLE_ID";
 
     @Autowired
     private BasicSettingsInit basicSettingsInit;
@@ -30,6 +31,12 @@ public class DeviceSatusScriptInit implements CommandLineRunner {
         if (groupId == null) {
             groupId = basicSettingsInit.createGlobalHostGroup();
         }
+        DB.update(SysConfig.class).where().eq("code", GLOBAL_HOST_GROUP_CODE).asUpdate().set("value", groupId).update();
+
+        //判断系统参数是否存在 zbx管理员ID
+        String roleId = basicSettingsInit.getAdminRoleId();
+        DB.update(SysConfig.class).where().eq("code", GLOBAL_ADMIN_ROLE_CODE).asUpdate().set("value", roleId).update();
+
 
         //判断只读用户是否存在 不存在就创建一个
         String userId = basicSettingsInit.getCookieUser();
@@ -38,11 +45,12 @@ public class DeviceSatusScriptInit implements CommandLineRunner {
             if (userGroupId == null) {
                 userGroupId = basicSettingsInit.createCookieUserGroup(groupId);
             }
-            basicSettingsInit.createCookieUser(userGroupId);
+            String guestRoleId = basicSettingsInit.getGuestRoleId();
+            basicSettingsInit.createCookieUser(userGroupId,guestRoleId);
         }
 
 
-        DB.update(SysConfig.class).where().eq("code", GLOBAL_HOST_GROUP_CODE).asUpdate().set("value", groupId).update();
+
 
         // 第二步：创建全局回调脚本
         String scriptId = basicSettingsInit.getOfflineStatusScript();

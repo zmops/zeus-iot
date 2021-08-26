@@ -4,7 +4,7 @@
     "params": {
         "username": "cookie",
         "passwd": "cookie",
-        "roleid": "4",
+        "roleid": "${roleId}",
         "usrgrps": [
             {
             "usrgrpid": "${usrGrpId}"

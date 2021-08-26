@@ -26,7 +26,7 @@ public interface ZbxInitService {
             interceptor = JsonBodyBuildInterceptor.class
     )
     @JsonPath("/usergroup/cookieUserGroupCreate")
-    String createCookieUserGroup(@ParamName("hostGroupId") String hostGroupId,@ParamName("userAuth") String userAuth);
+    String createCookieUserGroup(@ParamName("hostGroupId") String hostGroupId, @ParamName("userAuth") String userAuth);
 
     @Post(
             url = "${zbxApiUrl}",
@@ -50,5 +50,23 @@ public interface ZbxInitService {
             interceptor = JsonBodyBuildInterceptor.class
     )
     @JsonPath("/user/cookieUserAdd")
-    String createCookieUser(@ParamName("usrGrpId") String usrGrpId,@ParamName("userAuth") String userAuth);
+    String createCookieUser(@ParamName("usrGrpId") String usrGrpId,
+                            @ParamName("userAuth") String userAuth,
+                            @ParamName("roleId") String roleId);
+
+    @Post(
+            url = "${zbxApiUrl}",
+            headers = "authTag: noAuth",
+            interceptor = JsonBodyBuildInterceptor.class
+    )
+    @JsonPath("/role/adminRole.get")
+    String getAdminRole(@ParamName("userAuth") String zbxApiToken);
+
+    @Post(
+            url = "${zbxApiUrl}",
+            headers = "authTag: noAuth",
+            interceptor = JsonBodyBuildInterceptor.class
+    )
+    @JsonPath("/role/guestRole.get")
+    String getGuestRole(@ParamName("userAuth") String zbxApiToken);
 }

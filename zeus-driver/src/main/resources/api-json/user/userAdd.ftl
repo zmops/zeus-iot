@@ -4,7 +4,7 @@
     "params": {
         "username": "${name}",
         "passwd": "${password}",
-        "roleid": "2",
+        "roleid": "${roleId}",
         "usrgrps": [
             {
             "usrgrpid": "${usrGrpId}"
