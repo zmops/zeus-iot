@@ -1,0 +1,3 @@
+[submodule "zeus-iot-ui"]
+	path = zeus-iot-ui
+	url = https://github.com/zmops/zeus-iot-ui.git
