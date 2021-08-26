@@ -12,7 +12,9 @@ import com.zmops.iot.web.sys.dto.param.LoginParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author nantian created at 2021/7/29 19:55
@@ -60,8 +62,13 @@ public class LoginController extends BaseController {
         return new SuccessResponseData();
     }
 
-    @RequestMapping("/getCookie")
-    public ResponseData getCookie() {
-        return ResponseData.success(authService.getCookie());
+    @RequestMapping("/getCharts")
+    public void getCookie(HttpServletResponse response,
+                          @RequestParam("from") String from,
+                          @RequestParam("to") String to,
+                          @RequestParam("attrIds") List<Long> attrIds,
+                          @RequestParam("width") String width,
+                          @RequestParam("height") String height) {
+        authService.getCharts(response,from,to,attrIds,width,height);
     }
 }

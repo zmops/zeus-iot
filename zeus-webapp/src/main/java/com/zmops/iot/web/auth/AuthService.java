@@ -2,7 +2,6 @@ package com.zmops.iot.web.auth;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.convert.Convert;
-import com.dtflys.forest.http.ForestCookie;
 import com.zmops.iot.core.auth.cache.SessionManager;
 import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.core.auth.exception.AuthException;
@@ -13,6 +12,7 @@ import com.zmops.iot.core.auth.model.LoginUser;
 import com.zmops.iot.core.util.HttpContext;
 import com.zmops.iot.core.util.RsaUtil;
 import com.zmops.iot.core.util.SaltUtil;
+import com.zmops.iot.domain.product.query.QProductAttribute;
 import com.zmops.iot.domain.sys.SysUser;
 import com.zmops.iot.domain.sys.query.QSysUser;
 import com.zmops.iot.model.exception.ServiceException;
@@ -26,17 +26,21 @@ import com.zmops.zeus.driver.service.ZbxInitService;
 import com.zmops.zeus.driver.service.ZbxUser;
 import io.ebean.DB;
 import io.ebean.SqlRow;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.zmops.iot.constant.ConstantsContext.getJwtSecretExpireSec;
 import static com.zmops.iot.constant.ConstantsContext.getTokenHeaderName;
@@ -54,6 +58,12 @@ public class AuthService {
 
     @Autowired
     private ZbxInitService zbxInitService;
+
+    @Value("${forest.variables.zbxServerIp}")
+    private String zbxServerIp;
+
+    @Value("${forest.variables.zbxServerPort}")
+    private String zbxServerPort;
 
 
     /**
@@ -102,17 +112,63 @@ public class AuthService {
         return LoginUserDto.buildLoginUser(user, login(user));
     }
 
-    public String getCookie() {
-        AtomicReference<ForestCookie> cookieAtomic = new AtomicReference<>(null);
+    public void getCharts(HttpServletResponse response, String from, String to, List<Long> attrIds, String width, String height) {
+        try {
+            String       cookie  = getCookie();
+            List<String> itemids = getItemIds(attrIds);
 
-        String param = "name=cookie&password=cookie&autologin=1&enter=Sign+in";
+            HttpClient      client         = new HttpClient();
+            PostMethod      postMethod     = new PostMethod("http://" + zbxServerIp + ":" + zbxServerPort + "/zabbix/chart.php?type=0&profileIdx=web.item.graph.filter&profileIdx2=36816&_=v14ede3k");
+            NameValuePair[] nameValuePairs = new NameValuePair[itemids.size() + 4];
+            nameValuePairs[0] = new NameValuePair("from", from);
+            nameValuePairs[1] = new NameValuePair("to", to);
+            nameValuePairs[2] = new NameValuePair("width", width);
+            nameValuePairs[3] = new NameValuePair("height", height);
+            for (int index = 0; index < itemids.size(); index++) {
+                nameValuePairs[4 + index] = new NameValuePair("itemids[" + index + "]", itemids.get(index));
+            }
 
-        zbxInitService.getCookie(param, (request, cookies) -> {
-            cookieAtomic.set(cookies.allCookies().get(0));
-        });
+            postMethod.setRequestBody(nameValuePairs);
+            postMethod.setRequestHeader("Content_Type", "application/json-rpc");
+            postMethod.setRequestHeader("Cookie", cookie);
 
-        ForestCookie cookie = cookieAtomic.get();
-        return cookie.getValue();
+            //执行请求
+            client.executeMethod(postMethod);
+            byte[] responseBody = postMethod.getResponseBody();
+            response.setContentType("image/jpeg");
+            OutputStream out = response.getOutputStream();
+            out.write(responseBody);
+            out.flush();
+            //关闭响应输出流
+            out.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private List<String> getItemIds(List<Long> attrIds) {
+        return new QProductAttribute().select(QProductAttribute.alias().zbxId).attrId.in(attrIds).findSingleAttributeList();
+    }
+
+    private String getCookie() throws Exception {
+        HttpClient client     = new HttpClient();
+        PostMethod postMethod = new PostMethod("http://" + zbxServerIp + ":" + zbxServerPort + "/zabbix/index.php");
+        //推荐的数据存储方式,类似key-value形式
+
+        NameValuePair namePair      = new NameValuePair("name", "cookie");
+        NameValuePair pwdPair       = new NameValuePair("password", "cookie");
+        NameValuePair autologinPair = new NameValuePair("autologin", "1");
+        NameValuePair enterPair     = new NameValuePair("enter", "Sign in");
+        //构建表单参数
+
+        postMethod.setRequestBody(new NameValuePair[]{namePair, pwdPair, autologinPair, enterPair});
+        postMethod.setRequestHeader("Content_Type", "application/json");
+        //执行请求
+        client.executeMethod(postMethod);
+        //通过Post/GetMethod对象获取响应头信息
+        String cookie = postMethod.getResponseHeader("Set-Cookie").getValue();
+        return cookie;
     }
 
     /**

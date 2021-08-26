@@ -1,8 +1,6 @@
 package com.zmops.zeus.driver.service;
 
-import com.dtflys.forest.annotation.Body;
 import com.dtflys.forest.annotation.Post;
-import com.dtflys.forest.callback.OnSaveCookie;
 import com.zmops.zeus.driver.annotation.JsonPath;
 import com.zmops.zeus.driver.annotation.ParamName;
 import com.zmops.zeus.driver.inteceptor.JsonBodyBuildInterceptor;
@@ -12,13 +10,6 @@ import com.zmops.zeus.driver.inteceptor.JsonBodyBuildInterceptor;
  */
 
 public interface ZbxInitService {
-
-    @Post(
-            url = "http://${zbxServerIp}:${zbxServerPort}/zabbix/index.php",
-            headers = {"Content-Type: application/x-www-form-urlencoded"}
-    )
-    String getCookie(@Body String body, OnSaveCookie onSaveCookie);
-
 
     @Post(
             url = "${zbxApiUrl}",
