@@ -22,7 +22,7 @@ import com.zmops.iot.web.log.LogManager;
 import com.zmops.iot.web.log.factory.LogTaskFactory;
 import com.zmops.iot.web.sys.dto.LoginUserDto;
 import com.zmops.iot.web.sys.factory.UserFactory;
-import com.zmops.zeus.driver.service.ZbxCookieGet;
+import com.zmops.zeus.driver.service.ZbxInitService;
 import com.zmops.zeus.driver.service.ZbxUser;
 import io.ebean.DB;
 import io.ebean.SqlRow;
@@ -53,7 +53,7 @@ public class AuthService {
     private ZbxUser zbxUser;
 
     @Autowired
-    private ZbxCookieGet zbxCookieGet;
+    private ZbxInitService zbxInitService;
 
 
     /**
@@ -69,7 +69,7 @@ public class AuthService {
 
         String param = "name=Admin&password=zabbix&autologin=1&enter=Sign+in";
 
-        zbxCookieGet.getCookie(param, (request, cookies) -> {
+        zbxInitService.getCookie(param, (request, cookies) -> {
             cookieAtomic.set(cookies.allCookies().get(0));
         });
 
