@@ -9,6 +9,7 @@ import com.zmops.iot.model.cache.filter.DicType;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,7 +32,7 @@ public class DeviceDto implements BaseDto {
 
     private String productName;
 
-    @NotNull(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
+    @NotEmpty(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
     private List<Long> deviceGroupIds;
 
     private String status;

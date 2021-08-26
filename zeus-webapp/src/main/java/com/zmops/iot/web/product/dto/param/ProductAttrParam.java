@@ -5,6 +5,7 @@ import com.zmops.iot.web.sys.dto.param.BaseQueryParam;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -21,6 +22,6 @@ public class ProductAttrParam extends BaseQueryParam {
     private String key;
 
 
-    @NotNull(groups = BaseEntity.Delete.class)
+    @NotEmpty(groups = BaseEntity.Delete.class)
     private List<Long> ids;
 }

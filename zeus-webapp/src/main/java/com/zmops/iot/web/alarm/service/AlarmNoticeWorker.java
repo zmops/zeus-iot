@@ -27,7 +27,7 @@ public class AlarmNoticeWorker implements IWorker<Map<String, String>, Boolean> 
 
     private MessageBody buildMessage(Map<String, Object> alarmInfo) {
 
-        return MessageBody.builder().msg("告警消息").body(alarmInfo).build();
+        return MessageBody.builder().msg("告警消息").persist(true).body(alarmInfo).build();
     }
 
 
