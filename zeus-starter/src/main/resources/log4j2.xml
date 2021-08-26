@@ -77,6 +77,10 @@
             <appender-ref ref="RollingFileInfoForLog"/>
         </Logger>
 
+        <Logger name="io.ebean" level="INFO" additivity="false">
+            <appender-ref ref="Console"/>
+        </Logger>
+
         <root level="INFO">
             <appender-ref ref="Console"/>
             <appender-ref ref="RollingFileDebug"/>

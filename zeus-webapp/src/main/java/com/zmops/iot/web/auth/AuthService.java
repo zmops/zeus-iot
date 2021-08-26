@@ -37,6 +37,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -112,63 +115,101 @@ public class AuthService {
         return LoginUserDto.buildLoginUser(user, login(user));
     }
 
-    public void getCharts(HttpServletResponse response, String from, String to, List<Long> attrIds, String width, String height) {
-        try {
-            String       cookie  = getCookie();
-            List<String> itemids = getItemIds(attrIds);
+    /**
+     * 获取 数据图形展示
+     *
+     * @param response http响应
+     * @param from     开始时间
+     * @param to       结束时间
+     * @param attrIds  设备属性ID
+     * @param width    图表宽度
+     * @param height   图表高度
+     */
+    public void getCharts(HttpServletResponse response,
+                          String from, String to,
+                          List<Long> attrIds, String width, String height) {
 
-            HttpClient      client         = new HttpClient();
-            PostMethod      postMethod     = new PostMethod("http://" + zbxServerIp + ":" + zbxServerPort + "/zabbix/chart.php?type=0&profileIdx=web.item.graph.filter&profileIdx2=36816&_=v14ede3k");
-            NameValuePair[] nameValuePairs = new NameValuePair[itemids.size() + 4];
-            nameValuePairs[0] = new NameValuePair("from", from);
-            nameValuePairs[1] = new NameValuePair("to", to);
-            nameValuePairs[2] = new NameValuePair("width", width);
-            nameValuePairs[3] = new NameValuePair("height", height);
-            for (int index = 0; index < itemids.size(); index++) {
-                nameValuePairs[4 + index] = new NameValuePair("itemids[" + index + "]", itemids.get(index));
-            }
+        String       cookie  = getCookie();
+        List<String> itemids = getItemIds(attrIds);
 
-            postMethod.setRequestBody(nameValuePairs);
-            postMethod.setRequestHeader("Content_Type", "application/json-rpc");
-            postMethod.setRequestHeader("Cookie", cookie);
+        HttpClient client = new HttpClient();
+        PostMethod postMethod = new PostMethod("http://" + zbxServerIp + ":" + zbxServerPort
+                + "/zabbix/chart.php?type=0&profileIdx=web.item.graph.filter&profileIdx2=36816&_=v14ede3k");
 
-            //执行请求
-            client.executeMethod(postMethod);
-            byte[] responseBody = postMethod.getResponseBody();
-            response.setContentType("image/jpeg");
-            OutputStream out = response.getOutputStream();
-            out.write(responseBody);
-            out.flush();
-            //关闭响应输出流
-            out.close();
+        NameValuePair[] nameValuePairs = new NameValuePair[itemids.size() + 4];
+        nameValuePairs[0] = new NameValuePair("from", from);
+        nameValuePairs[1] = new NameValuePair("to", to);
+        nameValuePairs[2] = new NameValuePair("width", width);
+        nameValuePairs[3] = new NameValuePair("height", height);
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (int index = 0; index < itemids.size(); index++) {
+            nameValuePairs[4 + index] = new NameValuePair("itemids[" + index + "]", itemids.get(index));
         }
+
+        postMethod.setRequestBody(nameValuePairs);
+        postMethod.setRequestHeader("Content_Type", "application/json-rpc");
+        postMethod.setRequestHeader("Cookie", cookie);
+
+        OutputStream out = null;
+        try {
+            client.executeMethod(postMethod);
+            InputStream responseBody = postMethod.getResponseBodyAsStream();
+            response.setContentType("image/jpeg");
+
+            out = response.getOutputStream();
+            out.write(toByteArray(responseBody));
+
+            out.flush();
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        } finally {
+            try {
+                if (null != out) out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
+
+    private static byte[] toByteArray(InputStream input) throws IOException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+        byte[] buffer = new byte[4096];
+        int    n      = 0;
+
+        while (-1 != (n = input.read(buffer))) {
+            output.write(buffer, 0, n);
+        }
+
+        return output.toByteArray();
+    }
+
 
     private List<String> getItemIds(List<Long> attrIds) {
         return new QProductAttribute().select(QProductAttribute.alias().zbxId).attrId.in(attrIds).findSingleAttributeList();
     }
 
-    private String getCookie() throws Exception {
+
+    private String getCookie() {
         HttpClient client     = new HttpClient();
         PostMethod postMethod = new PostMethod("http://" + zbxServerIp + ":" + zbxServerPort + "/zabbix/index.php");
-        //推荐的数据存储方式,类似key-value形式
 
+        //TODO 使用了一个只读权限的访客用户
         NameValuePair namePair      = new NameValuePair("name", "cookie");
         NameValuePair pwdPair       = new NameValuePair("password", "cookie");
         NameValuePair autologinPair = new NameValuePair("autologin", "1");
         NameValuePair enterPair     = new NameValuePair("enter", "Sign in");
-        //构建表单参数
 
         postMethod.setRequestBody(new NameValuePair[]{namePair, pwdPair, autologinPair, enterPair});
         postMethod.setRequestHeader("Content_Type", "application/json");
-        //执行请求
-        client.executeMethod(postMethod);
-        //通过Post/GetMethod对象获取响应头信息
-        String cookie = postMethod.getResponseHeader("Set-Cookie").getValue();
-        return cookie;
+
+        try {
+            client.executeMethod(postMethod);
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+        return postMethod.getResponseHeader("Set-Cookie").getValue();
     }
 
     /**
