@@ -72,9 +72,7 @@
     </appenders>
 
     <loggers>
-        <logger name="com.dtflys" level="WARN"/>
-
-        <Logger name="com.zmops" level="DEBUG" additivity="false">
+        <Logger name="com.zmops" level="INFO" additivity="false">
             <appender-ref ref="Console"/>
             <appender-ref ref="RollingFileInfoForLog"/>
         </Logger>
