@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.dtflys.forest.config.ForestConfiguration;
 import com.zmops.zeus.driver.service.ZbxAction;
 import com.zmops.zeus.driver.service.ZbxHostGroup;
+import com.zmops.zeus.driver.service.ZbxInitService;
 import com.zmops.zeus.driver.service.ZbxScript;
 import lombok.Data;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +34,9 @@ public class BasicSettingsInit {
     @Autowired
     private ZbxAction zbxAction;
 
+    @Autowired
+    private ZbxInitService zbxInitService;
+
     private String zeusServerIp;
     private String zeusServerPort;
     private String zbxApiToken;
@@ -55,6 +60,23 @@ public class BasicSettingsInit {
         return JSON.parseObject(response, ZbxResponseIds.class).getGroupids()[0];
     }
 
+
+    /**
+     * 创建 只读权限用户组
+     *
+     * @param globalHostGroupId 全局主机组ID
+     * @return String
+     */
+    public String createCookieUserGroup(String globalHostGroupId) {
+        String response = zbxInitService.createCookieUserGroup(globalHostGroupId);
+        return JSON.parseObject(response, ZbxResponseIds.class).getUsrgrpids()[0];
+    }
+
+    /**
+     * 创建全局主机组
+     *
+     * @return String
+     */
     public String getGlobalHostGroup() {
         String                    response = zbxHostGroup.getGlobalHostGroup(zbxApiToken);
         List<Map<String, String>> ids      = JSON.parseObject(response, List.class);
@@ -101,5 +123,7 @@ public class BasicSettingsInit {
         String[] groupids;
         String[] scriptids;
         String[] actionids;
+
+        String[] usrgrpids;
     }
 }

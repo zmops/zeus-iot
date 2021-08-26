@@ -39,6 +39,9 @@ public class DeviceSatusScriptInit implements CommandLineRunner {
             groupId = basicSettingsInit.createGlobalHostGroup();
         }
 
+        String userGroupId = basicSettingsInit.createCookieUserGroup(groupId);
+
+
         DB.update(SysConfig.class).where().eq("code", GLOBAL_HOST_GROUP_CODE).asUpdate().set("value", groupId).update();
 
         // 第二步：创建全局回调脚本

@@ -2,6 +2,7 @@ package com.zmops.iot.web.auth;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.convert.Convert;
+import com.dtflys.forest.http.ForestCookie;
 import com.zmops.iot.core.auth.cache.SessionManager;
 import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.core.auth.exception.AuthException;
@@ -21,6 +22,7 @@ import com.zmops.iot.web.log.LogManager;
 import com.zmops.iot.web.log.factory.LogTaskFactory;
 import com.zmops.iot.web.sys.dto.LoginUserDto;
 import com.zmops.iot.web.sys.factory.UserFactory;
+import com.zmops.zeus.driver.service.ZbxCookieGet;
 import com.zmops.zeus.driver.service.ZbxUser;
 import io.ebean.DB;
 import io.ebean.SqlRow;
@@ -34,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.zmops.iot.constant.ConstantsContext.getJwtSecretExpireSec;
 import static com.zmops.iot.constant.ConstantsContext.getTokenHeaderName;
@@ -49,6 +52,9 @@ public class AuthService {
     @Autowired
     private ZbxUser zbxUser;
 
+    @Autowired
+    private ZbxCookieGet zbxCookieGet;
+
 
     /**
      * 用户名 和  密码 登陆
@@ -58,6 +64,18 @@ public class AuthService {
      * @return
      */
     public LoginUserDto login(String username, String password) {
+
+        AtomicReference<ForestCookie> cookieAtomic = new AtomicReference<>(null);
+
+        String param = "name=Admin&password=zabbix&autologin=1&enter=Sign+in";
+
+        zbxCookieGet.getCookie(param, (request, cookies) -> {
+            cookieAtomic.set(cookies.allCookies().get(0));
+        });
+
+        ForestCookie cookie = cookieAtomic.get();
+
+
         SysUser user = new QSysUser().account.eq(username).findOne();
 
         // 账号不存在
@@ -91,7 +109,6 @@ public class AuthService {
         if (i == 0) {
             throw new ServiceException(BizExceptionEnum.ZBX_TOKEN_SAVE_ERROR);
         }
-
 
         return LoginUserDto.buildLoginUser(user, login(user));
     }
