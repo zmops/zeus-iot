@@ -38,9 +38,9 @@ spring:
 forest:
   variables:
     ## Zabbix API IP 和 端口
-    zbxApiUrl: http://${ZEUS_ZABBIX_HOST:127.0.0.1}:${ZEUS_ZABBIX_API_PORT:80}/zabbix/api_jsonrpc.php
+    zbxApiUrl: http://${ZEUS_ZABBIX_HOST:127.0.0.1}:${ZEUS_ZABBIX_PORT:80}/zabbix/api_jsonrpc.php
     zbxServerIp: ${ZEUS_ZABBIX_HOST:127.0.0.1}
-    zbxServerPort: ${ZEUS_ZABBIX_PORT:10051}
+    zbxServerPort: ${ZEUS_ZABBIX_PORT:80}
     zbxApiToken: 0fc68dae932f185a22901cd7d3f1ee55d70353ff03f2a2cdea795043aa4ca2a7
 
     ## 设备触发告警，执行动作回调 IOT-SERVER 处理

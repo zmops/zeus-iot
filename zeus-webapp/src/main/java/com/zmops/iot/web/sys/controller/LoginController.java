@@ -59,4 +59,9 @@ public class LoginController extends BaseController {
         authService.logout();
         return new SuccessResponseData();
     }
+
+    @RequestMapping("/getCookie")
+    public ResponseData getCookie() {
+        return ResponseData.success(authService.getCookie());
+    }
 }

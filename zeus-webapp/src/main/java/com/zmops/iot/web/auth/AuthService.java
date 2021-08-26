@@ -65,17 +65,6 @@ public class AuthService {
      */
     public LoginUserDto login(String username, String password) {
 
-        AtomicReference<ForestCookie> cookieAtomic = new AtomicReference<>(null);
-
-        String param = "name=Admin&password=zabbix&autologin=1&enter=Sign+in";
-
-        zbxInitService.getCookie(param, (request, cookies) -> {
-            cookieAtomic.set(cookies.allCookies().get(0));
-        });
-
-        ForestCookie cookie = cookieAtomic.get();
-
-
         SysUser user = new QSysUser().account.eq(username).findOne();
 
         // 账号不存在
@@ -113,6 +102,18 @@ public class AuthService {
         return LoginUserDto.buildLoginUser(user, login(user));
     }
 
+    public String getCookie() {
+        AtomicReference<ForestCookie> cookieAtomic = new AtomicReference<>(null);
+
+        String param = "name=cookie&password=cookie&autologin=1&enter=Sign+in";
+
+        zbxInitService.getCookie(param, (request, cookies) -> {
+            cookieAtomic.set(cookies.allCookies().get(0));
+        });
+
+        ForestCookie cookie = cookieAtomic.get();
+        return cookie.getValue();
+    }
 
     /**
      * 用户名 登陆

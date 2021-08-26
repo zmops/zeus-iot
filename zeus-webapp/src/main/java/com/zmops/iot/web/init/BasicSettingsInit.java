@@ -7,7 +7,6 @@ import com.zmops.zeus.driver.service.ZbxHostGroup;
 import com.zmops.zeus.driver.service.ZbxInitService;
 import com.zmops.zeus.driver.service.ZbxScript;
 import lombok.Data;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,31 +48,8 @@ public class BasicSettingsInit {
         zbxApiToken = configuration.getVariables().get("zbxApiToken").toString();
     }
 
-
     /**
-     * 创建默认全局主机组
-     *
-     * @return Integer
-     */
-    public String createGlobalHostGroup() {
-        String response = zbxHostGroup.createGlobalHostGroup(zbxApiToken);
-        return JSON.parseObject(response, ZbxResponseIds.class).getGroupids()[0];
-    }
-
-
-    /**
-     * 创建 只读权限用户组
-     *
-     * @param globalHostGroupId 全局主机组ID
-     * @return String
-     */
-    public String createCookieUserGroup(String globalHostGroupId) {
-        String response = zbxInitService.createCookieUserGroup(globalHostGroupId);
-        return JSON.parseObject(response, ZbxResponseIds.class).getUsrgrpids()[0];
-    }
-
-    /**
-     * 创建全局主机组
+     * 查询全局主机组
      *
      * @return String
      */
@@ -86,6 +62,65 @@ public class BasicSettingsInit {
         return null;
     }
 
+    /**
+     * 创建默认全局主机组
+     *
+     * @return Integer
+     */
+    public String createGlobalHostGroup() {
+        String response = zbxHostGroup.createGlobalHostGroup(zbxApiToken);
+        return JSON.parseObject(response, ZbxResponseIds.class).getGroupids()[0];
+    }
+
+    /**
+     * 查询只读权限用户组
+     *
+     * @return String
+     */
+    public String getCookieUserGroup() {
+        String                    response = zbxInitService.getCookieUserGroup(zbxApiToken);
+        List<Map<String, String>> ids      = JSON.parseObject(response, List.class);
+        if (null != ids && ids.size() > 0) {
+            return ids.get(0).get("usrgrpid");
+        }
+        return null;
+    }
+
+    /**
+     * 创建 只读权限用户组
+     *
+     * @param globalHostGroupId 全局主机组ID
+     * @return String
+     */
+    public String createCookieUserGroup(String globalHostGroupId) {
+        String response = zbxInitService.createCookieUserGroup(globalHostGroupId,zbxApiToken);
+        return JSON.parseObject(response, ZbxResponseIds.class).getUsrgrpids()[0];
+    }
+
+    /**
+     * 查询 只读权限用户
+     *
+     * @return String
+     */
+    public String getCookieUser() {
+        String                    response = zbxInitService.getCookieUser(zbxApiToken);
+        List<Map<String, String>> ids      = JSON.parseObject(response, List.class);
+        if (null != ids && ids.size() > 0) {
+            return ids.get(0).get("userid");
+        }
+        return null;
+    }
+
+    /**
+     * 创建 只读权限用户
+     *
+     * @param groupId 只读用户组ID
+     * @return String
+     */
+    public String createCookieUser(String groupId) {
+        String response = zbxInitService.createCookieUser(groupId,zbxApiToken);
+        return JSON.parseObject(response, ZbxResponseIds.class).getUserids()[0];
+    }
 
     public String createOfflineStatusScript() {
         String response = zbxScript.createOfflineStatusScript(zbxApiToken, zeusServerIp, zeusServerPort);
@@ -123,7 +158,7 @@ public class BasicSettingsInit {
         String[] groupids;
         String[] scriptids;
         String[] actionids;
-
+        String[] userids;
         String[] usrgrpids;
     }
 }
