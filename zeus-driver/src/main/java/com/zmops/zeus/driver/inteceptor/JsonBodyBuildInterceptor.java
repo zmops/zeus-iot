@@ -1,6 +1,7 @@
 package com.zmops.zeus.driver.inteceptor;
 
 import com.alibaba.fastjson.JSON;
+import com.dtflys.forest.http.ForestCookies;
 import com.dtflys.forest.http.ForestRequest;
 import com.dtflys.forest.http.ForestResponse;
 import com.dtflys.forest.interceptor.Interceptor;
@@ -48,7 +49,7 @@ public class JsonBodyBuildInterceptor implements Interceptor<String> {
             } else {
                 Annotation[][] paramAnnos = method.getMethod().getParameterAnnotations();
                 for (int i = 0; i < args.length; i++) {
-                    if (paramAnnos[i][0] instanceof ParamName) {
+                    if (paramAnnos[i].length > 0 && paramAnnos[i][0] instanceof ParamName) {
                         ParamName paramAnno = (ParamName) paramAnnos[i][0];
                         paramMap.put(paramAnno.value(), args[i]);
                     }
@@ -79,5 +80,11 @@ public class JsonBodyBuildInterceptor implements Interceptor<String> {
         }
         response.setResult(responseData.getResult());
         Interceptor.super.onSuccess(data, request, response);
+    }
+
+    @Override
+    public void onSaveCookie(ForestRequest request, ForestCookies cookies) {
+        // 获取请求URI的主机名
+        String host = request.getURI().getHost();
     }
 }

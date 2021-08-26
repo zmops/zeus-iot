@@ -4,6 +4,7 @@ import com.dtflys.forest.annotation.BaseRequest;
 import com.dtflys.forest.annotation.Post;
 import com.zmops.zeus.driver.annotation.JsonPath;
 import com.zmops.zeus.driver.annotation.ParamName;
+import com.zmops.zeus.driver.inteceptor.JsonBodyBuildInterceptor;
 
 import java.util.List;
 
@@ -13,7 +14,10 @@ import java.util.List;
  * ZABBIX User 接口
  */
 
-@BaseRequest(baseURL = "${zbxApiUrl}")
+@BaseRequest(
+        baseURL = "${zbxApiUrl}",
+        interceptor = JsonBodyBuildInterceptor.class
+)
 public interface ZbxUser {
 
     /**
@@ -39,7 +43,9 @@ public interface ZbxUser {
      */
     @Post
     @JsonPath("/user/userAdd")
-    String userAdd(@ParamName("name") String name, @ParamName("password") String password, @ParamName("usrGrpId") String usrGrpId);
+    String userAdd(@ParamName("name") String name,
+                   @ParamName("password") String password,
+                   @ParamName("usrGrpId") String usrGrpId);
 
     /**
      * 用户修改
@@ -50,7 +56,8 @@ public interface ZbxUser {
      */
     @Post
     @JsonPath("/user/userUpdate")
-    String userUpdate(@ParamName("userId") String userId, @ParamName("usrGrpId") String usrGrpId);
+    String userUpdate(@ParamName("userId") String userId,
+                      @ParamName("usrGrpId") String usrGrpId);
 
     /**
      * 用户删除
