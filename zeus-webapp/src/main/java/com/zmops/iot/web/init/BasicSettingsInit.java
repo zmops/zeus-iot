@@ -117,9 +117,37 @@ public class BasicSettingsInit {
      * @param groupId 只读用户组ID
      * @return String
      */
-    public String createCookieUser(String groupId) {
-        String response = zbxInitService.createCookieUser(groupId,zbxApiToken);
+    public String createCookieUser(String groupId,String roleId) {
+        String response = zbxInitService.createCookieUser(groupId,zbxApiToken,roleId);
         return JSON.parseObject(response, ZbxResponseIds.class).getUserids()[0];
+    }
+
+    /**
+     * 查询 管理员用户角色
+     *
+     * @return String
+     */
+    public String getAdminRoleId() {
+        String                    response = zbxInitService.getAdminRole(zbxApiToken);
+        List<Map<String, String>> ids      = JSON.parseObject(response, List.class);
+        if (null != ids && ids.size() > 0) {
+            return ids.get(0).get("roleid");
+        }
+        return null;
+    }
+
+    /**
+     * 查询 访客用户角色
+     *
+     * @return String
+     */
+    public String getGuestRoleId() {
+        String                    response = zbxInitService.getGuestRole(zbxApiToken);
+        List<Map<String, String>> ids      = JSON.parseObject(response, List.class);
+        if (null != ids && ids.size() > 0) {
+            return ids.get(0).get("roleid");
+        }
+        return null;
     }
 
     public String createOfflineStatusScript() {

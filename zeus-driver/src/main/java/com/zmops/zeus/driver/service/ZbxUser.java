@@ -45,7 +45,8 @@ public interface ZbxUser {
     @JsonPath("/user/userAdd")
     String userAdd(@ParamName("name") String name,
                    @ParamName("password") String password,
-                   @ParamName("usrGrpId") String usrGrpId);
+                   @ParamName("usrGrpId") String usrGrpId,
+                   @ParamName("roleId") String roleId);
 
     /**
      * 用户修改
