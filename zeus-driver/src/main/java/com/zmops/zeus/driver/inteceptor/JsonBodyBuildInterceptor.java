@@ -1,7 +1,6 @@
 package com.zmops.zeus.driver.inteceptor;
 
 import com.alibaba.fastjson.JSON;
-import com.dtflys.forest.http.ForestCookies;
 import com.dtflys.forest.http.ForestRequest;
 import com.dtflys.forest.http.ForestResponse;
 import com.dtflys.forest.interceptor.Interceptor;
@@ -80,11 +79,5 @@ public class JsonBodyBuildInterceptor implements Interceptor<String> {
         }
         response.setResult(responseData.getResult());
         Interceptor.super.onSuccess(data, request, response);
-    }
-
-    @Override
-    public void onSaveCookie(ForestRequest request, ForestCookies cookies) {
-        // 获取请求URI的主机名
-        String host = request.getURI().getHost();
     }
 }
