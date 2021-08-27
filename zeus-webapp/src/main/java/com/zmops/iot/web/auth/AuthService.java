@@ -12,7 +12,6 @@ import com.zmops.iot.core.auth.model.LoginUser;
 import com.zmops.iot.core.util.HttpContext;
 import com.zmops.iot.core.util.RsaUtil;
 import com.zmops.iot.core.util.SaltUtil;
-import com.zmops.iot.domain.product.query.QProductAttribute;
 import com.zmops.iot.domain.sys.SysUser;
 import com.zmops.iot.domain.sys.query.QSysUser;
 import com.zmops.iot.model.exception.ServiceException;
@@ -22,25 +21,16 @@ import com.zmops.iot.web.log.LogManager;
 import com.zmops.iot.web.log.factory.LogTaskFactory;
 import com.zmops.iot.web.sys.dto.LoginUserDto;
 import com.zmops.iot.web.sys.factory.UserFactory;
-import com.zmops.zeus.driver.service.ZbxInitService;
 import com.zmops.zeus.driver.service.ZbxUser;
 import io.ebean.DB;
 import io.ebean.SqlRow;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -58,15 +48,6 @@ public class AuthService {
 
     @Autowired
     private ZbxUser zbxUser;
-
-    @Autowired
-    private ZbxInitService zbxInitService;
-
-    @Value("${forest.variables.zbxServerIp}")
-    private String zbxServerIp;
-
-    @Value("${forest.variables.zbxServerPort}")
-    private String zbxServerPort;
 
 
     /**
@@ -113,103 +94,6 @@ public class AuthService {
         }
 
         return LoginUserDto.buildLoginUser(user, login(user));
-    }
-
-    /**
-     * 获取 数据图形展示
-     *
-     * @param response http响应
-     * @param from     开始时间
-     * @param to       结束时间
-     * @param attrIds  设备属性ID
-     * @param width    图表宽度
-     * @param height   图表高度
-     */
-    public void getCharts(HttpServletResponse response,
-                          String from, String to,
-                          List<Long> attrIds, String width, String height) {
-
-        String       cookie  = getCookie();
-        List<String> itemids = getItemIds(attrIds);
-
-        HttpClient client = new HttpClient();
-        PostMethod postMethod = new PostMethod("http://" + zbxServerIp + ":" + zbxServerPort
-                + "/zabbix/chart.php?type=0&profileIdx=web.item.graph.filter&profileIdx2=36816&_=v14ede3k");
-
-        NameValuePair[] nameValuePairs = new NameValuePair[itemids.size() + 4];
-        nameValuePairs[0] = new NameValuePair("from", from);
-        nameValuePairs[1] = new NameValuePair("to", to);
-        nameValuePairs[2] = new NameValuePair("width", width);
-        nameValuePairs[3] = new NameValuePair("height", height);
-
-        for (int index = 0; index < itemids.size(); index++) {
-            nameValuePairs[4 + index] = new NameValuePair("itemids[" + index + "]", itemids.get(index));
-        }
-
-        postMethod.setRequestBody(nameValuePairs);
-        postMethod.setRequestHeader("Content_Type", "application/json-rpc");
-        postMethod.setRequestHeader("Cookie", cookie);
-
-        OutputStream out = null;
-        try {
-            client.executeMethod(postMethod);
-            InputStream responseBody = postMethod.getResponseBodyAsStream();
-            response.setContentType("image/jpeg");
-
-            out = response.getOutputStream();
-            out.write(toByteArray(responseBody));
-
-            out.flush();
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        } finally {
-            try {
-                if (null != out) out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
-
-    private static byte[] toByteArray(InputStream input) throws IOException {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-
-        byte[] buffer = new byte[4096];
-        int    n      = 0;
-
-        while (-1 != (n = input.read(buffer))) {
-            output.write(buffer, 0, n);
-        }
-
-        return output.toByteArray();
-    }
-
-
-    private List<String> getItemIds(List<Long> attrIds) {
-        return new QProductAttribute().select(QProductAttribute.alias().zbxId).attrId.in(attrIds).findSingleAttributeList();
-    }
-
-
-    private String getCookie() {
-        HttpClient client     = new HttpClient();
-        PostMethod postMethod = new PostMethod("http://" + zbxServerIp + ":" + zbxServerPort + "/zabbix/index.php");
-
-        //TODO 使用了一个只读权限的访客用户
-        NameValuePair namePair      = new NameValuePair("name", "cookie");
-        NameValuePair pwdPair       = new NameValuePair("password", "cookie");
-        NameValuePair autologinPair = new NameValuePair("autologin", "1");
-        NameValuePair enterPair     = new NameValuePair("enter", "Sign in");
-
-        postMethod.setRequestBody(new NameValuePair[]{namePair, pwdPair, autologinPair, enterPair});
-        postMethod.setRequestHeader("Content_Type", "application/json");
-
-        try {
-            client.executeMethod(postMethod);
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        }
-        return postMethod.getResponseHeader("Set-Cookie").getValue();
     }
 
     /**

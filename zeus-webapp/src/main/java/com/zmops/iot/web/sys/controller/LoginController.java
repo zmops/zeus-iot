@@ -62,13 +62,4 @@ public class LoginController extends BaseController {
         return new SuccessResponseData();
     }
 
-    @RequestMapping("/getCharts")
-    public void getCookie(HttpServletResponse response,
-                          @RequestParam("from") String from,
-                          @RequestParam("to") String to,
-                          @RequestParam("attrIds") List<Long> attrIds,
-                          @RequestParam("width") String width,
-                          @RequestParam("height") String height) {
-        authService.getCharts(response,from,to,attrIds,width,height);
-    }
 }
