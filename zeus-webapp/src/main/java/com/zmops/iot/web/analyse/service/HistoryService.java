@@ -32,7 +32,9 @@ public class HistoryService {
     ZbxHistoryGet zbxHistoryGet;
 
     public List<LatestDto> queryHistory(HistoryParam historyParam) {
-        return queryHistory(historyParam.getDeviceId(), historyParam.getAttrIds(), historyParam.getTimeFrom(), historyParam.getTimeTill());
+        return queryHistory(historyParam.getDeviceId(), historyParam.getAttrIds(),
+                LocalDateTimeUtils.getSecondsByStr(historyParam.getTimeFrom()),
+                LocalDateTimeUtils.getSecondsByStr(historyParam.getTimeTill()));
     }
 
     public List<LatestDto> queryHistory(Long deviceId, List<Long> attrIds, Long timeFrom, Long timeTill) {

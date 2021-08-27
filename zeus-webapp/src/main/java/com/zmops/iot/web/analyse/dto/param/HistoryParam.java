@@ -16,7 +16,7 @@ public class HistoryParam {
 
     private List<Long> attrIds;
 
-    private Long timeFrom;
+    private String timeFrom;
 
-    private Long timeTill;
+    private String timeTill;
 }

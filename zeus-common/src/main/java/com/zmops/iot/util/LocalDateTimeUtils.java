@@ -43,6 +43,11 @@ public class LocalDateTimeUtils {
         return time.atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
     }
 
+    // 获取指定日期的秒
+    public static Long getSecondsByStr(String date) {
+        return getSecondsByTime(dateToStamp(date));
+    }
+
     /**
      * 根据秒获取时间
      *
@@ -178,6 +183,6 @@ public class LocalDateTimeUtils {
     }
 
     public static void main(String[] args) {
-        System.out.println(formatTime(dateToStamp("2021-08-18T14:25:38.059")));
+        System.out.println(getSecondsByStr("2021-08-18T14:25:38.059"));
     }
 }
