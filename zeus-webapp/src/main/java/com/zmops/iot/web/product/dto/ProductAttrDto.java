@@ -64,4 +64,9 @@ public class ProductAttrDto implements BaseDto {
     @CachedValue(type = DicType.SysUserName)
     private Long updateUser;
 
+    private String clock;
+
+    private String value;
+
+
 }

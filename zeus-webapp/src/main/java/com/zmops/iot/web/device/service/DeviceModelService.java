@@ -4,13 +4,13 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.query.QDevice;
-import com.zmops.iot.domain.product.Product;
 import com.zmops.iot.domain.product.ProductAttribute;
-import com.zmops.iot.domain.product.query.QProduct;
 import com.zmops.iot.domain.product.query.QProductAttribute;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
+import com.zmops.iot.web.analyse.dto.LatestDto;
+import com.zmops.iot.web.analyse.service.LatestService;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductAttr;
 import com.zmops.iot.web.product.dto.ProductAttrDto;
@@ -36,6 +36,9 @@ public class DeviceModelService {
     @Autowired
     private ZbxItem zbxItem;
 
+    @Autowired
+    LatestService latestService;
+
     /**
      * 设备属性分页列表
      *
@@ -45,9 +48,8 @@ public class DeviceModelService {
     public Pager<ProductAttrDto> prodModelAttributeList(ProductAttrParam productAttr) {
         QProductAttribute qProductAttribute = new QProductAttribute();
 
-        if (null != productAttr.getProdId()) {
-            qProductAttribute.productId.eq(productAttr.getProdId());
-        }
+        qProductAttribute.productId.eq(productAttr.getProdId());
+
         if (ToolUtil.isNotEmpty(productAttr.getAttrName())) {
             qProductAttribute.name.contains(productAttr.getAttrName());
         }
@@ -57,6 +59,19 @@ public class DeviceModelService {
 
         List<ProductAttrDto> pagedList = qProductAttribute.setFirstRow((productAttr.getPage() - 1) * productAttr.getMaxRow())
                 .setMaxRows(productAttr.getMaxRow()).orderBy(" create_time desc").asDto(ProductAttrDto.class).findList();
+
+        //查询最新数据
+        List<Long>           attrIds    = pagedList.parallelStream().map(ProductAttrDto::getAttrId).collect(Collectors.toList());
+        List<LatestDto>      latestDtos = latestService.qeuryLatest(productAttr.getProdId(), attrIds);
+        Map<Long, LatestDto> map        = latestDtos.parallelStream().collect(Collectors.toMap(LatestDto::getAttrId, o -> o));
+
+        pagedList.forEach(productAttrDto -> {
+            if (null != map.get(productAttrDto.getAttrId())) {
+                productAttrDto.setClock(map.get(productAttrDto.getAttrId()).getClock());
+                productAttrDto.setValue(map.get(productAttrDto.getAttrId()).getValue());
+            }
+        });
+
         int count = qProductAttribute.findCount();
         return new Pager<>(pagedList, count);
     }

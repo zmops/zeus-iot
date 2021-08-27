@@ -5,6 +5,7 @@ import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.ProductAttribute;
 import com.zmops.iot.domain.product.query.QProductAttribute;
+import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.LocalDateTimeUtils;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.analyse.dto.LatestDto;
@@ -31,10 +32,13 @@ public class HistoryService {
     @Autowired
     ZbxHistoryGet zbxHistoryGet;
 
-    public List<LatestDto> queryHistory(HistoryParam historyParam) {
-        return queryHistory(historyParam.getDeviceId(), historyParam.getAttrIds(),
+    public Pager<LatestDto> queryHistory(HistoryParam historyParam) {
+        List<LatestDto> latestDtos = queryHistory(historyParam.getDeviceId(), historyParam.getAttrIds(),
                 LocalDateTimeUtils.getSecondsByStr(historyParam.getTimeFrom()),
                 LocalDateTimeUtils.getSecondsByStr(historyParam.getTimeTill()));
+        List<LatestDto> collect = latestDtos.stream().skip((historyParam.getMaxRow() - 1) * historyParam.getPage())
+                .limit(historyParam.getMaxRow()).collect(Collectors.toList());
+        return new Pager<>(collect,latestDtos.size());
     }
 
     public List<LatestDto> queryHistory(Long deviceId, List<Long> attrIds, Long timeFrom, Long timeTill) {

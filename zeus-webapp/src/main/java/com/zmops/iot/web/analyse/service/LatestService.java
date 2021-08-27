@@ -5,6 +5,7 @@ import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.ProductAttribute;
 import com.zmops.iot.domain.product.query.QProductAttribute;
+import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.LocalDateTimeUtils;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.analyse.dto.LatestDto;
@@ -36,9 +37,11 @@ public class LatestService {
      * @param latestParam
      * @return
      */
-    public List<LatestDto> qeuryLatest(LatestParam latestParam) {
+    public Pager<LatestDto> qeuryLatest(LatestParam latestParam) {
         List<LatestDto> latestDtos = qeuryLatest(latestParam.getDeviceId(), latestParam.getAttrIds());
-        return latestDtos;
+        List<LatestDto> collect = latestDtos.stream().skip((latestParam.getMaxRow() - 1) * latestParam.getPage())
+                .limit(latestParam.getMaxRow()).collect(Collectors.toList());
+        return new Pager<>(collect,latestDtos.size());
     }
 
     public List<LatestDto> qeuryLatest(Long deviceId, List<Long> attrIds) {

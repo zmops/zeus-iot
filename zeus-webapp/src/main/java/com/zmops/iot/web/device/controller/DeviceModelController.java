@@ -41,7 +41,7 @@ public class DeviceModelController {
      * @return ResponseData
      */
     @RequestMapping("/getAttrTrapperByPage")
-    public Pager<ProductAttrDto> prodModelAttributeList(@RequestBody ProductAttrParam productAttr) {
+    public Pager<ProductAttrDto> prodModelAttributeList(@Validated(BaseEntity.Get.class) @RequestBody ProductAttrParam productAttr) {
         return deviceModelService.prodModelAttributeList(productAttr);
     }
 

@@ -1,6 +1,7 @@
 package com.zmops.iot.web.analyse.controller;
 
-import com.zmops.iot.model.response.ResponseData;
+import com.zmops.iot.model.page.Pager;
+import com.zmops.iot.web.analyse.dto.LatestDto;
 import com.zmops.iot.web.analyse.dto.param.HistoryParam;
 import com.zmops.iot.web.analyse.service.HistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class HistoryController {
     HistoryService historyService;
 
     @RequestMapping("/query")
-    public ResponseData qeuryHistory(@Validated @RequestBody HistoryParam historyParam) {
-        return ResponseData.success(historyService.queryHistory(historyParam));
+    public Pager<LatestDto> qeuryHistory(@Validated @RequestBody HistoryParam historyParam) {
+        return historyService.queryHistory(historyParam);
     }
 }
