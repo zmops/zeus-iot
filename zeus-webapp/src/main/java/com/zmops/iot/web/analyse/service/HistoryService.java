@@ -66,6 +66,7 @@ public class HistoryService {
         }
 
         latestDtos.forEach(latestDto -> {
+            latestDto.setClock(LocalDateTimeUtils.convertTimeToString(Long.parseLong(latestDto.getClock()), "yyyy-MM-dd HH:mm:ss"));
             if (null != itemIdMap.get(latestDto.getItemid())) {
                 latestDto.setName(itemIdMap.get(latestDto.getItemid()).getName());
                 latestDto.setAttrId(itemIdMap.get(latestDto.getItemid()).getAttrId());

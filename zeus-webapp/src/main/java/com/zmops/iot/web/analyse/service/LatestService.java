@@ -5,6 +5,7 @@ import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.ProductAttribute;
 import com.zmops.iot.domain.product.query.QProductAttribute;
+import com.zmops.iot.util.LocalDateTimeUtils;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.analyse.dto.LatestDto;
 import com.zmops.iot.web.analyse.dto.param.LatestParam;
@@ -67,6 +68,7 @@ public class LatestService {
         }
 
         latestDtos.forEach(latestDto -> {
+            latestDto.setClock(LocalDateTimeUtils.convertTimeToString(Long.parseLong(latestDto.getClock()), "yyyy-MM-dd HH:mm:ss"));
             if (null != itemIdMap.get(latestDto.getItemid())) {
                 latestDto.setName(itemIdMap.get(latestDto.getItemid()).getName());
                 latestDto.setAttrId(itemIdMap.get(latestDto.getItemid()).getAttrId());

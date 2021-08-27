@@ -80,6 +80,7 @@ public class HomeService {
                 7, ChronoUnit.DAYS)), LocalDateTimeUtils.getSecondsByTime(LocalDateTime.now()));
 
         latestDtos.forEach(latestDto -> {
+            latestDto.setClock(LocalDateTimeUtils.convertTimeToString(Long.parseLong(latestDto.getClock()), "yyyy-MM-dd HH:mm:ss"));
             if (null != ITEM_Map.get(latestDto.getItemid())) {
                 latestDto.setName(ITEM_Map.get(latestDto.getItemid()));
             }
@@ -131,7 +132,7 @@ public class HomeService {
 
         HttpClient client = new HttpClient();
         PostMethod postMethod = new PostMethod("http://" + zbxServerIp + ":" + zbxServerPort
-                + "/zabbix/chart.php?type=0&profileIdx=web.item.graph.filter&profileIdx2=36816&_=v14ede3k");
+                + "/zabbix/chart.php?type=0&profileIdx=web.item.graph.filter");
 
         NameValuePair[] nameValuePairs = new NameValuePair[itemids.size() + 4];
         nameValuePairs[0] = new NameValuePair("from", from);
