@@ -6,7 +6,6 @@ import com.zmops.iot.constant.ConstantsContext;
 import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.core.auth.exception.enums.AuthExceptionEnum;
 import com.zmops.iot.core.auth.model.LoginUser;
-import com.zmops.iot.core.util.RsaUtil;
 import com.zmops.iot.core.util.SaltUtil;
 import com.zmops.iot.domain.sys.SysUser;
 import com.zmops.iot.domain.sys.query.QSysRole;
@@ -22,6 +21,7 @@ import com.zmops.iot.web.sys.factory.UserFactory;
 import com.zmops.zeus.driver.service.ZbxUser;
 import io.ebean.DB;
 import io.ebean.DtoQuery;
+import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.zmops.iot.web.init.DeviceSatusScriptInit.GLOBAL_ADMIN_ROLE_CODE;
-import static com.zmops.iot.web.init.DeviceSatusScriptInit.GLOBAL_HOST_GROUP_CODE;
 
 /**
  * @author yefei
@@ -57,8 +56,11 @@ public class SysUserService implements CommandLineRunner {
      */
     public Pager<UserDto> userList(UserParam userParam) {
         QSysUser qSysUser = new QSysUser();
-        StringBuilder sql = new StringBuilder("select u.account, u.name, u.email, u.phone, u.role_id,r.name role_name," +
-                "u.user_group_id,g.group_name user_group_name, u.status, u.create_user, u.update_user, u.create_time, u.update_time, u.user_id FROM sys_user u");
+        StringBuilder sql = new StringBuilder(
+                "select u.account, u.name, u.email, u.phone, u.role_id,r.name role_name," +
+                        "u.user_group_id,g.group_name user_group_name, u.status, u.create_user, " +
+                        "u.update_user, u.create_time, u.update_time, u.user_id FROM sys_user u");
+
         sql.append(" LEFT JOIN sys_role r ON r.role_id = u.role_id ");
         sql.append(" LEFT JOIN sys_user_group g ON g.user_group_id = u.user_group_id ");
 
@@ -74,7 +76,9 @@ public class SysUserService implements CommandLineRunner {
             dto.setParameter("%" + userParam.getName() + "%");
         }
         List<UserDto> pagedList = dto.setFirstRow((userParam.getPage() - 1) * userParam.getMaxRow()).setMaxRows(userParam.getMaxRow()).findList();
-        int           count     = qSysUser.findCount();
+
+        int count = qSysUser.findCount();
+
         return new Pager<>(pagedList, count);
     }
 
@@ -92,7 +96,7 @@ public class SysUserService implements CommandLineRunner {
         String password   = user.getPassword();
         String decryptPwd = "";
         try {
-            password = RsaUtil.decryptPwd(password);
+            password = new String(Hex.decodeHex(password));
             decryptPwd = password;
         } catch (Exception e) {
             throw new ServiceException(BizExceptionEnum.PWD_DECRYPT_ERR);
@@ -102,13 +106,18 @@ public class SysUserService implements CommandLineRunner {
         password = SaltUtil.md5Encrypt(password, salt);
 
         SysUser newUser = UserFactory.createUser(user, password, salt);
+
         //取对应的ZBX用户组ID
-        String       usrZbxId = sysUserGroupService.getZabUsrGrpId(user.getUserGroupId());
-        JSONObject result   = JSONObject.parseObject(zbxUser.userAdd(user.getAccount(), decryptPwd, usrZbxId, ConstantsContext.getConstntsMap().get(GLOBAL_ADMIN_ROLE_CODE).toString()));
-        JSONArray  userids  = result.getJSONArray("userids");
+        String usrZbxId = sysUserGroupService.getZabUsrGrpId(user.getUserGroupId());
+        JSONObject result = JSONObject.parseObject(
+                zbxUser.userAdd(user.getAccount(), decryptPwd, usrZbxId, ConstantsContext.getConstntsMap().get(GLOBAL_ADMIN_ROLE_CODE).toString()));
+
+        JSONArray userids = result.getJSONArray("userids");
         newUser.setZbxId(String.valueOf(userids.get(0)));
+
         DB.save(newUser);
         updateUserCache();
+
         return newUser;
     }
 
@@ -170,7 +179,7 @@ public class SysUserService implements CommandLineRunner {
     /**
      * 检查所选角色是否存在
      *
-     * @param roleId
+     * @param roleId 角色ID
      */
     private void checkByRole(Long roleId) {
         int count = new QSysRole().roleId.eq(roleId).findCount();
@@ -182,8 +191,8 @@ public class SysUserService implements CommandLineRunner {
     /**
      * 修改密码
      *
-     * @param oldPassword
-     * @param newPassword
+     * @param oldPassword String
+     * @param newPassword String
      */
     public void changePwd(String oldPassword, String newPassword) {
         LoginUser loginUser = LoginContextHolder.getContext().getUser();
@@ -194,8 +203,8 @@ public class SysUserService implements CommandLineRunner {
         SysUser user = new QSysUser().userId.eq(loginUser.getId()).findOne();
 
         try {
-            oldPassword = RsaUtil.decryptPwd(oldPassword);
-            newPassword = RsaUtil.decryptPwd(newPassword);
+            oldPassword = new String(Hex.decodeHex(oldPassword));
+            newPassword = new String(Hex.decodeHex(newPassword));
         } catch (Exception e) {
             throw new ServiceException(BizExceptionEnum.PWD_DECRYPT_ERR);
         }

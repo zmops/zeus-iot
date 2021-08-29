@@ -24,6 +24,8 @@ import com.zmops.iot.web.sys.factory.UserFactory;
 import com.zmops.zeus.driver.service.ZbxUser;
 import io.ebean.DB;
 import io.ebean.SqlRow;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -73,8 +76,8 @@ public class AuthService {
 
         //验证账号密码是否正确
         try {
-            password = RsaUtil.decryptPwd(password);
-        } catch (Exception e) {
+            password = new String(Hex.decodeHex(password));
+        } catch (DecoderException e) {
             throw new AuthException(AuthExceptionEnum.USERNAME_PWD_ERROR);
         }
 
