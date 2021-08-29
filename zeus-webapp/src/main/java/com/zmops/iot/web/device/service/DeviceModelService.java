@@ -147,15 +147,18 @@ public class DeviceModelService {
     }
 
     private ProductAttribute buildProdAttribute(ProductAttribute prodAttribute, ProductAttr productAttr) {
+        if(null == prodAttribute.getTemplateId()){
+            prodAttribute.setName(productAttr.getAttrName());
+            prodAttribute.setKey(productAttr.getKey());
+            prodAttribute.setSource(productAttr.getSource());
+            prodAttribute.setUnits(productAttr.getUnits());
+            prodAttribute.setDepAttrId(productAttr.getDepAttrId());
+            prodAttribute.setValueType(productAttr.getValueType());
+        }
         prodAttribute.setProductId(productAttr.getProductId());
-        prodAttribute.setName(productAttr.getAttrName());
-        prodAttribute.setKey(productAttr.getKey());
-        prodAttribute.setSource(productAttr.getSource());
-        prodAttribute.setUnits(productAttr.getUnits());
         prodAttribute.setRemark(productAttr.getRemark());
-        prodAttribute.setValueType(productAttr.getValueType());
         prodAttribute.setAttrId(productAttr.getAttrId());
-        prodAttribute.setDepAttrId(productAttr.getDepAttrId());
+
         return prodAttribute;
     }
 
