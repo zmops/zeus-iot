@@ -1,3 +1,6 @@
 [submodule "zeus-iot-ui"]
 	path = zeus-iot-ui
 	url = https://github.com/zmops/zeus-iot-ui.git
+[submodule "camel-zabbix-agent"]
+	path = camel-zabbix-agent
+	url = https://github.com/zmops/camel-zabbix-agent.git
