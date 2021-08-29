@@ -124,7 +124,7 @@ public class LocalDateTimeUtils {
     /*
      * 时间戳转 LocalDateTime
      */
-    public static LocalDateTime convertDateToLocalDateTime(Long time) {
+    public static LocalDateTime convertDateToLocalDateTime(Integer time) {
         if (time == null) {
             return null;
         }

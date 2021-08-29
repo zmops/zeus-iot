@@ -61,6 +61,10 @@ public class HomeService {
 
     private static Map<String, String> ITEM_Map = new ConcurrentHashMap<>(5);
 
+    private static String COOKIE = "";
+
+    private static LocalDateTime COOKIE_TIME;
+
     //Zbx 指标取数速率 key
     private static final String KEY = "zabbix[wcache,values";
 
@@ -80,7 +84,7 @@ public class HomeService {
                 7, ChronoUnit.DAYS)), LocalDateTimeUtils.getSecondsByTime(LocalDateTime.now()));
 
         latestDtos.forEach(latestDto -> {
-            latestDto.setClock(LocalDateTimeUtils.convertTimeToString(Long.parseLong(latestDto.getClock()), "yyyy-MM-dd HH:mm:ss"));
+            latestDto.setClock(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(latestDto.getClock()), "yyyy-MM-dd HH:mm:ss"));
             if (null != ITEM_Map.get(latestDto.getItemid())) {
                 latestDto.setName(ITEM_Map.get(latestDto.getItemid()));
             }
@@ -109,6 +113,9 @@ public class HomeService {
     }
 
     private static String formatName(String name) {
+        if (name.length() < 53) {
+            return "avg";
+        }
         return name.substring(35, name.length() - 18);
     }
 
@@ -126,8 +133,11 @@ public class HomeService {
     public void getCharts(HttpServletResponse response,
                           String from, String to,
                           List<Long> attrIds, String width, String height) {
+        if (ToolUtil.isEmpty(COOKIE) ||
+                LocalDateTimeUtils.betweenTwoTime(COOKIE_TIME, LocalDateTime.now(), ChronoUnit.DAYS) >= 30) {
+            getCookie();
+        }
 
-        String       cookie  = getCookie();
         List<String> itemids = getItemIds(attrIds);
 
         HttpClient client = new HttpClient();
@@ -146,7 +156,7 @@ public class HomeService {
 
         postMethod.setRequestBody(nameValuePairs);
         postMethod.setRequestHeader("Content_Type", "application/json-rpc");
-        postMethod.setRequestHeader("Cookie", cookie);
+        postMethod.setRequestHeader("Cookie", COOKIE);
 
         OutputStream out = null;
         try {
@@ -162,7 +172,9 @@ public class HomeService {
             ioException.printStackTrace();
         } finally {
             try {
-                if (null != out) out.close();
+                if (null != out) {
+                    out.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -189,7 +201,7 @@ public class HomeService {
     }
 
 
-    private String getCookie() {
+    private void getCookie() {
         HttpClient client     = new HttpClient();
         PostMethod postMethod = new PostMethod("http://" + zbxServerIp + ":" + zbxServerPort + "/zabbix/index.php");
 
@@ -207,6 +219,7 @@ public class HomeService {
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
-        return postMethod.getResponseHeader("Set-Cookie").getValue();
+        COOKIE = postMethod.getResponseHeader("Set-Cookie").getValue();
+        COOKIE_TIME = LocalDateTime.now();
     }
 }
