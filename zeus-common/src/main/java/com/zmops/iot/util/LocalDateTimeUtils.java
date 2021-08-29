@@ -141,6 +141,16 @@ public class LocalDateTimeUtils {
         return LocalDateTimeUtils.formatTime(LocalDateTimeUtils.getLDTByMilliSeconds(time), pattern);
     }
 
+    /*
+     * 秒转 String
+     */
+    public static String convertTimeToString(Integer time, String pattern) {
+        if (time == null) {
+            return null;
+        }
+        return LocalDateTimeUtils.formatTime(LocalDateTimeUtils.getLDTBySeconds(time), pattern);
+    }
+
     public static LocalDateTime dateToStamp(String str) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {

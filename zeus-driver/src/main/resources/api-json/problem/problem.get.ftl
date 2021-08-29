@@ -11,6 +11,9 @@
         <#if hostId??>
             "hostids":"${hostId}"
         </#if>
+        "filter":{
+            "source":"0"
+        },
         "sortorder": "DESC"
     },
     "auth": "${userAuth}",
