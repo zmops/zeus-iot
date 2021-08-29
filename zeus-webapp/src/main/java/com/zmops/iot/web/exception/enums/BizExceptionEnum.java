@@ -146,6 +146,12 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     DEVICE_NOT_EXISTS(1502, "设备不存在"),
 
     /**
+     * 服务相关
+     */
+    SERVICE_EXISTS(1601,"服务已存在"),
+    SERVICE_NOT_EXISTS(1602,"服务不存在"),
+
+    /**
      * 租户相关的异常
      */
     AUTH_REQUEST_ERROR(400, "账号密码错误");

@@ -1,5 +1,12 @@
 package com.zmops.iot.web.product.controller;
 
+import com.zmops.iot.model.page.Pager;
+import com.zmops.iot.model.response.ResponseData;
+import com.zmops.iot.web.product.dto.ProductServiceDto;
+import com.zmops.iot.web.product.dto.param.ProductSvcParam;
+import com.zmops.iot.web.product.service.ProductSvcService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,5 +20,48 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/product/service")
 public class ProductServiceController {
 
+    @Autowired
+    ProductSvcService productSvcService;
 
+    /**
+     * 服务分页列表
+     */
+    @RequestMapping("/getServiceByPage")
+    public Pager<ProductServiceDto> getServiceByPage(@RequestBody ProductSvcParam productSvcParam) {
+        return productSvcService.getServiceByPage(productSvcParam);
+    }
+
+    /**
+     * 服务列表
+     */
+    @RequestMapping("/list")
+    public ResponseData list(@RequestBody ProductSvcParam productSvcParam) {
+        return ResponseData.success(productSvcService.list(productSvcParam));
+    }
+
+
+    /**
+     * 服务创建
+     */
+    @RequestMapping("/create")
+    public ResponseData create(@RequestBody ProductServiceDto productServiceDto) {
+        return ResponseData.success(productSvcService.create(productServiceDto));
+    }
+
+    /**
+     * 服务修改
+     */
+    @RequestMapping("/update")
+    public ResponseData update(@RequestBody ProductServiceDto productServiceDto) {
+        return ResponseData.success(productSvcService.update(productServiceDto));
+    }
+
+    /**
+     * 服务删除
+     */
+    @RequestMapping("/delete")
+    public ResponseData delete(@RequestBody ProductServiceDto productServiceDto) {
+        productSvcService.delete(productServiceDto.getIds());
+        return ResponseData.success(productServiceDto.getIds());
+    }
 }
