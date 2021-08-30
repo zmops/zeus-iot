@@ -6,26 +6,23 @@ import com.zmops.iot.async.executor.Async;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.Product;
 import com.zmops.iot.domain.product.ProductAttribute;
-import com.zmops.iot.domain.product.ProductType;
 import com.zmops.iot.domain.product.query.QProduct;
 import com.zmops.iot.domain.product.query.QProductAttribute;
-import com.zmops.iot.domain.product.query.QProductType;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
-import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductAttr;
 import com.zmops.iot.web.product.dto.ProductAttrDto;
 import com.zmops.iot.web.product.dto.ProductTag;
 import com.zmops.iot.web.product.dto.param.ProductAttrParam;
+import com.zmops.iot.web.product.service.work.AsyncAttrZbxIdWorker;
 import com.zmops.iot.web.product.service.work.SaveProdAttrWorker;
 import com.zmops.iot.web.product.service.work.UpdateAttributeWorker;
 import com.zmops.zeus.driver.entity.ZbxProcessingStep;
 import com.zmops.zeus.driver.service.ZbxItem;
 import io.ebean.DB;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -42,6 +39,9 @@ public class ProductModelService {
 
     @Autowired
     SaveProdAttrWorker saveProdAttrWorker;
+
+    @Autowired
+    AsyncAttrZbxIdWorker asyncAttrZbxIdWorker;
 
     @Autowired
     UpdateAttributeWorker updateProdAttrWorker;
@@ -138,8 +138,11 @@ public class ProductModelService {
         buildProdAttribute(productAttribute, productAttr);
         productAttribute.setZbxId(zbxId);
         productAttribute.save();
+        productAttr.setAttrId(productAttribute.getAttrId());
 
-        WorkerWrapper<ProductAttr, Boolean> saveProdAttrWork = WorkerWrapper.<ProductAttr, Boolean>builder().worker(saveProdAttrWorker).build();
+
+        WorkerWrapper<ProductAttr, Boolean> asyncAttrZbxIdWork = WorkerWrapper.<ProductAttr, Boolean>builder().worker(asyncAttrZbxIdWorker).build();
+        WorkerWrapper<ProductAttr, Boolean> saveProdAttrWork = WorkerWrapper.<ProductAttr, Boolean>builder().worker(saveProdAttrWorker).nextOf(asyncAttrZbxIdWork).build();
 
         try {
             Async.work(100, saveProdAttrWork).awaitFinish();

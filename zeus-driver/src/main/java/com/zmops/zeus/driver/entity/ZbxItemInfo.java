@@ -25,4 +25,12 @@ public class ZbxItemInfo {
     private String valuemapid;
 
     private String interfaceid;
+
+    private HostInfo hosts;
+
+    @Data
+    public static class HostInfo {
+        private String hostid;
+        private String host;
+    }
 }

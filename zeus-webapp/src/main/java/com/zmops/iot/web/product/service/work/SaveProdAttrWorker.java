@@ -41,6 +41,7 @@ public class SaveProdAttrWorker implements IWorker<ProductAttr, Boolean> {
             ToolUtil.copyProperties(productAttr, productAttrbute);
             productAttrbute.setAttrId(IdUtil.getSnowflake().nextId());
             productAttrbute.setProductId(deviceId);
+            productAttrbute.setTemplateId(productAttr.getAttrId());
             productAttributeList.add(productAttrbute);
         }
         DB.saveAll(productAttributeList);

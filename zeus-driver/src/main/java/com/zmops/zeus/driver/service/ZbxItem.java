@@ -91,7 +91,7 @@ public interface ZbxItem {
     String getItemInfo(@ParamName("itemId") String itemId, @ParamName("hostid") String hostid);
 
     /**
-     * 根据item name 获取 ITEM 信息
+     * 根据item key 获取 ITEM 信息
      *
      * @param key key
      * @return String
@@ -99,4 +99,14 @@ public interface ZbxItem {
     @Post
     @JsonPath("/item/item.get")
     String getItemList(@ParamName("key") String key, @ParamName("hostid") String hostid);
+
+    /**
+     * 根据item name 获取 ITEM 信息
+     *
+     * @param name name
+     * @return String
+     */
+    @Post
+    @JsonPath("/item/name/item.get")
+    String getItemListByName(@ParamName("name") String name);
 }
