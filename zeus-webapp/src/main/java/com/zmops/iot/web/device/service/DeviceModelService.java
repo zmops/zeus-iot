@@ -63,7 +63,7 @@ public class DeviceModelService {
         //查询最新数据
         List<Long>           attrIds    = pagedList.parallelStream().map(ProductAttrDto::getAttrId).collect(Collectors.toList());
         List<LatestDto>      latestDtos = latestService.qeuryLatest(productAttr.getProdId(), attrIds);
-        Map<Long, LatestDto> map        = latestDtos.parallelStream().collect(Collectors.toMap(LatestDto::getAttrId, o -> o));
+        Map<Long, LatestDto> map        = latestDtos.parallelStream().distinct().collect(Collectors.toMap(LatestDto::getAttrId, o -> o, (a, b) -> b));
 
         pagedList.forEach(productAttrDto -> {
             if (null != map.get(productAttrDto.getAttrId())) {
@@ -147,7 +147,7 @@ public class DeviceModelService {
     }
 
     private ProductAttribute buildProdAttribute(ProductAttribute prodAttribute, ProductAttr productAttr) {
-        if(null == prodAttribute.getTemplateId()){
+        if (null == prodAttribute.getTemplateId()) {
             prodAttribute.setName(productAttr.getAttrName());
             prodAttribute.setKey(productAttr.getKey());
             prodAttribute.setSource(productAttr.getSource());

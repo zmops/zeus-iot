@@ -107,6 +107,6 @@ public interface ZbxItem {
      * @return String
      */
     @Post
-    @JsonPath("/item/name/item.get")
+    @JsonPath("/item/item.name.get")
     String getItemListByName(@ParamName("name") String name);
 }

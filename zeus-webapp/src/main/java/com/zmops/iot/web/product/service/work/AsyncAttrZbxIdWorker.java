@@ -42,11 +42,11 @@ public class AsyncAttrZbxIdWorker implements IWorker<ProductAttr, Boolean> {
             return true;
         }
 
-        Map<String, ZbxItemInfo> itemMap = itemInfos.parallelStream().collect(Collectors.toMap(o -> o.getHosts().getHost(), o -> o));
+        Map<String, ZbxItemInfo> itemMap = itemInfos.parallelStream().collect(Collectors.toMap(o -> o.getHosts().get(0).getHost(), o -> o));
         //取出继承的属性 并塞入对应的 itemId
         List<ProductAttribute> productAttributeList = new QProductAttribute().templateId.eq(attrId).findList();
         for (ProductAttribute productAttribute : productAttributeList) {
-            productAttribute.setZbxId(itemMap.get(productAttribute.getTemplateId() + "").getItemid());
+            productAttribute.setZbxId(itemMap.get(productAttribute.getProductId()+"").getItemid());
         }
 
         DB.updateAll(productAttributeList);

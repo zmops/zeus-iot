@@ -2,6 +2,8 @@ package com.zmops.zeus.driver.entity;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author nantian created at 2021/8/10 17:52
  */
@@ -26,7 +28,7 @@ public class ZbxItemInfo {
 
     private String interfaceid;
 
-    private HostInfo hosts;
+    private List<HostInfo> hosts;
 
     @Data
     public static class HostInfo {

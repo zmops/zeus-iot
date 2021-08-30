@@ -138,15 +138,16 @@ public class ProductModelService {
         buildProdAttribute(productAttribute, productAttr);
         productAttribute.setZbxId(zbxId);
         productAttribute.save();
-        productAttr.setAttrId(productAttribute.getAttrId());
 
 
-        WorkerWrapper<ProductAttr, Boolean> asyncAttrZbxIdWork = WorkerWrapper.<ProductAttr, Boolean>builder().worker(asyncAttrZbxIdWorker).build();
-        WorkerWrapper<ProductAttr, Boolean> saveProdAttrWork = WorkerWrapper.<ProductAttr, Boolean>builder().worker(saveProdAttrWorker).nextOf(asyncAttrZbxIdWork).build();
+        WorkerWrapper<ProductAttr, Boolean> asyncAttrZbxIdWork = WorkerWrapper.<ProductAttr, Boolean>builder()
+                .worker(asyncAttrZbxIdWorker).param(productAttr).build();
+        WorkerWrapper<ProductAttr, Boolean> saveProdAttrWork = WorkerWrapper.<ProductAttr, Boolean>builder()
+                .worker(saveProdAttrWorker).param(productAttr).nextOf(asyncAttrZbxIdWork).build();
 
         try {
-            Async.work(100, saveProdAttrWork).awaitFinish();
-        } catch (InterruptedException e) {
+            Async.work(10000, saveProdAttrWork).awaitFinish();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

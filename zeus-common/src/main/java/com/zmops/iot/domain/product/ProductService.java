@@ -18,10 +18,10 @@ public class ProductService {
     @Id
     private Long id;
 
-    private String  name;
-    private String  mark;
-    private String  remark;
-    private Long    sid;
-    private Long    templateId;
-    private Integer async;
+    private String name;
+    private String mark;
+    private String remark;
+    private Long   sid;
+    private Long   templateId;
+    private String async;
 }

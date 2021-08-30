@@ -196,7 +196,7 @@ public class DeviceService {
                 .build();
 
         WorkerWrapper<DeviceDto, Boolean> updateAttrZbxIdWork = WorkerWrapper.<DeviceDto, Boolean>builder().id("updateAttrZbxIdWork")
-                .worker(updateAttrZbxIdWorker)
+                .worker(updateAttrZbxIdWorker).param(deviceDto)
                 .build();
 
         WorkerWrapper<String, Boolean> updateDeviceZbxIdWork = WorkerWrapper.<String, Boolean>builder().id("updateDeviceZbxIdWork")

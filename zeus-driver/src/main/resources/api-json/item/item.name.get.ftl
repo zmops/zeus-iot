@@ -2,12 +2,12 @@
     "jsonrpc": "2.0",
     "method": "item.get",
     "params": {
-            "selectHosts":["host"],
+        "selectHosts":["host"],
+        <#if name??>
             "search":{
-            <#if name??>
                 "name":"${name}"
-            </#if>
             },
+        </#if>
         "output": [
             "itemid",
             "hostid",
