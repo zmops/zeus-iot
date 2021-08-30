@@ -1,11 +1,13 @@
 package com.zmops.iot.web.product.controller;
 
+import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.web.product.dto.ProductServiceDto;
 import com.zmops.iot.web.product.dto.param.ProductSvcParam;
 import com.zmops.iot.web.product.service.ProductSvcService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,7 +46,7 @@ public class ProductServiceController {
      * 服务创建
      */
     @RequestMapping("/create")
-    public ResponseData create(@RequestBody ProductServiceDto productServiceDto) {
+    public ResponseData create(@Validated(BaseEntity.Create.class) @RequestBody ProductServiceDto productServiceDto) {
         return ResponseData.success(productSvcService.create(productServiceDto));
     }
 
@@ -52,7 +54,7 @@ public class ProductServiceController {
      * 服务修改
      */
     @RequestMapping("/update")
-    public ResponseData update(@RequestBody ProductServiceDto productServiceDto) {
+    public ResponseData update(@Validated(BaseEntity.Update.class) @RequestBody ProductServiceDto productServiceDto) {
         return ResponseData.success(productSvcService.update(productServiceDto));
     }
 
@@ -60,7 +62,7 @@ public class ProductServiceController {
      * 服务删除
      */
     @RequestMapping("/delete")
-    public ResponseData delete(@RequestBody ProductServiceDto productServiceDto) {
+    public ResponseData delete(@Validated(BaseEntity.Delete.class) @RequestBody ProductServiceDto productServiceDto) {
         productSvcService.delete(productServiceDto.getIds());
         return ResponseData.success(productServiceDto.getIds());
     }

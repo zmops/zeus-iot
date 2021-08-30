@@ -29,6 +29,8 @@ public class ProductServiceDto {
 
     private Integer async;
 
+    private Long templateId;
+
     private List<ProductServiceParam> productServiceParamList;
 
 

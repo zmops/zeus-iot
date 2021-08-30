@@ -1,5 +1,7 @@
 package com.zmops.iot.web.product.service;
 
+import com.zmops.iot.async.executor.Async;
+import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.ProductService;
 import com.zmops.iot.domain.product.ProductServiceParam;
 import com.zmops.iot.domain.product.query.QProductService;
@@ -8,9 +10,14 @@ import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
+import com.zmops.iot.web.product.dto.ProductAttr;
 import com.zmops.iot.web.product.dto.ProductServiceDto;
 import com.zmops.iot.web.product.dto.param.ProductSvcParam;
+import com.zmops.iot.web.product.service.work.SaveProdSvcWorker;
+import com.zmops.iot.web.product.service.work.UpdateProdSvcWorker;
 import io.ebean.DB;
+import org.checkerframework.checker.units.qual.A;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +32,12 @@ import java.util.stream.Collectors;
  **/
 @Service
 public class ProductSvcService {
+
+    @Autowired
+    SaveProdSvcWorker saveProdSvcWorker;
+
+    @Autowired
+    UpdateProdSvcWorker updateProdSvcWorker;
 
     /**
      * 服务分页列表
@@ -102,7 +115,15 @@ public class ProductSvcService {
             DB.saveAll(productServiceDto.getProductServiceParamList());
         }
 
-        //TODO 同步到设备
+        //同步到设备
+        WorkerWrapper<ProductServiceDto, Boolean> saveProdAttrWork = WorkerWrapper.<ProductServiceDto, Boolean>builder().worker(saveProdSvcWorker).build();
+
+        try {
+            Async.work(100, saveProdAttrWork).awaitFinish();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         return productServiceDto;
     }
 
@@ -120,7 +141,7 @@ public class ProductSvcService {
         }
         ProductService productService = new ProductService();
         ToolUtil.copyProperties(productServiceDto, productService);
-        DB.save(productService);
+        DB.update(productService);
 
         new QProductServiceParam().serviceId.eq(productServiceDto.getId()).delete();
         if (ToolUtil.isNotEmpty(productServiceDto.getProductServiceParamList())) {
@@ -129,7 +150,15 @@ public class ProductSvcService {
             }
             DB.saveAll(productServiceDto.getProductServiceParamList());
         }
-        //TODO 同步到设备
+
+        //同步到设备
+        WorkerWrapper<ProductServiceDto, Boolean> updateProdSvcWork = WorkerWrapper.<ProductServiceDto, Boolean>builder().worker(updateProdSvcWorker).build();
+
+        try {
+            Async.work(100, updateProdSvcWork).awaitFinish();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         return productServiceDto;
     }
