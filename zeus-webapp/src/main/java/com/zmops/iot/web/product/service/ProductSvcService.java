@@ -10,13 +10,11 @@ import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
-import com.zmops.iot.web.product.dto.ProductAttr;
 import com.zmops.iot.web.product.dto.ProductServiceDto;
 import com.zmops.iot.web.product.dto.param.ProductSvcParam;
 import com.zmops.iot.web.product.service.work.SaveProdSvcWorker;
 import com.zmops.iot.web.product.service.work.UpdateProdSvcWorker;
 import io.ebean.DB;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,7 +98,7 @@ public class ProductSvcService {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public Object create(ProductServiceDto productServiceDto) {
+    public ProductServiceDto create(ProductServiceDto productServiceDto) {
         int count = new QProductService().name.eq(productServiceDto.getName()).sid.eq(productServiceDto.getSid()).findCount();
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.SERVICE_EXISTS);
@@ -136,7 +134,7 @@ public class ProductSvcService {
      * @param productServiceDto
      * @return
      */
-    public Object update(ProductServiceDto productServiceDto) {
+    public ProductServiceDto update(ProductServiceDto productServiceDto) {
         int count = new QProductService().name.eq(productServiceDto.getName()).sid.eq(productServiceDto.getSid())
                 .id.ne(productServiceDto.getId()).findCount();
         if (count > 0) {
