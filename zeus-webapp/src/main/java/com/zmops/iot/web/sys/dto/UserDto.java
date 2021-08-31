@@ -15,7 +15,11 @@
  */
 package com.zmops.iot.web.sys.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.zmops.iot.domain.BaseDto;
 import com.zmops.iot.domain.BaseEntity;
+import com.zmops.iot.model.cache.filter.CachedValue;
+import com.zmops.iot.model.cache.filter.CachedValueFilter;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -27,7 +31,8 @@ import javax.validation.constraints.NotNull;
  * @author stylefeng
  */
 @Data
-public class UserDto {
+@JsonSerialize(using = CachedValueFilter.class)
+public class UserDto implements BaseDto {
 
     @NotNull(groups = BaseEntity.Update.class)
     private Long userId;
@@ -48,6 +53,7 @@ public class UserDto {
     @NotNull(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
     private Long userGroupId;
 
+    @CachedValue(value = "STATUS")
     private String status;
 
     @NotNull(groups = {BaseEntity.Create.class, BaseEntity.Update.class})

@@ -35,6 +35,7 @@ public class DeviceDto implements BaseDto {
     @NotEmpty(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
     private List<Long> deviceGroupIds;
 
+    @CachedValue(value = "STATUS")
     private String status;
 
     @CachedValue(value = "DEVICE_TYPE")
