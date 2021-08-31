@@ -32,7 +32,7 @@ public class ProductAttrDto implements BaseDto {
     @CachedValue(value = "UNITS")
     private String units;
 
-    @CachedValue(value = "DEVICE_TYPE")
+    @CachedValue(value = "ATTR_TYPE")
     private String source;
 
     private String remark;
