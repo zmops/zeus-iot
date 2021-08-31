@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * @author yefei
- *
+ * <p>
  * 全局概览
  **/
 @RestController
@@ -22,8 +22,13 @@ public class HomeController {
     @Autowired
     HomeService homeService;
 
+    /**
+     * 服务器取数速率
+     *
+     * @return
+     */
     @RequestMapping("/collectonRate")
-    public ResponseData collectonRate(){
+    public ResponseData collectonRate() {
         return ResponseData.success(homeService.collectonRate());
     }
 
@@ -44,6 +49,6 @@ public class HomeController {
                           @RequestParam("attrIds") List<Long> attrIds,
                           @RequestParam("width") String width,
                           @RequestParam("height") String height) {
-        homeService.getCharts(response,from,to,attrIds,width,height);
+        homeService.getCharts(response, from, to, attrIds, width, height);
     }
 }
