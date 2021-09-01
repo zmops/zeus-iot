@@ -27,6 +27,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 模块化依赖管理，被依赖模块要优先启动
+ */
 class BootstrapFlow {
     private static final Logger LOGGER = LoggerFactory.getLogger(BootstrapFlow.class);
 

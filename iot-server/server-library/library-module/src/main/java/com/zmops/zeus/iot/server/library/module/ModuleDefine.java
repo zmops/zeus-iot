@@ -28,6 +28,9 @@ import java.util.ServiceLoader;
 
 /**
  * A module definition.
+ * 模块定义，需要被继承，实现模块化定义
+ * <p>
+ * TODO 基于页面的配置，实现模块化动态的加载
  */
 public abstract class ModuleDefine implements ModuleProviderHolder {
 

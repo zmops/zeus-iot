@@ -22,6 +22,9 @@ import java.util.*;
 
 /**
  * The <code>ModuleManager</code> takes charge of all {@link ModuleDefine}s in collector.
+ * <p>
+ * 实现模块之间的 Service 发布调用
+ * TODO 使用 google guice @Inject 实现
  */
 public class ModuleManager implements ModuleDefineHolder {
     private       boolean                   isInPrepareStage = true;
