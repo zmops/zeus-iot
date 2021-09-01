@@ -97,43 +97,43 @@ function AddInstallRepo() {
         sed -i '/mirrors.aliyuncs.com/,/mirrors.cloud.aliyuncs.com/d' /etc/yum.repos.d/CentOS-Base.repo
         ### Postgresql && timescaleDB
         tee /etc/yum.repos.d/postgresql_timescaledb.repo <<EOL &>/dev/null
-        [epel]
-        name=Extra Packages for Enterprise Linux 7 - \$basearch
-        baseurl=http://mirrors.aliyun.com/epel/7/\$basearch
-        failovermethod=priority
-        enabled=1
-        gpgcheck=0
+[epel]
+name=Extra Packages for Enterprise Linux 7 - \$basearch
+baseurl=http://mirrors.aliyun.com/epel/7/\$basearch
+failovermethod=priority
+enabled=1
+gpgcheck=0
 
-        [timescale_timescaledb]
-        name=timescale_timescaledb
-        baseurl=https://packagecloud.io/timescale/timescaledb/el/$(rpm -E %{rhel})/\$basearch
-        gpgcheck=0
-        enabled=1
+[timescale_timescaledb]
+name=timescale_timescaledb
+baseurl=https://packagecloud.io/timescale/timescaledb/el/$(rpm -E %{rhel})/\$basearch
+gpgcheck=0
+enabled=1
 
-        [centos-sclo-rh]
-        name=CentOS-7 - SCLo rh
-        baseurl=https://mirrors.aliyun.com/centos/7/sclo/\$basearch/rh/
-        gpgcheck=0
-        enabled=1
+[centos-sclo-rh]
+name=CentOS-7 - SCLo rh
+baseurl=https://mirrors.aliyun.com/centos/7/sclo/\$basearch/rh/
+gpgcheck=0
+enabled=1
 
-        [pgdg-common]
-        name=PostgreSQL common RPMs for RHEL/CentOS \$releasever - \$basearch
-        baseurl=https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-\$releasever-\$basearch
-        enabled=1
-        gpgcheck=0
+[pgdg-common]
+name=PostgreSQL common RPMs for RHEL/CentOS \$releasever - \$basearch
+baseurl=https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-\$releasever-\$basearch
+enabled=1
+gpgcheck=0
 
 
-        [pgdg13]
-        name=PostgreSQL 13 for RHEL/CentOS \$releasever - \$basearch
-        baseurl=https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-\$releasever-\$basearch
-        enabled=1
-        gpgcheck=0
+[pgdg13]
+name=PostgreSQL 13 for RHEL/CentOS \$releasever - \$basearch
+baseurl=https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-\$releasever-\$basearch
+enabled=1
+gpgcheck=0
 
-        [pgdg12]
-        name=PostgreSQL 12 for RHEL/CentOS \$releasever - \$basearch
-        baseurl=https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-\$releasever-\$basearch
-        enabled=1
-        gpgcheck=0
+[pgdg12]
+name=PostgreSQL 12 for RHEL/CentOS \$releasever - \$basearch
+baseurl=https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-\$releasever-\$basearch
+enabled=1
+gpgcheck=0
 EOL
 
         echo "配置安装 YUM 源 。。。"
@@ -241,48 +241,48 @@ function ZbxInstall() {
         sed -i 's/^# DBPassword=/DBPassword=zabbix/g' $ZABBIX_HOME/etc/zabbix_server.conf
         ### 配置启动文件
         tee /usr/lib/systemd/system/zabbix-server.service <<EOL 1>/dev/null
-        [Unit]
-        Description=Zabbix Server
+[Unit]
+Description=Zabbix Server
 
-        After=network.target
-        After=postgresql-13.service
+After=network.target
+After=postgresql-13.service
 
-        [Service]
-        Environment="CONFFILE=$ZABBIX_HOME/etc/zabbix_server.conf"
-        EnvironmentFile=-/etc/default/zabbix-server
-        Type=forking
-        Restart=on-failure
-        PIDFile=/tmp/zabbix_server.pid
-        KillMode=control-group
-        ExecStart=$ZABBIX_HOME/sbin/zabbix_server -c \$CONFFILE
-        ExecStop=/bin/kill -SIGTERM \$MAINPID
-        RestartSec=10s
-        TimeoutSec=0
+[Service]
+Environment="CONFFILE=$ZABBIX_HOME/etc/zabbix_server.conf"
+EnvironmentFile=-/etc/default/zabbix-server
+Type=forking
+Restart=on-failure
+PIDFile=/tmp/zabbix_server.pid
+KillMode=control-group
+ExecStart=$ZABBIX_HOME/sbin/zabbix_server -c \$CONFFILE
+ExecStop=/bin/kill -SIGTERM \$MAINPID
+RestartSec=10s
+TimeoutSec=0
 
-        [Install]
-        WantedBy=multi-user.target
+[Install]
+WantedBy=multi-user.target
 EOL
 
         tee /usr/lib/systemd/system/zabbix-agent.service <<EOL 1>/dev/null
-        [Unit]
-        Description=Zabbix Agent
-        After=network.target
+[Unit]
+Description=Zabbix Agent
+After=network.target
 
-        [Service]
-        Environment="CONFFILE=$ZABBIX_HOME/etc/zabbix_agentd.conf"
-        EnvironmentFile=-/etc/default/zabbix-agent
-        Type=forking
-        Restart=on-failure
-        PIDFile=/tmp/zabbix_agentd.pid
-        KillMode=control-group
-        ExecStart=$ZABBIX_HOME/sbin/zabbix_agentd -c \$CONFFILE
-        ExecStop=/bin/kill -SIGTERM \$MAINPID
-        RestartSec=10s
-        User=zabbix
-        Group=zabbix
+[Service]
+Environment="CONFFILE=$ZABBIX_HOME/etc/zabbix_agentd.conf"
+EnvironmentFile=-/etc/default/zabbix-agent
+Type=forking
+Restart=on-failure
+PIDFile=/tmp/zabbix_agentd.pid
+KillMode=control-group
+ExecStart=$ZABBIX_HOME/sbin/zabbix_agentd -c \$CONFFILE
+ExecStop=/bin/kill -SIGTERM \$MAINPID
+RestartSec=10s
+User=zabbix
+Group=zabbix
 
-        [Install]
-        WantedBy=multi-user.target
+[Install]
+WantedBy=multi-user.target
 EOL
 
         systemctl daemon-reload
