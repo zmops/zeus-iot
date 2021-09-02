@@ -9,6 +9,7 @@ import com.zmops.zeus.iot.server.core.server.JettyHandlerRegister;
 import com.zmops.zeus.iot.server.core.server.JettyHandlerRegisterImpl;
 import com.zmops.zeus.iot.server.core.servlet.DeviceTriggerActionHandler;
 import com.zmops.zeus.iot.server.core.servlet.HttpItemTrapperHandler;
+import com.zmops.zeus.iot.server.core.servlet.ZabbixConfigHandler;
 import com.zmops.zeus.iot.server.eventbus.core.EventControllerFactory;
 import com.zmops.zeus.iot.server.eventbus.thread.ThreadPoolFactory;
 import com.zmops.zeus.iot.server.eventbus.thread.entity.ThreadCustomization;
@@ -106,6 +107,7 @@ public class CoreModuleProvider extends ModuleProvider {
         JettyHandlerRegister service = getManager().find(CoreModule.NAME).provider().getService(JettyHandlerRegister.class);
         service.addHandler(new HttpItemTrapperHandler());
         service.addHandler(new DeviceTriggerActionHandler(getManager()));
+        service.addHandler(new ZabbixConfigHandler(moduleConfig.getZabbixConfigPath()));
 
 
         // ### 可以自定义添加 Action 的动作异步处理，指定 ID

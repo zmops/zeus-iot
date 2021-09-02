@@ -41,6 +41,7 @@ core:
     restAcceptorPriorityDelta: ${ZS_CORE_REST_JETTY_DELTA:0}
     restAcceptQueueSize: ${ZS_CORE_REST_JETTY_QUEUE_SIZE:0}
     httpMaxRequestHeaderSize: ${ZS_CORE_HTTP_MAX_REQUEST_HEADER_SIZE:8192}
+    zabbixConfigPath: ${ZS_CORE_ZABBIX_CONFIG_PATH:E:\\zabbix_server.conf}
 
 # 健康检查
 health-checker:

@@ -26,6 +26,7 @@ public class CoreModuleConfig extends ModuleConfig {
     private long   restIdleTimeOut           = 30000;
     private int    restAcceptorPriorityDelta = 0;
     private int    restAcceptQueueSize       = 0;
+    private String zabbixConfigPath          = "/etc/zabbix/zabbix_server.conf"; // yum or apt install default location.
 
 
     /**
