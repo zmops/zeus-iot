@@ -133,6 +133,7 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     PRODUCT_TYPE_HAS_BIND(1304, "产品分类已绑定产品"),
     PRODUCT_TYPE_PID_NOT_EXIST(1305, "父节点不存在"),
     PRODUCT_TYPE_PID_ERR(1306, "父节点不可以是自已或子节点"),
+    PRODUCT_HAS_BIND_DEVICE(1307, "产品已绑定设备"),
 
     /**
      * 属性相关
@@ -148,8 +149,8 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     /**
      * 服务相关
      */
-    SERVICE_EXISTS(1601,"服务已存在"),
-    SERVICE_NOT_EXISTS(1602,"服务不存在"),
+    SERVICE_EXISTS(1601, "服务已存在"),
+    SERVICE_NOT_EXISTS(1602, "服务不存在"),
 
     /**
      * 租户相关的异常

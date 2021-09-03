@@ -4,6 +4,7 @@ import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSON;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.domain.device.Tag;
+import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.device.query.QTag;
 import com.zmops.iot.domain.product.Product;
 import com.zmops.iot.domain.product.query.QProduct;
@@ -137,13 +138,15 @@ public class ProductController {
     @PostMapping("/delete")
     public ResponseData prodDelete(@RequestBody @Validated(value = BaseEntity.Delete.class)
                                            ProductBasicInfo prodBasicInfo) {
-
         //第一步：验证产品下 是否有设备存在
         Product product = new QProduct().productId.eq(prodBasicInfo.getProductId()).findOne();
         if (null == product) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }
-        // TODO 判断该产品下 是否有设备
+        int deviceNum = new QDevice().productId.eq(prodBasicInfo.getProductId()).findCount();
+        if(deviceNum>0){
+            throw new ServiceException(BizExceptionEnum.PRODUCT_HAS_BIND_DEVICE);
+        }
 
 
         //第二步：删除Zabbix对应的模板
