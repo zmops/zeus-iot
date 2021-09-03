@@ -35,7 +35,7 @@ public class ProductAttribute extends BaseEntity {
 
     private Long depAttrId;
 
-    private Long productId; // 产品ID
+    private String productId; // 产品ID
 
     private String zbxId;  // Zabbix itemId
 

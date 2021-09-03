@@ -21,8 +21,7 @@ import javax.persistence.Table;
 public class Device extends BaseEntity {
 
     @Id
-    @GeneratedValue(generator = IdTypeConsts.ID_SNOW)
-    private Long deviceId;
+    private String deviceId;
 
     private String name;
 

@@ -30,13 +30,13 @@ public class SaveProdAttrWorker implements IWorker<ProductAttr, Boolean> {
     public Boolean action(ProductAttr productAttr, Map<String, WorkerWrapper<?, ?>> map) {
         log.debug("处理产品 新增Attr 同步到设备工作…………");
 
-        Long prodId = productAttr.getProductId();
+        String prodId = productAttr.getProductId();
 
-        List<Long> deviceIds = new QDevice().select(QDevice.Alias.deviceId).productId.eq(prodId).findSingleAttributeList();
+        List<String> deviceIds = new QDevice().select(QDevice.Alias.deviceId).productId.eq(Integer.parseInt(prodId)).findSingleAttributeList();
 
         List<ProductAttribute> productAttributeList = new ArrayList<>();
 
-        for (Long deviceId : deviceIds) {
+        for (String deviceId : deviceIds) {
             ProductAttribute productAttrbute = new ProductAttribute();
             ToolUtil.copyProperties(productAttr, productAttrbute);
             productAttrbute.setAttrId(IdUtil.getSnowflake().nextId());

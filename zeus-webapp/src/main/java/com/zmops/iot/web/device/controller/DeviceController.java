@@ -1,5 +1,6 @@
 package com.zmops.iot.web.device.controller;
 
+import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.domain.device.Device;
@@ -57,13 +58,19 @@ public class DeviceController {
      */
     @RequestMapping("/create")
     public ResponseData create(@Validated(BaseEntity.Create.class) @RequestBody DeviceDto deviceDto) {
-        int count = new QDevice().name.eq(deviceDto.getName()).findCount();
+        QDevice qDevice = new QDevice().or().name.eq(deviceDto.getName());
+        if (ToolUtil.isNotEmpty(deviceDto.getDeviceId())) {
+            qDevice.deviceId.eq(deviceDto.getDeviceId());
+        } else {
+            deviceDto.setDeviceId(IdUtil.getSnowflake().nextId() + "");
+        }
+        int count = qDevice.findCount();
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.DEVICE_EXISTS);
         }
 
         deviceService.checkProductExist(deviceDto);
-        Long deviceId = deviceService.create(deviceDto);
+        String deviceId = deviceService.create(deviceDto);
         deviceDto.setDeviceId(deviceId);
         return ResponseData.success(deviceDto);
     }
@@ -105,7 +112,7 @@ public class DeviceController {
      * 设备标签列表
      */
     @GetMapping("/tag/list")
-    public ResponseData prodTagList(@RequestParam("deviceId") Long deviceId) {
+    public ResponseData prodTagList(@RequestParam("deviceId") String deviceId) {
         return ResponseData.success(deviceService.deviceTagList(deviceId));
     }
 
@@ -113,7 +120,7 @@ public class DeviceController {
      * 设备值映射列表
      */
     @GetMapping("/valueMap/list")
-    public ResponseData valueMapList(@RequestParam("deviceId") Long deviceId) {
+    public ResponseData valueMapList(@RequestParam("deviceId") String deviceId) {
         return ResponseData.success(deviceService.valueMapList(deviceId));
     }
 
@@ -125,14 +132,14 @@ public class DeviceController {
     @PostMapping("/tag/update")
     public ResponseData deviceTagCreate(@RequestBody @Valid ProductTag productTag) {
 
-        Long   deviceId = productTag.getProductId();
+        String   deviceId = productTag.getProductId();
         Device device   = new QDevice().deviceId.eq(deviceId).findOne();
 
         if (null == device) {
             throw new ServiceException(BizExceptionEnum.DEVICE_NOT_EXISTS);
         }
 
-        deviceService.deviceTagCreate(productTag,device.getZbxId());
+        deviceService.deviceTagCreate(productTag, device.getZbxId());
 
         return ResponseData.success(productTag);
     }
@@ -170,7 +177,7 @@ public class DeviceController {
      */
     @PostMapping("/valuemap/delete")
     public ResponseData prodValueMapDelete(@RequestBody @Validated(BaseEntity.Delete.class) ValueMap valueMap) {
-        String response   = deviceService.valueMapDelete(valueMap.getValuemapid());
+        String response = deviceService.valueMapDelete(valueMap.getValuemapid());
         return ResponseData.success(JSONObject.parseObject(response).getJSONArray("valuemapids").get(0));
     }
 

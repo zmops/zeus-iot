@@ -22,7 +22,10 @@ import java.util.List;
 public class DeviceDto implements BaseDto {
 
     @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Delete.class})
-    private Long deviceId;
+    private String deviceId;
+
+    @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
+    private String edit;
 
     @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
     private String name;

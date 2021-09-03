@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 public class LatestParam  extends BaseQueryParam{
     @NotNull(message = "请选择一个设备再查询")
-    private Long deviceId;
+    private String deviceId;
 
     private List<Long> attrIds;
 

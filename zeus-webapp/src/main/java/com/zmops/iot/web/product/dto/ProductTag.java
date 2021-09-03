@@ -16,7 +16,7 @@ import java.util.List;
 public class ProductTag {
 
     @NotNull
-    private Long productId;
+    private String productId;
 
     private List<Tag> productTag;
 

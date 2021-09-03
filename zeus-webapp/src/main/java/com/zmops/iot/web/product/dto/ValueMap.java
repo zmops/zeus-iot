@@ -14,7 +14,7 @@ import java.util.Map;
 public class ValueMap {
 
     @NotNull(groups = BaseEntity.Create.class)
-    private Long productId;
+    private String productId;
 
     @NotNull(groups = BaseEntity.Create.class)
     private String valueMapName;

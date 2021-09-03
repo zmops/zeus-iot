@@ -15,7 +15,7 @@ import java.util.List;
 public class ProductAttrParam extends BaseQueryParam {
 
     @NotNull(groups = BaseEntity.Get.class,message = "请选择一个设备再查询")
-    private Long prodId;
+    private String prodId;
 
     private String attrName;
 

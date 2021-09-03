@@ -44,7 +44,7 @@ public class LatestService {
         return new Pager<>(collect,latestDtos.size());
     }
 
-    public List<LatestDto> qeuryLatest(Long deviceId, List<Long> attrIds) {
+    public List<LatestDto> qeuryLatest(String deviceId, List<Long> attrIds) {
         //查询出设备
         Device one = new QDevice().deviceId.eq(deviceId).findOne();
         if (null == one || ToolUtil.isEmpty(one.getZbxId())) {

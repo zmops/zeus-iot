@@ -46,7 +46,7 @@ public class ProductAttr {
     private String zbxId;
 
     @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
-    private Long productId;
+    private String productId;
 
     @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private String valueType;

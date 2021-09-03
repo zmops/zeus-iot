@@ -41,7 +41,7 @@ public class HistoryService {
         return new Pager<>(collect,latestDtos.size());
     }
 
-    public List<LatestDto> queryHistory(Long deviceId, List<Long> attrIds, Long timeFrom, Long timeTill) {
+    public List<LatestDto> queryHistory(String deviceId, List<Long> attrIds, Long timeFrom, Long timeTill) {
         //查询出设备
         Device one = new QDevice().deviceId.eq(deviceId).findOne();
         if (null == one || ToolUtil.isEmpty(one.getZbxId())) {

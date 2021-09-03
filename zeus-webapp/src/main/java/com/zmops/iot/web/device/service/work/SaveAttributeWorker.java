@@ -19,7 +19,7 @@ import java.util.Map;
 
 /**
  * @author yefei
- *
+ * <p>
  * 设备属性处理步骤
  */
 @Slf4j
@@ -31,23 +31,24 @@ public class SaveAttributeWorker implements IWorker<DeviceDto, Boolean> {
     public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> map) {
         log.debug("处理Attr工作…………");
 
-        Long deviceId = deviceDto.getDeviceId();
-        //创建
-        if (null == deviceId) {
-            Device device = (Device) map.get("saveDvice").getWorkResult().getResult();
-            deviceId = device.getDeviceId();
-        } else {
-            //修改
+        String deviceId = deviceDto.getDeviceId();
 
+        if (ToolUtil.isNotEmpty(deviceDto.getEdit()) && "true".equals(deviceDto.getEdit())) {
+            //修改
             //没有修改关联的产品 不做处理
             if (deviceDto.getProductId().equals(deviceDto.getOldProductId())) {
                 return true;
             }
             new QProductAttribute().productId.eq(deviceId).templateId.isNotNull().delete();
+        } else {
+            //创建
+            Device device = (Device) map.get("saveDvice").getWorkResult().getResult();
+            deviceId = device.getDeviceId();
+
         }
 
 
-        List<ProductAttribute> productAttributeList    = new QProductAttribute().productId.eq(deviceDto.getProductId()).findList();
+        List<ProductAttribute> productAttributeList    = new QProductAttribute().productId.eq(deviceDto.getProductId() + "").findList();
         List<ProductAttribute> newProductAttributeList = new ArrayList<>();
 
         for (ProductAttribute productAttribute : productAttributeList) {

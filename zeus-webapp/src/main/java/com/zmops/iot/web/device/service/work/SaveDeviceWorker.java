@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  * @author yefei
- *
+ * <p>
  * 保存设备
  */
 @Slf4j
@@ -29,11 +29,11 @@ public class SaveDeviceWorker implements IWorker<DeviceDto, Device> {
         Device device = new Device();
         ToolUtil.copyProperties(deviceDto, device);
 
-        if (null == deviceDto.getDeviceId()) {
+        if (ToolUtil.isNotEmpty(deviceDto.getEdit()) && "true".equals(deviceDto.getEdit())) {
+            DB.update(device);
+        } else {
             device.setStatus(CommonStatus.ENABLE.getCode());
             DB.save(device);
-        } else {
-            DB.update(device);
         }
 
         return device;

@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author yefei
- *
+ * <p>
  * 更新设备属性中ZBXID
  */
 @Slf4j
@@ -36,18 +36,19 @@ public class UpdateAttrZbxIdWorker implements IWorker<DeviceDto, Boolean> {
     @Override
     public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> map) {
         log.debug("处理Attr zbx回填工作……");
-        Long deviceId = deviceDto.getDeviceId();
-        //创建
-        if (null == deviceId) {
-            Device device = (Device) map.get("saveDvice").getWorkResult().getResult();
-            deviceId = device.getDeviceId();
-        } else {
+        String deviceId = deviceDto.getDeviceId();
+
+        if (ToolUtil.isNotEmpty(deviceDto.getEdit()) && "true".equals(deviceDto.getEdit())) {
             //修改
 
             //没有修改关联的产品 不做处理
             if (deviceDto.getProductId().equals(deviceDto.getOldProductId())) {
                 return true;
             }
+        } else {
+            //创建
+            Device device = (Device) map.get("saveDvice").getWorkResult().getResult();
+            deviceId = device.getDeviceId();
         }
 
         //取出 ZBX hostid

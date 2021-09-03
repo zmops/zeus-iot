@@ -183,7 +183,7 @@ public class DeviceService {
      * @param deviceDto
      * @return
      */
-    public Long create(DeviceDto deviceDto) {
+    public String create(DeviceDto deviceDto) {
 
         WorkerWrapper<DeviceDto, Boolean> saveTagWork = WorkerWrapper.<DeviceDto, Boolean>builder().id("saveTagWork")
                 .worker(saveTagWorker).param(deviceDto).build();
@@ -229,7 +229,7 @@ public class DeviceService {
      * @param deviceDto
      * @return
      */
-    public Long update(DeviceDto deviceDto) {
+    public String update(DeviceDto deviceDto) {
         Device device = new QDevice().deviceId.eq(deviceDto.getDeviceId()).findOne();
         if (null == device) {
             throw new ServiceException(BizExceptionEnum.DEVICE_NOT_EXISTS);
@@ -284,25 +284,25 @@ public class DeviceService {
         deviceDto.setType(product.getType());
     }
 
-    public Long delete(DeviceDto deviceDto) {
+    public String delete(DeviceDto deviceDto) {
         Device device = new QDevice().deviceId.eq(deviceDto.getDeviceId()).findOne();
         if (null == device) {
             return deviceDto.getDeviceId();
         }
         String zbxId = device.getZbxId();
-        WorkerWrapper<Long, Boolean> delTagWork = WorkerWrapper.<Long, Boolean>builder().id("delTagWork")
+        WorkerWrapper<String, Boolean> delTagWork = WorkerWrapper.<String, Boolean>builder().id("delTagWork")
                 .worker((deviceId, allWrappers) -> {
                     new QTag().sid.eq(deviceId).delete();
                     return true;
                 }).param(deviceDto.getDeviceId()).build();
 
-        WorkerWrapper<Long, Boolean> delAttrWork = WorkerWrapper.<Long, Boolean>builder().id("delAttrWork")
+        WorkerWrapper<String, Boolean> delAttrWork = WorkerWrapper.<String, Boolean>builder().id("delAttrWork")
                 .worker((deviceId, allWrappers) -> {
                     new QProductAttribute().productId.eq(deviceId).delete();
                     return true;
                 }).param(deviceDto.getDeviceId()).build();
 
-        WorkerWrapper<Long, Boolean> delGropusWork = WorkerWrapper.<Long, Boolean>builder().id("delGropusWork")
+        WorkerWrapper<String, Boolean> delGropusWork = WorkerWrapper.<String, Boolean>builder().id("delGropusWork")
                 .worker((deviceId, allWrappers) -> {
                     new QDevicesGroups().deviceId.eq(deviceId).delete();
                     return true;
@@ -314,7 +314,7 @@ public class DeviceService {
                     return true;
                 }).param(zbxId).build();
 
-        WorkerWrapper<Long, Boolean> delDeviceWork = WorkerWrapper.<Long, Boolean>builder().id("delDeviceWork")
+        WorkerWrapper<String, Boolean> delDeviceWork = WorkerWrapper.<String, Boolean>builder().id("delDeviceWork")
                 .worker((deviceId, allWrappers) -> {
                     new QDevice().deviceId.eq(deviceId).delete();
                     return true;
@@ -419,7 +419,7 @@ public class DeviceService {
      * @param deviceId
      * @return
      */
-    public List<Tag> deviceTagList(Long deviceId) {
+    public List<Tag> deviceTagList(String deviceId) {
         QTag tag = QTag.alias();
         return new QTag().select(tag.id, tag.sid, tag.tag, tag.value).sid.eq(deviceId).findList();
     }
@@ -430,7 +430,7 @@ public class DeviceService {
      * @param deviceId
      * @return
      */
-    public JSONArray valueMapList(Long deviceId) {
+    public JSONArray valueMapList(String deviceId) {
         JSONArray zbxTemplateInfo = getZbxHostInfo(deviceId);
         if (zbxTemplateInfo.size() == 0) {
             return new JSONArray();
@@ -439,7 +439,7 @@ public class DeviceService {
         return JSONObject.parseArray(zbxTemplateInfo.getJSONObject(0).getString("valuemaps"));
     }
 
-    private JSONArray getZbxHostInfo(Long deviceId) {
+    private JSONArray getZbxHostInfo(String deviceId) {
         String zbxId = new QDevice().select(QDevice.alias().zbxId).deviceId.eq(deviceId).findSingleAttribute();
         if (null == zbxId) {
             return new JSONArray();

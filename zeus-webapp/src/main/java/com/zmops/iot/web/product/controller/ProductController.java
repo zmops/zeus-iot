@@ -69,7 +69,7 @@ public class ProductController {
      * 产品标签列表
      */
     @GetMapping("/prodTag/list")
-    public ResponseData prodTagList(@RequestParam("productId") Long prodId) {
+    public ResponseData prodTagList(@RequestParam("productId") String prodId) {
         return ResponseData.success(productService.prodTagList(prodId));
     }
 
@@ -168,8 +168,8 @@ public class ProductController {
     @PostMapping("/tag/update")
     public ResponseData prodTagCreate(@RequestBody @Valid ProductTag productTag) {
 
-        Long    productId = productTag.getProductId();
-        Product product   = new QProduct().productId.eq(productId).findOne();
+        String    productId = productTag.getProductId();
+        Product product   = new QProduct().productId.eq(Integer.parseInt(productId)).findOne();
 
         if (null == product) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
@@ -203,7 +203,7 @@ public class ProductController {
     @PostMapping("/valuemap/update")
     public ResponseData prodValueMapCreate(@RequestBody @Validated(BaseEntity.Create.class) ValueMap valueMap) {
 
-        Product product = new QProduct().productId.eq(valueMap.getProductId()).findOne();
+        Product product = new QProduct().productId.eq(Integer.parseInt(valueMap.getProductId())).findOne();
         if (null == product) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }

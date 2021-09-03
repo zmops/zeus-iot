@@ -25,7 +25,7 @@ public class Tag extends BaseEntity {
     @Id
     private Long id;
 
-    private Long sid;
+    private String sid;
 
     private String tag;
 

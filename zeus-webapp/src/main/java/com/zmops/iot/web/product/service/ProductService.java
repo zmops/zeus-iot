@@ -241,7 +241,7 @@ public class ProductService {
      * @param prodId
      * @return
      */
-    public List<Tag> prodTagList(Long prodId) {
+    public List<Tag> prodTagList(String prodId) {
         QTag tag = QTag.alias();
         return new QTag().select(tag.id, tag.sid, tag.tag, tag.value).sid.eq(prodId).orderBy(" create_time desc").findList();
     }

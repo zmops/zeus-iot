@@ -39,7 +39,7 @@ public class UpdateZbxTagWorker implements IWorker<DeviceDto, Boolean> {
 
         //取 设备ID
         Device device   = (Device) map.get("saveDvice").getWorkResult().getResult();
-        Long   deviceId = device.getDeviceId();
+        String   deviceId = device.getDeviceId();
 
         //查询出本地tag
         List<Tag>           list   = new QTag().sid.eq(deviceId).findList();

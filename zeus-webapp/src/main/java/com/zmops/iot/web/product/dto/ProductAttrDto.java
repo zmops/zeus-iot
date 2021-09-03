@@ -42,7 +42,7 @@ public class ProductAttrDto implements BaseDto {
     @JsonIgnore
     private String zbxId;
 
-    private Long productId;
+    private String productId;
 
     @CachedValue(value = "DATA_TYPE")
     private String valueType;
