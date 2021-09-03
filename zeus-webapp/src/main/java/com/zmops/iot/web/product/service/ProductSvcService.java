@@ -51,7 +51,7 @@ public class ProductSvcService {
         if (ToolUtil.isNotEmpty(productSvcParam.getMark())) {
             qProductService.mark.contains(productSvcParam.getMark());
         }
-        if (null != productSvcParam.getProdId()) {
+        if (ToolUtil.isNotEmpty(productSvcParam.getProdId())) {
             qProductService.sid.eq(productSvcParam.getProdId());
         }
         qProductService.orderBy(" id desc");

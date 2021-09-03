@@ -30,11 +30,11 @@ public class SaveProdSvcWorker implements IWorker<ProductServiceDto, Boolean> {
     public Boolean action(ProductServiceDto productServiceDto, Map<String, WorkerWrapper<?, ?>> map) {
         log.debug("处理产品 新增服务 同步到设备工作…………");
 
-        Long prodId = productServiceDto.getSid();
+        String prodId = productServiceDto.getSid();
 
-        List<Long> deviceIds = new QDevice().select(QDevice.Alias.deviceId).productId.eq(prodId).findSingleAttributeList();
+        List<String> deviceIds = new QDevice().select(QDevice.Alias.deviceId).productId.eq(Long.parseLong(prodId)).findSingleAttributeList();
 
-        for (Long deviceId : deviceIds) {
+        for (String deviceId : deviceIds) {
             ProductService productService = new ProductService();
             ToolUtil.copyProperties(productServiceDto, productService);
             productService.setSid(deviceId);

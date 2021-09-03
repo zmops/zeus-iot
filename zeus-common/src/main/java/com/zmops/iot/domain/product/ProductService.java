@@ -21,7 +21,7 @@ public class ProductService {
     private String name;
     private String mark;
     private String remark;
-    private Long   sid;
+    private String   sid;
     private Long   templateId;
     private String async;
 }

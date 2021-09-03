@@ -406,7 +406,7 @@ public class DeviceService {
      * @param deviceId
      * @return
      */
-    public DeviceDto deviceDetail(Long deviceId) {
+    public DeviceDto deviceDetail(String deviceId) {
         StringBuilder sql = generateBaseSql();
         sql.append(" where d.device_id=:deviceId");
         DeviceDto deviceDto = DB.findDto(DeviceDto.class, sql.toString()).setParameter("deviceId", deviceId).findOne();

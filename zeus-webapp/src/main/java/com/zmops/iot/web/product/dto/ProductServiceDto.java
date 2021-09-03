@@ -30,7 +30,7 @@ public class ProductServiceDto implements BaseDto {
     private String remark;
 
     @NotNull(groups = BaseEntity.Create.class)
-    private Long sid;
+    private String sid;
 
     @CachedValue(value = "EXECUTE_TYPE")
     private String async;

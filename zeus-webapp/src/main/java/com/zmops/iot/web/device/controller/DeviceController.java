@@ -104,7 +104,7 @@ public class DeviceController {
      * 设备详情
      */
     @GetMapping("/detail")
-    public ResponseData prodDetail(@RequestParam("deviceId") Long deviceId) {
+    public ResponseData prodDetail(@RequestParam("deviceId") String deviceId) {
         return ResponseData.success(deviceService.deviceDetail(deviceId));
     }
 

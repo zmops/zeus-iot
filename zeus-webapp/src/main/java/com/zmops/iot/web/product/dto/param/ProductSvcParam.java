@@ -13,5 +13,5 @@ public class ProductSvcParam extends BaseQueryParam {
 
     private String mark;
 
-    private Long prodId;
+    private String prodId;
 }
