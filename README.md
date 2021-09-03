@@ -8,7 +8,7 @@
 
 ### 快速安装
 
-Zeus-IOT 支持 Centos 7、Ubuntu 20.04、Debain 10 、Kylin、UOS 等基于x86_64平台的 Linux 操作系统。
+Zeus-IoT 支持 Centos 7、Ubuntu 20.04、Debain 10 、Kylin、UOS 等基于x86_64平台的 Linux 操作系统。
 
 - Centos7、RedHat 7
 
