@@ -1,4 +1,4 @@
-## Zeus IOT 宙斯物联网分布式采集平台
+## Zeus IoT 宙斯物联网分布式采集平台
 
 [![GitHub stars](https://img.shields.io/github/stars/zmops/zeus-iot.svg?label=Stars&logo=github)](https://github.com/zmops/zeus-iot)
 [![GitHub issues](https://img.shields.io/github/issues/zmops/zeus-iot?label=Issuess&logo=github)](https://github.com/zmops/zeus-iot)
