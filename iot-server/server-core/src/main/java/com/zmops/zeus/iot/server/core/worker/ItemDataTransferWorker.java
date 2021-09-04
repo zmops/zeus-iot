@@ -101,10 +101,13 @@ public class ItemDataTransferWorker extends TransferWorker<ItemValue> {
 
     private void batchSenderDataToZabbix(List<ItemValue> valueList) {
         ZabbixTrapper zabbixTrapper = new ZabbixTrapper(valueList);
-        ZabbixSenderService senderService = getModuleDefineHolder().find(ZabbixSenderModule.NAME)
-                .provider().getService(ZabbixSenderService.class);
+
+        ZabbixSenderService senderService = getModuleDefineHolder()
+                .find(ZabbixSenderModule.NAME).provider().getService(ZabbixSenderService.class);
+
         try {
-            senderService.sendData(gson.toJson(zabbixTrapper));
+            String sendResult = senderService.sendData(gson.toJson(zabbixTrapper));
+            log.debug(sendResult);
         } catch (IOException e) {
             log.error(" itemvalue data sender error，msg ：{}", e.getMessage());
             e.printStackTrace();
