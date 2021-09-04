@@ -68,7 +68,7 @@ public class DeviceController {
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.DEVICE_EXISTS);
         }
-
+        deviceDto.setEdit("false");
         deviceService.checkProductExist(deviceDto);
         String deviceId = deviceService.create(deviceDto);
         deviceDto.setDeviceId(deviceId);
@@ -84,7 +84,7 @@ public class DeviceController {
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.DEVICE_EXISTS);
         }
-
+        deviceDto.setEdit("true");
         deviceService.checkProductExist(deviceDto);
         deviceService.update(deviceDto);
 
