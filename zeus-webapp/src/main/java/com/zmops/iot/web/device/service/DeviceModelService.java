@@ -82,7 +82,7 @@ public class DeviceModelService {
      * @param productAttr
      * @return
      */
-    public List<ProductAttribute> list(ProductAttrParam productAttr) {
+    public List<ProductAttrDto> list(ProductAttrParam productAttr) {
         QProductAttribute qProductAttribute = new QProductAttribute();
         if (null != productAttr.getProdId()) {
             qProductAttribute.productId.eq(productAttr.getProdId());
@@ -93,7 +93,7 @@ public class DeviceModelService {
         if (ToolUtil.isNotEmpty(productAttr.getKey())) {
             qProductAttribute.key.contains(productAttr.getKey());
         }
-        return qProductAttribute.findList();
+        return qProductAttribute.asDto(ProductAttrDto.class).findList();
     }
 
     /**
