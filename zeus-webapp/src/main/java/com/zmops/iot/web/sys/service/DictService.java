@@ -11,6 +11,7 @@ import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
+import com.zmops.iot.web.sys.dto.SysDictDto;
 import com.zmops.iot.web.sys.dto.param.DictParam;
 import io.ebean.DB;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,14 +113,14 @@ public class DictService implements CommandLineRunner {
     /**
      * 查询字典列表，通过字典ID
      */
-    public List<SysDict> listDicts(Long dictTypeId) {
-        return new QSysDict().dictTypeId.eq(dictTypeId).orderBy(" sort desc").findList();
+    public List<SysDictDto> listDicts(Long dictTypeId) {
+        return new QSysDict().dictTypeId.eq(dictTypeId).orderBy(" sort desc").asDto(SysDictDto.class).findList();
     }
 
     /**
      * 查询字典列表，通过字典编码
      */
-    public List<SysDict> listDicts(String dictTypeCode) {
+    public List<SysDictDto> listDicts(String dictTypeCode) {
         Long dictTypeId = new QSysDictType().select(QSysDictType.alias().dictTypeId).code.eq(dictTypeCode).findSingleAttribute();
         return listDicts(dictTypeId);
     }
@@ -127,13 +128,13 @@ public class DictService implements CommandLineRunner {
     /**
      * 分组查询字典列表，通过字典编码
      */
-    public Map<String, List<SysDict>> groupDictByCode(String dictTypeCode) {
+    public Map<String, List<SysDictDto>> groupDictByCode(String dictTypeCode) {
         Long          dictTypeId = new QSysDictType().select(QSysDictType.alias().dictTypeId).code.eq(dictTypeCode).findSingleAttribute();
-        List<SysDict> sysDicts   = listDicts(dictTypeId);
+        List<SysDictDto> sysDicts   = listDicts(dictTypeId);
         if (ToolUtil.isEmpty(sysDicts)) {
             return new HashMap<>();
         }
-        return sysDicts.parallelStream().collect(Collectors.groupingBy(SysDict::getGroups));
+        return sysDicts.parallelStream().collect(Collectors.groupingBy(SysDictDto::getGroups));
     }
 
     private void updateDictionaries() {

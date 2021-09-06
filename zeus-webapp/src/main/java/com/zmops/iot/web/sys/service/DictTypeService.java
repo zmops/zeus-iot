@@ -8,12 +8,15 @@ import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
+import com.zmops.iot.web.sys.dto.SysDictTypeDto;
 import com.zmops.iot.web.sys.dto.param.DictTypeParam;
 import io.ebean.DB;
 import io.ebean.PagedList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * <p>
@@ -95,8 +98,8 @@ public class DictTypeService {
         }
         qSysDictType.orderBy("create_time desc");
         qSysDictType.setFirstRow((param.getPage() - 1) * param.getMaxRow()).setMaxRows(param.getMaxRow());
-        PagedList<SysDictType> pagedList = qSysDictType.findPagedList();
-        return new Pager<>(pagedList.getList(), pagedList.getTotalCount());
+        List<SysDictTypeDto> pagedList = qSysDictType.asDto(SysDictTypeDto.class).findList();
+        return new Pager<>(pagedList, qSysDictType.findCount());
     }
 
     private SysDictType getEntity(DictTypeParam param) {
