@@ -45,10 +45,9 @@ core:
 storage:
   selector: ${SW_STORAGE:tdengine}
   tdengine:
-    url: ${ZS_STORAGE_TDENGINE_URL:jdbc:TAOS://zmops-zabbix:6030/test}
+    url: ${ZS_STORAGE_TDENGINE_URL:jdbc:TAOS://192.168.1.1:6030/zeus_data} # TDEngine jdbcUrl
     user: ${ZS_STORAGE_TDENGINE_USER:root}
     password: ${ZS_STORAGE_TDENGINE_PASSWORD:taosdata}
-
 
 
 # 健康检查

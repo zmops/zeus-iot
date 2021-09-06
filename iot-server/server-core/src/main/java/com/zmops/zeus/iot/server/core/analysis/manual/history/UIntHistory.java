@@ -1,8 +1,9 @@
 package com.zmops.zeus.iot.server.core.analysis.manual.history;
 
 import com.zmops.zeus.iot.server.core.analysis.Stream;
+import com.zmops.zeus.iot.server.core.analysis.record.Record;
 import com.zmops.zeus.iot.server.core.analysis.worker.RecordStreamProcessor;
-import com.zmops.zeus.iot.server.core.storage.StorageData;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,9 +16,7 @@ import java.util.Map;
 @Getter
 @Setter
 @Stream(name = "uint_hitory", processor = RecordStreamProcessor.class)
-public class UIntHistory implements StorageData {
-
-    private Integer itemid;
+public class UIntHistory extends Record {
 
     private Long clock;
 
@@ -34,5 +33,9 @@ public class UIntHistory implements StorageData {
         return null;
     }
 
-
+    @Override
+    public void setValue(String value, Long clock) {
+        this.value = value;
+        this.clock = clock;
+    }
 }

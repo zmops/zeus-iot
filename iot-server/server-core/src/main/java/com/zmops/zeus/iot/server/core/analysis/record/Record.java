@@ -26,5 +26,8 @@ public abstract class Record implements StorageData {
 
     @Getter
     @Setter
-    private long itemid;
+    private Integer itemid;
+
+
+    public abstract void setValue(String value, Long clock);
 }
