@@ -2,6 +2,8 @@ package com.zmops.zeus.iot.server.core;
 
 import com.zmops.zeus.iot.server.action.ActionRouteIdentifier;
 import com.zmops.zeus.iot.server.action.HelloWorldAction;
+import com.zmops.zeus.iot.server.core.analysis.StreamAnnotationListener;
+import com.zmops.zeus.iot.server.core.annotation.AnnotationScan;
 import com.zmops.zeus.iot.server.core.camel.CamelContextHolderService;
 import com.zmops.zeus.iot.server.core.camel.ZabbixSenderComponent;
 import com.zmops.zeus.iot.server.core.eventbus.EventBusService;
@@ -9,6 +11,7 @@ import com.zmops.zeus.iot.server.core.server.JettyHandlerRegister;
 import com.zmops.zeus.iot.server.core.server.JettyHandlerRegisterImpl;
 import com.zmops.zeus.iot.server.core.servlet.DeviceTriggerActionHandler;
 import com.zmops.zeus.iot.server.core.servlet.HttpItemTrapperHandler;
+import com.zmops.zeus.iot.server.core.storage.StorageException;
 import com.zmops.zeus.iot.server.eventbus.core.EventControllerFactory;
 import com.zmops.zeus.iot.server.eventbus.thread.ThreadPoolFactory;
 import com.zmops.zeus.iot.server.eventbus.thread.entity.ThreadCustomization;
@@ -20,6 +23,8 @@ import com.zmops.zeus.iot.server.sender.module.ZabbixSenderModule;
 import com.zmops.zeus.iot.server.telemetry.TelemetryModule;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.model.ModelCamelContext;
+
+import java.io.IOException;
 
 /**
  * @author nantian created at 2021/8/16 22:26
@@ -33,10 +38,13 @@ public class CoreModuleProvider extends ModuleProvider {
     private ThreadPoolFactory      threadPoolFactory;
     private EventControllerFactory eventControllerFactory;
 
+    private final AnnotationScan annotationScan;
+
 
     public CoreModuleProvider() {
         super();
         this.moduleConfig = new CoreModuleConfig();
+        this.annotationScan = new AnnotationScan();
     }
 
 
@@ -60,6 +68,8 @@ public class CoreModuleProvider extends ModuleProvider {
 
         threadPoolFactory = new ThreadPoolFactory(new ThreadCustomization(), new ThreadParameter());
         eventControllerFactory = new EventControllerFactory(threadPoolFactory);
+
+        annotationScan.registerListener(new StreamAnnotationListener(getManager()));
 
         JettyServerConfig jettyServerConfig = JettyServerConfig.builder()
                 .host(moduleConfig.getRestHost())
@@ -88,12 +98,9 @@ public class CoreModuleProvider extends ModuleProvider {
     @Override
     public void start() throws ServiceNotProvidedException, ModuleStartException {
         try {
-
-            jettyServer.start();
-            camelContext.start();
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            annotationScan.scan();
+        } catch (IOException | StorageException e) {
+            throw new ModuleStartException(e.getMessage(), e);
         }
     }
 
@@ -103,6 +110,14 @@ public class CoreModuleProvider extends ModuleProvider {
 
     @Override
     public void notifyAfterCompleted() throws ServiceNotProvidedException, ModuleStartException {
+
+        try {
+            jettyServer.start();
+            camelContext.start();
+        } catch (Exception e) {
+            throw new ModuleStartException(e.getMessage(), e);
+        }
+
         JettyHandlerRegister service = getManager().find(CoreModule.NAME).provider().getService(JettyHandlerRegister.class);
         service.addHandler(new HttpItemTrapperHandler());
         service.addHandler(new DeviceTriggerActionHandler(getManager()));
