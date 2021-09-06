@@ -16,5 +16,5 @@
 #
 #
 
-com.zmops.zeus.iot.server.core.storage.StorageModule
-com.zmops.zeus.iot.server.core.CoreModule
+
+com.zmops.zeus.iot.server.storage.plugin.jdbc.tdengine.TDEngineStorageProvider

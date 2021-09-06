@@ -63,6 +63,19 @@
             <artifactId>mqtt-receiver-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-zabbix-agent</artifactId>
+            <version>${camel.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>server-tdengine-plugin</artifactId>
+            <version>1.0-beta</version>
+        </dependency>
+
     </dependencies>
 
     <build>

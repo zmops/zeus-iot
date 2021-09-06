@@ -2,9 +2,11 @@ package com.zmops.zeus.iot.server.storage.plugin.jdbc.tdengine;
 
 import com.zmops.zeus.iot.server.core.CoreModule;
 import com.zmops.zeus.iot.server.core.storage.IBatchDAO;
+import com.zmops.zeus.iot.server.core.storage.StorageDAO;
 import com.zmops.zeus.iot.server.core.storage.StorageModule;
 import com.zmops.zeus.iot.server.library.client.jdbc.hikaricp.JDBCHikariCPClient;
 import com.zmops.zeus.iot.server.library.module.*;
+import com.zmops.zeus.iot.server.storage.plugin.jdbc.tdengine.dao.TDEngineStorageDAO;
 import com.zmops.zeus.iot.server.telemetry.TelemetryModule;
 import com.zmops.zeus.iot.server.telemetry.api.HealthCheckMetrics;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsCreator;
@@ -17,11 +19,11 @@ import java.util.Properties;
  */
 public class TDEngineStorageProvider extends ModuleProvider {
 
-    private TDEngineStorageConfig config;
-    private JDBCHikariCPClient    client;
+    private final TDEngineStorageConfig config;
+    private       JDBCHikariCPClient    client;
 
-    public TDEngineStorageProvider(TDEngineStorageConfig config) {
-        this.config = config;
+    public TDEngineStorageProvider() {
+        this.config = new TDEngineStorageConfig();
     }
 
     @Override
@@ -36,7 +38,7 @@ public class TDEngineStorageProvider extends ModuleProvider {
 
     @Override
     public ModuleConfig createConfigBeanIfAbsent() {
-        return null;
+        return config;
     }
 
     @Override
@@ -50,12 +52,13 @@ public class TDEngineStorageProvider extends ModuleProvider {
         client = new JDBCHikariCPClient(settings);
 
         this.registerServiceImplementation(IBatchDAO.class, new TDEngineBatchDAO(client));
+        this.registerServiceImplementation(StorageDAO.class, new TDEngineStorageDAO(getManager(), client));
     }
 
     @Override
     public void start() throws ServiceNotProvidedException, ModuleStartException {
 
-        MetricsCreator metricCreator = getManager().find(TelemetryModule.NAME).provider().getService(MetricsCreator.class);
+        MetricsCreator     metricCreator = getManager().find(TelemetryModule.NAME).provider().getService(MetricsCreator.class);
         HealthCheckMetrics healthChecker = metricCreator.createHealthCheckerGauge("storage_tdengine", MetricsTag.EMPTY_KEY, MetricsTag.EMPTY_VALUE);
 
         client.registerChecker(healthChecker);

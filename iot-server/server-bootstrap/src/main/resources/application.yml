@@ -42,6 +42,15 @@ core:
     restAcceptQueueSize: ${ZS_CORE_REST_JETTY_QUEUE_SIZE:0}
     httpMaxRequestHeaderSize: ${ZS_CORE_HTTP_MAX_REQUEST_HEADER_SIZE:8192}
 
+storage:
+  selector: ${SW_STORAGE:tdengine}
+  tdengine:
+    url: ${ZS_STORAGE_TDENGINE_URL:jdbc:TAOS://zmops-zabbix:6030/test}
+    user: ${ZS_STORAGE_TDENGINE_USER:root}
+    password: ${ZS_STORAGE_TDENGINE_PASSWORD:taosdata}
+
+
+
 # 健康检查
 health-checker:
   selector: ${ZS_HEALTH_CHECKER:default}

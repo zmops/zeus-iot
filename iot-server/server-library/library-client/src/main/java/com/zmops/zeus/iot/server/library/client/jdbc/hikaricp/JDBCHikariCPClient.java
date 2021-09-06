@@ -38,12 +38,17 @@ import java.util.Properties;
 public class JDBCHikariCPClient implements Client, HealthCheckable {
     private static final Logger LOGGER = LoggerFactory.getLogger(JDBCHikariCPClient.class);
 
-    private final HikariConfig hikariConfig;
+    private final HikariConfig           hikariConfig;
     private final DelegatedHealthChecker healthChecker;
-    private HikariDataSource dataSource;
+    private       HikariDataSource       dataSource;
 
     public JDBCHikariCPClient(Properties properties) {
-        hikariConfig = new HikariConfig(properties);
+        hikariConfig = new HikariConfig();
+        hikariConfig.setJdbcUrl(properties.getProperty("dataSource.url"));
+        hikariConfig.setUsername(properties.getProperty("dataSource.user"));
+        hikariConfig.setPassword(properties.getProperty("dataSource.password"));
+        hikariConfig.setConnectionTestQuery("select server_status()");
+
         this.healthChecker = new DelegatedHealthChecker();
     }
 
@@ -90,7 +95,7 @@ public class JDBCHikariCPClient implements Client, HealthCheckable {
 
     public int executeUpdate(Connection connection, String sql, Object... params) throws JDBCClientException {
         LOGGER.debug("execute query with result: {}", sql);
-        int result;
+        int               result;
         PreparedStatement statement = null;
         try {
             statement = connection.prepareStatement(sql);
@@ -114,7 +119,7 @@ public class JDBCHikariCPClient implements Client, HealthCheckable {
 
     public ResultSet executeQuery(Connection connection, String sql, Object... params) throws JDBCClientException {
         LOGGER.debug("execute query with result: {}", sql);
-        ResultSet rs;
+        ResultSet         rs;
         PreparedStatement statement = null;
         try {
             statement = connection.prepareStatement(sql);
