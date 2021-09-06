@@ -29,5 +29,5 @@ public abstract class Record implements StorageData {
     private Integer itemid;
 
 
-    public abstract void setValue(String value, Long clock);
+    public abstract void setValue(String deviceId, String value, Long clock);
 }

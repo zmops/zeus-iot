@@ -24,6 +24,8 @@ public class UIntHistory extends Record {
 
     private String value; // 浮点数
 
+    private String deviceId;
+
     private Map<String, String> itemTags;
 
     private List<String> hostGroups;
@@ -34,7 +36,8 @@ public class UIntHistory extends Record {
     }
 
     @Override
-    public void setValue(String value, Long clock) {
+    public void setValue(String deviceId, String value, Long clock) {
+        this.deviceId = deviceId;
         this.value = value;
         this.clock = clock;
     }
