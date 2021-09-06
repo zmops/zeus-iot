@@ -172,7 +172,7 @@ public class ProductController {
     public ResponseData prodTagCreate(@RequestBody @Valid ProductTag productTag) {
 
         String    productId = productTag.getProductId();
-        Product product   = new QProduct().productId.eq(Integer.parseInt(productId)).findOne();
+        Product product   = new QProduct().productId.eq(Long.parseLong(productId)).findOne();
 
         if (null == product) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
@@ -206,7 +206,7 @@ public class ProductController {
     @PostMapping("/valuemap/update")
     public ResponseData prodValueMapCreate(@RequestBody @Validated(BaseEntity.Create.class) ValueMap valueMap) {
 
-        Product product = new QProduct().productId.eq(Integer.parseInt(valueMap.getProductId())).findOne();
+        Product product = new QProduct().productId.eq(Long.parseLong(valueMap.getProductId())).findOne();
         if (null == product) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }

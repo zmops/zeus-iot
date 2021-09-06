@@ -176,7 +176,7 @@ public class ProductModelService {
 
         String itemName = productAttr.getAttrId() + "";
 
-        Product prod = new QProduct().productId.eq(Integer.parseInt(productAttr.getProductId())).findOne();
+        Product prod = new QProduct().productId.eq(Long.parseLong(productAttr.getProductId())).findOne();
         if (null == prod) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }
@@ -212,7 +212,7 @@ public class ProductModelService {
     public ProductAttr updateTrapperItem(ProductAttr productAttr) {
         ProductAttribute productAttribute = new QProductAttribute().attrId.eq(productAttr.getAttrId()).findOne();
         buildProdAttribute(productAttribute, productAttr);
-        Product prod = new QProduct().productId.eq(Integer.parseInt(productAttr.getProductId())).findOne();
+        Product prod = new QProduct().productId.eq(Long.parseLong(productAttr.getProductId())).findOne();
         if (null == prod) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }
