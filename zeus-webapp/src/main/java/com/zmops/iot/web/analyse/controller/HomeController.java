@@ -23,6 +23,14 @@ public class HomeController {
     HomeService homeService;
 
     /**
+     * 设备数量统计
+     */
+    @RequestMapping("/deviceNum")
+    public ResponseData getDeviceNum(){
+        return ResponseData.success(homeService.getDeviceNum());
+    }
+
+    /**
      * 服务器取数速率
      *
      * @return

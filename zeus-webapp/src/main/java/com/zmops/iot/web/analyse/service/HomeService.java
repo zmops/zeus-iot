@@ -2,6 +2,9 @@ package com.zmops.iot.web.analyse.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.zmops.iot.domain.device.Device;
+import com.zmops.iot.domain.device.query.QDevice;
+import com.zmops.iot.domain.product.query.QProduct;
 import com.zmops.iot.domain.product.query.QProductAttribute;
 import com.zmops.iot.util.LocalDateTimeUtils;
 import com.zmops.iot.util.ToolUtil;
@@ -68,6 +71,11 @@ public class HomeService {
     //Zbx 指标取数速率 key
     private static final String KEY = "zabbix[wcache,values";
 
+    /**
+     * 服务器取数速率统计
+     *
+     * @return
+     */
     public Map<String, List<LatestDto>> collectonRate() {
         if (ToolUtil.isEmpty(hostId)) {
             if (ToolUtil.isEmpty(getZbxServerId())) {
@@ -93,6 +101,11 @@ public class HomeService {
         return latestDtos.parallelStream().collect(Collectors.groupingBy(LatestDto::getName));
     }
 
+    /**
+     * 获取服务器 hostid
+     *
+     * @return
+     */
     private String getZbxServerId() {
         String                    response = zbxHost.hostGet("Zabbix server");
         List<Map<String, String>> ids      = JSON.parseObject(response, List.class);
@@ -103,6 +116,11 @@ public class HomeService {
         return "";
     }
 
+    /**
+     * 获取服务器 取数的ITEM
+     *
+     * @return
+     */
     private Map<String, String> getItemMap() {
         String            itemList  = zbxItem.getItemList(KEY, hostId);
         List<ZbxItemInfo> itemInfos = JSONObject.parseArray(itemList, ZbxItemInfo.class);
@@ -112,6 +130,9 @@ public class HomeService {
         return ITEM_Map;
     }
 
+    /**
+     * 格式化显示的名称
+     */
     private static String formatName(String name) {
         if (name.length() < 53) {
             return "avg";
@@ -200,7 +221,9 @@ public class HomeService {
         return new QProductAttribute().select(QProductAttribute.alias().zbxId).attrId.in(attrIds).findSingleAttributeList();
     }
 
-
+    /**
+     * 用户访客 获取cookie
+     */
     private void getCookie() {
         HttpClient client     = new HttpClient();
         PostMethod postMethod = new PostMethod("http://" + zbxServerIp + ":" + zbxServerPort + "/zabbix/index.php");
@@ -222,4 +245,24 @@ public class HomeService {
         COOKIE = postMethod.getResponseHeader("Set-Cookie").getValue();
         COOKIE_TIME = LocalDateTime.now();
     }
+
+    /**
+     * 统计设备数量
+     *
+     * @return
+     */
+    public Map<String, Integer> getDeviceNum() {
+        Map<String, Integer> deviceNumMap = new HashMap<>(4);
+
+        deviceNumMap.put("online", 0);
+
+        List<Device> list = new QDevice().findList();
+        deviceNumMap.put("total", list.size());
+        deviceNumMap.put("disable", (int) list.parallelStream().filter(o -> "DISABLE".equals(o.getStatus())).count());
+        deviceNumMap.put("product", new QProduct().findCount());
+
+
+        return deviceNumMap;
+    }
+
 }
