@@ -88,7 +88,7 @@ public class DeviceModelController {
             if(null == productAttribute){
                 throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_DEPTED_NOT_EXIST);
             }
-            productAttr.setMasterItemId(productAttr.getZbxId());
+            productAttr.setMasterItemId(productAttribute.getZbxId());
         }
 
         Long attrId = IdUtil.getSnowflake().nextId();
@@ -123,7 +123,7 @@ public class DeviceModelController {
             if(null == productAttribute){
                 throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_DEPTED_NOT_EXIST);
             }
-            productAttr.setMasterItemId(productAttr.getZbxId());
+            productAttr.setMasterItemId(productAttribute.getZbxId());
         }
 
         return ResponseData.success(deviceModelService.updateTrapperItem(productAttr));
