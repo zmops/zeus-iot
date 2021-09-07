@@ -39,7 +39,7 @@ public class LatestService {
      */
     public Pager<LatestDto> qeuryLatest(LatestParam latestParam) {
         List<LatestDto> latestDtos = qeuryLatest(latestParam.getDeviceId(), latestParam.getAttrIds());
-        List<LatestDto> collect = latestDtos.stream().skip((latestParam.getMaxRow() - 1) * latestParam.getPage())
+        List<LatestDto> collect = latestDtos.stream().skip((latestParam.getPage() - 1) * latestParam.getMaxRow())
                 .limit(latestParam.getMaxRow()).collect(Collectors.toList());
         return new Pager<>(collect,latestDtos.size());
     }

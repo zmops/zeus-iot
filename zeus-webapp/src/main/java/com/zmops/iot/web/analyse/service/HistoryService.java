@@ -36,7 +36,7 @@ public class HistoryService {
         List<LatestDto> latestDtos = queryHistory(historyParam.getDeviceId(), historyParam.getAttrIds(),
                 LocalDateTimeUtils.getSecondsByStr(historyParam.getTimeFrom()),
                 LocalDateTimeUtils.getSecondsByStr(historyParam.getTimeTill()));
-        List<LatestDto> collect = latestDtos.stream().skip((historyParam.getMaxRow() - 1) * historyParam.getPage())
+        List<LatestDto> collect = latestDtos.stream().skip((historyParam.getPage() - 1) * historyParam.getMaxRow())
                 .limit(historyParam.getMaxRow()).collect(Collectors.toList());
         return new Pager<>(collect,latestDtos.size());
     }
