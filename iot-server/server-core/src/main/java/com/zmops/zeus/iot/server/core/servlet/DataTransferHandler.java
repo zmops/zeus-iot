@@ -64,7 +64,7 @@ public class DataTransferHandler extends JettyJsonHandler {
         }
 
         record.setItemid(itemValue.itemid);
-        record.setValue(itemValue.getHost().get("host"), itemValue.value, itemValue.clock);
+        record.setValue(itemValue.getHost().get("host"), itemValue.value, itemValue.getTimestamp());
 
         RecordStreamProcessor.getInstance().in(record);
     }
@@ -87,5 +87,9 @@ public class DataTransferHandler extends JettyJsonHandler {
         private String value;
 
         private Map<String, String> host;
+
+        public Long getTimestamp() {
+            return Long.valueOf(clock + String.format("%09d", ns).substring(0, 3));
+        }
     }
 }

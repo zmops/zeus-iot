@@ -25,5 +25,5 @@ public interface StorageData {
     /**
      * @return the unique id used in any storage option.
      */
-    String id();
+    Integer itemid();
 }

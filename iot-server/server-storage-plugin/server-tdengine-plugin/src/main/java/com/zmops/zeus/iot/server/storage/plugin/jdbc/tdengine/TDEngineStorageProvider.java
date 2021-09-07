@@ -3,6 +3,7 @@ package com.zmops.zeus.iot.server.storage.plugin.jdbc.tdengine;
 import com.zmops.zeus.iot.server.core.CoreModule;
 import com.zmops.zeus.iot.server.core.storage.IBatchDAO;
 import com.zmops.zeus.iot.server.core.storage.StorageDAO;
+import com.zmops.zeus.iot.server.core.storage.StorageException;
 import com.zmops.zeus.iot.server.core.storage.StorageModule;
 import com.zmops.zeus.iot.server.library.client.jdbc.hikaricp.JDBCHikariCPClient;
 import com.zmops.zeus.iot.server.library.module.*;
@@ -65,9 +66,12 @@ public class TDEngineStorageProvider extends ModuleProvider {
         client.connect();
 
         TDEngineDatabaseInstaller installer = new TDEngineDatabaseInstaller(client, getManager(), config);
-        installer.createDatabase();
+        try {
+            installer.createDatabase();
+        } catch (StorageException e) {
+            e.printStackTrace();
+        }
 //            getManager().find(CoreModule.NAME).provider().getService(ModelCreator.class).addModelListener(installer);
-
     }
 
     @Override

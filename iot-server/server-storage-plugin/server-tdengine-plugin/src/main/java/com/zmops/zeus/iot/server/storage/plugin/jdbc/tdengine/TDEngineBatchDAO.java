@@ -11,12 +11,16 @@ import com.zmops.zeus.iot.server.library.client.jdbc.hikaricp.JDBCHikariCPClient
 import com.zmops.zeus.iot.server.library.client.request.InsertRequest;
 import com.zmops.zeus.iot.server.library.client.request.PrepareRequest;
 import com.zmops.zeus.iot.server.library.util.CollectionUtils;
+import com.zmops.zeus.iot.server.storage.plugin.jdbc.SQLBuilder;
 import com.zmops.zeus.iot.server.storage.plugin.jdbc.SQLExecutor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author nantian created at 2021/9/4 0:31
@@ -26,6 +30,8 @@ public class TDEngineBatchDAO implements IBatchDAO {
 
     private final JDBCHikariCPClient          tdengineClient;
     private final DataCarrier<PrepareRequest> dataCarrier;
+
+    private final ExecutorService executor = Executors.newFixedThreadPool(10);
 
     public TDEngineBatchDAO(JDBCHikariCPClient client) {
         this.tdengineClient = client;
@@ -39,7 +45,7 @@ public class TDEngineBatchDAO implements IBatchDAO {
             throw new UnexpectedException(e.getMessage(), e);
         }
 
-        this.dataCarrier = new DataCarrier<>(1, 10000);
+        this.dataCarrier = new DataCarrier<>(4, 2500);
         this.dataCarrier.consume(ConsumerPoolFactory.INSTANCE.get(name), new TDEngineBatchConsumer(this));
     }
 
@@ -54,19 +60,34 @@ public class TDEngineBatchDAO implements IBatchDAO {
             log.debug("batch sql statements execute, data size: {}", prepareRequests.size());
         }
 
-        try (Connection connection = tdengineClient.getConnection()) {
-            for (PrepareRequest prepareRequest : prepareRequests) {
+        SQLBuilder execSql = new SQLBuilder(" INSERT INTO ");
+        for (PrepareRequest prepareRequest : prepareRequests) {
+            SQLExecutor sqlExecutor = (SQLExecutor) prepareRequest;
+            execSql.appendLine(sqlExecutor.getSql());
+        }
+        execSql.append(";");
+
+        executor.submit(() -> {
+            PreparedStatement preparedStatement;
+            Connection        connection        = null;
+            try {
+                connection = tdengineClient.getConnection();
+                preparedStatement = connection.prepareStatement(execSql.toString());
+                preparedStatement.execute();
+            } catch (SQLException | JDBCClientException e) {
+                e.printStackTrace();
+            } finally {
                 try {
-                    SQLExecutor sqlExecutor = (SQLExecutor) prepareRequest;
-                    sqlExecutor.invoke(connection);
+                    if (connection != null) {
+                        connection.close();
+                    }
                 } catch (SQLException e) {
-                    // Just avoid one execution failure makes the rest of batch failure.
-                    log.error(e.getMessage(), e);
+                    e.printStackTrace();
                 }
             }
-        } catch (SQLException | JDBCClientException e) {
-            log.error(e.getMessage(), e);
-        }
+        });
+
+
     }
 
     @Override

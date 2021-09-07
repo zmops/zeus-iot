@@ -31,12 +31,12 @@ public class History extends Record {
     private List<String> hostGroups;
 
     @Override
-    public String id() {
-        return null;
+    public Integer itemid() {
+        return getItemid();
     }
 
     @Override
-    public void setValue(String deviceId,String value, Long clock) {
+    public void setValue(String deviceId, String value, Long clock) {
         this.deviceId = deviceId;
         this.value = value;
         this.clock = clock;

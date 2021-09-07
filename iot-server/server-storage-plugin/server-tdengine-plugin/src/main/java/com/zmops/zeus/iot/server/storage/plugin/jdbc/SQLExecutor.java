@@ -20,6 +20,7 @@ package com.zmops.zeus.iot.server.storage.plugin.jdbc;
 
 import com.zmops.zeus.iot.server.library.client.request.InsertRequest;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +36,7 @@ public class SQLExecutor implements InsertRequest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SQLExecutor.class);
 
+    @Getter
     private final String       sql;
     private final List<Object> param;
 

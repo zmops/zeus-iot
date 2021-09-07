@@ -15,7 +15,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-@Stream(name = "uint_hitory", processor = RecordStreamProcessor.class)
+@Stream(name = "history_uint", processor = RecordStreamProcessor.class)
 public class UIntHistory extends Record {
 
     private Long clock;
@@ -31,8 +31,8 @@ public class UIntHistory extends Record {
     private List<String> hostGroups;
 
     @Override
-    public String id() {
-        return null;
+    public Integer itemid() {
+        return getItemid();
     }
 
     @Override
