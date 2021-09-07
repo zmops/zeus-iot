@@ -1,7 +1,6 @@
 package com.zmops.iot.web.device.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.zmops.iot.domain.BaseDto;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.model.cache.filter.CachedValue;
 import com.zmops.iot.model.cache.filter.CachedValueFilter;
@@ -19,7 +18,7 @@ import java.util.List;
  **/
 @Data
 @JsonSerialize(using = CachedValueFilter.class)
-public class DeviceDto implements BaseDto {
+public class DeviceDto {
 
     @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Delete.class})
     private String deviceId;

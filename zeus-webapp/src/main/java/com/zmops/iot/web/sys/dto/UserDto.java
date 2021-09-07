@@ -16,7 +16,6 @@
 package com.zmops.iot.web.sys.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.zmops.iot.domain.BaseDto;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.model.cache.filter.CachedValue;
 import com.zmops.iot.model.cache.filter.CachedValueFilter;
@@ -32,7 +31,7 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 @JsonSerialize(using = CachedValueFilter.class)
-public class UserDto implements BaseDto {
+public class UserDto {
 
     @NotNull(groups = BaseEntity.Update.class)
     private Long userId;

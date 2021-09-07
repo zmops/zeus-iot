@@ -1,7 +1,6 @@
 package com.zmops.iot.web.analyse.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.zmops.iot.domain.BaseDto;
 import com.zmops.iot.model.cache.filter.CachedValue;
 import com.zmops.iot.model.cache.filter.CachedValueFilter;
 import lombok.Data;
@@ -11,7 +10,7 @@ import lombok.Data;
  **/
 @Data
 @JsonSerialize(using = CachedValueFilter.class)
-public class LatestDto implements BaseDto {
+public class LatestDto {
 
     private String name;
 

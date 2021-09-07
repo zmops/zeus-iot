@@ -1,19 +1,10 @@
 package com.zmops.iot.web.sys.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.zmops.iot.constant.IdTypeConsts;
-import com.zmops.iot.domain.BaseDto;
-import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.model.cache.filter.CachedValue;
 import com.zmops.iot.model.cache.filter.CachedValueFilter;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -23,7 +14,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @JsonSerialize(using = CachedValueFilter.class)
-public class SysDictTypeDto implements BaseDto {
+public class SysDictTypeDto {
 
     /**
      * 字典类型id

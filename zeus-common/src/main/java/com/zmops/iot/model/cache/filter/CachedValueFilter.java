@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.zmops.iot.domain.BaseDto;
 import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.LocalDateTimeUtils;
 
@@ -25,10 +24,6 @@ public class CachedValueFilter extends JsonSerializer<Object> {
 
     @Override
     public void serialize(Object object, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        if (!(object instanceof BaseDto)) {
-            return;
-        }
-
         jsonGenerator.writeStartObject();
         for (Field field : getAllFields(object.getClass())) {
 

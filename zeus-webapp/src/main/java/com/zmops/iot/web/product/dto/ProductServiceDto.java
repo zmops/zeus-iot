@@ -1,7 +1,6 @@
 package com.zmops.iot.web.product.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.zmops.iot.domain.BaseDto;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.domain.product.ProductServiceParam;
 import com.zmops.iot.model.cache.filter.CachedValue;
@@ -17,7 +16,7 @@ import java.util.List;
  **/
 @Data
 @JsonSerialize(using = CachedValueFilter.class)
-public class ProductServiceDto implements BaseDto {
+public class ProductServiceDto {
 
     @NotNull(groups = BaseEntity.Update.class)
     private Long id;

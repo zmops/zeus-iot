@@ -3,7 +3,6 @@ package com.zmops.iot.web.product.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.zmops.iot.domain.BaseDto;
 import com.zmops.iot.model.cache.filter.CachedValue;
 import com.zmops.iot.model.cache.filter.CachedValueFilter;
 import com.zmops.iot.model.cache.filter.DicType;
@@ -20,7 +19,7 @@ import java.util.List;
 
 @Data
 @JsonSerialize(using = CachedValueFilter.class)
-public class ProductAttrDto implements BaseDto {
+public class ProductAttrDto {
 
     private Long attrId;
 

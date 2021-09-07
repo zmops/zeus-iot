@@ -196,7 +196,7 @@ public class DeviceModelService {
         }
 
         return zbxItem.createTrapperItem(itemName, productAttr.getKey(),
-                hostId, productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap);
+                hostId, productAttr.getSource(),productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap);
     }
 
     /**
@@ -233,7 +233,7 @@ public class DeviceModelService {
 
 
         zbxItem.updateTrapperItem(productAttribute.getZbxId(), productAttr.getAttrId() + "", productAttr.getKey(),
-                hostId, productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap);
+                hostId, productAttr.getSource(),productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap);
 
         DB.update(productAttribute);
 
