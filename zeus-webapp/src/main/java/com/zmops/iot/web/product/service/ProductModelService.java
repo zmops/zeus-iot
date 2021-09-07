@@ -241,7 +241,7 @@ public class ProductModelService {
 
         DB.update(productAttribute);
 
-        WorkerWrapper<ProductAttr, Boolean> updateProdAttrWork = WorkerWrapper.<ProductAttr, Boolean>builder().worker(updateProdAttrWorker).build();
+        WorkerWrapper<ProductAttr, Boolean> updateProdAttrWork = WorkerWrapper.<ProductAttr, Boolean>builder().worker(updateProdAttrWorker).param(productAttr).build();
 
         try {
             Async.work(100, updateProdAttrWork).awaitFinish();
