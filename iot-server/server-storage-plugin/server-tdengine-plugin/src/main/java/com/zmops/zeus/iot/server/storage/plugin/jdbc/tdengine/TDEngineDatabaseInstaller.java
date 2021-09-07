@@ -18,11 +18,11 @@ public class TDEngineDatabaseInstaller {
     private final   ModuleManager         moduleManager;
     private final   TDEngineStorageConfig config;
 
-    private static final String CREATE_ZEUS_STABLE_HISTORY      = "create stable if not exists history(clock TIMESTAMP, value DOUBLE) tags (deviceid BINARY(20))";
-    private static final String CREATE_ZEUS_STABLE_HISTORY_UINT = "create stable if not exists history_uint(clock TIMESTAMP, value BIGINT) tags (deviceid BINARY(20))";
+    private static final String CREATE_ZEUS_STABLE_HISTORY      = "create stable if not exists history(clock TIMESTAMP, value DOUBLE) tags (deviceid BINARY(20), itemid BINARY(20))";
+    private static final String CREATE_ZEUS_STABLE_HISTORY_UINT = "create stable if not exists history_uint(clock TIMESTAMP, value BIGINT) tags (deviceid BINARY(20), itemid BINARY(20))";
 
-    private static final String CREATE_ZEUS_STABLE_TRENDS      = "create stable if not exists trends(clock TIMESTAMP, value_min DOUBLE, value_avg DOUBLE, value_max DOUBLE) tags (hostid BINARY(20))";
-    private static final String CREATE_ZEUS_STABLE_TRENDS_UINT = "create stable if not exists trends_uint(clock TIMESTAMP, value_min BIGINT, value_avg BIGINT, value_max BIGINT) tags (hostid BINARY(20))";
+    private static final String CREATE_ZEUS_STABLE_TRENDS      = "create stable if not exists trends(clock TIMESTAMP, value_min DOUBLE, value_avg DOUBLE, value_max DOUBLE) tags (hostid BINARY(20), itemid BINARY(20))";
+    private static final String CREATE_ZEUS_STABLE_TRENDS_UINT = "create stable if not exists trends_uint(clock TIMESTAMP, value_min BIGINT, value_avg BIGINT, value_max BIGINT) tags (hostid BINARY(20), itemid BINARY(20))";
 
     public TDEngineDatabaseInstaller(Client client, ModuleManager moduleManager, TDEngineStorageConfig config) {
         this.config = config;

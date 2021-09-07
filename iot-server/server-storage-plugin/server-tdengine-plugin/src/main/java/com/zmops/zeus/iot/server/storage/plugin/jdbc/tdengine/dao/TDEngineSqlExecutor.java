@@ -26,13 +26,19 @@ public class TDEngineSqlExecutor {
         if (modelName.equals("history")) {
 
             History history = (History) metrics;
-            sqlBuilder.append("history TAGS('").append(history.getDeviceId()).append("') VALUES (")
+            sqlBuilder.append("history (deviceid, itemid) TAGS")
+                    .append("('").append(history.getDeviceId()).append("'")
+                    .append(",").append(history.getItemid() + " )")
+                    .append(" VALUES (")
                     .append(history.getClock() + "").append(",").append(history.getValue()).append(")");
 
         } else if (modelName.equals("history_uint")) {
 
             UIntHistory uihistory = (UIntHistory) metrics;
-            sqlBuilder.append("history_uint TAGS('").append(uihistory.getDeviceId()).append("') VALUES (")
+            sqlBuilder.append("history_uint (deviceid, itemid) TAGS")
+                    .append(" ('").append(uihistory.getDeviceId()).append("'")
+                    .append(",").append(uihistory.getItemid() + " )")
+                    .append(" VALUES (")
                     .append(uihistory.getClock() + "").append(",").append(uihistory.getValue()).append(")");
         }
 
