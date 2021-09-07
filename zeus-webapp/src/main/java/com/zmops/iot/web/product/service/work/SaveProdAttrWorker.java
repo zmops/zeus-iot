@@ -32,7 +32,7 @@ public class SaveProdAttrWorker implements IWorker<ProductAttr, Boolean> {
 
         String prodId = productAttr.getProductId();
 
-        List<String> deviceIds = new QDevice().select(QDevice.Alias.deviceId).productId.eq(Integer.parseInt(prodId)).findSingleAttributeList();
+        List<String> deviceIds = new QDevice().select(QDevice.Alias.deviceId).productId.eq(Long.parseLong(prodId)).findSingleAttributeList();
 
         List<ProductAttribute> productAttributeList = new ArrayList<>();
 
