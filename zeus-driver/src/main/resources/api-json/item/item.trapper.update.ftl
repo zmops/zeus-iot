@@ -6,7 +6,10 @@
         "name": "${itemName}",
         "key_": "${itemKey}",
         "hostid": "${hostId}",
-        "type": ${source},  <#--zabbix trapper-->
+        "type": ${source},
+        <#if source == '18'>
+            "master_itemid":${masterItemid},
+        </#if>
         "value_type": ${valueType},
         <#if valuemapid??>
             "valuemapid":${valuemapid},

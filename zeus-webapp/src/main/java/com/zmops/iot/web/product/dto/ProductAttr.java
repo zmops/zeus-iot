@@ -43,6 +43,9 @@ public class ProductAttr {
     private Long depAttrId;
 
     @JsonIgnore
+    private String masterItemId;
+
+    @JsonIgnore
     private String zbxId;
 
     @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})

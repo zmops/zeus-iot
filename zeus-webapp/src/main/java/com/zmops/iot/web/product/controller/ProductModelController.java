@@ -3,6 +3,7 @@ package com.zmops.iot.web.product.controller;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSON;
 import com.zmops.iot.domain.BaseEntity;
+import com.zmops.iot.domain.product.ProductAttribute;
 import com.zmops.iot.domain.product.query.QProductAttribute;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
@@ -34,6 +35,8 @@ public class ProductModelController {
     @Autowired
     private ProductModelService productModelService;
 
+    //依赖属性类型
+    private static final String ATTR_SOURCE_DEPEND = "18";
 
     /**
      * 产品物模型 属性 分页列表
@@ -77,6 +80,17 @@ public class ProductModelController {
             throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_KEY_EXISTS);
         }
 
+        if (ATTR_SOURCE_DEPEND.equals(productAttr.getSource())) {
+            if(productAttr.getDepAttrId() == null){
+                throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_DEPTED_NULL);
+            }
+            ProductAttribute productAttribute = new QProductAttribute().attrId.eq(productAttr.getDepAttrId()).findOne();
+            if(null == productAttribute){
+                throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_DEPTED_NOT_EXIST);
+            }
+            productAttr.setMasterItemId(productAttr.getZbxId());
+        }
+
         Long attrId = IdUtil.getSnowflake().nextId();
         productAttr.setAttrId(attrId);
 
@@ -99,6 +113,17 @@ public class ProductModelController {
                 .attrId.ne(productAttr.getAttrId()).findCount();
         if (i > 0) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_KEY_EXISTS);
+        }
+
+        if (ATTR_SOURCE_DEPEND.equals(productAttr.getSource())) {
+            if(productAttr.getDepAttrId() == null){
+                throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_DEPTED_NULL);
+            }
+            ProductAttribute productAttribute = new QProductAttribute().attrId.eq(productAttr.getDepAttrId()).findOne();
+            if(null == productAttribute){
+                throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_DEPTED_NOT_EXIST);
+            }
+            productAttr.setMasterItemId(productAttr.getZbxId());
         }
 
         return ResponseData.success(productModelService.updateTrapperItem(productAttr));
