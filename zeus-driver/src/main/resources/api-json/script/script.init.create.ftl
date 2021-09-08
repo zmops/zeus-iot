@@ -13,7 +13,7 @@
             "type": 0,
             "execute_on": 1
         },{
-            "name": "__trigger_webhook__", <#-- 执行 方法 -->
+            "name": "__trigger_execute__", <#-- 执行 方法 -->
             "command": "curl -H \\"Content-Type:application/json\\" -X POST --data '{\\"hostname\\":\\"{HOST.HOST}\\"}' http://127.0.0.1:12800/device/action/exec",
             "type": 0,
             "execute_on": 1
