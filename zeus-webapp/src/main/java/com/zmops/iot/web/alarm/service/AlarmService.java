@@ -65,7 +65,7 @@ public class AlarmService {
             hostId = one.getZbxId();
         }
         //从zbx取告警记录
-        String               problem         = zbxProblem.getProblem(hostId, alarmParam.getClock());
+        String               problem         = zbxProblem.getProblem(hostId, alarmParam.getTimeFrom(),alarmParam.getTimeTill(),alarmParam.getRecent());
         List<ZbxProblemInfo> zbxProblemInfos = JSONObject.parseArray(problem, ZbxProblemInfo.class);
 
 

@@ -30,7 +30,7 @@ public class HomeController {
      * 设备数量统计
      */
     @RequestMapping("/deviceNum")
-    public ResponseData getDeviceNum(){
+    public ResponseData getDeviceNum() {
         return ResponseData.success(homeService.getDeviceNum());
     }
 
@@ -38,8 +38,8 @@ public class HomeController {
      * 告警数量统计
      */
     @RequestMapping("/alarmNum")
-    public ResponseData getAlarmNum(){
-        return ResponseData.success(homeService.getAlarmNum());
+    public ResponseData getAlarmNum(@RequestParam("timeFrom") long timeFrom, @RequestParam("timeTill") long timeTill) {
+        return ResponseData.success(homeService.getAlarmNum(timeFrom, timeTill));
     }
 
 
@@ -49,8 +49,8 @@ public class HomeController {
      * @return
      */
     @RequestMapping("/collectonRate")
-    public ResponseData collectonRate() {
-        return ResponseData.success(homeService.collectonRate());
+    public ResponseData collectonRate(@RequestParam("timeFrom") long timeFrom, @RequestParam("timeTill") long timeTill) {
+        return ResponseData.success(homeService.collectonRate(timeFrom, timeTill));
     }
 
     /**

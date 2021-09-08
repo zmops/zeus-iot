@@ -6,13 +6,16 @@
         "selectAcknowledges": "extend",
         "selectTags": "extend",
         "selectSuppressionData": "extend",
-        "recent": "true",
+        "recent": ${recent},
         "sortfield": ["eventid"],
         <#if hostId??>
             "hostids":"${hostId}"
         </#if>
         <#if timeFrom??>
             "time_from":${timeFrom},
+        </#if>
+        <#if timeTill??>
+            "time_till":${timeTill},
         </#if>
         "filter":{
             "source":"0"

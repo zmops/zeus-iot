@@ -10,5 +10,8 @@ import lombok.Data;
 public class AlarmParam extends BaseQueryParam {
     private String deviceId;
 
-    private long clock;
+    private Long timeFrom;
+    private Long timeTill;
+
+    private String recent = "true";
 }

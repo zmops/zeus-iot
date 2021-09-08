@@ -22,6 +22,9 @@ public interface ZbxProblem {
      */
     @Post
     @JsonPath("/problem/problem.get")
-    String getProblem(@ParamName("hostId") String hostId, @ParamName("timeFrom") long timeFrom);
+    String getProblem(@ParamName("hostId") String hostId,
+                      @ParamName("timeFrom") Long timeFrom,
+                      @ParamName("timeTill") Long timeTill,
+                      @ParamName("recent") String recent);
 
 }

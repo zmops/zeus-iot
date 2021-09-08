@@ -18,11 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -58,20 +54,19 @@ public class HomeService {
      *
      * @return
      */
-    public Map<String, List<LatestDto>> collectonRate() {
+    public List<Map<String, Object>> collectonRate(long timeFrom, long timeTill) {
         if (ToolUtil.isEmpty(hostId)) {
             if (ToolUtil.isEmpty(getZbxServerId())) {
-                return new HashMap<>(0);
+                return Collections.emptyList();
             }
         }
         if (ToolUtil.isEmpty(ITEM_Map)) {
             if (ToolUtil.isEmpty(getItemMap())) {
-                return new HashMap<>(0);
+                return Collections.emptyList();
             }
         }
-        List<String> itemIds = new ArrayList<>(ITEM_Map.keySet());
-        List<LatestDto> latestDtos = historyService.queryHitoryData(hostId, itemIds, 0, LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.minu(LocalDateTime.now(),
-                7, ChronoUnit.DAYS)), LocalDateTimeUtils.getSecondsByTime(LocalDateTime.now()));
+        List<String>    itemIds    = new ArrayList<>(ITEM_Map.keySet());
+        List<LatestDto> latestDtos = historyService.queryHitoryData(hostId, itemIds, 0, timeFrom, timeTill);
 
         latestDtos.forEach(latestDto -> {
             latestDto.setClock(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(latestDto.getClock()), "yyyy-MM-dd HH:mm:ss"));
@@ -79,8 +74,15 @@ public class HomeService {
                 latestDto.setName(ITEM_Map.get(latestDto.getItemid()));
             }
         });
-
-        return latestDtos.parallelStream().collect(Collectors.groupingBy(LatestDto::getName));
+        Map<String, List<LatestDto>> collect     = latestDtos.parallelStream().collect(Collectors.groupingBy(LatestDto::getName));
+        List<Map<String, Object>>    collectList = new ArrayList();
+        collect.forEach((key, value) -> {
+            Map<String, Object> collectMap = new HashMap<>(2);
+            collectMap.put("name", key);
+            collectMap.put("data", value);
+            collectList.add(collectMap);
+        });
+        return collectList;
     }
 
     /**
@@ -149,42 +151,49 @@ public class HomeService {
      */
     private static final String[] severity = {"", "信息", "低级", "中级", "高级", "紧急"};
 
-    public Map<String, Object> getAlarmNum() {
+    public Map<String, Object> getAlarmNum(long timeFrom, long timeTill) {
         AlarmParam alarmParam = new AlarmParam();
-        //7天前的日期
-        alarmParam.setClock(LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.minu(LocalDateTime.now(), 7, ChronoUnit.DAYS)));
+        alarmParam.setRecent("false");
         List<ZbxProblemInfo> alarmList = alarmService.getAlarmList(alarmParam);
         Map<String, Object>  alarmMap  = new HashMap<>(3);
-        if (ToolUtil.isEmpty(alarmList)) {
-            return alarmMap;
+
+        if (ToolUtil.isNotEmpty(alarmList)) {
+
+            alarmMap.put("total", alarmList.size());
+
+            //过滤出指定时间段内的告警
+            Map<String, Map<String, Long>> tmpMap = alarmList.parallelStream()
+                    .filter(o -> !o.getSeverity().equals("0")
+                            && Long.parseLong(o.getClock()) >= timeFrom
+                            && Long.parseLong(o.getClock()) < timeTill
+                    ).collect(
+                            Collectors.groupingBy(ZbxProblemInfo::getSeverity,
+                                    Collectors.groupingBy(ZbxProblemInfo::getClock, Collectors.counting()
+                                    )
+                            )
+                    );
+
+            Map<String, Object> trendsMap = new HashMap<>(6);
+            tmpMap.forEach((key, value) -> {
+                List list = new ArrayList();
+                value.forEach((date, val) -> {
+                    Map<String, Object> valMap = new HashMap<>(2);
+                    valMap.put("date", date);
+                    valMap.put("val", val);
+                    list.add(valMap);
+                });
+                trendsMap.put(severity[Integer.parseInt(key)], list);
+            });
+            alarmMap.put("trends", trendsMap);
         }
 
-        Map<String, Map<String, Long>> tmpMap = alarmList.parallelStream().filter(o -> o.getR_clock().equals("0") && !o.getSeverity().equals("0")).collect(
-                Collectors.groupingBy(ZbxProblemInfo::getSeverity,
-                        Collectors.groupingBy(ZbxProblemInfo::getClock, Collectors.counting()
-                        )
-                )
-        );
-
-        Map<String, Object> trendsMap = new HashMap<>(6);
-        tmpMap.forEach((key, value) -> {
-            List list = new ArrayList();
-            value.forEach((date, val) -> {
-                Map<String, Object> valMap = new HashMap<>(2);
-                valMap.put("date", date);
-                valMap.put("val", val);
-                list.add(valMap);
-            });
-            trendsMap.put(severity[Integer.parseInt(key)], list);
-        });
-        alarmMap.put("trnds", trendsMap);
-
-        long total = alarmList.parallelStream().filter(o -> "0".equals(o.getR_clock()) && !"0".equals(o.getSeverity())).count();
-        alarmMap.put("total", total);
 
         //今日开始时间
-        Long timeStart     = LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.getDayStart(LocalDateTime.now()));
-        Long todayAlarmNum = alarmList.parallelStream().filter(o -> Long.parseLong(o.getClock()) >= timeStart).count();
+        Long       timeStart  = LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.getDayStart(LocalDateTime.now()));
+        AlarmParam todayParam = new AlarmParam();
+        todayParam.setTimeFrom(timeStart);
+        List<ZbxProblemInfo> todayAlarmList = alarmService.getAlarmList(todayParam);
+        Long                 todayAlarmNum  = todayAlarmList.parallelStream().filter(o -> !o.getSeverity().equals("0")).count();
         alarmMap.put("today", todayAlarmNum);
 
         return alarmMap;
