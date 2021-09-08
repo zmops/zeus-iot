@@ -1,13 +1,11 @@
 package com.zmops.iot.domain.device;
 
-import com.zmops.iot.constant.IdTypeConsts;
 import com.zmops.iot.domain.BaseEntity;
 import io.ebean.annotation.Aggregation;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -38,6 +36,8 @@ public class Device extends BaseEntity {
     private String addr;
 
     private String position;
+
+    private Integer online;
 
     @Aggregation("count(*)")
     Long totalCount;
