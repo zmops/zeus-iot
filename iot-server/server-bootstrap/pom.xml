@@ -106,10 +106,4 @@
         </plugins>
     </build>
 
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <compiler.version>1.8</compiler.version>
-    </properties>
-
 </project>
