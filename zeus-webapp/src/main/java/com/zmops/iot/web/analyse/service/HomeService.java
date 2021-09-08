@@ -67,7 +67,7 @@ public class HomeService {
         }
         List<String>    itemIds    = new ArrayList<>(ITEM_Map.keySet());
         List<LatestDto> latestDtos = historyService.queryHitoryData(hostId, itemIds, 0, timeFrom, timeTill);
-
+        Collections.reverse(latestDtos);
         latestDtos.forEach(latestDto -> {
             latestDto.setClock(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(latestDto.getClock()), "yyyy-MM-dd HH:mm:ss"));
             if (null != ITEM_Map.get(latestDto.getItemid())) {
