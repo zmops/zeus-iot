@@ -170,15 +170,15 @@ public class HomeService {
         if (ToolUtil.isNotEmpty(alarmList)) {
 
             alarmMap.put("total", alarmList.size());
-
-            //过滤出指定时间段内的告警
+            Collections.reverse(alarmList);
+            //过滤出指定时间段内的告警 并顺序排序
             Map<String, Map<String, Long>> tmpMap = alarmList.parallelStream()
                     .filter(o -> !o.getSeverity().equals("0")
                             && Long.parseLong(o.getClock()) >= timeFrom
                             && Long.parseLong(o.getClock()) < timeTill
                     ).collect(
                             Collectors.groupingBy(ZbxProblemInfo::getSeverity,
-                                    Collectors.groupingBy(ZbxProblemInfo::getClock, Collectors.counting()
+                                    Collectors.groupingBy(o -> LocalDateTimeUtils.convertTimeToString(Integer.parseInt(o.getClock()), "yyyy-MM-dd"), Collectors.counting()
                                     )
                             )
                     );
