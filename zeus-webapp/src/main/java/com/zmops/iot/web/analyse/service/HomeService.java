@@ -66,16 +66,18 @@ public class HomeService {
             }
         }
         List<String>    itemIds    = new ArrayList<>(ITEM_Map.keySet());
-        List<LatestDto> latestDtos = historyService.queryHitoryData(hostId, itemIds, 0, timeFrom, timeTill);
+        List<LatestDto> latestDtos = historyService.queryHitoryData(hostId, itemIds,100000, 0, timeFrom, timeTill);
         Collections.reverse(latestDtos);
         latestDtos.forEach(latestDto -> {
-            latestDto.setClock(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(latestDto.getClock()), "yyyy-MM-dd HH:mm:ss"));
+            latestDto.setClock(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(latestDto.getClock()), "yyyy-MM-dd"));
             if (null != ITEM_Map.get(latestDto.getItemid())) {
                 latestDto.setName(ITEM_Map.get(latestDto.getItemid()));
             }
         });
-        Map<String, List<LatestDto>> collect     = latestDtos.parallelStream().collect(Collectors.groupingBy(LatestDto::getName));
-        List<Map<String, Object>>    collectList = new ArrayList();
+        Map<String, Map<String, Double>> collect = latestDtos.parallelStream().collect(
+                Collectors.groupingBy(LatestDto::getName, Collectors.groupingBy(LatestDto::getClock, Collectors.averagingDouble(o -> Double.parseDouble(o.getValue()))))
+        );
+        List<Map<String, Object>> collectList = new ArrayList();
         collect.forEach((key, value) -> {
             Map<String, Object> collectMap = new HashMap<>(2);
             collectMap.put("name", key);
@@ -172,24 +174,17 @@ public class HomeService {
                                     )
                             )
                     );
+
             List<Map<String, Object>> trendsList = new ArrayList<>();
             tmpMap.forEach((key, value) -> {
-                Map<String, Object> trendsMap = new HashMap<>(2);
-                List                list      = new ArrayList<>();
-                value.forEach((date, val) -> {
-                    Map<String, Object> valMap = new HashMap<>(2);
-                    valMap.put("date", date);
-                    valMap.put("val", val);
-                    list.add(valMap);
-                });
-                trendsMap.put("name", severity[Integer.parseInt(key)]);
-                trendsMap.put("data", list);
-                trendsList.add(trendsMap);
+                Map<String, Object> collectMap = new HashMap<>(2);
+                collectMap.put("name", severity[Integer.parseInt(key)]);
+                collectMap.put("data", value);
+                trendsList.add(collectMap);
             });
             alarmMap.put("trends", trendsList);
         }
-
-
+        
         //今日开始时间
         Long       timeStart  = LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.getDayStart(LocalDateTime.now()));
         AlarmParam todayParam = new AlarmParam();

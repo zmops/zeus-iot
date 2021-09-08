@@ -66,7 +66,7 @@ public class HistoryService {
         }
         //根据属性值类型 分组查询历史数据
         for (Map.Entry<String, List<ProductAttribute>> map : valueTypeMap.entrySet()) {
-            latestDtos.addAll(queryHitoryData(one.getZbxId(), zbxIds, Integer.parseInt(map.getKey()), timeFrom, timeTill));
+            latestDtos.addAll(queryHitoryData(one.getZbxId(), zbxIds,1000, Integer.parseInt(map.getKey()), timeFrom, timeTill));
         }
 
         latestDtos.forEach(latestDto -> {
@@ -81,8 +81,8 @@ public class HistoryService {
         return latestDtos;
     }
 
-    public List<LatestDto> queryHitoryData(String hostId, List<String> itemIds, Integer valueType, Long timeFrom, Long timeTill) {
-        String res = zbxHistoryGet.historyGet(hostId, itemIds, 1000, valueType, timeFrom, timeTill);
+    public List<LatestDto> queryHitoryData(String hostId, List<String> itemIds,int hisNum, Integer valueType, Long timeFrom, Long timeTill) {
+        String res = zbxHistoryGet.historyGet(hostId, itemIds, hisNum, valueType, timeFrom, timeTill);
         return JSONObject.parseArray(res, LatestDto.class);
     }
 
