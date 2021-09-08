@@ -21,7 +21,6 @@
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-mqtt</artifactId>
-            <version>${camel.version}</version>
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>

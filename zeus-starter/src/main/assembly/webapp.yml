@@ -1,0 +1,46 @@
+#  =========== 宙斯物联网采集分析基础平台 ===========
+server:
+  port: 9090
+  max-http-header-size: 10240
+  shutdown: graceful
+  undertow:
+    threads:
+      worker: 256
+    buffer-size: 1024
+    direct-buffers: true
+management:
+  endpoint:
+    shutdown:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: shutdown
+
+# EBean Database 配置
+spring:
+  application:
+    name: ZEUS-IOT
+  datasource:
+    druid:
+      driver-class-name: org.postgresql.Driver
+      username: ${ZEUS_DB_USERNAME:postgres}
+      password: ${ZEUS_DB_PASSWORD:postgres}
+      url: jdbc:postgresql://${ZEUS_DB_HOST:127.0.0.1}:${ZEUS_DB_PORT:5432}/zeus-iot
+  servlet:
+    multipart:
+      max-request-size: 200MB
+      max-file-size: 200MB
+  jackson:
+    generator:
+      write_numbers_as_strings: true
+
+forest:
+  log-enabled: false
+  timeout: 5000
+  variables:
+    ## Zabbix API IP 和 ServerIp and ServerPort
+    zbxApiUrl: http://${ZEUS_ZABBIX_HOST:127.0.0.1}:${ZEUS_ZABBIX_PORT:80}/zabbix/api_jsonrpc.php
+    zbxServerIp: ${ZEUS_ZABBIX_HOST:127.0.0.1}
+    zbxServerPort: ${ZEUS_ZABBIX_PORT:80}
+    zbxApiToken: 3464dee6b3fa3ce4173972e0497d7b84a93bdf8477ff1bdd51a7719cc0db2cd9

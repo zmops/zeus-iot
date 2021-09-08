@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.zmops</groupId>
+        <artifactId>zeus-iot</artifactId>
+        <version>1.0-beta</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>zmops-zeus-iot</artifactId>
+    <packaging>pom</packaging>
+
+
+    <profiles>
+        <profile>
+            <id>server</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.zmops</groupId>
+                    <artifactId>server-starter</artifactId>
+                    <version>1.0-beta</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>webapp</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.zmops</groupId>
+                    <artifactId>zeus-starter</artifactId>
+                    <version>1.0-beta</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>dist</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>zeus-iot-bin</finalName>
+                            <descriptors>
+                                <descriptor>${project.basedir}/src/main/assembly/binary.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <attach>true</attach>
+                    <tarLongFileMode>posix</tarLongFileMode>
+                    <runOnlyAtExecutionRoot>false</runOnlyAtExecutionRoot>
+                    <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>dist</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <copy file="${project.build.directory}/zeus-iot-bin.tar.gz" tofile="${project.basedir}/../dist/zeus-iot-bin.tar.gz" overwrite="true" />
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

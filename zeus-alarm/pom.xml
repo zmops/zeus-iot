@@ -3,9 +3,10 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>zeus-iot</artifactId>
+        <artifactId>zeus-webapp-bom</artifactId>
         <groupId>com.zmops</groupId>
         <version>1.0-beta</version>
+        <relativePath>../zeus-webapp-bom/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -19,7 +20,6 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-codec-http</artifactId>
-            <version>${netty.version}</version>
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>

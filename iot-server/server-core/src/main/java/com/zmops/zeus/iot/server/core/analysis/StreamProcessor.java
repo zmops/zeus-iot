@@ -8,7 +8,7 @@ public interface StreamProcessor<STREAM> {
     /**
      * 写入数据
      *
-     * @param stream
+     * @param stream record
      */
     void in(STREAM stream);
 }
