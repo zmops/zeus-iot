@@ -28,6 +28,8 @@ public interface ZbxAction {
     @Post(headers = "authTag: noAuth")
     @JsonPath("/action/action.init.create")
     String createOfflineStatusAction(@ParamName("userAuth") String userAuth,
+                                     @ParamName("name") String name,
+                                     @ParamName("tagName") String tagName,
                                      @ParamName("scriptId") String scriptId,
                                      @ParamName("groupId") String groupId);
 
@@ -40,5 +42,5 @@ public interface ZbxAction {
      */
     @Post(headers = "authTag: noAuth")
     @JsonPath("/action/action.offline.get")
-    String getOfflineStatusAction(@ParamName("userAuth") String userAuth);
+    String getOfflineStatusAction(@ParamName("userAuth") String userAuth,@ParamName("name") String name);
 }

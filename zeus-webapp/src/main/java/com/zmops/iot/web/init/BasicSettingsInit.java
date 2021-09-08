@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -93,7 +94,7 @@ public class BasicSettingsInit {
      * @return String
      */
     public String createCookieUserGroup(String globalHostGroupId) {
-        String response = zbxInitService.createCookieUserGroup(globalHostGroupId,zbxApiToken);
+        String response = zbxInitService.createCookieUserGroup(globalHostGroupId, zbxApiToken);
         return JSON.parseObject(response, ZbxResponseIds.class).getUsrgrpids()[0];
     }
 
@@ -117,8 +118,8 @@ public class BasicSettingsInit {
      * @param groupId 只读用户组ID
      * @return String
      */
-    public String createCookieUser(String groupId,String roleId) {
-        String response = zbxInitService.createCookieUser(groupId,zbxApiToken,roleId);
+    public String createCookieUser(String groupId, String roleId) {
+        String response = zbxInitService.createCookieUser(groupId, zbxApiToken, roleId);
         return JSON.parseObject(response, ZbxResponseIds.class).getUserids()[0];
     }
 
@@ -150,29 +151,33 @@ public class BasicSettingsInit {
         return null;
     }
 
-    public String createOfflineStatusScript() {
-        String response = zbxScript.createOfflineStatusScript(zbxApiToken, zeusServerIp, zeusServerPort);
-        return JSON.parseObject(response, ZbxResponseIds.class).getScriptids()[0];
+    public Map<String, String> createOfflineStatusScript() {
+        zbxScript.createOfflineStatusScript(zbxApiToken, zeusServerIp, zeusServerPort);
+
+        return getOfflineStatusScript();
     }
 
-    public String getOfflineStatusScript() {
+    public Map<String, String> getOfflineStatusScript() {
         String                    response = zbxScript.getOfflineStatusScript(zbxApiToken);
         List<Map<String, String>> ids      = JSON.parseObject(response, List.class);
+        Map<String, String>       map      = new HashMap<>(3);
         if (null != ids && ids.size() > 0) {
-            return ids.get(0).get("scriptid");
+            ids.forEach(script -> {
+                map.put(script.get("name"), script.get("scriptid"));
+            });
         }
-        return null;
+        return map;
     }
 
 
-    public String createOfflineStatusAction(String scriptId, String groupId) {
-        String response = zbxAction.createOfflineStatusAction(zbxApiToken, scriptId, groupId);
+    public String createAction(String name,String tagName,String scriptId, String groupId) {
+        String response = zbxAction.createOfflineStatusAction(zbxApiToken,tagName,name, scriptId, groupId);
         return JSON.parseObject(response, ZbxResponseIds.class).getActionids()[0];
     }
 
 
-    public String getOfflineStatusAction() {
-        String                    response = zbxAction.getOfflineStatusAction(zbxApiToken);
+    public String getAction(String name) {
+        String                    response = zbxAction.getOfflineStatusAction(zbxApiToken,name);
         List<Map<String, String>> ids      = JSON.parseObject(response, List.class);
         if (null != ids && ids.size() > 0) {
             return ids.get(0).get("actionid");

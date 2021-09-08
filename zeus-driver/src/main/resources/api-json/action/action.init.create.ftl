@@ -2,7 +2,7 @@
     "jsonrpc": "2.0",
     "method": "action.create",
     "params": {
-        "name": "__offline_status__",
+        "name": "${name}",
         "eventsource": 0,
         "status": 0,
         "esc_period": "2m",
@@ -12,7 +12,7 @@
                 {
                     "conditiontype": 25,
                     "operator": 0,
-                    "value": "DEVICE_STATUS"
+                    "value": "${tagName}"
                 }
             ]
         },

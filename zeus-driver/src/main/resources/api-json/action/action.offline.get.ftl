@@ -6,7 +6,7 @@
             "actionid"
         ],
         "search": {
-            "name": "__offline_status__"
+            "name": "${name}"
         }
     },
     "auth": "${userAuth}",
