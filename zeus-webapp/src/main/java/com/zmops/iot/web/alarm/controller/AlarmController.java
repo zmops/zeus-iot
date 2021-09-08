@@ -1,7 +1,10 @@
 package com.zmops.iot.web.alarm.controller;
 
+import com.zmops.iot.model.response.ResponseData;
+import com.zmops.iot.web.alarm.dto.param.AlarmParam;
 import com.zmops.iot.web.alarm.service.AlarmService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,5 +21,10 @@ public class AlarmController {
     @RequestMapping("/test")
     public void test() {
         alarmService.test();
+    }
+
+    @RequestMapping("/list")
+    public ResponseData getAlarmByPage(@RequestBody AlarmParam alarmParam){
+        return ResponseData.success(alarmService.getAlarmByPage(alarmParam));
     }
 }

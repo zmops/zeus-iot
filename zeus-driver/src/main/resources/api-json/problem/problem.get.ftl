@@ -11,6 +11,9 @@
         <#if hostId??>
             "hostids":"${hostId}"
         </#if>
+        <#if timeFrom??>
+            "time_from":${timeFrom},
+        </#if>
         "filter":{
             "source":"0"
         },
