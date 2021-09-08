@@ -10,8 +10,6 @@ public class HeaderPredicate implements Predicate {
 
     @Override
     public boolean matches(Exchange exchange) {
-
-
-        return exchange.getIn().getHeader("username").equals("zhangsan");
+        return exchange.getIn().getHeader("deviceType").equals("1010"); // just for example
     }
 }

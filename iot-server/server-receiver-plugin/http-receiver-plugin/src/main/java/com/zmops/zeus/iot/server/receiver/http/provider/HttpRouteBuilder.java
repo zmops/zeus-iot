@@ -21,9 +21,7 @@ public class HttpRouteBuilder extends RouteBuilder {
         fromF("netty4-http:http://0.0.0.0:%d/data/receiver?sync=true", config.getPort())
                 .threads(10)
                 .choice()
-
                 .when(new HeaderPredicate())
-
                 .process(new JsonToItemValueProcess())
                 .to("Zabbix");
     }
