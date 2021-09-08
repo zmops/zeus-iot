@@ -14,10 +14,7 @@ import com.zmops.zeus.driver.service.ZbxHistoryGet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -41,7 +38,7 @@ public class LatestService {
         List<LatestDto> latestDtos = qeuryLatest(latestParam.getDeviceId(), latestParam.getAttrIds());
         List<LatestDto> collect = latestDtos.stream().skip((latestParam.getPage() - 1) * latestParam.getMaxRow())
                 .limit(latestParam.getMaxRow()).collect(Collectors.toList());
-        return new Pager<>(collect,latestDtos.size());
+        return new Pager<>(collect, latestDtos.size());
     }
 
     public List<LatestDto> qeuryLatest(String deviceId, List<Long> attrIds) {
@@ -69,6 +66,13 @@ public class LatestService {
             String res = zbxHistoryGet.historyGet(one.getZbxId(), zbxIds, map.getValue().size(), Integer.parseInt(map.getKey()), null, null);
             latestDtos.addAll(JSONObject.parseArray(res, LatestDto.class));
         }
+
+        //根据itemid去重
+        latestDtos = latestDtos.parallelStream().collect(
+                Collectors.collectingAndThen(
+                        Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(LatestDto::getItemid))),
+                        ArrayList::new)
+        );
 
         latestDtos.forEach(latestDto -> {
             latestDto.setClock(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(latestDto.getClock()), "yyyy-MM-dd HH:mm:ss"));

@@ -154,7 +154,7 @@ public class HomeService {
         //7天前的日期
         alarmParam.setClock(LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.minu(LocalDateTime.now(), 7, ChronoUnit.DAYS)));
         List<ZbxProblemInfo> alarmList = alarmService.getAlarmList(alarmParam);
-        Map<String, Object>  alarmMap  = new HashMap<>(6);
+        Map<String, Object>  alarmMap  = new HashMap<>(3);
         if (ToolUtil.isEmpty(alarmList)) {
             return alarmMap;
         }
@@ -166,6 +166,7 @@ public class HomeService {
                 )
         );
 
+        Map<String, Object> trendsMap = new HashMap<>(6);
         tmpMap.forEach((key, value) -> {
             List list = new ArrayList();
             value.forEach((date, val) -> {
@@ -174,13 +175,18 @@ public class HomeService {
                 valMap.put("val", val);
                 list.add(valMap);
             });
-            alarmMap.put(severity[Integer.parseInt(key)], list);
+            trendsMap.put(severity[Integer.parseInt(key)], list);
         });
+        alarmMap.put("trnds", trendsMap);
+
+        long total = alarmList.parallelStream().filter(o -> "0".equals(o.getR_clock()) && !"0".equals(o.getSeverity())).count();
+        alarmMap.put("total", total);
 
         //今日开始时间
         Long timeStart     = LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.getDayStart(LocalDateTime.now()));
-        Long todayAlarmNum = alarmList.parallelStream().filter(o -> Long.parseLong(o.getClock()) >= timeStart).collect(Collectors.counting());
+        Long todayAlarmNum = alarmList.parallelStream().filter(o -> Long.parseLong(o.getClock()) >= timeStart).count();
         alarmMap.put("today", todayAlarmNum);
+
         return alarmMap;
     }
 }
