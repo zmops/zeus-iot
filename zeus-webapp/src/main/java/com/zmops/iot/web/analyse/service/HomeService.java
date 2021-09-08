@@ -66,7 +66,7 @@ public class HomeService {
             }
         }
         List<String>    itemIds    = new ArrayList<>(ITEM_Map.keySet());
-        List<LatestDto> latestDtos = historyService.queryHitoryData(hostId, itemIds,100000, 0, timeFrom, timeTill);
+        List<LatestDto> latestDtos = historyService.queryHitoryData(hostId, itemIds, 100000, 0, timeFrom, timeTill);
         Collections.reverse(latestDtos);
         latestDtos.forEach(latestDto -> {
             latestDto.setClock(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(latestDto.getClock()), "yyyy-MM-dd"));
@@ -79,11 +79,19 @@ public class HomeService {
         );
         List<Map<String, Object>> collectList = new ArrayList();
         collect.forEach((key, value) -> {
-            Map<String, Object> collectMap = new HashMap<>(2);
+            Map<String, Object>       collectMap = new HashMap<>(2);
+            List<Map<String, Object>> tmpList    = new ArrayList<>();
+            value.forEach((date, val) -> {
+                Map<String, Object> valMap = new HashMap<>(2);
+                valMap.put("date", date);
+                valMap.put("val", val);
+                tmpList.add(valMap);
+            });
             collectMap.put("name", key);
-            collectMap.put("data", value);
+            collectMap.put("data", tmpList);
             collectList.add(collectMap);
         });
+
         return collectList;
     }
 
@@ -174,17 +182,24 @@ public class HomeService {
                                     )
                             )
                     );
-
             List<Map<String, Object>> trendsList = new ArrayList<>();
             tmpMap.forEach((key, value) -> {
-                Map<String, Object> collectMap = new HashMap<>(2);
-                collectMap.put("name", severity[Integer.parseInt(key)]);
-                collectMap.put("data", value);
-                trendsList.add(collectMap);
+                Map<String, Object> trendsMap = new HashMap<>(2);
+                List                list      = new ArrayList<>();
+                value.forEach((date, val) -> {
+                    Map<String, Object> valMap = new HashMap<>(2);
+                    valMap.put("date", date);
+                    valMap.put("val", val);
+                    list.add(valMap);
+                });
+                trendsMap.put("name", severity[Integer.parseInt(key)]);
+                trendsMap.put("data", list);
+                trendsList.add(trendsMap);
             });
             alarmMap.put("trends", trendsList);
         }
-        
+
+
         //今日开始时间
         Long       timeStart  = LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.getDayStart(LocalDateTime.now()));
         AlarmParam todayParam = new AlarmParam();
