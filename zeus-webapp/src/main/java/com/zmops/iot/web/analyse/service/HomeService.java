@@ -172,19 +172,21 @@ public class HomeService {
                                     )
                             )
                     );
-
-            Map<String, Object> trendsMap = new HashMap<>(6);
+            List<Map<String, Object>> trendsList = new ArrayList<>();
             tmpMap.forEach((key, value) -> {
-                List list = new ArrayList();
+                Map<String, Object> trendsMap = new HashMap<>(2);
+                List                list      = new ArrayList<>();
                 value.forEach((date, val) -> {
                     Map<String, Object> valMap = new HashMap<>(2);
                     valMap.put("date", date);
                     valMap.put("val", val);
                     list.add(valMap);
                 });
-                trendsMap.put(severity[Integer.parseInt(key)], list);
+                trendsMap.put("name", severity[Integer.parseInt(key)]);
+                trendsMap.put("data", list);
+                trendsList.add(trendsMap);
             });
-            alarmMap.put("trends", trendsMap);
+            alarmMap.put("trends", trendsList);
         }
 
 
