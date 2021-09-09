@@ -37,15 +37,15 @@ public class BasicSettingsInit {
     @Autowired
     private ZbxInitService zbxInitService;
 
-    private String zeusServerIp;
-    private String zeusServerPort;
+//    private String zeusServerIp;
+//    private String zeusServerPort;
     private String zbxApiToken;
 
 
     @PostConstruct
     public void init() {
-        zeusServerIp = configuration.getVariables().get("zeusServerIp").toString();
-        zeusServerPort = configuration.getVariables().get("zeusServerPort").toString();
+        //zeusServerIp = configuration.getVariables().get("zeusServerIp").toString();
+        //zeusServerPort = configuration.getVariables().get("zeusServerPort").toString();
         zbxApiToken = configuration.getVariables().get("zbxApiToken").toString();
     }
 
@@ -152,7 +152,7 @@ public class BasicSettingsInit {
     }
 
     public Map<String, String> createOfflineStatusScript() {
-        zbxScript.createOfflineStatusScript(zbxApiToken, zeusServerIp, zeusServerPort);
+        zbxScript.createOfflineStatusScript(zbxApiToken);
 
         return getOfflineStatusScript();
     }
