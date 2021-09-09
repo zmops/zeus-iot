@@ -57,7 +57,13 @@
     <build>
         <finalName>zeus-webapp</finalName>
         <resources>
-
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
         </resources>
         <plugins>
             <plugin>
@@ -103,23 +109,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <configuration>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                    <outputDirectory>${project.build.directory}</outputDirectory>
-                    <resources>
-                        <resource>
-                            <targetPath>${basedir}/target/classes/public</targetPath>
-                            <directory>${ui.path}/dist</directory>
-                        </resource>
-                        <resource>
-                            <targetPath>${basedir}/target/classes</targetPath>
-                            <directory>src/main/resources</directory>
-                        </resource>
-                    </resources>
-                </configuration>
-            </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
