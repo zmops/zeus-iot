@@ -23,10 +23,11 @@
                 <dependency>
                     <groupId>com.zmops</groupId>
                     <artifactId>server-starter</artifactId>
-                    <version>1.0-beta</version>
+                    <version>${project.version}</version>
                 </dependency>
             </dependencies>
         </profile>
+
         <profile>
             <id>webapp</id>
             <activation>
@@ -36,7 +37,7 @@
                 <dependency>
                     <groupId>com.zmops</groupId>
                     <artifactId>zeus-starter</artifactId>
-                    <version>1.0-beta</version>
+                    <version>${project.version}</version>
                 </dependency>
             </dependencies>
         </profile>

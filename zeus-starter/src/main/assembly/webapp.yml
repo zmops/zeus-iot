@@ -1,4 +1,3 @@
-#  =========== 宙斯物联网采集分析基础平台 ===========
 server:
   port: 9090
   max-http-header-size: 10240
@@ -17,7 +16,7 @@ management:
       exposure:
         include: shutdown
 
-# EBean Database 配置
+# EBean Database Setting
 spring:
   application:
     name: ZEUS-IOT
@@ -39,7 +38,7 @@ forest:
   log-enabled: false
   timeout: 5000
   variables:
-    ## Zabbix API IP 和 ServerIp and ServerPort
+    ## Zabbix API IP And ServerIp and ServerPort
     zbxApiUrl: http://${ZEUS_ZABBIX_HOST:127.0.0.1}:${ZEUS_ZABBIX_PORT:80}/zabbix/api_jsonrpc.php
     zbxServerIp: ${ZEUS_ZABBIX_HOST:127.0.0.1}
     zbxServerPort: ${ZEUS_ZABBIX_PORT:80}

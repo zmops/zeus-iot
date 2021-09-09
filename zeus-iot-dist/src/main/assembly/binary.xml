@@ -15,11 +15,11 @@
   ~ limitations under the License.
   ~
   -->
-
+<!-- IoT Server 打包 -->
 <assembly
-    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+        xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
     <id>dist</id>
     <formats>
         <format>tar.gz</format>
@@ -41,7 +41,6 @@
                 <include>log4j2.xml</include>
             </includes>
         </fileSet>
-
         <fileSet>
             <directory>${project.basedir}/../iot-server/server-bootstrap/src/main/resources</directory>
             <includes>
@@ -50,14 +49,15 @@
             <outputDirectory>config</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/../iot-server/server-starter/target/zeus-iot-server-assembly/iot-server/libs</directory>
+            <directory>${project.basedir}/../iot-server/server-starter/target/iot-server-assembly/iot-server/libs
+            </directory>
             <outputDirectory>iot-server-libs</outputDirectory>
         </fileSet>
-
     </fileSets>
+
     <files>
         <file>
-            <source>${project.basedir}/../zeus-starter/target/zeus-iot-webapp.jar</source>
+            <source>${project.basedir}/../zeus-starter/target/zeus-webapp.jar</source>
             <outputDirectory>webapp</outputDirectory>
             <fileMode>0644</fileMode>
         </file>
