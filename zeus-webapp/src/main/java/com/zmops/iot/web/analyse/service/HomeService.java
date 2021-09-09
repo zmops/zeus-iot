@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.query.QProduct;
+import com.zmops.iot.enums.ValueType;
 import com.zmops.iot.util.LocalDateTimeUtils;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.alarm.dto.param.AlarmParam;
@@ -87,7 +88,7 @@ public class HomeService {
                 valMap.put("val", val);
                 tmpList.add(valMap);
             });
-            collectMap.put("name", key);
+            collectMap.put("name", ValueType.getVal(key));
             collectMap.put("data", tmpList);
             collectList.add(collectMap);
         });
