@@ -15,10 +15,8 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-
         <frontend-maven-plugin.version>1.11.0</frontend-maven-plugin.version>
         <ui.path>../zeus-iot-ui</ui.path>
-        <spring.boot.version>2.3.12.RELEASE</spring.boot.version>
     </properties>
 
     <dependencies>
@@ -57,7 +55,10 @@
     <build>
         <finalName>zeus-webapp</finalName>
         <resources>
-
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
         </resources>
         <plugins>
             <plugin>
@@ -66,6 +67,7 @@
                     <source>${compiler.version}</source>
                     <target>${compiler.version}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
+                    <showWarnings>false</showWarnings>
                 </configuration>
             </plugin>
             <plugin>
@@ -130,9 +132,7 @@
                 <executions>
                     <execution>
                         <goals>
-                            <goal>
-                                repackage
-                            </goal>
+                            <goal>repackage</goal>
                         </goals>
                     </execution>
                 </executions>
