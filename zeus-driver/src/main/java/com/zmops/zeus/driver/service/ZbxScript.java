@@ -20,15 +20,11 @@ public interface ZbxScript {
      * 创建 在线状态 回调地址
      *
      * @param userApiToken   apiToekn
-     * @param zeusServerIp   平台IP
-     * @param zeusServerPort 平台端口
      * @return String
      */
     @Post(headers = "authTag: noAuth")
     @JsonPath("/script/script.init.create")
-    String createOfflineStatusScript(@ParamName("userAuth") String userApiToken,
-                                     @ParamName("zeusServerIp") String zeusServerIp,
-                                     @ParamName("zeusServerPort") String zeusServerPort);
+    String createOfflineStatusScript(@ParamName("userAuth") String userApiToken);
 
 
     /**
