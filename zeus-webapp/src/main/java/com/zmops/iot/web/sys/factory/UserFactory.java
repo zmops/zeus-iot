@@ -74,6 +74,9 @@ public class UserFactory {
             if (ToolUtil.isNotEmpty(newUser.getPhone())) {
                 oldUser.setPhone(newUser.getPhone());
             }
+            if (ToolUtil.isNotEmpty(newUser.getStatus())) {
+                oldUser.setStatus(newUser.getStatus());
+            }
             return oldUser;
         }
     }
