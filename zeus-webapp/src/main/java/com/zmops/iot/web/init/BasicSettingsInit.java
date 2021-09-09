@@ -37,15 +37,11 @@ public class BasicSettingsInit {
     @Autowired
     private ZbxInitService zbxInitService;
 
-//    private String zeusServerIp;
-//    private String zeusServerPort;
     private String zbxApiToken;
 
 
     @PostConstruct
     public void init() {
-        //zeusServerIp = configuration.getVariables().get("zeusServerIp").toString();
-        //zeusServerPort = configuration.getVariables().get("zeusServerPort").toString();
         zbxApiToken = configuration.getVariables().get("zbxApiToken").toString();
     }
 
