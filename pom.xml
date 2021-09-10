@@ -22,7 +22,6 @@
         <docker.img.version>latest</docker.img.version>
         <compiler.version>1.8</compiler.version>
         <os-maven-plugin.version>1.6.2</os-maven-plugin.version>
-
         <spring.boot.version>2.3.12.RELEASE</spring.boot.version>
 
         <!--plugin-->
