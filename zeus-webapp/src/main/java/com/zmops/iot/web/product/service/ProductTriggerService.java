@@ -7,10 +7,8 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.zmops.iot.web.product.dto.ProductStatusJudgeRule.OFF_LINE;
-import static com.zmops.iot.web.product.dto.ProductStatusJudgeRule.ON_LINE;
-import static com.zmops.iot.web.product.dto.ProductStatusJudgeRule.NODATA;
-import static com.zmops.iot.web.product.dto.ProductStatusJudgeRule.LASTDATA;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author nantian created at 2021/8/10 17:55
@@ -35,28 +33,24 @@ public class ProductTriggerService {
      */
     public Integer createDeviceStatusJudgeTrigger(ProductStatusJudgeRule judgeRule) {
 
-        String triggerName = judgeRule.getTriggerName();
-        String hostName    = judgeRule.getHostName();
-        String itemKey     = judgeRule.getItemKey();
-        String ruleValue   = judgeRule.getRuleValue();
+        Map<String, String> rule = new HashMap<>();
 
-        if (NODATA.equals(judgeRule.getRuleFunction())) {
-            // 上线触发器
-            if (ON_LINE.equals(judgeRule.getRuleType())) {
-                return getTriggerId(deviceStatusTrigger.nodataOnline(hostName, itemKey, ruleValue, triggerName));
-            }
+        rule.put("ruleId", judgeRule.getRuleId());
+        rule.put("deviceId", judgeRule.getDeviceId());
 
-            if (OFF_LINE.equals(judgeRule.getRuleType())) {
-                return getTriggerId(deviceStatusTrigger.nodataOffline(hostName, itemKey, ruleValue, triggerName));
-            }
-        }
+        rule.put("ruleFunction", judgeRule.getRuleFunction());
+        rule.put("ruleCondition", judgeRule.getRuleCondition());
+        rule.put("itemKey", judgeRule.getProductAttrKey());
 
-        if (LASTDATA.equals(judgeRule.getRuleFunction())) {
-            return getTriggerId(deviceStatusTrigger.lastValueJudge(hostName, itemKey, ruleValue, triggerName));
-        }
+        rule.put("itemKeySecond", judgeRule.getProductAttrKeySecond());
+        rule.put("ruleConditionSecond", judgeRule.getRuleConditionSecond());
+        rule.put("ruleFunctionSecond", judgeRule.getRuleFunctionSecond());
 
-        return null;
+        String res = deviceStatusTrigger.createDeviceStatusTrigger(rule);
+
+        return getTriggerId(res);
     }
+
 
     private Integer getTriggerId(String responseStr) {
         TriggerIds ids = JSON.parseObject(responseStr, TriggerIds.class);

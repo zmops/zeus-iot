@@ -6,6 +6,8 @@ import com.zmops.zeus.driver.annotation.JsonPath;
 import com.zmops.zeus.driver.annotation.ParamName;
 import com.zmops.zeus.driver.inteceptor.JsonBodyBuildInterceptor;
 
+import java.util.Map;
+
 /**
  * @author nantian created at 2021/8/10 16:32
  * <p>
@@ -19,36 +21,23 @@ public interface ZbxDeviceStatusTrigger {
 
 
     /**
-     * 在线状态
+     * 创建 设备 在线，离线 触发器
+     *
+     * @param triggerRule rule object
+     * @return String
      */
     @Post
-    @JsonPath("/trigger/trigger.nodata.0.create")
-    public String nodataOnline(@ParamName("hostName") String hostName,
-                               @ParamName("itemKey") String itemKey,
-                               @ParamName("nodatTime") String nodataTime,
-                               @ParamName("triggerName") String triggerName);
+    @JsonPath("/trigger/device.status.trigger")
+    String createDeviceStatusTrigger(@ParamName("rule") Map<String, String> triggerRule);
 
 
     /**
-     * 离线状态
+     * 修改 设备 在线，离线 触发器
+     *
+     * @param triggerRule rule object
+     * @return String
      */
     @Post
-    @JsonPath("/trigger/trigger.nodata.1.create")
-    public String nodataOffline(@ParamName("hostName") String hostName,
-                                @ParamName("itemKey") String itemKey,
-                                @ParamName("nodatTime") String nodataTime,
-                                @ParamName("triggerName") String triggerName);
-
-
-    /**
-     * 自定义状态，最新值等于 ？ 触发
-     */
-    @Post
-    @JsonPath("/trigger/trigger.last.create")
-    public String lastValueJudge(@ParamName("hostName") String hostName,
-                                 @ParamName("itemKey") String itemKey,
-                                 @ParamName("dataValue") String dataValue,
-                                 @ParamName("triggerName") String triggerName);
-
-
+    @JsonPath("/trigger/device.status.trigger.update")
+    String updateDeviceStatusTrigger(@ParamName("rule") Map<String, String> triggerRule);
 }

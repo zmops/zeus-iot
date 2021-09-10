@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * @author nantian created at 2021/8/3 19:45
  * <p>
- * 设备在线状态 触发器
+ * 设备在线 离线状态 触发器
  */
 
 @RestController
@@ -44,23 +44,15 @@ public class ProductStatusTriggerController {
      * @return ResponseData
      */
     @PostMapping("/create")
-    public ResponseData createOfflineTrigger(@RequestBody @Valid ProductStatusJudgeRule rule) {
+    public ResponseData createDeviceStatusTrigger(@RequestBody @Valid ProductStatusJudgeRule rule) {
 
-        // nodata(/sanshi-host/sender.a,1m)=1
-        // 查询 itemid itemkey 和 template name
-        ProductAttribute prodAttr = new QProductAttribute().attrId.eq(rule.getProductAttrId()).findOne();
-        if (null == prodAttr) {
+        ProductAttribute prodAttr       = new QProductAttribute().attrId.eq(rule.getProductAttrId()).findOne();
+        ProductAttribute prodAttrSecond = new QProductAttribute().attrId.eq(rule.getProductAttrIdSecond()).findOne();
+
+        if (null == prodAttr || null == prodAttrSecond) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }
 
-        List<ZbxItemInfo> itemInfo = JSON.parseObject(zbxItem.getItemInfo(prodAttr.getZbxId(), null), List.class);
-
-        String key = itemInfo.get(0).getKey_(); // item key
-
-
-        productTriggerService.createDeviceStatusJudgeTrigger(rule);
-
-
-        return ResponseData.success();
+        return ResponseData.success(productTriggerService.createDeviceStatusJudgeTrigger(rule));
     }
 }
