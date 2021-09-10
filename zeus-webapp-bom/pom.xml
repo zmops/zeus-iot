@@ -115,6 +115,10 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+        </dependency>
+        <dependency>
             <groupId>one.util</groupId>
             <artifactId>streamex</artifactId>
             <version>0.7.3</version>
