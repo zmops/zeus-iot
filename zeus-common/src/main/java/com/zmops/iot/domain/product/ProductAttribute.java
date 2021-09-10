@@ -1,5 +1,6 @@
 package com.zmops.iot.domain.product;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.zmops.iot.domain.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,6 +22,7 @@ public class ProductAttribute extends BaseEntity {
     @Id
     private Long attrId; //属性ID
 
+    @JsonProperty("attrName")
     private String name; // 属性名称
 
     private String key; // 属性唯一Key
