@@ -1,4 +1,4 @@
-## Zeus IoT 宙斯物联网分布式采集平台
+## Zeus IoT distributed collection platform
 
 [![GitHub stars](https://img.shields.io/github/stars/zmops/zeus-iot.svg?label=Stars&logo=github)](https://github.com/zmops/zeus-iot)
 [![GitHub issues](https://img.shields.io/github/issues/zmops/zeus-iot?label=Issuess&logo=github)](https://github.com/zmops/zeus-iot)
@@ -6,9 +6,9 @@
 ![Version](https://img.shields.io/badge/version-1.0.0--RELEASE-brightgreen)
 [![QQ群736541577](https://img.shields.io/badge/QQ群-736541577-brightgreen)](https://qm.qq.com/cgi-bin/qm/qr?k=CcWBdkXjkgt99bBu5d_-1TeS36DhCkU4&jump_from=webapi)
 
-### 快速安装
+### Quick install
 
-Zeus-IoT 支持 Centos 7、Ubuntu 20.04、Debain 10 、Kylin、UOS 等基于x86_64平台的 Linux 操作系统。
+Zeus-IoT supports Linux operating systems based on the x86_64 platform, such as Centos 7, Ubuntu 20.04, Debain 10, Kylin, and UOS.
 
 - Centos7、RedHat 7
 
