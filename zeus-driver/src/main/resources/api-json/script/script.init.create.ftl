@@ -4,7 +4,7 @@
     "params": [
         {
             "name": "__offline_status__", <#--上下线 调用 webapp-->
-            "command": "curl -H \\"Content-Type:application/json\\" -X POST --data '{\\"hostname\\":\\"{HOST.HOST}\\"}' http://127.0.0.1:9090/device/status",
+            "command": "curl -H \\"Content-Type:application/json\\" -X POST --data '{\\"hostname\\":\\"{HOST.HOST}\\",\\"recovery\\":\\"{EVENT.RECOVERY.STATUS}\\"}' http://127.0.0.1:9090/device/status",
             "type": 0,
             "execute_on": 1
         },{

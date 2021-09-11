@@ -36,4 +36,8 @@ public class ProductStatusFunction extends BaseEntity {
     private String ruleConditionRecovery;
 
     private Long attrIdRecovery;
+
+    private String unit;
+
+    private String unitRecovery;
 }

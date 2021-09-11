@@ -22,7 +22,8 @@ public class NoneAuthedResources {
      */
     public static final String[] NO_AUTH_API = {
             "/login",
-            "/rest/device/webhook"
+            "/device/status",
+            "/device/problem"
     };
 
 

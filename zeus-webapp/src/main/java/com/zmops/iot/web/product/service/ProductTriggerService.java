@@ -6,6 +6,7 @@ import com.zmops.iot.domain.product.ProductStatusFunction;
 import com.zmops.iot.domain.product.ProductStatusFunctionRelation;
 import com.zmops.iot.domain.product.query.QProductStatusFunction;
 import com.zmops.iot.domain.product.query.QProductStatusFunctionRelation;
+import com.zmops.iot.web.product.dto.ProductStatusFunctionDto;
 import com.zmops.iot.web.product.dto.ProductStatusJudgeRule;
 import com.zmops.zeus.driver.service.ZbxDeviceStatusTrigger;
 import io.ebean.DB;
@@ -37,10 +38,11 @@ public class ProductTriggerService {
      * @param relationId 在线规则
      * @return ResponseData
      */
-    public ProductStatusFunction getRule(String relationId) {
-        ProductStatusFunctionRelation productStatusFunctionRelation = new QProductStatusFunctionRelation().relationId.eq(relationId).findOne();
-
-        return new QProductStatusFunction().ruleId.eq(productStatusFunctionRelation.getRuleId()).findOne();
+    public ProductStatusFunctionDto getRule(String relationId) {
+        String sql = "select s.*,p.name attrName,p2.name attrNameRecovery,p.units,p2.units unitsRecovery " +
+                " from product_status_function s LEFT JOIN product_attribute p on p.attr_id = s.attr_id LEFT JOIN product_attribute p2 on p2.attr_id = s.attr_id_recovery \n" +
+                " where s.rule_id in (select rule_id from product_status_function_relation where relation_id = :relationId)";
+        return  DB.findDto(ProductStatusFunctionDto.class, sql).setParameter("relationId", relationId).findOne();
     }
 
 
@@ -59,8 +61,8 @@ public class ProductTriggerService {
 //        buildTriggerCreateMap(rule, judgeRule);
 
         String res = deviceStatusTrigger.createDeviceStatusTrigger(judgeRule.getRuleId() + "", judgeRule.getRelationId(),
-                judgeRule.getProductAttrKey(), judgeRule.getRuleCondition(), judgeRule.getRuleFunction(), judgeRule.getProductAttrKeyRecovery(),
-                judgeRule.getRuleConditionRecovery(), judgeRule.getRuleFunctionRecovery());
+                judgeRule.getProductAttrKey(), judgeRule.getRuleCondition() + judgeRule.getUnit(), judgeRule.getRuleFunction(), judgeRule.getProductAttrKeyRecovery(),
+                judgeRule.getRuleConditionRecovery() + judgeRule.getUnitRecovery(), judgeRule.getRuleFunctionRecovery());
 
         String triggerId = getTriggerId(res);
 
@@ -89,8 +91,8 @@ public class ProductTriggerService {
 //        buildTriggerCreateMap(rule, judgeRule);
 
         deviceStatusTrigger.updateDeviceStatusTrigger(judgeRule.getTriggerId(), judgeRule.getRuleId() + "", judgeRule.getRelationId(),
-                judgeRule.getProductAttrKey(), judgeRule.getRuleCondition(), judgeRule.getRuleFunction(), judgeRule.getProductAttrKeyRecovery(),
-                judgeRule.getRuleConditionRecovery(), judgeRule.getRuleFunctionRecovery());
+                judgeRule.getProductAttrKey(), judgeRule.getRuleCondition() + judgeRule.getUnit(), judgeRule.getRuleFunction(), judgeRule.getProductAttrKeyRecovery(),
+                judgeRule.getRuleConditionRecovery() + judgeRule.getUnitRecovery(), judgeRule.getRuleFunctionRecovery());
 
         ProductStatusFunction productStatusFunction = new ProductStatusFunction();
         BeanUtils.copyProperties(judgeRule, productStatusFunction);
