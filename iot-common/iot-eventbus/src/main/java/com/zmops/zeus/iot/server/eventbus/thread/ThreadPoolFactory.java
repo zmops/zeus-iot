@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ThreadPoolFactory {
     private static final Logger LOG = LoggerFactory.getLogger(ThreadPoolFactory.class);
 
-    private final Map<String, ThreadPoolExecutor> threadPoolExecutorMap = new ConcurrentHashMap<String, ThreadPoolExecutor>();
+    private final Map<String, ThreadPoolExecutor> threadPoolExecutorMap = new ConcurrentHashMap<>();
     private       ThreadPoolExecutor              threadPoolExecutor;
 
     private final ThreadCustomization threadCustomization;
