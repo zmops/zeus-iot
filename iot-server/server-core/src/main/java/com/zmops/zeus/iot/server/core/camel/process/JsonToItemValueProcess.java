@@ -32,17 +32,12 @@ public class JsonToItemValueProcess implements Processor {
 
         List<IOTDeviceValue> valueList = gson.fromJson(inputContext, new TypeToken<List<IOTDeviceValue>>() {}.getType());
 
-        // 多一步 命名转换，方便 Json 字段理解
         List<ItemValue> itemValueList = new ArrayList<>();
-        valueList.forEach(i -> {
-            ItemValue item = new ItemValue(i.getDeviceId(), i.getDeviceAttrKey(), i.getDeviceAttrValue());
-            if (i.getDeviceTime() != null) {
-                item.setClock(i.getDeviceTime());
-            }
-            itemValueList.add(item);
-        });
 
-        exchange.getMessage().setBody(itemValueList);
+        ItemValue item = new ItemValue(itemValueList);
+        valueList.forEach(item::addItemValue);
+
+        exchange.getMessage().setBody(item.getValueList());
     }
 
 

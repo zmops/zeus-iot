@@ -25,36 +25,17 @@ public class StringItemValueProcess implements Processor {
 
     @Override
     public void process(Exchange exchange) throws Exception {
-        Message              message   = exchange.getIn();
-        List<IOTDeviceValue> valueList = gson.fromJson((String) message.getBody(), new TypeToken<List<IOTDeviceValue>>() {}.getType());
+        Message message = exchange.getIn();
+
+        List<IOTDeviceValue> valueList = gson.fromJson((String) message.getBody(), new TypeToken<List<IOTDeviceValue>>() {
+        }.getType());
 
         // 多一步 命名转换，方便 Json 字段理解
         List<ItemValue> itemValueList = new ArrayList<>();
-        valueList.forEach(i -> {
-            ItemValue item = new ItemValue(i.getDeviceId(), i.getDeviceAttrKey(), i.getDeviceAttrValue());
-            if (i.getDeviceTime() != null) {
-                item.setClock(i.getDeviceTime());
-            }
-            itemValueList.add(item);
-        });
 
-        exchange.getMessage().setBody(itemValueList);
-    }
+        ItemValue item = new ItemValue(itemValueList);
+        valueList.forEach(item::addItemValue);
 
-
-    private String analysisMessage(InputStream bodyStream) throws IOException {
-        ByteArrayOutputStream outStream    = new ByteArrayOutputStream();
-        byte[]                contextBytes = new byte[4096];
-        int                   realLen;
-        while ((realLen = bodyStream.read(contextBytes, 0, 4096)) != -1) {
-            outStream.write(contextBytes, 0, realLen);
-        }
-
-        // 返回从Stream中读取的字串
-        try {
-            return outStream.toString("UTF-8");
-        } finally {
-            outStream.close();
-        }
+        exchange.getMessage().setBody(item.getValueList());
     }
 }
