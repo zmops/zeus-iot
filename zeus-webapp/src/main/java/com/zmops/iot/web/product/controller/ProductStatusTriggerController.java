@@ -1,7 +1,9 @@
 package com.zmops.iot.web.product.controller;
 
 import com.zmops.iot.domain.product.ProductAttribute;
+import com.zmops.iot.domain.product.ProductStatusFunction;
 import com.zmops.iot.domain.product.query.QProductAttribute;
+import com.zmops.iot.domain.product.query.QProductStatusFunction;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
@@ -43,8 +45,8 @@ public class ProductStatusTriggerController {
     @PostMapping("/create")
     public ResponseData createDeviceStatusTrigger(@RequestBody @Valid ProductStatusJudgeRule rule) {
 
-        ProductAttribute prodAttr       = new QProductAttribute().attrId.eq(rule.getProductAttrId()).findOne();
-        ProductAttribute prodAttrSecond = new QProductAttribute().attrId.eq(rule.getProductAttrIdRecovery()).findOne();
+        ProductAttribute prodAttr       = new QProductAttribute().attrId.eq(rule.getAttrId()).findOne();
+        ProductAttribute prodAttrSecond = new QProductAttribute().attrId.eq(rule.getAttrIdRecovery()).findOne();
 
         if (null == prodAttr || null == prodAttrSecond) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
@@ -63,14 +65,20 @@ public class ProductStatusTriggerController {
     @PostMapping("/update")
     public ResponseData updateDeviceStatusTrigger(@RequestBody @Valid ProductStatusJudgeRule rule) {
 
-        ProductAttribute prodAttr       = new QProductAttribute().attrId.eq(rule.getProductAttrId()).findOne();
-        ProductAttribute prodAttrSecond = new QProductAttribute().attrId.eq(rule.getProductAttrIdRecovery()).findOne();
+        ProductAttribute prodAttr       = new QProductAttribute().attrId.eq(rule.getAttrId()).findOne();
+        ProductAttribute prodAttrSecond = new QProductAttribute().attrId.eq(rule.getAttrIdRecovery()).findOne();
 
         if (null == prodAttr || null == prodAttrSecond) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }
 
         // 数据库查询 triggerId 并且赋值
+        ProductStatusFunction productStatusFunction = new QProductStatusFunction().ruleId.eq(rule.getRuleId()).findOne();
+        if(null == productStatusFunction){
+            throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
+        }
+        rule.setTriggerId(productStatusFunction.getZbxId());
+
 
         return ResponseData.success(productTriggerService.updateDeviceStatusJudgeTrigger(rule));
     }

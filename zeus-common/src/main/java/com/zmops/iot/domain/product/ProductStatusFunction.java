@@ -19,15 +19,21 @@ import javax.persistence.Table;
 public class ProductStatusFunction extends BaseEntity {
 
     @Id
-    private Long triggerId;
+    private Long ruleId;
 
-    private Integer zbxId;
+    private String zbxId;
 
-    private String ruleType;
+    private String ruleFunction;
 
-    private String fuleFunction;
+    private Long attrId;
 
     private String ruleValue;
 
     private Integer ruleStatus;
+
+    private String ruleFunctionRecovery;
+
+    private String ruleValueRecovery;
+
+    private Long attrIdRecovery;
 }

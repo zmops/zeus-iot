@@ -1,11 +1,17 @@
 package com.zmops.iot.web.product.service;
 
+import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSON;
+import com.zmops.iot.domain.product.ProductStatusFunction;
+import com.zmops.iot.domain.product.ProductStatusFunctionRelation;
 import com.zmops.iot.web.product.dto.ProductStatusJudgeRule;
 import com.zmops.zeus.driver.service.ZbxDeviceStatusTrigger;
+import io.ebean.DB;
 import lombok.Data;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,13 +37,29 @@ public class ProductTriggerService {
      * @param judgeRule 判断规则
      * @return Integer
      */
-    public Integer createDeviceStatusJudgeTrigger(ProductStatusJudgeRule judgeRule) {
+    @Transactional(rollbackFor = Exception.class)
+    public Long createDeviceStatusJudgeTrigger(ProductStatusJudgeRule judgeRule) {
 
+        long ruleId = IdUtil.getSnowflake().nextId();
+        judgeRule.setRuleId(ruleId);
         Map<String, String> rule = new HashMap<>();
         buildTriggerCreateMap(rule, judgeRule);
 
-        String res = deviceStatusTrigger.createDeviceStatusTrigger(rule);
-        return getTriggerId(res);
+        String res       = deviceStatusTrigger.createDeviceStatusTrigger(rule);
+        String triggerId = getTriggerId(res);
+
+        ProductStatusFunction productStatusFunction = new ProductStatusFunction();
+        BeanUtils.copyProperties(judgeRule, productStatusFunction);
+        productStatusFunction.setZbxId(triggerId);
+        productStatusFunction.setRuleId(ruleId);
+        DB.save(productStatusFunction);
+
+        ProductStatusFunctionRelation productStatusFunctionRelation = new ProductStatusFunctionRelation();
+        productStatusFunctionRelation.setRelationId(judgeRule.getRelationId());
+        productStatusFunctionRelation.setRuleId(ruleId);
+        DB.save(productStatusFunctionRelation);
+
+        return productStatusFunction.getRuleId();
     }
 
     /**
@@ -46,14 +68,18 @@ public class ProductTriggerService {
      * @param judgeRule 判断规则
      * @return Integer
      */
-    public Integer updateDeviceStatusJudgeTrigger(ProductStatusJudgeRule judgeRule) {
+    public Long updateDeviceStatusJudgeTrigger(ProductStatusJudgeRule judgeRule) {
         Map<String, String> rule = new HashMap<>();
         buildTriggerCreateMap(rule, judgeRule);
 
         rule.put("triggerId", judgeRule.getTriggerId());
-        String res = deviceStatusTrigger.createDeviceStatusTrigger(rule);
+        deviceStatusTrigger.updateDeviceStatusTrigger(rule);
 
-        return getTriggerId(res);
+        ProductStatusFunction productStatusFunction = new ProductStatusFunction();
+        BeanUtils.copyProperties(judgeRule, productStatusFunction);
+        DB.update(productStatusFunction);
+
+        return judgeRule.getRuleId();
     }
 
     /**
@@ -63,8 +89,8 @@ public class ProductTriggerService {
      * @param judgeRule 规则
      */
     private void buildTriggerCreateMap(Map<String, String> rule, ProductStatusJudgeRule judgeRule) {
-        rule.put("ruleId", judgeRule.getRuleId());
-        rule.put("deviceId", judgeRule.getDeviceId());
+        rule.put("ruleId", judgeRule.getRuleId() + "");
+        rule.put("deviceId", judgeRule.getRelationId());
 
         rule.put("ruleFunction", judgeRule.getRuleFunction());
         rule.put("ruleCondition", judgeRule.getRuleCondition());
@@ -76,7 +102,7 @@ public class ProductTriggerService {
     }
 
 
-    private Integer getTriggerId(String responseStr) {
+    private String getTriggerId(String responseStr) {
         TriggerIds ids = JSON.parseObject(responseStr, TriggerIds.class);
         if (null != ids && ids.getTriggerids().length > 0) {
             return ids.getTriggerids()[0];
@@ -87,6 +113,6 @@ public class ProductTriggerService {
 
     @Data
     static class TriggerIds {
-        Integer[] triggerids;
+        String[] triggerids;
     }
 }

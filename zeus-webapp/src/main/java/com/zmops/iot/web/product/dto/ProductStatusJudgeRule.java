@@ -1,7 +1,9 @@
 package com.zmops.iot.web.product.dto;
 
+import com.zmops.iot.domain.BaseEntity;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -14,43 +16,43 @@ import javax.validation.constraints.NotNull;
 public class ProductStatusJudgeRule {
 
 
-    @NotNull
-    private String deviceId; // deviceid
+    @NotBlank(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
+    private String relationId; // deviceid
 
-    private String ruleId; // 自动生成，trigger name
+    @NotNull(groups = BaseEntity.Update.class)
+    private Long ruleId; // 自动生成，trigger name
+
+    @NotBlank(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
+    private String ruleName;
 
     private String triggerId; // zbxId
 
-
     //#####################  下线规则
 
-    @NotNull
-    private Long productAttrId; // 设备属性ID
+    @NotNull(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
+    private Long attrId; // 设备属性ID
 
-    @NotNull
-    private String ruleType; // 触发离线 还是 触发在线
-
-    @NotNull
+    @NotBlank(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
     private String ruleFunction; // nodata 或者 > < = 函数
 
-    @NotNull
+    @NotBlank(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
     private String ruleCondition;  // 时间 或者 特定值
 
-    @NotNull
+    @NotBlank(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
     private String productAttrKey; // 属性 Key
 
 
     //#####################  上线规则
 
-    @NotNull
-    private Long productAttrIdRecovery; // 设备属性ID
+    @NotNull(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
+    private Long attrIdRecovery; // 设备属性ID
 
-    @NotNull
+    @NotBlank(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
     private String ruleFunctionRecovery; // nodata 或者 > < = 函数
 
-    @NotNull
+    @NotBlank(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
     private String ruleConditionRecovery;  // 时间 或者 特定值
 
-    @NotNull
+    @NotBlank(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
     private String productAttrKeyRecovery; // 属性 Key
 }

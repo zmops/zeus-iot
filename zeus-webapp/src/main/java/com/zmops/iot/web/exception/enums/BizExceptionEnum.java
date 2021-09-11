@@ -155,6 +155,11 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     SERVICE_NOT_EXISTS(1602, "服务不存在"),
 
     /**
+     * 触发规则相关
+     */
+    RULE_NOT_EXISTS(1701, "规则不存在"),
+
+    /**
      * 租户相关的异常
      */
     AUTH_REQUEST_ERROR(400, "账号密码错误");
