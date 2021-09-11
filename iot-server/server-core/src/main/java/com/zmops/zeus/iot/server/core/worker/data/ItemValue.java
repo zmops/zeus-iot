@@ -1,7 +1,12 @@
 package com.zmops.zeus.iot.server.core.worker.data;
 
+import afu.org.checkerframework.checker.igj.qual.I;
+import com.zmops.zeus.iot.server.core.camel.IOTDeviceValue;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author nantian created at 2021/8/23 15:15
@@ -23,11 +28,32 @@ public class ItemValue implements Item {
 
     private Long ns; // 纳秒，如果为 Null，则 zabbix 以接收时间为准
 
-    public ItemValue(String host, String key, String value) {
-        this.host = host;
-        this.key = key;
-        this.value = value;
+
+    public ItemValue(List<ItemValue> itemValueList) {
+        this.valueList = itemValueList;
     }
+
+    public ItemValue() {
+        super();
+    }
+
+    private List<ItemValue> valueList;
+
+    public void addItemValue(IOTDeviceValue deviceValue) {
+
+        ItemValue itemValue = new ItemValue();
+
+        itemValue.setHost(deviceValue.getDeviceId());
+        itemValue.setKey(deviceValue.getDeviceAttrKey());
+        itemValue.setValue(deviceValue.getDeviceAttrValue());
+
+        if (deviceValue.getDeviceTime() != null) {
+            itemValue.setClock(deviceValue.getDeviceTime());
+        }
+
+        this.valueList.add(itemValue);
+    }
+
 
     /**
      * 设置 数据时间，单独设置 以设备推送的时间数据为准
