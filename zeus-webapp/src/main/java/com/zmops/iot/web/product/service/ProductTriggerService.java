@@ -4,6 +4,8 @@ import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSON;
 import com.zmops.iot.domain.product.ProductStatusFunction;
 import com.zmops.iot.domain.product.ProductStatusFunctionRelation;
+import com.zmops.iot.domain.product.query.QProductStatusFunction;
+import com.zmops.iot.domain.product.query.QProductStatusFunctionRelation;
 import com.zmops.iot.web.product.dto.ProductStatusJudgeRule;
 import com.zmops.zeus.driver.service.ZbxDeviceStatusTrigger;
 import io.ebean.DB;
@@ -13,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -30,6 +31,18 @@ public class ProductTriggerService {
     @Autowired
     private ZbxDeviceStatusTrigger deviceStatusTrigger;
 
+    /**
+     * 离线 或者 在线触发器 信息
+     *
+     * @param relationId 在线规则
+     * @return ResponseData
+     */
+    public ProductStatusFunction getRule(String relationId) {
+        ProductStatusFunctionRelation productStatusFunctionRelation = new QProductStatusFunctionRelation().relationId.eq(relationId).findOne();
+
+        return new QProductStatusFunction().ruleId.eq(productStatusFunctionRelation.getRuleId()).findOne();
+    }
+
 
     /**
      * 创建 设备状态 触发器
@@ -42,10 +55,13 @@ public class ProductTriggerService {
 
         long ruleId = IdUtil.getSnowflake().nextId();
         judgeRule.setRuleId(ruleId);
-        Map<String, String> rule = new HashMap<>();
-        buildTriggerCreateMap(rule, judgeRule);
+//        Map<String, String> rule = new HashMap<>();
+//        buildTriggerCreateMap(rule, judgeRule);
 
-        String res       = deviceStatusTrigger.createDeviceStatusTrigger(rule);
+        String res = deviceStatusTrigger.createDeviceStatusTrigger(judgeRule.getRuleId() + "", judgeRule.getRelationId(),
+                judgeRule.getProductAttrKey(), judgeRule.getRuleCondition(), judgeRule.getRuleFunction(), judgeRule.getProductAttrKeyRecovery(),
+                judgeRule.getRuleConditionRecovery(), judgeRule.getRuleFunctionRecovery());
+
         String triggerId = getTriggerId(res);
 
         ProductStatusFunction productStatusFunction = new ProductStatusFunction();
@@ -69,11 +85,12 @@ public class ProductTriggerService {
      * @return Integer
      */
     public Long updateDeviceStatusJudgeTrigger(ProductStatusJudgeRule judgeRule) {
-        Map<String, String> rule = new HashMap<>();
-        buildTriggerCreateMap(rule, judgeRule);
+//        Map<String, String> rule = new HashMap<>();
+//        buildTriggerCreateMap(rule, judgeRule);
 
-        rule.put("triggerId", judgeRule.getTriggerId());
-        deviceStatusTrigger.updateDeviceStatusTrigger(rule);
+        deviceStatusTrigger.updateDeviceStatusTrigger(judgeRule.getTriggerId(), judgeRule.getRuleId() + "", judgeRule.getRelationId(),
+                judgeRule.getProductAttrKey(), judgeRule.getRuleCondition(), judgeRule.getRuleFunction(), judgeRule.getProductAttrKeyRecovery(),
+                judgeRule.getRuleConditionRecovery(), judgeRule.getRuleFunctionRecovery());
 
         ProductStatusFunction productStatusFunction = new ProductStatusFunction();
         BeanUtils.copyProperties(judgeRule, productStatusFunction);
@@ -108,6 +125,16 @@ public class ProductTriggerService {
             return ids.getTriggerids()[0];
         }
         return null;
+    }
+
+    /**
+     * 删除 离线 或者 在线触发器
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteDeviceStatusTrigger(Long ruleId) {
+        new QProductStatusFunctionRelation().ruleId.eq(ruleId).delete();
+
+        new QProductStatusFunction().ruleId.eq(ruleId).delete();
     }
 
 

@@ -3,17 +3,17 @@
     "method": "trigger.create",
     "params": [
         {
-            "description": "${rule.ruleId}", <#--trigger name-->
-            <#if rule.ruleFunction == "nodata">
-                "expression": "nodata(/${rule.deviceId}/${rule.itemKey},${rule.ruleCondition}) = 1", <#--下线规则，nodata = 1 -->
+            "description": "${ruleId}", <#--trigger name-->
+            <#if ruleFunction == "nodata">
+                "expression": "nodata(/${deviceId}/${itemKey},${ruleCondition}) = 1", <#--下线规则，nodata = 1 -->
             <#else>
-                "expression": "last(/${rule.deviceId}/${rule.itemKey}) ${rule.ruleFunction} ${rule.ruleCondition}",
+                "expression": "last(/${deviceId}/${itemKey}) ${ruleFunction} ${ruleCondition}",
             </#if>
             "recovery_mode": 1,
-            <#if rule.ruleFunctionRecovery == "nodata">
-                "recovery_expression": "nodata(/${rule.deviceId}/${rule.itemKeyRecovery},${rule.ruleConditionRecovery}) = 0", <#-- 上线规则 nodata = 0 -->
+            <#if ruleFunctionRecovery == "nodata">
+                "recovery_expression": "nodata(/${deviceId}/${itemKeyRecovery},${ruleConditionRecovery}) = 0", <#-- 上线规则 nodata = 0 -->
             <#else>
-                "recovery_expression": "last(/${rule.deviceId}/${rule.itemKeyRecovery}) ${rule.ruleFunctionRecovery} ${rule.ruleConditionRecovery}",
+                "recovery_expression": "last(/${deviceId}/${itemKeyRecovery}) ${ruleFunctionRecovery} ${ruleConditionRecovery}",
             </#if>
             "tags": [
                 {

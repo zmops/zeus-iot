@@ -16,43 +16,42 @@ import javax.validation.constraints.NotNull;
 public class ProductStatusJudgeRule {
 
 
-    @NotBlank(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
+    @NotBlank(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private String relationId; // deviceid
 
-    @NotNull(groups = BaseEntity.Update.class)
+    @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Delete.class})
     private Long ruleId; // 自动生成，trigger name
 
-    @NotBlank(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
     private String ruleName;
 
     private String triggerId; // zbxId
 
     //#####################  下线规则
 
-    @NotNull(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
+    @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private Long attrId; // 设备属性ID
 
-    @NotBlank(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
+    @NotBlank(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private String ruleFunction; // nodata 或者 > < = 函数
 
-    @NotBlank(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
+    @NotBlank(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private String ruleCondition;  // 时间 或者 特定值
 
-    @NotBlank(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
+    @NotBlank(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private String productAttrKey; // 属性 Key
 
 
     //#####################  上线规则
 
-    @NotNull(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
+    @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private Long attrIdRecovery; // 设备属性ID
 
-    @NotBlank(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
+    @NotBlank(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private String ruleFunctionRecovery; // nodata 或者 > < = 函数
 
-    @NotBlank(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
+    @NotBlank(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private String ruleConditionRecovery;  // 时间 或者 特定值
 
-    @NotBlank(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
+    @NotBlank(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private String productAttrKeyRecovery; // 属性 Key
 }

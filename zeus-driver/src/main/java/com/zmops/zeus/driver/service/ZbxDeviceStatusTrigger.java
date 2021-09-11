@@ -23,21 +23,34 @@ public interface ZbxDeviceStatusTrigger {
     /**
      * 创建 设备 在线，离线 触发器
      *
-     * @param triggerRule rule object
      * @return String
      */
     @Post
     @JsonPath("/trigger/device.status.trigger")
-    String createDeviceStatusTrigger(@ParamName("rule") Map<String, String> triggerRule);
+    String createDeviceStatusTrigger(@ParamName("ruleId") String ruleId,
+                                     @ParamName("deviceId") String deviceId,
+                                     @ParamName("itemKey") String itemKey,
+                                     @ParamName("ruleCondition") String ruleCondition,
+                                     @ParamName("ruleFunction") String ruleFunction,
+                                     @ParamName("itemKeyRecovery") String itemKeyRecovery,
+                                     @ParamName("ruleConditionRecovery") String ruleConditionRecovery,
+                                     @ParamName("ruleFunctionRecovery") String ruleFunctionRecovery);
 
 
     /**
      * 修改 设备 在线，离线 触发器
      *
-     * @param triggerRule rule object
      * @return String
      */
     @Post
     @JsonPath("/trigger/device.status.trigger.update")
-    String updateDeviceStatusTrigger(@ParamName("rule") Map<String, String> triggerRule);
+    String updateDeviceStatusTrigger(@ParamName("triggerId") String triggerId,
+                                     @ParamName("ruleId") String ruleId,
+                                     @ParamName("deviceId") String deviceId,
+                                     @ParamName("itemKey") String itemKey,
+                                     @ParamName("ruleCondition") String ruleCondition,
+                                     @ParamName("ruleFunction") String ruleFunction,
+                                     @ParamName("itemKeyRecovery") String itemKeyRecovery,
+                                     @ParamName("ruleConditionRecovery") String ruleConditionRecovery,
+                                     @ParamName("ruleFunctionRecovery") String ruleFunctionRecovery);
 }

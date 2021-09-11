@@ -27,13 +27,13 @@ public class ProductStatusFunction extends BaseEntity {
 
     private Long attrId;
 
-    private String ruleValue;
+    private String ruleCondition;
 
     private Integer ruleStatus;
 
     private String ruleFunctionRecovery;
 
-    private String ruleValueRecovery;
+    private String ruleConditionRecovery;
 
     private Long attrIdRecovery;
 }

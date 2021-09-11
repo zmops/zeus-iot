@@ -157,7 +157,8 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     /**
      * 触发规则相关
      */
-    RULE_NOT_EXISTS(1701, "规则不存在"),
+    RULE_NOT_EXISTS(1701, "上下线规则不存在"),
+    RULE_EXISTS(1702, "上下线规则已存在"),
 
     /**
      * 租户相关的异常
