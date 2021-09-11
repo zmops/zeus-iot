@@ -34,7 +34,35 @@ public class ProductTriggerService {
     public Integer createDeviceStatusJudgeTrigger(ProductStatusJudgeRule judgeRule) {
 
         Map<String, String> rule = new HashMap<>();
+        buildTriggerCreateMap(rule, judgeRule);
 
+        String res = deviceStatusTrigger.createDeviceStatusTrigger(rule);
+        return getTriggerId(res);
+    }
+
+    /**
+     * 修改 设备状态 触发器
+     *
+     * @param judgeRule 判断规则
+     * @return Integer
+     */
+    public Integer updateDeviceStatusJudgeTrigger(ProductStatusJudgeRule judgeRule) {
+        Map<String, String> rule = new HashMap<>();
+        buildTriggerCreateMap(rule, judgeRule);
+
+        rule.put("triggerId", judgeRule.getTriggerId());
+        String res = deviceStatusTrigger.createDeviceStatusTrigger(rule);
+
+        return getTriggerId(res);
+    }
+
+    /**
+     * 值拷贝
+     *
+     * @param rule      新规则
+     * @param judgeRule 规则
+     */
+    private void buildTriggerCreateMap(Map<String, String> rule, ProductStatusJudgeRule judgeRule) {
         rule.put("ruleId", judgeRule.getRuleId());
         rule.put("deviceId", judgeRule.getDeviceId());
 
@@ -45,10 +73,6 @@ public class ProductTriggerService {
         rule.put("itemKeySecond", judgeRule.getProductAttrKeySecond());
         rule.put("ruleConditionSecond", judgeRule.getRuleConditionSecond());
         rule.put("ruleFunctionSecond", judgeRule.getRuleFunctionSecond());
-
-        String res = deviceStatusTrigger.createDeviceStatusTrigger(rule);
-
-        return getTriggerId(res);
     }
 
 
