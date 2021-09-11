@@ -1,6 +1,5 @@
 package com.zmops.zeus.iot.server.core.camel.process;
 
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.zmops.zeus.iot.server.core.camel.IOTDeviceValue;
 import com.zmops.zeus.iot.server.core.worker.data.ItemValue;
@@ -28,13 +27,18 @@ public class ByteArrayToItemValueProcess implements Processor {
 
         String inputContext = new String(messageBytes, StandardCharsets.UTF_8);
 
-        List<IOTDeviceValue> valueList = gson.fromJson(inputContext, new TypeToken<List<IOTDeviceValue>>() {}.getType());
+        IOTDeviceValue iotValue = gson.fromJson(inputContext, IOTDeviceValue.class);
 
         List<ItemValue> itemValueList = new ArrayList<>();
 
-        ItemValue item = new ItemValue(itemValueList);
-        valueList.forEach(item::addItemValue);
+        iotValue.getAttributes().forEach((key, value) -> {
+            ItemValue item = new ItemValue(iotValue.getDeviceId(), iotValue.getClock());
+            item.setKey(key);
+            item.setValue(value);
 
-        exchange.getMessage().setBody(item.getValueList());
+            itemValueList.add(item);
+        });
+
+        exchange.getMessage().setBody(itemValueList);
     }
 }

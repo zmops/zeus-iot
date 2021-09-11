@@ -3,6 +3,8 @@ package com.zmops.zeus.iot.server.core.camel;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Map;
+
 /**
  * @author nantian created at 2021/8/23 18:01
  * <p>
@@ -15,9 +17,7 @@ public class IOTDeviceValue {
 
     private String deviceId; // 设备ID
 
-    private String deviceAttrKey; // 设备属性Key
+    private Map<String, String> attributes; // key : value
 
-    private String deviceAttrValue; // 设备属性值
-
-    private Long deviceTime; // 毫秒，70年到现在时间戳
+    private Long clock; // 毫秒，70年到现在时间戳
 }

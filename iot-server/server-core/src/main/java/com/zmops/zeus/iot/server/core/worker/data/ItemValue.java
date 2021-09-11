@@ -24,36 +24,17 @@ public class ItemValue implements Item {
     // Zabbix 会根据配置的ITEM 类型，进行转换，如果失败就报错
     private String value;
 
-    private Long clock; // 毫秒，如果为 Null，则 zabbix 以接收时间为准
+    private Long clock; // 秒，如果为 Null，则 zabbix 以接收时间为准
 
     private Long ns; // 纳秒，如果为 Null，则 zabbix 以接收时间为准
 
 
-    public ItemValue(List<ItemValue> itemValueList) {
-        this.valueList = itemValueList;
-    }
-
-    public ItemValue() {
-        super();
-    }
-
-    private List<ItemValue> valueList;
-
-    public void addItemValue(IOTDeviceValue deviceValue) {
-
-        ItemValue itemValue = new ItemValue();
-
-        itemValue.setHost(deviceValue.getDeviceId());
-        itemValue.setKey(deviceValue.getDeviceAttrKey());
-        itemValue.setValue(deviceValue.getDeviceAttrValue());
-
-        if (deviceValue.getDeviceTime() != null) {
-            itemValue.setClock(deviceValue.getDeviceTime());
+    public ItemValue(String host, Long clock) {
+        this.host = host;
+        if (clock != null) {
+            this.clock = clock;
         }
-
-        this.valueList.add(itemValue);
     }
-
 
     /**
      * 设置 数据时间，单独设置 以设备推送的时间数据为准
