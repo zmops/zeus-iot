@@ -97,9 +97,8 @@ public class ProductAttr {
                     paramStr.append(param).append("\\\\n");
                 }
                 return paramStr.substring(0, paramStr.length() - 3);
-            } else {
-                return "";
             }
+            return "";
         }
     }
 }
