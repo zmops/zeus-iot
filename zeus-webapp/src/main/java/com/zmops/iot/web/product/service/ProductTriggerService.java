@@ -70,9 +70,9 @@ public class ProductTriggerService {
         rule.put("ruleCondition", judgeRule.getRuleCondition());
         rule.put("itemKey", judgeRule.getProductAttrKey());
 
-        rule.put("itemKeySecond", judgeRule.getProductAttrKeySecond());
-        rule.put("ruleConditionSecond", judgeRule.getRuleConditionSecond());
-        rule.put("ruleFunctionSecond", judgeRule.getRuleFunctionSecond());
+        rule.put("itemKeyRecovery", judgeRule.getProductAttrKeyRecovery());
+        rule.put("ruleConditionRecovery", judgeRule.getRuleConditionRecovery());
+        rule.put("ruleFunctionRecovery", judgeRule.getRuleFunctionRecovery());
     }
 
 

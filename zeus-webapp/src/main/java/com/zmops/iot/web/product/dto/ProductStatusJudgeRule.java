@@ -19,6 +19,8 @@ public class ProductStatusJudgeRule {
 
     private String ruleId; // 自动生成，trigger name
 
+    private String triggerId; // zbxId
+
 
     //#####################  下线规则
 
@@ -41,14 +43,14 @@ public class ProductStatusJudgeRule {
     //#####################  上线规则
 
     @NotNull
-    private Long productAttrIdSecond; // 设备属性ID
+    private Long productAttrIdRecovery; // 设备属性ID
 
     @NotNull
-    private String ruleFunctionSecond; // nodata 或者 > < = 函数
+    private String ruleFunctionRecovery; // nodata 或者 > < = 函数
 
     @NotNull
-    private String ruleConditionSecond;  // 时间 或者 特定值
+    private String ruleConditionRecovery;  // 时间 或者 特定值
 
     @NotNull
-    private String productAttrKeySecond; // 属性 Key
+    private String productAttrKeyRecovery; // 属性 Key
 }

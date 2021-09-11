@@ -10,10 +10,10 @@
                 "expression": "last(/${rule.deviceId}/${rule.itemKey}) ${rule.ruleFunction} ${rule.ruleCondition}",
             </#if>
             "recovery_mode": 1,
-            <#if rule.ruleFunctionSecond == "nodata">
-                "recovery_expression": "nodata(/${rule.deviceId}/${rule.itemKeySecond},${rule.ruleConditionSecond}) = 0", <#-- 上线规则 nodata = 0 -->
+            <#if rule.ruleFunctionRecovery == "nodata">
+                "recovery_expression": "nodata(/${rule.deviceId}/${rule.itemKeyRecovery},${rule.ruleConditionRecovery}) = 0", <#-- 上线规则 nodata = 0 -->
             <#else>
-                "recovery_expression": "last(/${rule.deviceId}/${rule.itemKeySecond}) ${rule.ruleFunctionSecond} ${rule.ruleConditionSecond}",
+                "recovery_expression": "last(/${rule.deviceId}/${rule.itemKeyRecovery}) ${rule.ruleFunctionRecovery} ${rule.ruleConditionRecovery}",
             </#if>
             "tags": [
                 {
