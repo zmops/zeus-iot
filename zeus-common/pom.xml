@@ -31,7 +31,7 @@
         <dependency>
             <groupId>io.ebean</groupId>
             <artifactId>querybean-generator</artifactId>
-            <version>12.9.3</version>
+            <version>12.11.3</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -50,7 +50,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <tiles>
-                        <tile>io.ebean.tile:enhancement:12.9.3</tile>
+                        <tile>io.ebean.tile:enhancement:12.11.3</tile>
                     </tiles>
                 </configuration>
             </plugin>
