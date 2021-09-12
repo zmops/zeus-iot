@@ -44,7 +44,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <tiles>
-                        <tile>io.ebean.tile:enhancement:12.9.3</tile>
+                        <tile>io.ebean.tile:enhancement:12.11.3</tile>
                     </tiles>
                 </configuration>
             </plugin>
