@@ -30,8 +30,8 @@ public class HomeController {
      * 设备数量统计
      */
     @RequestMapping("/deviceNum")
-    public ResponseData getDeviceNum() {
-        return ResponseData.success(homeService.getDeviceNum());
+    public ResponseData getDeviceNum(@RequestParam("timeFrom") long timeFrom, @RequestParam("timeTill") long timeTill) {
+        return ResponseData.success(homeService.getDeviceNum(timeFrom, timeTill));
     }
 
     /**
