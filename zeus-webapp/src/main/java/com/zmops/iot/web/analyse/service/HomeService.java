@@ -3,7 +3,9 @@ package com.zmops.iot.web.analyse.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.device.Device;
+import com.zmops.iot.domain.device.DeviceOnlineReport;
 import com.zmops.iot.domain.device.query.QDevice;
+import com.zmops.iot.domain.device.query.QDeviceOnlineReprot;
 import com.zmops.iot.domain.product.query.QProduct;
 import com.zmops.iot.enums.ValueType;
 import com.zmops.iot.util.LocalDateTimeUtils;
@@ -141,8 +143,8 @@ public class HomeService {
      *
      * @return
      */
-    public Map<String, Integer> getDeviceNum() {
-        Map<String, Integer> deviceNumMap = new HashMap<>(4);
+    public Map<String, Object> getDeviceNum(long timeFrom, long timeTill) {
+        Map<String, Object> deviceNumMap = new HashMap<>(4);
 
         deviceNumMap.put("online", 0);
 
@@ -151,6 +153,19 @@ public class HomeService {
         deviceNumMap.put("disable", (int) list.parallelStream().filter(o -> "DISABLE".equals(o.getStatus())).count());
         deviceNumMap.put("product", new QProduct().findCount());
 
+        List<DeviceOnlineReport> onLineList = new QDeviceOnlineReprot().createTime.ge(LocalDateTimeUtils.convertTimeToString(timeFrom, "yyyy-MM-dd")).createTime.lt(LocalDateTimeUtils.convertTimeToString(timeTill, "yyyy-MM-dd")).findList();
+
+        Map<String, Long> collect = onLineList.parallelStream().collect(Collectors.groupingBy(DeviceOnlineReport::getCreateTime, Collectors.summingLong(DeviceOnlineReport::getOnline)));
+
+        List<Map<String, Object>> trendsList = new ArrayList<>();
+
+        collect.forEach((key, value) -> {
+            Map<String, Object> map = new ConcurrentHashMap<>(2);
+            map.put("date", key);
+            map.put("val", value);
+            trendsList.add(map);
+        });
+        deviceNumMap.put("trends", trendsList);
 
         return deviceNumMap;
     }
@@ -166,7 +181,7 @@ public class HomeService {
         AlarmParam alarmParam = new AlarmParam();
         alarmParam.setRecent("false");
         List<ZbxProblemInfo> alarmList = alarmService.getAlarmList(alarmParam);
-        Map<String, Object>  alarmMap  = new HashMap<>(3);
+        Map<String, Object>  alarmMap  = new ConcurrentHashMap<>(3);
 
         if (ToolUtil.isNotEmpty(alarmList)) {
 
@@ -185,10 +200,10 @@ public class HomeService {
                     );
             List<Map<String, Object>> trendsList = new ArrayList<>();
             tmpMap.forEach((key, value) -> {
-                Map<String, Object> trendsMap = new HashMap<>(2);
+                Map<String, Object> trendsMap = new ConcurrentHashMap<>(2);
                 List                list      = new ArrayList<>();
                 value.forEach((date, val) -> {
-                    Map<String, Object> valMap = new HashMap<>(2);
+                    Map<String, Object> valMap = new ConcurrentHashMap<>(2);
                     valMap.put("date", date);
                     valMap.put("val", val);
                     list.add(valMap);
