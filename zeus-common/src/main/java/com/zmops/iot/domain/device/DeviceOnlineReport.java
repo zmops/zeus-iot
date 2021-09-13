@@ -1,7 +1,6 @@
 package com.zmops.iot.domain.device;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -14,15 +13,20 @@ import javax.persistence.Table;
 @Data
 @Table(name = "device_online_report")
 @Entity
-public class DeviceOnlineReprot {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class DeviceOnlineReport {
 
     @Id
     private Long id;
 
     private String createTime;
 
-    private Integer online;
+    private Long online;
 
-    private Integer offline;
+    private Long offline;
+
+    private String type;
 
 }
