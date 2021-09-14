@@ -15,7 +15,9 @@
             "valuemapid":${valuemapid},
         </#if>
         <#if valueType == '0' || valueType == '3'>
-            "units": "${units}",
+            <#if units??>
+                "units": "${units}",
+            </#if>
         </#if>
         "preprocessing": [
         <#if processList??>

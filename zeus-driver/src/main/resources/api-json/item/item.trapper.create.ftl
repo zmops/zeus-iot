@@ -13,8 +13,10 @@
         <#if valuemapid?? && valuemapid != ''>
             "valuemapid":${valuemapid},
         </#if>
+        <#if valueType == '0' || valueType == '3'>
         <#if units??>
             "units": "${units}",
+        </#if>
         </#if>
         "preprocessing": [
         <#if processList??>

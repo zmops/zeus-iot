@@ -151,7 +151,7 @@ public class DeviceController {
      * @param valueMap
      * @return
      */
-    @PostMapping("/valuemap/update")
+    @PostMapping("/valueMap/update")
     public ResponseData prodValueMapCreate(@RequestBody @Validated(BaseEntity.Create.class) ValueMap valueMap) {
 
         Device device = new QDevice().deviceId.eq(valueMap.getProductId()).findOne();

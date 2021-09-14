@@ -69,7 +69,7 @@ public class ProductController {
     /**
      * 产品标签列表
      */
-    @GetMapping("/prodTag/list")
+    @GetMapping("/tag/list")
     public ResponseData prodTagList(@RequestParam("productId") String prodId) {
         return ResponseData.success(productService.prodTagList(prodId));
     }
@@ -228,7 +228,7 @@ public class ProductController {
      * @param valueMap
      * @return
      */
-    @PostMapping("/valuemap/delete")
+    @PostMapping("/valueMap/delete")
     public ResponseData prodValueMapDelete(@RequestBody @Validated(BaseEntity.Delete.class) ValueMap valueMap) {
         String response   = productService.valueMapDelete(valueMap.getValuemapid());
         String valuemapid = JSON.parseObject(response, TemplateIds.class).getValuemapids()[0];
