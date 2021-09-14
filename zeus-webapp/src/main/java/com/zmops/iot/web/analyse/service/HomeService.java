@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.DeviceOnlineReport;
 import com.zmops.iot.domain.device.query.QDevice;
-import com.zmops.iot.domain.device.query.QDeviceOnlineReprot;
+import com.zmops.iot.domain.device.query.QDeviceOnlineReport;
 import com.zmops.iot.domain.product.query.QProduct;
 import com.zmops.iot.enums.ValueType;
 import com.zmops.iot.util.LocalDateTimeUtils;
@@ -57,7 +57,7 @@ public class HomeService {
      *
      * @return
      */
-    public List<Map<String, Object>> collectonRate(long timeFrom, long timeTill) {
+    public List<Map<String, Object>> collectionRate(long timeFrom, long timeTill) {
         if (ToolUtil.isEmpty(hostId)) {
             if (ToolUtil.isEmpty(getZbxServerId())) {
                 return Collections.emptyList();
@@ -80,7 +80,7 @@ public class HomeService {
         Map<String, Map<String, Double>> collect = latestDtos.parallelStream().collect(
                 Collectors.groupingBy(LatestDto::getName, Collectors.groupingBy(LatestDto::getClock, Collectors.averagingDouble(o -> Double.parseDouble(o.getValue()))))
         );
-        List<Map<String, Object>> collectList = new ArrayList();
+        List<Map<String, Object>> collectList = new ArrayList<>();
         collect.forEach((key, value) -> {
             Map<String, Object>       collectMap = new HashMap<>(2);
             List<Map<String, Object>> tmpList    = new ArrayList<>();
@@ -153,7 +153,7 @@ public class HomeService {
         deviceNumMap.put("disable", (int) list.parallelStream().filter(o -> "DISABLE".equals(o.getStatus())).count());
         deviceNumMap.put("product", new QProduct().findCount());
 
-        List<DeviceOnlineReport> onLineList = new QDeviceOnlineReprot().createTime.ge(LocalDateTimeUtils.convertTimeToString(timeFrom, "yyyy-MM-dd")).createTime.lt(LocalDateTimeUtils.convertTimeToString(timeTill, "yyyy-MM-dd")).findList();
+        List<DeviceOnlineReport> onLineList = new QDeviceOnlineReport().createTime.ge(LocalDateTimeUtils.convertTimeToString(timeFrom, "yyyy-MM-dd")).createTime.lt(LocalDateTimeUtils.convertTimeToString(timeTill, "yyyy-MM-dd")).findList();
 
         Map<String, Long> collect = onLineList.parallelStream().collect(Collectors.groupingBy(DeviceOnlineReport::getCreateTime, Collectors.summingLong(DeviceOnlineReport::getOnline)));
 

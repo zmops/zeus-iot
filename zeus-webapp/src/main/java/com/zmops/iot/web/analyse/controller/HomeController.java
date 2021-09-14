@@ -50,7 +50,7 @@ public class HomeController {
      */
     @RequestMapping("/collectonRate")
     public ResponseData collectonRate(@RequestParam("timeFrom") long timeFrom, @RequestParam("timeTill") long timeTill) {
-        return ResponseData.success(homeService.collectonRate(timeFrom, timeTill));
+        return ResponseData.success(homeService.collectionRate(timeFrom, timeTill));
     }
 
     /**
