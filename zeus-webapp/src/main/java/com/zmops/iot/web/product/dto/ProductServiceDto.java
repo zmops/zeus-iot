@@ -29,7 +29,7 @@ public class ProductServiceDto {
     private String remark;
 
     @NotNull(groups = BaseEntity.Create.class)
-    private String sid;
+    private String relationId;
 
     @CachedValue(value = "EXECUTE_TYPE")
     private String async;

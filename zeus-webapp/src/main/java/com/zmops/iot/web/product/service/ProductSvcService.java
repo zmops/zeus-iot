@@ -6,6 +6,7 @@ import com.zmops.iot.domain.product.ProductService;
 import com.zmops.iot.domain.product.ProductServiceParam;
 import com.zmops.iot.domain.product.query.QProductService;
 import com.zmops.iot.domain.product.query.QProductServiceParam;
+import com.zmops.iot.domain.product.query.QProductServiceRelation;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
@@ -52,7 +53,10 @@ public class ProductSvcService {
             qProductService.mark.contains(productSvcParam.getMark());
         }
         if (ToolUtil.isNotEmpty(productSvcParam.getProdId())) {
-            qProductService.sid.eq(productSvcParam.getProdId());
+            List<Long> serviceIds = getServiceIdList(productSvcParam.getProdId());
+            if (ToolUtil.isNotEmpty(serviceIds)) {
+                qProductService.id.in(serviceIds);
+            }
         }
         qProductService.orderBy(" id desc");
         List<ProductServiceDto> productServiceDtoList = qProductService.setFirstRow((productSvcParam.getPage() - 1) * productSvcParam.getMaxRow())
@@ -99,9 +103,12 @@ public class ProductSvcService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ProductServiceDto create(ProductServiceDto productServiceDto) {
-        int count = new QProductService().name.eq(productServiceDto.getName()).sid.eq(productServiceDto.getSid()).findCount();
-        if (count > 0) {
-            throw new ServiceException(BizExceptionEnum.SERVICE_EXISTS);
+        List<Long> serviceIds = getServiceIdList(productServiceDto.getRelationId());
+        if (ToolUtil.isNotEmpty(serviceIds)) {
+            int count = new QProductService().name.eq(productServiceDto.getName()).id.in(serviceIds).findCount();
+            if (count > 0) {
+                throw new ServiceException(BizExceptionEnum.SERVICE_EXISTS);
+            }
         }
         ProductService productService = new ProductService();
         ToolUtil.copyProperties(productServiceDto, productService);
@@ -135,10 +142,13 @@ public class ProductSvcService {
      * @return
      */
     public ProductServiceDto update(ProductServiceDto productServiceDto) {
-        int count = new QProductService().name.eq(productServiceDto.getName()).sid.eq(productServiceDto.getSid())
-                .id.ne(productServiceDto.getId()).findCount();
-        if (count > 0) {
-            throw new ServiceException(BizExceptionEnum.SERVICE_EXISTS);
+        List<Long> serviceIds = getServiceIdList(productServiceDto.getRelationId());
+        if (ToolUtil.isNotEmpty(serviceIds)) {
+            int count = new QProductService().name.eq(productServiceDto.getName()).id.in(serviceIds)
+                    .id.ne(productServiceDto.getId()).findCount();
+            if (count > 0) {
+                throw new ServiceException(BizExceptionEnum.SERVICE_EXISTS);
+            }
         }
         ProductService productService = new ProductService();
         ToolUtil.copyProperties(productServiceDto, productService);
@@ -152,16 +162,12 @@ public class ProductSvcService {
             DB.saveAll(productServiceDto.getProductServiceParamList());
         }
 
-        //同步到设备
-        WorkerWrapper<ProductServiceDto, Boolean> updateProdSvcWork = WorkerWrapper.<ProductServiceDto, Boolean>builder().worker(updateProdSvcWorker).build();
-
-        try {
-            Async.work(100, updateProdSvcWork).awaitFinish();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         return productServiceDto;
+    }
+
+    private List<Long> getServiceIdList(String relationId) {
+        return new QProductServiceRelation().select(QProductServiceRelation.Alias.serviceId).relationId.eq(relationId)
+                .findSingleAttributeList();
     }
 
     /**
@@ -173,8 +179,7 @@ public class ProductSvcService {
     public void delete(List<Long> ids) {
 
         new QProductServiceParam().serviceId.in(ids).delete();
+        new QProductServiceRelation().serviceId.in(ids).delete();
         new QProductService().id.in(ids).delete();
-
-        //TODO 同步到设备
     }
 }

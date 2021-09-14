@@ -4,9 +4,7 @@ package com.zmops.iot.web.product.service.work;
 import com.zmops.iot.async.callback.IWorker;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.device.query.QDevice;
-import com.zmops.iot.domain.product.ProductService;
-import com.zmops.iot.domain.product.ProductServiceParam;
-import com.zmops.iot.util.ToolUtil;
+import com.zmops.iot.domain.product.ProductServiceRelation;
 import com.zmops.iot.web.product.dto.ProductServiceDto;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
@@ -30,24 +28,17 @@ public class SaveProdSvcWorker implements IWorker<ProductServiceDto, Boolean> {
     public Boolean action(ProductServiceDto productServiceDto, Map<String, WorkerWrapper<?, ?>> map) {
         log.debug("处理产品 新增服务 同步到设备工作…………");
 
-        String prodId = productServiceDto.getSid();
+        String prodId = productServiceDto.getRelationId();
 
-        List<String> deviceIds = new QDevice().select(QDevice.Alias.deviceId).productId.eq(Long.parseLong(prodId)).findSingleAttributeList();
-
+        List<String>                 deviceIds                  = new QDevice().select(QDevice.Alias.deviceId).productId.eq(Long.parseLong(prodId)).findSingleAttributeList();
+        List<ProductServiceRelation> productServiceRelationList = new ArrayList<>();
         for (String deviceId : deviceIds) {
-            ProductService productService = new ProductService();
-            ToolUtil.copyProperties(productServiceDto, productService);
-            productService.setSid(deviceId);
-            productService.setTemplateId(productServiceDto.getId());
-            DB.save(productService);
-
-            if (ToolUtil.isNotEmpty(productServiceDto.getProductServiceParamList())) {
-                for (ProductServiceParam productServiceParam : productServiceDto.getProductServiceParamList()) {
-                    productServiceParam.setServiceId(productService.getId());
-                }
-                DB.saveAll(productServiceDto.getProductServiceParamList());
-            }
+            ProductServiceRelation productServiceRelation = new ProductServiceRelation();
+            productServiceRelation.setRelationId(deviceId);
+            productServiceRelation.setServiceId(productServiceDto.getId());
+            productServiceRelationList.add(productServiceRelation);
         }
+        DB.saveAll(productServiceRelationList);
 
         return true;
     }
