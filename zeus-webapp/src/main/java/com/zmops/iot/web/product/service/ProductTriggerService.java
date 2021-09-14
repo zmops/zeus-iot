@@ -40,9 +40,11 @@ public class ProductTriggerService {
      */
     public ProductStatusFunctionDto getRule(String relationId) {
         String sql = "select s.*,p.name attrName,p2.name attrNameRecovery,p.units,p2.units unitsRecovery " +
-                " from product_status_function s LEFT JOIN product_attribute p on p.attr_id = s.attr_id LEFT JOIN product_attribute p2 on p2.attr_id = s.attr_id_recovery \n" +
+                " from product_status_function s" +
+                " LEFT JOIN product_attribute p on p.attr_id = s.attr_id" +
+                " LEFT JOIN product_attribute p2 on p2.attr_id = s.attr_id_recovery" +
                 " where s.rule_id in (select rule_id from product_status_function_relation where relation_id = :relationId)";
-        return  DB.findDto(ProductStatusFunctionDto.class, sql).setParameter("relationId", relationId).findOne();
+        return DB.findDto(ProductStatusFunctionDto.class, sql).setParameter("relationId", relationId).findOne();
     }
 
 
