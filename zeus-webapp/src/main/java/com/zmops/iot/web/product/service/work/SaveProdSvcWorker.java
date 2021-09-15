@@ -36,6 +36,7 @@ public class SaveProdSvcWorker implements IWorker<ProductServiceDto, Boolean> {
             ProductServiceRelation productServiceRelation = new ProductServiceRelation();
             productServiceRelation.setRelationId(deviceId);
             productServiceRelation.setServiceId(productServiceDto.getId());
+            productServiceRelation.setInherit(1);
             productServiceRelationList.add(productServiceRelation);
         }
         DB.saveAll(productServiceRelationList);

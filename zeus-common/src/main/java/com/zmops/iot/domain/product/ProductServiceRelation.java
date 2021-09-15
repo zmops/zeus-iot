@@ -1,6 +1,5 @@
 package com.zmops.iot.domain.product;
 
-import afu.org.checkerframework.checker.igj.qual.I;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,5 +23,7 @@ public class ProductServiceRelation {
     private Long serviceId;
 
     private String relationId;
+
+    private Integer inherit;
 
 }

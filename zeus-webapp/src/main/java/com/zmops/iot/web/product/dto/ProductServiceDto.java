@@ -34,10 +34,10 @@ public class ProductServiceDto {
     @CachedValue(value = "EXECUTE_TYPE")
     private String async;
 
-    private Long templateId;
+    @CachedValue(value = "WHETHER")
+    private String inherit;
 
     private List<ProductServiceParam> productServiceParamList;
-
 
     @NotNull(groups = BaseEntity.Delete.class)
     private List<Long> ids;

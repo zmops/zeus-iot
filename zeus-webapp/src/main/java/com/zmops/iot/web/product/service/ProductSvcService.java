@@ -4,6 +4,7 @@ import com.zmops.iot.async.executor.Async;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.ProductService;
 import com.zmops.iot.domain.product.ProductServiceParam;
+import com.zmops.iot.domain.product.ProductServiceRelation;
 import com.zmops.iot.domain.product.query.QProductService;
 import com.zmops.iot.domain.product.query.QProductServiceParam;
 import com.zmops.iot.domain.product.query.QProductServiceRelation;
@@ -16,6 +17,7 @@ import com.zmops.iot.web.product.dto.param.ProductSvcParam;
 import com.zmops.iot.web.product.service.work.SaveProdSvcWorker;
 import com.zmops.iot.web.product.service.work.UpdateProdSvcWorker;
 import io.ebean.DB;
+import io.ebean.DtoQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,22 +47,37 @@ public class ProductSvcService {
      * @return
      */
     public Pager<ProductServiceDto> getServiceByPage(ProductSvcParam productSvcParam) {
+        StringBuilder   sql             = new StringBuilder("SELECT s.*,r.inherit from product_service s LEFT JOIN product_service_relation r on r.service_id=s.id where 1=1 ");
         QProductService qProductService = new QProductService();
         if (ToolUtil.isNotEmpty(productSvcParam.getName())) {
+            sql.append(" and s.name like :name");
             qProductService.name.contains(productSvcParam.getName());
         }
         if (ToolUtil.isNotEmpty(productSvcParam.getMark())) {
+            sql.append(" and s.mark like :mark");
             qProductService.mark.contains(productSvcParam.getMark());
         }
         if (ToolUtil.isNotEmpty(productSvcParam.getProdId())) {
+            sql.append(" and r.relation_id = :relationId");
             List<Long> serviceIds = getServiceIdList(productSvcParam.getProdId());
             if (ToolUtil.isNotEmpty(serviceIds)) {
                 qProductService.id.in(serviceIds);
             }
         }
-        qProductService.orderBy(" id desc");
-        List<ProductServiceDto> productServiceDtoList = qProductService.setFirstRow((productSvcParam.getPage() - 1) * productSvcParam.getMaxRow())
-                .setMaxRows(productSvcParam.getMaxRow()).asDto(ProductServiceDto.class).findList();
+        sql.append(" order by id desc");
+        DtoQuery<ProductServiceDto> query = DB.findDto(ProductServiceDto.class, sql.toString());
+        if (ToolUtil.isNotEmpty(productSvcParam.getName())) {
+            query.setParameter("name", "%" + productSvcParam.getName() + "%");
+        }
+        if (ToolUtil.isNotEmpty(productSvcParam.getMark())) {
+            query.setParameter("mark", "%" + productSvcParam.getMark() + "%");
+        }
+        if (ToolUtil.isNotEmpty(productSvcParam.getProdId())) {
+            query.setParameter("relationId", productSvcParam.getProdId());
+        }
+
+        List<ProductServiceDto> productServiceDtoList = query.setFirstRow((productSvcParam.getPage() - 1) * productSvcParam.getMaxRow())
+                .setMaxRows(productSvcParam.getMaxRow()).findList();
 
         if (ToolUtil.isEmpty(productServiceDtoList)) {
             return new Pager<>(productServiceDtoList, 0);
@@ -116,6 +133,12 @@ public class ProductSvcService {
         Long serviceId = productService.getId();
         productServiceDto.setId(serviceId);
 
+        ProductServiceRelation productServiceRelation = new ProductServiceRelation();
+        productServiceRelation.setInherit(0);
+        productServiceRelation.setServiceId(productService.getId());
+        productServiceRelation.setRelationId(productServiceDto.getRelationId());
+        DB.save(productServiceRelation);
+
         if (ToolUtil.isNotEmpty(productServiceDto.getProductServiceParamList())) {
             for (ProductServiceParam productServiceParam : productServiceDto.getProductServiceParamList()) {
                 productServiceParam.setServiceId(serviceId);
@@ -124,7 +147,7 @@ public class ProductSvcService {
         }
 
         //同步到设备
-        WorkerWrapper<ProductServiceDto, Boolean> saveProdAttrWork = WorkerWrapper.<ProductServiceDto, Boolean>builder().worker(saveProdSvcWorker).build();
+        WorkerWrapper<ProductServiceDto, Boolean> saveProdAttrWork = WorkerWrapper.<ProductServiceDto, Boolean>builder().worker(saveProdSvcWorker).param(productServiceDto).build();
 
         try {
             Async.work(100, saveProdAttrWork).awaitFinish();
