@@ -101,7 +101,7 @@ public class ProductController {
         String result = productService.zbxTemplateCreate(prodId + "");
 
         // 第二步：创建产品
-        String  zbxId = JSON.parseObject(result, TemplateIds.class).getTemplateids()[0];
+        String zbxId = JSON.parseObject(result, TemplateIds.class).getTemplateids()[0];
         productService.createProduct(zbxId, prodId, prodBasicInfo);
         prodBasicInfo.setProductId(prodId);
         return ResponseData.success(prodBasicInfo);
@@ -144,7 +144,7 @@ public class ProductController {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }
         int deviceNum = new QDevice().productId.eq(prodBasicInfo.getProductId()).findCount();
-        if(deviceNum>0){
+        if (deviceNum > 0) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_HAS_BIND_DEVICE);
         }
 
@@ -171,20 +171,24 @@ public class ProductController {
     @PostMapping("/tag/update")
     public ResponseData prodTagCreate(@RequestBody @Valid ProductTag productTag) {
 
-        String    productId = productTag.getProductId();
+        String  productId = productTag.getProductId();
         Product product   = new QProduct().productId.eq(Long.parseLong(productId)).findOne();
 
         if (null == product) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }
+
         new QTag().sid.eq(productTag.getProductId()).delete();
+
         List<Tag> tags = new ArrayList<>();
         for (ProductTag.Tag tag : productTag.getProductTag()) {
-            tags.add(
-                    Tag.builder().sid(productTag.getProductId())
-                            .tag(tag.getTag()).value(tag.getValue())
-                            .build());
+            tags.add(Tag.builder()
+                    .sid(productTag.getProductId())
+                    .tag(tag.getTag()).value(tag.getValue())
+                    .build()
+            );
         }
+
         DB.saveAll(tags);
 
         String response   = productService.updateTemplateTags(product.getZbxId(), productTag);
