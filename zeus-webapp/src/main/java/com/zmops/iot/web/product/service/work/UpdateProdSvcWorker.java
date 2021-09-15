@@ -31,28 +31,7 @@ public class UpdateProdSvcWorker implements IWorker<ProductServiceDto, Boolean> 
     public Boolean action(ProductServiceDto productServiceDto, Map<String, WorkerWrapper<?, ?>> map) {
         log.debug("处理产品服务修改 同步到设备工作…………");
 
-        Long Id = productServiceDto.getId();
 
-        List<ProductService> list = new QProductService().templateId.eq(Id).findList();
-
-        for (ProductService productService : list) {
-            productService.setName(productServiceDto.getName());
-            productService.setMark(productServiceDto.getMark());
-            productService.setAsync(productServiceDto.getAsync());
-        }
-        DB.updateAll(list);
-
-        //处理服务参数
-        List<Long> ids = list.parallelStream().map(ProductService::getId).collect(Collectors.toList());
-        new QProductServiceParam().serviceId.in(ids).delete();
-        if (ToolUtil.isNotEmpty(productServiceDto.getProductServiceParamList())) {
-            for (Long id : ids) {
-                for (ProductServiceParam productServiceParam : productServiceDto.getProductServiceParamList()) {
-                    productServiceParam.setServiceId(id);
-                }
-            }
-            DB.saveAll(productServiceDto.getProductServiceParamList());
-        }
         return true;
     }
 
