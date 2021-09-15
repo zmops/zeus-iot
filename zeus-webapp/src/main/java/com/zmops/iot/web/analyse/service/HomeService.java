@@ -143,7 +143,7 @@ public class HomeService {
      *
      * @return
      */
-    public Map<String, Object> getDeviceNum(long timeFrom, long timeTill) {
+    public Map<String, Object> getDeviceNum(Integer timeFrom, Integer timeTill) {
         Map<String, Object> deviceNumMap = new HashMap<>(4);
 
         deviceNumMap.put("online", 0);

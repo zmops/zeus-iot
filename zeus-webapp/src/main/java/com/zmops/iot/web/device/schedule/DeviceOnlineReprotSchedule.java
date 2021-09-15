@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -33,7 +34,8 @@ public class DeviceOnlineReprotSchedule {
         Map<String, Map<Integer, Long>> onLinemap = deviceList.parallelStream().collect(Collectors.groupingBy(Device::getType, Collectors.groupingBy(Device::getOnline, Collectors.counting())));
         List<DeviceOnlineReport>        list      = new ArrayList<>();
         onLinemap.forEach((key, value) -> {
-            list.add(DeviceOnlineReport.builder().type(key).createTime(LocalDateTimeUtils.formatTimeDate(LocalDateTime.now())).online(value.get(1)).offline(value.get(0)).build());
+            list.add(DeviceOnlineReport.builder().type(Integer.parseInt(key)).createTime(LocalDateTimeUtils.formatTimeDate(LocalDateTime.now()))
+                    .online(Optional.ofNullable(value.get(1)).orElse(0L)).offline(Optional.ofNullable(value.get(0)).orElse(0L)).build());
         });
         //插入 在线情况表
         DB.saveAll(list);

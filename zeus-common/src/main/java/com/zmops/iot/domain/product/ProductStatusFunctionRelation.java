@@ -18,6 +18,9 @@ import javax.persistence.Table;
 @Table(name = "product_status_function_relation")
 public class ProductStatusFunctionRelation {
 
+    @Id
+    private Long id;
+
     private Long ruleId;
 
     private String relationId;
