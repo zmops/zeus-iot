@@ -27,6 +27,6 @@ public class DeviceOnlineReport {
 
     private Long offline;
 
-    private String type;
+    private Integer type;
 
 }

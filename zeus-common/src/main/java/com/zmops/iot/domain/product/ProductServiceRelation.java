@@ -1,9 +1,11 @@
 package com.zmops.iot.domain.product;
 
+import afu.org.checkerframework.checker.igj.qual.I;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
@@ -15,6 +17,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "product_service_relation")
 public class ProductServiceRelation {
+
+    @Id
+    private Long id;
 
     private Long serviceId;
 
