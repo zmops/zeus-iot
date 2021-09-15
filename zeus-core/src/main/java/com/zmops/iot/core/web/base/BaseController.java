@@ -52,13 +52,6 @@ public class BaseController {
     }
 
     /**
-     * 包装一个list，让list增加额外属性
-     */
-    protected Object warpObject(BaseControllerWrapper warpper) {
-        return warpper.wrap();
-    }
-
-    /**
      * 删除cookie
      */
     protected void deleteCookieByName(String cookieName) {
