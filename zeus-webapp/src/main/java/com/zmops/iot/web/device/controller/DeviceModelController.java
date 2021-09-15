@@ -81,11 +81,11 @@ public class DeviceModelController {
         }
 
         if (ATTR_SOURCE_DEPEND.equals(productAttr.getSource())) {
-            if(productAttr.getDepAttrId() == null){
+            if (productAttr.getDepAttrId() == null) {
                 throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_DEPTED_NULL);
             }
             ProductAttribute productAttribute = new QProductAttribute().attrId.eq(productAttr.getDepAttrId()).findOne();
-            if(null == productAttribute){
+            if (null == productAttribute) {
                 throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_DEPTED_NOT_EXIST);
             }
             productAttr.setMasterItemId(productAttribute.getZbxId());
@@ -116,11 +116,11 @@ public class DeviceModelController {
         }
 
         if (ATTR_SOURCE_DEPEND.equals(productAttr.getSource())) {
-            if(productAttr.getDepAttrId() == null){
+            if (productAttr.getDepAttrId() == null) {
                 throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_DEPTED_NULL);
             }
             ProductAttribute productAttribute = new QProductAttribute().attrId.eq(productAttr.getDepAttrId()).findOne();
-            if(null == productAttribute){
+            if (null == productAttribute) {
                 throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_DEPTED_NOT_EXIST);
             }
             productAttr.setMasterItemId(productAttribute.getZbxId());
