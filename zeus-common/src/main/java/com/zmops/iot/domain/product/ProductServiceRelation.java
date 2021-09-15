@@ -24,6 +24,6 @@ public class ProductServiceRelation {
 
     private String relationId;
 
-    private Integer inherit;
+    private String inherit;
 
 }

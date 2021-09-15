@@ -134,7 +134,6 @@ public class ProductSvcService {
         productServiceDto.setId(serviceId);
 
         ProductServiceRelation productServiceRelation = new ProductServiceRelation();
-        productServiceRelation.setInherit(0);
         productServiceRelation.setServiceId(productService.getId());
         productServiceRelation.setRelationId(productServiceDto.getRelationId());
         DB.save(productServiceRelation);

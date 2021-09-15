@@ -77,7 +77,10 @@ public class ProductTriggerService {
         ProductStatusFunctionRelation productStatusFunctionRelation = new ProductStatusFunctionRelation();
         productStatusFunctionRelation.setRelationId(judgeRule.getRelationId());
         productStatusFunctionRelation.setRuleId(ruleId);
+        productStatusFunctionRelation.setRuleId(ruleId);
         DB.save(productStatusFunctionRelation);
+
+
 
         return productStatusFunction.getRuleId();
     }

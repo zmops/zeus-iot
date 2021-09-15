@@ -25,4 +25,6 @@ public class ProductStatusFunctionRelation {
 
     private String relationId;
 
+    private String inherit;
+
 }

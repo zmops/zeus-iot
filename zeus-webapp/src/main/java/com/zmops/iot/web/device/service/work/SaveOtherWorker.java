@@ -5,6 +5,7 @@ import com.zmops.iot.async.callback.IWorker;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.product.query.QProductServiceRelation;
+import com.zmops.iot.domain.product.query.QProductStatusFunctionRelation;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.dto.DeviceDto;
 import io.ebean.DB;
@@ -37,6 +38,8 @@ public class SaveOtherWorker implements IWorker<DeviceDto, Boolean> {
             }
             //删除服务关联
             new QProductServiceRelation().relationId.eq(deviceId).delete();
+            //删除上下线规则关联
+            new QProductStatusFunctionRelation().relationId.eq(deviceId).delete();
         } else {
             //创建
             Device device = (Device) allWrappers.get("saveDvice").getWorkResult().getResult();
@@ -45,6 +48,10 @@ public class SaveOtherWorker implements IWorker<DeviceDto, Boolean> {
 
         //服务关联
         DB.sqlUpdate("insert into product_service_relation (relation_id,service_id,inherit) SELECT :deviceId,service_id,1 from product_service_relation where relation_id=:relationId")
+                .setParameter("deviceId", deviceId).setParameter("relationId", deviceDto.getProductId()).execute();
+
+        //上下线规则关联
+        DB.sqlUpdate("insert into product_status_function_relation (relation_id,rule_id,inherit) SELECT :deviceId,rule_id,1 from product_status_function_relation where relation_id=:relationId")
                 .setParameter("deviceId", deviceId).setParameter("relationId", deviceDto.getProductId()).execute();
 
         return true;
