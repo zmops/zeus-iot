@@ -22,7 +22,8 @@ public class ProductEventExpression extends Model {
 
     @Id
     @GeneratedValue(generator = IdTypeConsts.ID_SNOW)
-    private Long   eventExpId;
+    private Long eventExpId;
+
     private Long   eventRuleId;
     private String function;
     private String scope;

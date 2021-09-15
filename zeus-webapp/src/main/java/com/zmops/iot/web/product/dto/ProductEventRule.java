@@ -21,25 +21,26 @@ import java.util.Map;
 @Setter
 public class ProductEventRule {
 
-    private String eventRuleId;
+    @NotNull(groups = BaseEntity.Update.class)
+    private Long eventRuleId;
 
-    @NotNull(groups = BaseEntity.Create.class)
+    @NotNull(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
     private Byte eventNotify; // 0 否 1 是，默认 1
 
     // 告警规则名称
-    @NotBlank(groups = BaseEntity.Create.class)
+    @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
     private String eventRuleName;
 
     // 告警规则级别
-    @NotNull(groups = BaseEntity.Create.class)
+    @NotNull(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
     private Byte eventLevel;
 
     // 表达式列表
     @Valid
-    @NotEmpty(groups = BaseEntity.Create.class)
+    @NotEmpty(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
     private List<Expression> expList;
 
-    @NotBlank(groups = BaseEntity.Create.class)
+    @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
     private String expLogic; // and or
 
     private String remark;
@@ -48,27 +49,33 @@ public class ProductEventRule {
 
     private Map<String, String> tags;
 
+    @NotNull(groups = BaseEntity.Update.class)
+    private Integer zbxId;
+
 
     @Getter
     @Setter
     // 告警表达式 构成
     public static class Expression {
 
-        @NotBlank(groups = BaseEntity.Create.class)
+        @NotNull(groups = BaseEntity.Update.class)
+        private Long eventExpId;
+
+        @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
         private String function; // last avg max min sum change nodata
 
         private String scope; // s m h T
 
-        @NotBlank(groups = BaseEntity.Create.class)
+        @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
         private String condition; // > < = <> >= <=
 
-        @NotBlank(groups = BaseEntity.Create.class)
+        @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
         private String value;
 
-        @NotNull(groups = BaseEntity.Create.class)
+        @NotNull(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
         private String productAttrKey; // 产品属性 Key
 
-        @NotBlank(groups = BaseEntity.Create.class)
+        @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
         private String productId; // 产品ID
 
         @Override

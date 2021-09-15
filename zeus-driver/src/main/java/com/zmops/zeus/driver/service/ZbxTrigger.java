@@ -35,15 +35,13 @@ public interface ZbxTrigger {
      * 更新告警触发器
      *
      * @param triggerId   触发器ID
-     * @param triggerName 触发器名称
      * @param expression  触发器 表达式
      * @param ruleLevel   告警等级
      * @return
      */
     @Post
     @JsonPath("/trigger/trigger.update")
-    String triggerUpdate(@ParamName("triggerId") Long triggerId,
-                         @ParamName("triggerName") String triggerName,
+    String triggerUpdate(@ParamName("triggerId") Integer triggerId,
                          @ParamName("expression") String expression,
                          @ParamName("ruleLevel") Byte ruleLevel);
 
@@ -57,6 +55,6 @@ public interface ZbxTrigger {
      */
     @Post
     @JsonPath("/trigger/trigger.tags.update")
-    String triggerTagCreate(@ParamName("triggerId") Long triggerId,
+    String triggerTagCreate(@ParamName("triggerId") Integer triggerId,
                             @ParamName("tagMap") Map<String, String> tags);
 }

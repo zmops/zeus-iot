@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author nantian created at 2021/9/15 13:59
@@ -43,29 +42,16 @@ public class EventRuleService {
      */
     public void createProductEventRule(Long eventRuleId, ProductEventRule eventRule) {
         // step 1: 保存产品告警规则
-        ProductEvent event = new ProductEvent();
+        ProductEvent event = initEventRule(eventRule);
         event.setEventRuleId(eventRuleId);
-        event.setEventLevel(eventRule.getEventLevel());
-        event.setExpLogic(eventRule.getExpLogic());
-        event.setEventNotify(eventRule.getEventNotify());
-        event.setRemark(eventRule.getRemark());
-        event.setEventRuleName(eventRule.getEventRuleName());
-        event.setStatus(CommonStatus.ENABLE.getCode());
-
         DB.save(event);
 
         //step 2: 保存 表达式，方便回显
         List<ProductEventExpression> expList = new ArrayList<>();
 
         eventRule.getExpList().forEach(i -> {
-            ProductEventExpression exp = new ProductEventExpression();
+            ProductEventExpression exp = initEventExpression(i);
             exp.setEventRuleId(eventRuleId);
-            exp.setCondition(i.getCondition());
-            exp.setFunction(i.getFunction());
-            exp.setScope(i.getScope());
-            exp.setValue(i.getValue());
-            exp.setProductId(i.getProductId());
-            exp.setProductAttrKey(i.getProductAttrKey());
             expList.add(exp);
         });
 
@@ -81,6 +67,78 @@ public class EventRuleService {
                         .execute();
             });
         }
+    }
+
+    /**
+     * 更新触发器
+     *
+     * @param eventRuleId 触发器ID
+     * @param eventRule   告警规则
+     */
+    public void updateProductEventRule(Long eventRuleId, ProductEventRule eventRule) {
+
+        //step 1: 函数表达式
+        DB.sqlUpdate("delete from product_event_expression where event_rule_id = :eventRuleId")
+                .setParameter("eventRuleId", eventRule.getEventRuleId())
+                .execute();
+
+        //step 2: 删除服务方法调用
+        DB.sqlUpdate("delete from product_event_service where event_rule_id = :eventRuleId")
+                .setParameter("eventRuleId", eventRule.getEventRuleId())
+                .execute();
+
+
+        // step 3: 保存产品告警规则
+        ProductEvent event = initEventRule(eventRule);
+        event.setEventRuleId(eventRuleId);
+        DB.update(event);
+
+        //step 4: 保存 表达式，方便回显
+        List<ProductEventExpression> expList = new ArrayList<>();
+
+        eventRule.getExpList().forEach(i -> {
+            ProductEventExpression exp = initEventExpression(i);
+            exp.setEventRuleId(eventRuleId);
+            expList.add(exp);
+        });
+
+        DB.saveAll(expList);
+
+        //step 5: 保存触发器 调用 本产品方法
+        if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
+
+            eventRule.getDeviceServices().forEach(i -> {
+                DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id, service_id) values (:eventRuleId, :deviceId, :serviceId)")
+                        .setParameter("eventRuleId", eventRuleId)
+                        .setParameter("deviceId", i.getDeviceId())
+                        .setParameter("serviceId", i.getServiceId())
+                        .execute();
+            });
+        }
+    }
+
+
+    private ProductEvent initEventRule(ProductEventRule eventRule) {
+        ProductEvent event = new ProductEvent();
+        event.setEventLevel(eventRule.getEventLevel());
+        event.setExpLogic(eventRule.getExpLogic());
+        event.setEventNotify(eventRule.getEventNotify());
+        event.setRemark(eventRule.getRemark());
+        event.setEventRuleName(eventRule.getEventRuleName());
+        event.setStatus(CommonStatus.ENABLE.getCode());
+        return event;
+    }
+
+    private ProductEventExpression initEventExpression(ProductEventRule.Expression exp) {
+        ProductEventExpression eventExpression = new ProductEventExpression();
+        eventExpression.setEventExpId(exp.getEventExpId());
+        eventExpression.setCondition(exp.getCondition());
+        eventExpression.setFunction(exp.getFunction());
+        eventExpression.setScope(exp.getScope());
+        eventExpression.setValue(exp.getValue());
+        eventExpression.setProductId(exp.getProductId());
+        eventExpression.setProductAttrKey(exp.getProductAttrKey());
+        return eventExpression;
     }
 
 
@@ -107,6 +165,7 @@ public class EventRuleService {
         String res = zbxTrigger.triggerCreate(triggerName, expression, level);
         return JSON.parseObject(res, TriggerIds.class).getTriggerids()[0];
     }
+
 
     /**
      * 触发器 分页列表
