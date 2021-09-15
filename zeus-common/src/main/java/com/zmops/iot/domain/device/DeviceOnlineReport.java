@@ -9,7 +9,7 @@ import javax.persistence.Table;
 /**
  * @author yefei
  **/
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode
 @Data
 @Table(name = "device_online_report")
 @Entity
