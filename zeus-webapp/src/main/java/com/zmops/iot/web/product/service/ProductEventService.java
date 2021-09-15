@@ -3,6 +3,12 @@ package com.zmops.iot.web.product.service;
 import com.alibaba.fastjson.JSON;
 import com.zmops.iot.domain.product.ProductEvent;
 import com.zmops.iot.domain.product.ProductEventExpression;
+import com.zmops.iot.domain.product.query.QProductEvent;
+import com.zmops.iot.domain.product.query.QProductEventExpression;
+import com.zmops.iot.model.page.Pager;
+import com.zmops.iot.util.ToolUtil;
+import com.zmops.iot.web.product.dto.ProductEventDto;
+import com.zmops.iot.web.product.dto.param.EventParm;
 import com.zmops.zeus.driver.service.ZbxTrigger;
 import io.ebean.DB;
 import lombok.Data;
@@ -57,6 +63,28 @@ public class ProductEventService {
     public String createZbxTrigger(String triggerName, String expression, Byte level) {
         String res = zbxTrigger.triggerCreate(triggerName, expression, level);
         return JSON.parseObject(res, TriggerIds.class).getTriggerids()[0];
+    }
+
+    /**
+     * 触发器 分页列表
+     *
+     * @param eventParm
+     * @return
+     */
+    public Pager<ProductEventDto> getEventByPage(EventParm eventParm) {
+        QProductEvent query = new QProductEvent();
+        if (ToolUtil.isNotEmpty(eventParm.getEventRuleName())) {
+            query.eventRuleName.contains(eventParm.getEventRuleName());
+        }
+        if (ToolUtil.isNotEmpty(eventParm.getProdId())) {
+            List<Long> eventRuleIdList = new QProductEventExpression().select(QProductEventExpression.alias().eventRuleId).productId.eq(eventParm.getProdId()).findSingleAttributeList();
+            if (ToolUtil.isNotEmpty(eventRuleIdList)) {
+                query.eventRuleId.in(eventRuleIdList);
+            }
+        }
+        List<ProductEventDto> list = query.setFirstRow((eventParm.getPage() - 1) * eventParm.getMaxRow())
+                .setMaxRows(eventParm.getMaxRow()).orderBy(" create_time desc").asDto(ProductEventDto.class).findList();
+        return new Pager<>(list, query.findCount());
     }
 
 

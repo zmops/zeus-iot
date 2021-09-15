@@ -4,8 +4,12 @@ import cn.hutool.core.util.IdUtil;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.domain.product.ProductEvent;
 import com.zmops.iot.domain.product.ProductEventExpression;
+import com.zmops.iot.enums.CommonStatus;
+import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
+import com.zmops.iot.web.product.dto.ProductEventDto;
 import com.zmops.iot.web.product.dto.ProductEventRule;
+import com.zmops.iot.web.product.dto.param.EventParm;
 import com.zmops.iot.web.product.service.ProductEventService;
 import io.ebean.DB;
 import io.ebean.annotation.Transactional;
@@ -34,7 +38,23 @@ public class ProductEventController {
     @Autowired
     private ProductEventService productEventService;
 
+    /**
+     * 触发器 分页列表
+     *
+     * @param eventParm
+     * @return
+     */
+    @PostMapping("/getEventByPage")
+    public Pager<ProductEventDto> getEventByPage(@RequestBody EventParm eventParm) {
+        return productEventService.getEventByPage(eventParm);
+    }
 
+    /**
+     * 创建 触发器
+     *
+     * @param eventRule 触发器规则
+     * @return 触发器ID
+     */
     @Transactional
     @PostMapping("/create")
     public ResponseData createProductEventRule(@RequestBody @Validated(value = BaseEntity.Create.class)
@@ -57,6 +77,7 @@ public class ProductEventController {
         event.setRemark(eventRule.getRemark());
         event.setEventRuleName(eventRule.getEventRuleName());
         event.setZbxId(Integer.valueOf(triggerId));
+        event.setStatus(CommonStatus.ENABLE.getCode());
 
         productEventService.createProductEventRule(event);
 
@@ -99,5 +120,17 @@ public class ProductEventController {
         return ResponseData.success(eventRuleId); // 返回触发器ID
     }
 
+    /**
+     * 修改 触发器
+     *
+     * @param eventRule 触发器规则
+     * @return 触发器ID
+     */
+    @Transactional
+    @PostMapping("/update")
+    public ResponseData updateProductEventRule(@RequestBody @Validated(value = BaseEntity.Create.class)
+                                                       ProductEventRule eventRule) {
+        return ResponseData.success();
+    }
 
 }

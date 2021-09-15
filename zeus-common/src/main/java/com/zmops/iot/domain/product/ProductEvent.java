@@ -27,5 +27,5 @@ public class ProductEvent extends BaseEntity {
     private String  remark;
     private Byte    eventNotify;
     private Integer zbxId;
-
+    private String  status;
 }
