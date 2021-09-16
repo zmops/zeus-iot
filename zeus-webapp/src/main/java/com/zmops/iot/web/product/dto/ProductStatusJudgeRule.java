@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 public class ProductStatusJudgeRule {
 
 
-    @NotBlank(groups = { BaseEntity.Create.class})
+    @NotBlank(groups = {BaseEntity.Create.class})
     private String relationId; // deviceid
 
     @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Delete.class})
@@ -28,19 +28,19 @@ public class ProductStatusJudgeRule {
 
     //#####################  下线规则
 
-    @NotNull(groups = { BaseEntity.Create.class})
+    @NotNull(groups = {BaseEntity.Create.class})
     private Long attrId; // 设备属性ID
 
-    @NotBlank(groups = { BaseEntity.Create.class})
+    @NotBlank(groups = {BaseEntity.Create.class})
     private String ruleFunction; // nodata 或者 > < = 函数
 
     @NotBlank(groups = {BaseEntity.Create.class})
     private String ruleCondition;  // 时间 或者 特定值
 
-    @NotNull(groups = { BaseEntity.Create.class})
+    @NotNull(groups = {BaseEntity.Create.class})
     private String unit; //单位 s m h 或空
 
-    @NotBlank(groups = { BaseEntity.Create.class})
+    @NotBlank(groups = {BaseEntity.Create.class})
     private String productAttrKey; // 属性 Key
 
 
@@ -49,13 +49,13 @@ public class ProductStatusJudgeRule {
     @NotNull(groups = {BaseEntity.Create.class})
     private Long attrIdRecovery; // 设备属性ID
 
-    @NotBlank(groups = { BaseEntity.Create.class})
+    @NotBlank(groups = {BaseEntity.Create.class})
     private String ruleFunctionRecovery; // nodata 或者 > < = 函数
 
     @NotBlank(groups = {BaseEntity.Create.class})
     private String ruleConditionRecovery;  // 时间 或者 特定值
 
-    @NotBlank(groups = { BaseEntity.Create.class})
+    @NotBlank(groups = {BaseEntity.Create.class})
     private String productAttrKeyRecovery; // 属性 Key
 
     private String unitRecovery;
