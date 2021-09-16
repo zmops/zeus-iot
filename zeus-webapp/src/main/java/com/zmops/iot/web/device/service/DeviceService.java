@@ -10,8 +10,7 @@ import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.device.query.QDevicesGroups;
 import com.zmops.iot.domain.device.query.QTag;
 import com.zmops.iot.domain.product.Product;
-import com.zmops.iot.domain.product.query.QProduct;
-import com.zmops.iot.domain.product.query.QProductAttribute;
+import com.zmops.iot.domain.product.query.*;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
@@ -222,7 +221,7 @@ public class DeviceService {
 
         try {
 
-            Async.work(3000, deviceWork).awaitFinish();
+            Async.work(10000, deviceWork).awaitFinish();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -325,16 +324,24 @@ public class DeviceService {
                     return true;
                 }).param(zbxId).build();
 
+        WorkerWrapper<String, Boolean> delOtherWork = WorkerWrapper.<String, Boolean>builder().id("delOtherWork")
+                .worker((deviceId, allWrappers) -> {
+                    new QProductServiceRelation().relationId.eq(deviceId).delete();
+                    new QProductEventRelation().relationId.eq(deviceId).delete();
+                    new QProductEventService().deviceId.eq(deviceId).delete();
+                    return true;
+                }).param(zbxId).build();
+
         WorkerWrapper<String, Boolean> delDeviceWork = WorkerWrapper.<String, Boolean>builder().id("delDeviceWork")
                 .worker((deviceId, allWrappers) -> {
                     new QDevice().deviceId.eq(deviceId).delete();
                     return true;
                 }).param(deviceDto.getDeviceId())
-                .nextOf(delTagWork, delAttrWork, delGropusWork, delZbxWork).build();
+                .nextOf(delTagWork, delAttrWork, delGropusWork, delZbxWork,delOtherWork).build();
 
         try {
 
-            Async.work(10000, delDeviceWork).awaitFinish();
+            Async.work(5000, delDeviceWork).awaitFinish();
         } catch (Exception e) {
             e.printStackTrace();
         }
