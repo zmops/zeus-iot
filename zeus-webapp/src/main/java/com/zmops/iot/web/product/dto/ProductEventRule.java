@@ -105,6 +105,8 @@ public class ProductEventRule {
 
         private Long deviceId;
 
+        private Long executeDeviceId;
+
         private Long serviceId;
     }
 

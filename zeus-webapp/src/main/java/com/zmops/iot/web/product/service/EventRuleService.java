@@ -66,9 +66,10 @@ public class EventRuleService {
         //step 3: 保存触发器 调用 本产品方法
         if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
             eventRule.getDeviceServices().forEach(i -> {
-                DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id, service_id) values (:eventRuleId, :deviceId, :serviceId)")
+                DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id,execute_device_id, service_id) values (:eventRuleId, :deviceId,:executeDeviceId, :serviceId)")
                         .setParameter("eventRuleId", eventRuleId)
-                        .setParameter("deviceId", i.getDeviceId())
+                        .setParameter("deviceId", eventRuleId)
+                        .setParameter("executeDeviceId", i.getExecuteDeviceId())
                         .setParameter("serviceId", i.getServiceId())
                         .execute();
             });
