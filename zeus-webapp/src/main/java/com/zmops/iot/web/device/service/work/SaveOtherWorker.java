@@ -66,14 +66,14 @@ public class SaveOtherWorker implements IWorker<DeviceDto, Boolean> {
 
         //服务关联
         DB.sqlUpdate("insert into product_service_relation (relation_id,service_id,inherit) SELECT :deviceId,service_id,1 from product_service_relation where relation_id=:relationId")
-                .setParameter("deviceId", deviceId).setParameter("relationId", deviceDto.getProductId()).execute();
+                .setParameter("deviceId", deviceId).setParameter("relationId", deviceDto.getProductId() + "").execute();
 
         //上下线规则关联
         DB.sqlUpdate("insert into product_status_function_relation (relation_id,rule_id,inherit) SELECT :deviceId,rule_id,1 from product_status_function_relation where relation_id=:relationId")
-                .setParameter("deviceId", deviceId).setParameter("relationId", deviceDto.getProductId()).execute();
+                .setParameter("deviceId", deviceId).setParameter("relationId", deviceDto.getProductId() + "").execute();
 
         //告警规则关联 并 回填zbx triggerId
-        List<EventRuleService.Triggers> triggers                 = JSONObject.parseArray(zbxTrigger.triggerGet(deviceId), EventRuleService.Triggers.class);
+        List<EventRuleService.Triggers> triggers                 = JSONObject.parseArray(zbxTrigger.triggerGetByHost(deviceId), EventRuleService.Triggers.class);
         Map<String, String>             map                      = triggers.parallelStream().collect(Collectors.toMap(EventRuleService.Triggers::getDescription, EventRuleService.Triggers::getTriggerid));
         List<ProductEventRelation>      productEventRelationList = new QProductEventRelation().relationId.eq(deviceDto.getProductId() + "").findList();
         for (ProductEventRelation productEventRelation : productEventRelationList) {
@@ -85,7 +85,7 @@ public class SaveOtherWorker implements IWorker<DeviceDto, Boolean> {
         DB.saveAll(productEventRelationList);
         //告警执行动作关联
         DB.sqlUpdate("insert into product_event_service (service_id,device_id,execute_device_id,event_rule_id,inherit) SELECT service_id,:deviceId,:executeDeviceId,event_rule_id,1 from product_event_service where relation_id=:relationId")
-                .setParameter("deviceId", deviceId).setParameter("executeDeviceId", deviceId).setParameter("relationId", deviceDto.getProductId()).execute();
+                .setParameter("deviceId", deviceId).setParameter("executeDeviceId", deviceId).setParameter("relationId", deviceDto.getProductId() + "").execute();
 
 
         return true;

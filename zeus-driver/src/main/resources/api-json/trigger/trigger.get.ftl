@@ -3,12 +3,12 @@
     "method": "trigger.get",
     "params": {
         "selectHosts":["host"],
-    <#if triggerids??>
-        "triggerids":[${triggerids}],
-    </#if>
-    <#if host??>
-        "host":${host},
-    </#if>
+        <#if triggerids??>
+            "triggerids":${triggerids},
+        </#if>
+        <#if host??>
+            "host":"${host}",
+        </#if>
         "output": "extend"
     },
     "id": 1,

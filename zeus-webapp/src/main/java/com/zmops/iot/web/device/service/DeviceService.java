@@ -274,7 +274,7 @@ public class DeviceService {
 
         try {
 
-            Async.work(3000, deviceWork).awaitFinish();
+            Async.work(10000, deviceWork).awaitFinish();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -334,7 +334,7 @@ public class DeviceService {
 
         try {
 
-            Async.work(3000, delDeviceWork).awaitFinish();
+            Async.work(10000, delDeviceWork).awaitFinish();
         } catch (Exception e) {
             e.printStackTrace();
         }
