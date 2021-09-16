@@ -105,6 +105,12 @@ public class ProductSvcService {
         if (ToolUtil.isNotEmpty(productSvcParam.getName())) {
             qProdService.name.contains(productSvcParam.getName());
         }
+        if (ToolUtil.isNotEmpty(productSvcParam.getProdId())) {
+            List<Long> serviceIds = getServiceIdList(productSvcParam.getProdId());
+            if (ToolUtil.isNotEmpty(serviceIds)) {
+                qProdService.id.in(serviceIds);
+            }
+        }
         if (ToolUtil.isNotEmpty(productSvcParam.getMark())) {
             qProdService.mark.contains(productSvcParam.getMark());
         }
@@ -203,5 +209,12 @@ public class ProductSvcService {
         new QProductServiceParam().serviceId.in(ids).delete();
         new QProductServiceRelation().serviceId.in(ids).delete();
         new QProductService().id.in(ids).delete();
+    }
+
+    /**
+     * 根据服务 获取参数列表
+     */
+    public List<ProductServiceParam> paramList(long serviceId) {
+        return new QProductServiceParam().serviceId.eq(serviceId).findList();
     }
 }
