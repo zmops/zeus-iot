@@ -17,12 +17,12 @@
 @echo off
 
 setlocal
-set OAP_PROCESS_TITLE=Skywalking-Collector
+set OAP_PROCESS_TITLE=Zeus-IoT-Server
 set OAP_HOME=%~dp0%..
-set OAP_OPTS="-Xms256M -Xmx512M -Doap.logDir=%OAP_HOME%\logs"
+set OAP_OPTS="-Xms1024M -Xmx1024M -Doap.logDir=%OAP_HOME%\logs"
 
 set CLASSPATH=%OAP_HOME%\config;.;
-set CLASSPATH=%OAP_HOME%\oap-libs\*;%CLASSPATH%
+set CLASSPATH=%OAP_HOME%\iot-server-libs\*;%CLASSPATH%
 
 if defined JAVA_HOME (
  set _EXECJAVA="%JAVA_HOME%\bin\java"
@@ -33,5 +33,5 @@ if not defined JAVA_HOME (
  set _EXECJAVA=java
 )
 
-start "%OAP_PROCESS_TITLE%" %_EXECJAVA% "%OAP_OPTS%" -cp "%CLASSPATH%" org.apache.skywalking.oap.server.starter.OAPServerStartUp
+start "%OAP_PROCESS_TITLE%" %_EXECJAVA% "%OAP_OPTS%" -cp "%CLASSPATH%" com.zmops.zeus.iot.server.starter.IOTServerStartUp
 endlocal
