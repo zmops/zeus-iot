@@ -87,7 +87,6 @@ public class EventRuleService {
                 .setParameter("eventRuleId", eventRule.getEventRuleId())
                 .execute();
 
-
         // step 3: 保存产品告警规则
         ProductEvent event = initEventRule(eventRule);
         event.setEventRuleId(eventRuleId);
@@ -106,7 +105,6 @@ public class EventRuleService {
 
         //step 5: 保存触发器 调用 本产品方法
         if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
-
             eventRule.getDeviceServices().forEach(i -> {
                 DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id, service_id) values (:eventRuleId, :deviceId, :serviceId)")
                         .setParameter("eventRuleId", eventRuleId)
