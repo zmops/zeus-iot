@@ -331,7 +331,7 @@ public class DeviceService {
                     new QProductEventRelation().relationId.eq(deviceId).delete();
                     new QProductEventService().deviceId.eq(deviceId).delete();
                     return true;
-                }).param(zbxId).build();
+                }).param(deviceDto.getDeviceId()).build();
 
         WorkerWrapper<String, Boolean> delDeviceWork = WorkerWrapper.<String, Boolean>builder().id("delDeviceWork")
                 .worker((deviceId, allWrappers) -> {

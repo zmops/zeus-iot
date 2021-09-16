@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,11 +35,38 @@ public class HistoryService {
 
     public Pager<LatestDto> queryHistory(HistoryParam historyParam) {
         List<LatestDto> latestDtos = queryHistory(historyParam.getDeviceId(), historyParam.getAttrIds(),
-                LocalDateTimeUtils.getSecondsByStr(historyParam.getTimeFrom()),
-                LocalDateTimeUtils.getSecondsByStr(historyParam.getTimeTill()));
+                dateTransfer(historyParam.getTimeFrom()),
+                dateTransfer(historyParam.getTimeTill()));
         List<LatestDto> collect = latestDtos.stream().skip((historyParam.getPage() - 1) * historyParam.getMaxRow())
                 .limit(historyParam.getMaxRow()).collect(Collectors.toList());
-        return new Pager<>(collect,latestDtos.size());
+        return new Pager<>(collect, latestDtos.size());
+    }
+
+    private long dateTransfer(String date) {
+        LocalDateTime now = LocalDateTime.now();
+        if (ToolUtil.isEmpty(date)) {
+            return LocalDateTimeUtils.getSecondsByTime(now);
+        }
+        if (date.startsWith("now-")) {
+            String value = date.substring(date.indexOf("-") + 1, date.length() - 1);
+            String unit  = date.substring(date.length() - 1);
+            switch (unit) {
+                case "m":
+                    return LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.minu(now, Integer.valueOf(value), ChronoUnit.MINUTES));
+                case "d":
+                    return LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.minu(now, Integer.valueOf(value), ChronoUnit.DAYS));
+                case "M":
+                    return LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.minu(now, Integer.valueOf(value), ChronoUnit.MONTHS));
+                case "h":
+                    return LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.minu(now, Integer.valueOf(value), ChronoUnit.HOURS));
+                case "y":
+                    return LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.minu(now, Integer.valueOf(value), ChronoUnit.YEARS));
+                default:
+                    return LocalDateTimeUtils.getSecondsByTime(now);
+            }
+        } else {
+            return LocalDateTimeUtils.getSecondsByStr(date);
+        }
     }
 
     public List<LatestDto> queryHistory(String deviceId, List<Long> attrIds, Long timeFrom, Long timeTill) {
@@ -66,7 +94,7 @@ public class HistoryService {
         }
         //根据属性值类型 分组查询历史数据
         for (Map.Entry<String, List<ProductAttribute>> map : valueTypeMap.entrySet()) {
-            latestDtos.addAll(queryHitoryData(one.getZbxId(), zbxIds,1000, Integer.parseInt(map.getKey()), timeFrom, timeTill));
+            latestDtos.addAll(queryHitoryData(one.getZbxId(), zbxIds, 1000, Integer.parseInt(map.getKey()), timeFrom, timeTill));
         }
 
         latestDtos.forEach(latestDto -> {
@@ -81,7 +109,7 @@ public class HistoryService {
         return latestDtos;
     }
 
-    public List<LatestDto> queryHitoryData(String hostId, List<String> itemIds,int hisNum, Integer valueType, Long timeFrom, Long timeTill) {
+    public List<LatestDto> queryHitoryData(String hostId, List<String> itemIds, int hisNum, Integer valueType, Long timeFrom, Long timeTill) {
         String res = zbxHistoryGet.historyGet(hostId, itemIds, hisNum, valueType, timeFrom, timeTill);
         return JSONObject.parseArray(res, LatestDto.class);
     }
