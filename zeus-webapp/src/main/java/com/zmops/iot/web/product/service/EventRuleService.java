@@ -1,10 +1,13 @@
 package com.zmops.iot.web.product.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.product.ProductEvent;
 import com.zmops.iot.domain.product.ProductEventExpression;
+import com.zmops.iot.domain.product.ProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEvent;
 import com.zmops.iot.domain.product.query.QProductEventExpression;
+import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.enums.CommonStatus;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
@@ -19,7 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author nantian created at 2021/9/15 13:59
@@ -67,6 +73,17 @@ public class EventRuleService {
                         .execute();
             });
         }
+
+        //step 4: 保存关联关系
+        List<String>               relationIds = eventRule.getExpList().parallelStream().map(ProductEventRule.Expression::getProductId).distinct().collect(Collectors.toList());
+        List<ProductEventRelation> lists       = new ArrayList<>();
+        relationIds.forEach(relationId -> {
+            ProductEventRelation productEventRelation = new ProductEventRelation();
+            productEventRelation.setEventRuleId(eventRuleId);
+            productEventRelation.setRelationId(relationId);
+        });
+
+
     }
 
     /**
@@ -136,8 +153,9 @@ public class EventRuleService {
         eventExpression.setFunction(exp.getFunction());
         eventExpression.setScope(exp.getScope());
         eventExpression.setValue(exp.getValue());
-        eventExpression.setProductId(exp.getProductId());
+        eventExpression.setDeviceId(exp.getProductId());
         eventExpression.setProductAttrKey(exp.getProductAttrKey());
+        eventExpression.setUnit(exp.getUnit());
         return eventExpression;
     }
 
@@ -148,8 +166,21 @@ public class EventRuleService {
      * @param triggerId 规则ID
      * @param zbxId     triggerId
      */
-    public void updateProductEventRuleZbxId(Long triggerId, Integer zbxId) {
-        DB.update(ProductEvent.class).where().eq("eventRuleId", triggerId).asUpdate().set("zbxId", zbxId).update();
+    public void updateProductEventRuleZbxId(Long triggerId, String[] zbxId) {
+
+        List<Triggers> triggers = JSONObject.parseArray(zbxTrigger.triggerGet(Arrays.toString(zbxId)), Triggers.class);
+
+        Map<String, String> map = triggers.parallelStream().collect(Collectors.toMap(o -> o.hosts.host, Triggers::getTriggerid));
+
+        List<ProductEventRelation> productEventRelationList = new QProductEventRelation().eventRuleId.eq(triggerId).findList();
+
+        productEventRelationList.forEach(productEventRelation -> {
+            if (null != map.get(productEventRelation.getRelationId())) {
+                DB.update(ProductEventRelation.class).where().eq("ruleId", triggerId).eq("relationId", productEventRelation.getRelationId())
+                        .asUpdate().set("zbxId", map.get(productEventRelation.getRelationId())).update();
+            }
+        });
+
     }
 
 
@@ -161,9 +192,9 @@ public class EventRuleService {
      * @param level       告警等级
      * @return 触发器ID
      */
-    public String createZbxTrigger(String triggerName, String expression, Byte level) {
+    public String[] createZbxTrigger(String triggerName, String expression, Byte level) {
         String res = zbxTrigger.triggerCreate(triggerName, expression, level);
-        return JSON.parseObject(res, TriggerIds.class).getTriggerids()[0];
+        return JSON.parseObject(res, TriggerIds.class).getTriggerids();
     }
 
 
@@ -181,8 +212,8 @@ public class EventRuleService {
         }
 
         if (ToolUtil.isNotEmpty(eventParm.getProdId())) {
-            List<Long> eventRuleIdList = new QProductEventExpression().select(QProductEventExpression.alias().eventRuleId)
-                    .productId.eq(eventParm.getProdId()).findSingleAttributeList();
+            List<Long> eventRuleIdList = new QProductEventRelation().select(QProductEventRelation.alias().eventRuleId)
+                    .relationId.eq(eventParm.getProdId()).findSingleAttributeList();
 
             if (ToolUtil.isNotEmpty(eventRuleIdList)) {
                 query.eventRuleId.in(eventRuleIdList);
@@ -199,5 +230,18 @@ public class EventRuleService {
     @Data
     static class TriggerIds {
         private String[] triggerids;
+    }
+
+    @Data
+    public static class Triggers {
+        private String triggerid;
+        private String description;
+        private Hosts  hosts;
+    }
+
+    @Data
+    static class Hosts {
+        private String hostid;
+        private String host;
     }
 }

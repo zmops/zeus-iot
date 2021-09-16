@@ -78,6 +78,8 @@ public class ProductEventRule {
         @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
         private String productId; // 产品ID
 
+        private String unit;
+
         @Override
         public String toString() {
             StringBuilder expression = new StringBuilder();

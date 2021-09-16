@@ -29,6 +29,7 @@ public class ProductEventExpression extends Model {
     private String scope;
     private String condition;
     private String value;
-    private String productId;
+    private String deviceId;
     private String productAttrKey;
+    private String unit;
 }
