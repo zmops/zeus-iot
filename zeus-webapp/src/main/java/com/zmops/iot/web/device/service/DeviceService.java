@@ -326,6 +326,7 @@ public class DeviceService {
 
         WorkerWrapper<String, Boolean> delOtherWork = WorkerWrapper.<String, Boolean>builder().id("delOtherWork")
                 .worker((deviceId, allWrappers) -> {
+                    new QProductStatusFunctionRelation().relationId.eq(deviceId).delete();
                     new QProductServiceRelation().relationId.eq(deviceId).delete();
                     new QProductEventRelation().relationId.eq(deviceId).delete();
                     new QProductEventService().deviceId.eq(deviceId).delete();
