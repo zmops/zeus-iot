@@ -58,6 +58,9 @@ public class DeviceService {
     private UpdateDeviceZbxIdWorker updateDeviceZbxIdWorker;
 
     @Autowired
+    private SaveOtherWorker saveOtherWorker;
+
+    @Autowired
     private ZbxHost zbxHost;
 
     @Autowired
@@ -203,6 +206,10 @@ public class DeviceService {
                 .worker(updateDeviceZbxIdWorker)
                 .build();
 
+        WorkerWrapper<DeviceDto, Boolean> saveOtherWork = WorkerWrapper.<DeviceDto, Boolean>builder().id("saveOtherWork")
+                .worker(saveOtherWorker).param(deviceDto)
+                .build();
+
         WorkerWrapper<DeviceDto, String> saveZbxHostWork = WorkerWrapper.<DeviceDto, String>builder().id("saveZbxHostWork")
                 .worker(saveZbxHostWorker).param(deviceDto)
                 .nextOf(updateAttrZbxIdWork, updateDeviceZbxIdWork)
@@ -210,7 +217,7 @@ public class DeviceService {
 
         WorkerWrapper<DeviceDto, Device> deviceWork = WorkerWrapper.<DeviceDto, Device>builder().id("saveDvice")
                 .worker(saveDeviceWorker).param(deviceDto)
-                .nextOf(saveTagWork, saveAttributeWork, saveDeviceGrpWork, saveZbxHostWork)
+                .nextOf(saveTagWork, saveAttributeWork, saveDeviceGrpWork, saveOtherWork, saveZbxHostWork)
                 .build();
 
         try {
@@ -251,6 +258,10 @@ public class DeviceService {
                 .worker(updateAttrZbxIdWorker)
                 .build();
 
+        WorkerWrapper<DeviceDto, Boolean> saveOtherWork = WorkerWrapper.<DeviceDto, Boolean>builder().id("saveOtherWork")
+                .worker(saveOtherWorker).param(deviceDto)
+                .build();
+
         WorkerWrapper<DeviceDto, String> saveZbxHostWork = WorkerWrapper.<DeviceDto, String>builder().id("saveZbxHostWork")
                 .worker(saveZbxHostWorker).param(deviceDto)
                 .nextOf(updateAttrZbxIdWork)
@@ -258,7 +269,7 @@ public class DeviceService {
 
         WorkerWrapper<DeviceDto, Device> deviceWork = WorkerWrapper.<DeviceDto, Device>builder().id("saveDvice")
                 .worker(saveDeviceWorker).param(deviceDto)
-                .nextOf(saveTagWork, saveAttributeWork, saveDeviceGrpWork, saveZbxHostWork)
+                .nextOf(saveTagWork, saveAttributeWork, saveDeviceGrpWork, saveOtherWork, saveZbxHostWork)
                 .build();
 
         try {
