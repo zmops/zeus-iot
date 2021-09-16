@@ -44,7 +44,7 @@ public class HistoryService {
 
     private long dateTransfer(String date) {
         LocalDateTime now = LocalDateTime.now();
-        if (ToolUtil.isEmpty(date)) {
+        if (ToolUtil.isEmpty(date) || date.equals("now")) {
             return LocalDateTimeUtils.getSecondsByTime(now);
         }
         if (date.startsWith("now-")) {
