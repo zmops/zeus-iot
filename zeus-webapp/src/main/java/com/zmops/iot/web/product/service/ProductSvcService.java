@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -107,9 +108,10 @@ public class ProductSvcService {
         }
         if (ToolUtil.isNotEmpty(productSvcParam.getProdId())) {
             List<Long> serviceIds = getServiceIdList(productSvcParam.getProdId());
-            if (ToolUtil.isNotEmpty(serviceIds)) {
-                qProdService.id.in(serviceIds);
+            if (ToolUtil.isEmpty(serviceIds)) {
+                return Collections.emptyList();
             }
+            qProdService.id.in(serviceIds);
         }
         if (ToolUtil.isNotEmpty(productSvcParam.getMark())) {
             qProdService.mark.contains(productSvcParam.getMark());
