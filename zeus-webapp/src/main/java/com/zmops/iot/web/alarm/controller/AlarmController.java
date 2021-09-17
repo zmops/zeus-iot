@@ -23,7 +23,7 @@ public class AlarmController {
         alarmService.test();
     }
 
-    @RequestMapping("/list")
+    @RequestMapping("/getAlarmByPage")
     public ResponseData getAlarmByPage(@RequestBody AlarmParam alarmParam){
         return ResponseData.success(alarmService.getAlarmByPage(alarmParam));
     }

@@ -1,40 +1,27 @@
 package com.zmops.iot.web.alarm.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.zmops.iot.model.cache.filter.CachedValue;
+import com.zmops.iot.model.cache.filter.CachedValueFilter;
 import lombok.Data;
 
 /**
  * @author yefei
  **/
 @Data
+@JsonSerialize(using = CachedValueFilter.class)
 public class AlarmDto {
 
     private String eventid;
 
-    private String source;
-
-    private String object;
-
     private String clock;
 
-    private String ns;
-
-    private String r_eventid;
-
-    private String r_clock;
-
-    private String r_ns;
-
-    private String correlationid;
-
-    private String userid;
+    private String rClock;
 
     private String name;
 
-    private String acknowledged;
-
+    @CachedValue(value = "EVENT_LEVEL")
     private String severity;
 
-    private String opdata;
-
-    private String acknowledges;
+    private String deviceName;
 }

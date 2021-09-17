@@ -17,6 +17,8 @@
         <#if timeTill??>
             "time_till":${timeTill},
         </#if>
+        "evaltype":2,
+        "tags":[{"tag": "__alarm__"},{"tag": "__execute__"}],
         "filter":{
             "source":"0"
         },
