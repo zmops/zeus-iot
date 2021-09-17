@@ -63,4 +63,9 @@ public abstract class BaseEntity extends Model {
     public interface MassRemove {
     }
 
+    /**
+     * 数据校验组:状态
+     */
+    public interface Status {
+    }
 }

@@ -21,7 +21,7 @@ import java.util.Map;
 @Setter
 public class ProductEventRule {
 
-    @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Delete.class})
+    @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Delete.class, BaseEntity.Status.class})
     private Long eventRuleId;
 
     @NotNull(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
@@ -52,6 +52,10 @@ public class ProductEventRule {
     @NotNull(groups = BaseEntity.Update.class)
     private Integer zbxId;
 
+    private String productId; // 产品ID
+
+    @NotBlank(groups = BaseEntity.Status.class)
+    private String status;
 
     @Getter
     @Setter
@@ -75,8 +79,7 @@ public class ProductEventRule {
         @NotNull(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
         private String productAttrKey; // 产品属性 Key
 
-        @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
-        private String productId; // 产品ID
+        private String deviceId; // 设备ID
 
         private String unit;
 
@@ -85,7 +88,7 @@ public class ProductEventRule {
             StringBuilder expression = new StringBuilder();
             expression.append(function);
             expression.append("(/");
-            expression.append(productId);
+            expression.append(deviceId);
             expression.append("/");
             expression.append(productAttrKey);
 

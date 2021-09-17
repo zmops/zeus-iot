@@ -160,6 +160,8 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     RULE_NOT_EXISTS(1701, "上下线规则不存在"),
     RULE_EXISTS(1702, "上下线规则已存在"),
 
+    EVENT_HAS_NOT_DEVICE(1703,"告警规则缺少关联产品或设备"),
+
     /**
      * 租户相关的异常
      */

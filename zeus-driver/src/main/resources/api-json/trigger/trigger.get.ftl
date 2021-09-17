@@ -3,8 +3,8 @@
     "method": "trigger.get",
     "params": {
         "selectHosts":["host"],
-        <#if triggerids??>
-            "triggerids":${triggerids},
+        <#if triggerIds??>
+            "triggerids":${triggerIds},
         </#if>
         <#if host??>
             "host":"${host}",

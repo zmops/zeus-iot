@@ -7,6 +7,9 @@ import com.zmops.iot.domain.product.ProductEventExpression;
 import com.zmops.iot.domain.product.ProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.enums.CommonStatus;
+import com.zmops.iot.model.exception.ServiceException;
+import com.zmops.iot.util.ToolUtil;
+import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductEventRule;
 import com.zmops.zeus.driver.service.ZbxTrigger;
 import io.ebean.DB;
@@ -65,14 +68,26 @@ public class DeviceEventService {
         }
 
         //step 4: 保存关联关系
-        List<String>               relationIds = eventRule.getExpList().parallelStream().map(ProductEventRule.Expression::getProductId).distinct().collect(Collectors.toList());
-        List<ProductEventRelation> lists       = new ArrayList<>();
-        relationIds.forEach(relationId -> {
+        //step 4: 保存关联关系
+        if (ToolUtil.isNotEmpty(eventRule.getProductId())) {
             ProductEventRelation productEventRelation = new ProductEventRelation();
             productEventRelation.setEventRuleId(eventRuleId);
-            productEventRelation.setRelationId(relationId);
-        });
-
+            productEventRelation.setRelationId(eventRule.getProductId());
+            DB.save(productEventRelation);
+        } else {
+            List<String> relationIds = eventRule.getExpList().parallelStream().map(ProductEventRule.Expression::getDeviceId).distinct().collect(Collectors.toList());
+            if (ToolUtil.isEmpty(relationIds)) {
+                throw new ServiceException(BizExceptionEnum.EVENT_HAS_NOT_DEVICE);
+            }
+            List<ProductEventRelation> productEventRelationList = new ArrayList<>();
+            relationIds.forEach(relationId -> {
+                ProductEventRelation productEventRelation = new ProductEventRelation();
+                productEventRelation.setEventRuleId(eventRuleId);
+                productEventRelation.setRelationId(relationId);
+                productEventRelationList.add(productEventRelation);
+            });
+            DB.saveAll(productEventRelationList);
+        }
 
     }
 
@@ -94,7 +109,7 @@ public class DeviceEventService {
         eventExpression.setFunction(exp.getFunction());
         eventExpression.setScope(exp.getScope());
         eventExpression.setValue(exp.getValue());
-        eventExpression.setDeviceId(exp.getProductId());
+        eventExpression.setDeviceId(exp.getDeviceId());
         eventExpression.setProductAttrKey(exp.getProductAttrKey());
         eventExpression.setUnit(exp.getUnit());
         return eventExpression;
@@ -110,13 +125,13 @@ public class DeviceEventService {
 
         List<Triggers> triggers = JSONObject.parseArray(zbxTrigger.triggerGet(Arrays.toString(zbxId)), Triggers.class);
 
-        Map<String, String> map = triggers.parallelStream().collect(Collectors.toMap(o -> o.hosts.host, Triggers::getTriggerid));
+        Map<String, String> map = triggers.parallelStream().collect(Collectors.toMap(o -> o.hosts.get(0).host, Triggers::getTriggerid));
 
         List<ProductEventRelation> productEventRelationList = new QProductEventRelation().eventRuleId.eq(triggerId).findList();
 
         productEventRelationList.forEach(productEventRelation -> {
             if (null != map.get(productEventRelation.getRelationId())) {
-                DB.update(ProductEventRelation.class).where().eq("ruleId", triggerId).eq("relationId", productEventRelation.getRelationId())
+                DB.update(ProductEventRelation.class).where().eq("eventRuleId", triggerId).eq("relationId", productEventRelation.getRelationId())
                         .asUpdate().set("zbxId", map.get(productEventRelation.getRelationId())).update();
             }
         });
@@ -143,9 +158,9 @@ public class DeviceEventService {
 
     @Data
     public static class Triggers {
-        private String triggerid;
-        private String description;
-        private Hosts  hosts;
+        private String      triggerid;
+        private String      description;
+        private List<Hosts> hosts;
     }
 
     @Data

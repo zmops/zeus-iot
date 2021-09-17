@@ -16,6 +16,7 @@ import com.zmops.iot.web.product.dto.ProductEventRule;
 import com.zmops.iot.web.product.dto.param.EventParm;
 import com.zmops.iot.web.product.service.EventRuleService;
 import com.zmops.zeus.driver.service.ZbxTrigger;
+import io.ebean.DB;
 import io.ebean.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -84,11 +86,14 @@ public class ProductEventController {
 
         //step 4: zbx 触发器创建 Tag
         Map<String, String> tags = eventRule.getTags();
-        if (tags == null || !tags.containsKey(ALARM_TAG_NAME)) {
-            tags.put(ALARM_TAG_NAME, eventRule.getEventRuleId() + "");
+        if (ToolUtil.isEmpty(tags)){
+            tags = new HashMap<>(2);
+        }
+        if (!tags.containsKey(ALARM_TAG_NAME)) {
+            tags.put(ALARM_TAG_NAME, eventRuleId + "");
         }
         if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
-            tags.put(EXECUTE_TAG_NAME, eventRule.getEventRuleId() + "");
+            tags.put(EXECUTE_TAG_NAME, eventRuleId + "");
         }
         for (String triggerId : triggerIds) {
             zbxTrigger.triggerTagCreate(triggerId, tags);
@@ -129,7 +134,10 @@ public class ProductEventController {
 
                 //step 3: zbx 触发器创建 Tag
                 Map<String, String> tags = eventRule.getTags();
-                if (tags == null || !tags.containsKey(ALARM_TAG_NAME)) {
+                if (ToolUtil.isEmpty(tags)){
+                    tags = new HashMap<>(2);
+                }
+                if (!tags.containsKey(ALARM_TAG_NAME)) {
                     tags.put(ALARM_TAG_NAME, eventRule.getEventRuleId() + "");
                 }
                 if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
@@ -140,6 +148,18 @@ public class ProductEventController {
         }
 
         return ResponseData.success(eventRule.getEventRuleId());
+    }
+
+    /**
+     * 修改 触发器
+     *
+     * @param eventRule 触发器规则
+     * @return 触发器ID
+     */
+    @PostMapping("/status")
+    public ResponseData updateProductEventStatus(@RequestBody @Validated(value = BaseEntity.Status.class) ProductEventRule eventRule) {
+        DB.update(ProductEvent.class).where().eq("eventRuleId",eventRule.getEventRuleId()).asUpdate().set("status",eventRule.getStatus()).update();
+        return ResponseData.success();
     }
 
     /**
@@ -162,7 +182,7 @@ public class ProductEventController {
         new QProductEventExpression().eventRuleId.eq(eventRule.getEventRuleId()).delete();
 
         //step 4:删除 触发器
-        new QProductEventService().eventRuleId.eq(eventRule.getEventRuleId()).delete();
+        new QProductEvent().eventRuleId.eq(eventRule.getEventRuleId()).delete();
 
         return ResponseData.success();
     }
