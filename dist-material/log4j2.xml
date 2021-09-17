@@ -22,8 +22,8 @@
         <Property name="log-path">${sys:oap.logDir}</Property>
     </Properties>
     <Appenders>
-        <RollingFile name="RollingFile" fileName="${log-path}/skywalking-oap-server.log"
-                     filePattern="${log-path}/skywalking-oap-server-%d{yyyy-MM-dd}-%i.log">
+        <RollingFile name="RollingFile" fileName="${log-path}/zeus-iot-server.log"
+                     filePattern="${log-path}/zeus-iot-server-%d{yyyy-MM-dd}-%i.log">
             <PatternLayout>
                 <pattern>%d - %c - %L [%t] %-5p %x - %m%n</pattern>
             </PatternLayout>
