@@ -68,9 +68,11 @@ public class HomeService {
                 return Collections.emptyList();
             }
         }
-        List<String>    itemIds    = new ArrayList<>(ITEM_Map.keySet());
-        List<LatestDto> latestDtos = historyService.queryHitoryData(hostId, itemIds, 100000, 0, timeFrom, timeTill);
-        Collections.reverse(latestDtos);
+        List<LatestDto> latestDtos = new ArrayList<>();
+        ITEM_Map.forEach((key, value) -> {
+            latestDtos.addAll(historyService.queryHitoryData(hostId, Collections.singletonList(key), 10000, 0, timeFrom, timeTill));
+        });
+
         latestDtos.forEach(latestDto -> {
             latestDto.setClock(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(latestDto.getClock()), "yyyy-MM-dd"));
             if (null != ITEM_Map.get(latestDto.getItemid())) {
@@ -90,8 +92,9 @@ public class HomeService {
                 valMap.put("val", val);
                 tmpList.add(valMap);
             });
+            List<Map<String, Object>> dataList = tmpList.parallelStream().sorted(Comparator.comparing(o -> o.get("date").toString())).collect(Collectors.toList());
             collectMap.put("name", ValueType.getVal(key));
-            collectMap.put("data", tmpList);
+            collectMap.put("data", dataList);
             collectList.add(collectMap);
         });
 
