@@ -1,8 +1,10 @@
 package com.zmops.iot.web.analyse.service;
 
 import com.zmops.iot.domain.product.query.QProductAttribute;
+import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.util.LocalDateTimeUtils;
 import com.zmops.iot.util.ToolUtil;
+import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -50,12 +52,16 @@ public class ZbxChartsService {
     public void getCharts(HttpServletResponse response,
                           String from, String to,
                           List<Long> attrIds, String width, String height) {
+
         if (ToolUtil.isEmpty(COOKIE) ||
                 LocalDateTimeUtils.betweenTwoTime(COOKIE_TIME, LocalDateTime.now(), ChronoUnit.DAYS) >= 30) {
             getCookie();
         }
 
         List<String> itemids = getItemIds(attrIds);
+        if (ToolUtil.isEmpty(itemids)) {
+            throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_KEY_NOT_EXISTS);
+        }
 
         HttpClient client = new HttpClient();
         PostMethod postMethod = new PostMethod("http://" + zbxServerIp + ":" + zbxServerPort

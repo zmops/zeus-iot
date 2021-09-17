@@ -139,6 +139,7 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
      * 属性相关
      */
     PRODUCT_ATTR_KEY_EXISTS(1401, "该属性Key已存在"),
+    PRODUCT_ATTR_KEY_NOT_EXISTS(1404, "该属性Key不存在"),
     PRODUCT_ATTR_DEPTED_NULL(1402,"依赖的属性不能为空"),
     PRODUCT_ATTR_DEPTED_NOT_EXIST(1403,"依赖的属性不能为空"),
 
