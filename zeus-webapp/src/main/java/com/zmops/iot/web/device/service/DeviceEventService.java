@@ -1,0 +1,156 @@
+package com.zmops.iot.web.device.service;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.zmops.iot.domain.product.ProductEvent;
+import com.zmops.iot.domain.product.ProductEventExpression;
+import com.zmops.iot.domain.product.ProductEventRelation;
+import com.zmops.iot.domain.product.query.QProductEventRelation;
+import com.zmops.iot.enums.CommonStatus;
+import com.zmops.iot.web.product.dto.ProductEventRule;
+import com.zmops.zeus.driver.service.ZbxTrigger;
+import io.ebean.DB;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+/**
+ * @author yefei
+ **/
+@Service
+public class DeviceEventService {
+
+    @Autowired
+    private ZbxTrigger zbxTrigger;
+
+    /**
+     * 保存触发器
+     *
+     * @param eventRuleId 触发器ID
+     * @param eventRule   告警规则
+     */
+    public void createProductEventRule(Long eventRuleId, ProductEventRule eventRule) {
+        // step 1: 保存产品告警规则
+        ProductEvent event = initEventRule(eventRule);
+        event.setEventRuleId(eventRuleId);
+        DB.save(event);
+
+        //step 2: 保存 表达式，方便回显
+        List<ProductEventExpression> expList = new ArrayList<>();
+
+        eventRule.getExpList().forEach(i -> {
+            ProductEventExpression exp = initEventExpression(i);
+            exp.setEventRuleId(eventRuleId);
+            expList.add(exp);
+        });
+
+        DB.saveAll(expList);
+
+        //step 3: 保存触发器 调用 本产品方法
+        if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
+            eventRule.getDeviceServices().forEach(i -> {
+                DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id,execute_device_id, service_id) values (:eventRuleId, :deviceId,:executeDeviceId, :serviceId)")
+                        .setParameter("eventRuleId", eventRuleId)
+                        .setParameter("deviceId", eventRuleId)
+                        .setParameter("executeDeviceId", i.getExecuteDeviceId())
+                        .setParameter("serviceId", i.getServiceId())
+                        .execute();
+            });
+        }
+
+        //step 4: 保存关联关系
+        List<String>               relationIds = eventRule.getExpList().parallelStream().map(ProductEventRule.Expression::getProductId).distinct().collect(Collectors.toList());
+        List<ProductEventRelation> lists       = new ArrayList<>();
+        relationIds.forEach(relationId -> {
+            ProductEventRelation productEventRelation = new ProductEventRelation();
+            productEventRelation.setEventRuleId(eventRuleId);
+            productEventRelation.setRelationId(relationId);
+        });
+
+
+    }
+
+    private ProductEvent initEventRule(ProductEventRule eventRule) {
+        ProductEvent event = new ProductEvent();
+        event.setEventLevel(eventRule.getEventLevel());
+        event.setExpLogic(eventRule.getExpLogic());
+        event.setEventNotify(eventRule.getEventNotify());
+        event.setRemark(eventRule.getRemark());
+        event.setEventRuleName(eventRule.getEventRuleName());
+        event.setStatus(CommonStatus.ENABLE.getCode());
+        return event;
+    }
+
+    private ProductEventExpression initEventExpression(ProductEventRule.Expression exp) {
+        ProductEventExpression eventExpression = new ProductEventExpression();
+        eventExpression.setEventExpId(exp.getEventExpId());
+        eventExpression.setCondition(exp.getCondition());
+        eventExpression.setFunction(exp.getFunction());
+        eventExpression.setScope(exp.getScope());
+        eventExpression.setValue(exp.getValue());
+        eventExpression.setDeviceId(exp.getProductId());
+        eventExpression.setProductAttrKey(exp.getProductAttrKey());
+        eventExpression.setUnit(exp.getUnit());
+        return eventExpression;
+    }
+
+    /**
+     * 更新 触发器规则 zbxId
+     *
+     * @param triggerId 规则ID
+     * @param zbxId     triggerId
+     */
+    public void updateProductEventRuleZbxId(Long triggerId, String[] zbxId) {
+
+        List<Triggers> triggers = JSONObject.parseArray(zbxTrigger.triggerGet(Arrays.toString(zbxId)), Triggers.class);
+
+        Map<String, String> map = triggers.parallelStream().collect(Collectors.toMap(o -> o.hosts.host, Triggers::getTriggerid));
+
+        List<ProductEventRelation> productEventRelationList = new QProductEventRelation().eventRuleId.eq(triggerId).findList();
+
+        productEventRelationList.forEach(productEventRelation -> {
+            if (null != map.get(productEventRelation.getRelationId())) {
+                DB.update(ProductEventRelation.class).where().eq("ruleId", triggerId).eq("relationId", productEventRelation.getRelationId())
+                        .asUpdate().set("zbxId", map.get(productEventRelation.getRelationId())).update();
+            }
+        });
+
+    }
+
+    /**
+     * 创建 触发器
+     *
+     * @param triggerName 触发器名称
+     * @param expression  表达式
+     * @param level       告警等级
+     * @return 触发器ID
+     */
+    public String[] createZbxTrigger(String triggerName, String expression, Byte level) {
+        String res = zbxTrigger.triggerCreate(triggerName, expression, level);
+        return JSON.parseObject(res, TriggerIds.class).getTriggerids();
+    }
+
+    @Data
+    static class TriggerIds {
+        private String[] triggerids;
+    }
+
+    @Data
+    public static class Triggers {
+        private String triggerid;
+        private String description;
+        private Hosts  hosts;
+    }
+
+    @Data
+    static class Hosts {
+        private String hostid;
+        private String host;
+    }
+}
