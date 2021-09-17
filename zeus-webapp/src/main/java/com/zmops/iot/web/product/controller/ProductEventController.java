@@ -5,7 +5,9 @@ import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.domain.product.ProductEvent;
 import com.zmops.iot.domain.product.ProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEvent;
+import com.zmops.iot.domain.product.query.QProductEventExpression;
 import com.zmops.iot.domain.product.query.QProductEventRelation;
+import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.util.ToolUtil;
@@ -140,4 +142,28 @@ public class ProductEventController {
         return ResponseData.success(eventRule.getEventRuleId());
     }
 
+    /**
+     * 删除 触发器
+     *
+     * @param eventRule 触发器规则
+     * @return 触发器ID
+     */
+    @Transactional
+    @PostMapping("/delete")
+    public ResponseData deleteProductEventRule(@RequestBody @Validated(value = BaseEntity.Delete.class)
+                                                       ProductEventRule eventRule) {
+        //step 1:删除 与产品 设备的关联
+        new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId()).delete();
+
+        //step 2:删除 关联的执行服务
+        new QProductEventService().eventRuleId.eq(eventRule.getEventRuleId()).delete();
+
+        //step 3:删除 关联的表达式
+        new QProductEventExpression().eventRuleId.eq(eventRule.getEventRuleId()).delete();
+
+        //step 4:删除 触发器
+        new QProductEventService().eventRuleId.eq(eventRule.getEventRuleId()).delete();
+
+        return ResponseData.success();
+    }
 }

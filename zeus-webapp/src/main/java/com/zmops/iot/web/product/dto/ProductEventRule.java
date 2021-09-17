@@ -21,7 +21,7 @@ import java.util.Map;
 @Setter
 public class ProductEventRule {
 
-    @NotNull(groups = BaseEntity.Update.class)
+    @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Delete.class})
     private Long eventRuleId;
 
     @NotNull(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
