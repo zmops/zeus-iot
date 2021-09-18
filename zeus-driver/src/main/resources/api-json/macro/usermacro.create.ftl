@@ -4,7 +4,10 @@
     "params": {
         "hostid": "${hostid}",
         "macro": "${macro}",
-        "value": "${value}"
+        "value": "${value}",
+    <#if description??>
+        "description":"${description}"
+    </#if>
     },
     "auth": "${userAuth}",
     "id": 1

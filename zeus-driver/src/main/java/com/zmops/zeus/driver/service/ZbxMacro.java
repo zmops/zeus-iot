@@ -7,6 +7,8 @@ import com.zmops.zeus.driver.annotation.JsonPath;
 import com.zmops.zeus.driver.annotation.ParamName;
 import com.zmops.zeus.driver.inteceptor.JsonBodyBuildInterceptor;
 
+import java.util.List;
+
 /**
  * 宏定义接口
  */
@@ -29,22 +31,24 @@ public interface ZbxMacro {
     @JsonPath("/macro/usermacro.create")
     String macroCreate(@ParamName("hostid") String hostid,
                        @ParamName("macro") String macro,
-                       @ParamName("value") String value);
+                       @ParamName("value") String value,
+                       @ParamName("description") String description);
 
 
     /**
      * 更新 宏
      *
-     * @param hostmacroid 宏 ID
+     * @param macroid 宏 ID
      * @param macro       宏 Key
      * @param value       宏 Value
      * @return
      */
     @Post
     @JsonPath("/macro/usermacro.update")
-    String macroUpdate(@ParamName("hostmacroid") String macroid,
+    String macroUpdate(@ParamName("macroid") String macroid,
                        @ParamName("macro") String macro,
-                       @ParamName("value") String value);
+                       @ParamName("value") String value,
+                       @ParamName("description") String description);
 
     /**
      * 获取 宏
@@ -82,6 +86,6 @@ public interface ZbxMacro {
      */
     @Post
     @JsonPath("/macro/usermacro.delete")
-    String macroDelete(@ParamName("hostid") String macroids);
+    String macroDelete(@ParamName("macroids") List<String> macroids);
 
 }

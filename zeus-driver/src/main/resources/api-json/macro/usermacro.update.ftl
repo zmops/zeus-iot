@@ -3,7 +3,10 @@
     "method": "usermacro.update",
     "params": {
         "hostmacroid": "${macroid}",
-        "value": "${value}"
+        "value": "${value}",
+    <#if description??>
+        "description":"${description}"
+    </#if>
     },
     "auth": "${userAuth}",
     "id": 1

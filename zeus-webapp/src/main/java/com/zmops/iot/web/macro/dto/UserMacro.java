@@ -1,7 +1,10 @@
 package com.zmops.iot.web.macro.dto;
 
+import com.zmops.iot.domain.BaseEntity;
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.validation.constraints.NotBlank;
 
 /**
  * @author nantian created at 2021/9/18 11:47
@@ -11,7 +14,8 @@ import lombok.Setter;
 @Setter
 public class UserMacro {
 
-    private Long deviceId; // 产品ID 或者 设备ID
+    @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Get.class})
+    private String deviceId; // 产品ID 或者 设备ID
 
     private String macro;
 
@@ -19,5 +23,6 @@ public class UserMacro {
 
     private String description;
 
-    private String macro_old;
+    @NotBlank(groups = {BaseEntity.Delete.class, BaseEntity.Update.class})
+    private String hostMacroId;
 }

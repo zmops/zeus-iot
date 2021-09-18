@@ -7,10 +7,12 @@
             "value",
             "description"
         ],
-        "hostids": "${hostId}",
+        "hostids": "${hostid}",
+        <#if macro??>
         "filter": {
             "macro": "${macro}"
         }
+        </#if>
     },
     "auth": "${userAuth}",
     "id": 1
