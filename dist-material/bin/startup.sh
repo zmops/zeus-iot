@@ -15,7 +15,7 @@
 # limitations under the License.
 
 #!/usr/bin/env sh
-
+source /etc/profile
 PRG="$0"
 PRGDIR=`dirname "$PRG"`
 IOT_EXE=IoTServer.sh
