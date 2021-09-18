@@ -1,12 +1,15 @@
 package com.zmops.iot.web.product.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.product.ProductEvent;
 import com.zmops.iot.domain.product.ProductEventExpression;
 import com.zmops.iot.domain.product.ProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEvent;
+import com.zmops.iot.domain.product.query.QProductEventExpression;
 import com.zmops.iot.domain.product.query.QProductEventRelation;
+import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.enums.CommonStatus;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
@@ -14,6 +17,7 @@ import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductEventDto;
 import com.zmops.iot.web.product.dto.ProductEventRule;
+import com.zmops.iot.web.product.dto.ProductEventRuleDto;
 import com.zmops.iot.web.product.dto.param.EventParm;
 import com.zmops.zeus.driver.service.ZbxTrigger;
 import io.ebean.DB;
@@ -22,10 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -225,6 +226,9 @@ public class EventRuleService {
         if (ToolUtil.isNotEmpty(eventParm.getProdId())) {
             List<Long> eventRuleIdList = new QProductEventRelation().select(QProductEventRelation.alias().eventRuleId)
                     .relationId.eq(eventParm.getProdId()).findSingleAttributeList();
+            if (ToolUtil.isEmpty(eventRuleIdList)) {
+                return new Pager<>();
+            }
 
             if (ToolUtil.isNotEmpty(eventRuleIdList)) {
                 query.eventRuleId.in(eventRuleIdList);
@@ -235,6 +239,20 @@ public class EventRuleService {
                 .setMaxRows(eventParm.getMaxRow()).orderBy(" create_time desc").asDto(ProductEventDto.class).findList();
 
         return new Pager<>(list, query.findCount());
+    }
+
+    public ProductEventRuleDto detail(ProductEvent productEvent, long eventRuleId, String prodId) {
+        ProductEventRuleDto productEventRuleDto = new ProductEventRuleDto();
+        ToolUtil.copyProperties(productEvent, productEventRuleDto);
+
+        productEventRuleDto.setExpList(new QProductEventExpression().eventRuleId.eq(eventRuleId).findList());
+        productEventRuleDto.setDeviceServices(new QProductEventService().eventRuleId.eq(eventRuleId).deviceId.isNull().findList());
+
+        ProductEventRelation productEventRelation = new QProductEventRelation().relationId.eq(prodId).eventRuleId.eq(eventRuleId).findOne();
+        JSONArray            triggerInfo          = JSONObject.parseArray(zbxTrigger.triggerAndTagsGet(productEventRelation.getZbxId()));
+        productEventRuleDto.setTags(JSONObject.parseArray(triggerInfo.getJSONObject(0).getString("tags"), ProductEventRuleDto.Tag.class));
+
+        return productEventRuleDto;
     }
 
 

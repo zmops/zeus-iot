@@ -8,12 +8,13 @@ import com.zmops.iot.domain.product.query.QProductEvent;
 import com.zmops.iot.domain.product.query.QProductEventExpression;
 import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEventService;
+import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.util.ToolUtil;
+import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductEventDto;
 import com.zmops.iot.web.product.dto.ProductEventRule;
-import com.zmops.iot.web.product.dto.ProductTag;
 import com.zmops.iot.web.product.dto.param.EventParm;
 import com.zmops.iot.web.product.service.EventRuleService;
 import com.zmops.zeus.driver.service.ZbxTrigger;
@@ -21,10 +22,7 @@ import io.ebean.DB;
 import io.ebean.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +62,21 @@ public class ProductEventController {
     }
 
     /**
+     * 触发器 详情
+     *
+     * @param eventRuleId
+     * @return
+     */
+    @GetMapping("/detail")
+    public ResponseData detail(@RequestParam("eventRuleId") long eventRuleId,@RequestParam("prodId") String prodId) {
+        ProductEvent productEvent = new QProductEvent().eventRuleId.eq(eventRuleId).findOne();
+        if (null == productEvent) {
+            throw new ServiceException(BizExceptionEnum.EVENT_NOT_EXISTS);
+        }
+        return ResponseData.success(eventRuleService.detail(productEvent,eventRuleId,prodId));
+    }
+
+    /**
      * 创建 触发器
      *
      * @param eventRule 触发器规则
@@ -84,11 +97,11 @@ public class ProductEventController {
 
         //step 2: zbx 保存触发器
         String[] triggerIds = eventRuleService.createZbxTrigger(eventRuleId + "", expression, eventRule.getEventLevel());
-        
+
         //step 4: zbx 触发器创建 Tag
         Map<String, String> tags = eventRule.getTags().stream()
                 .collect(Collectors.toMap(ProductEventRule.Tag::getTag, ProductEventRule.Tag::getValue, (k1, k2) -> k2));
-        if (ToolUtil.isEmpty(tags)){
+        if (ToolUtil.isEmpty(tags)) {
             tags = new HashMap<>(2);
         }
         if (!tags.containsKey(ALARM_TAG_NAME)) {
@@ -137,7 +150,7 @@ public class ProductEventController {
                 //step 3: zbx 触发器创建 Tag
                 Map<String, String> tags = eventRule.getTags().stream()
                         .collect(Collectors.toMap(ProductEventRule.Tag::getTag, ProductEventRule.Tag::getValue, (k1, k2) -> k2));
-                if (ToolUtil.isEmpty(tags)){
+                if (ToolUtil.isEmpty(tags)) {
                     tags = new HashMap<>(2);
                 }
                 if (!tags.containsKey(ALARM_TAG_NAME)) {
@@ -161,7 +174,7 @@ public class ProductEventController {
      */
     @PostMapping("/status")
     public ResponseData updateProductEventStatus(@RequestBody @Validated(value = BaseEntity.Status.class) ProductEventRule eventRule) {
-        DB.update(ProductEvent.class).where().eq("eventRuleId",eventRule.getEventRuleId()).asUpdate().set("status",eventRule.getStatus()).update();
+        DB.update(ProductEvent.class).where().eq("eventRuleId", eventRule.getEventRuleId()).asUpdate().set("status", eventRule.getStatus()).update();
         return ResponseData.success();
     }
 

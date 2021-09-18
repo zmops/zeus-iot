@@ -1,16 +1,20 @@
 package com.zmops.iot.web.device.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.product.ProductEvent;
 import com.zmops.iot.domain.product.ProductEventExpression;
 import com.zmops.iot.domain.product.ProductEventRelation;
+import com.zmops.iot.domain.product.query.QProductEventExpression;
 import com.zmops.iot.domain.product.query.QProductEventRelation;
+import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.enums.CommonStatus;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductEventRule;
+import com.zmops.iot.web.product.dto.ProductEventRuleDto;
 import com.zmops.zeus.driver.service.ZbxTrigger;
 import io.ebean.DB;
 import lombok.Data;
@@ -136,6 +140,21 @@ public class DeviceEventService {
             }
         });
 
+    }
+
+
+    public ProductEventRuleDto detail(ProductEvent productEvent, long eventRuleId, String deviceId) {
+        ProductEventRuleDto productEventRuleDto = new ProductEventRuleDto();
+        ToolUtil.copyProperties(productEvent, productEventRuleDto);
+
+        productEventRuleDto.setExpList(new QProductEventExpression().eventRuleId.eq(eventRuleId).findList());
+        productEventRuleDto.setDeviceServices(new QProductEventService().eventRuleId.eq(eventRuleId).deviceId.eq(deviceId).findList());
+
+        ProductEventRelation productEventRelation = new QProductEventRelation().relationId.eq(deviceId).eventRuleId.eq(eventRuleId).findOne();
+        JSONArray            triggerInfo          = JSONObject.parseArray(zbxTrigger.triggerAndTagsGet(productEventRelation.getZbxId()));
+        productEventRuleDto.setTags(JSONObject.parseArray(triggerInfo.getJSONObject(0).getString("tags"), ProductEventRuleDto.Tag.class));
+
+        return productEventRuleDto;
     }
 
     /**

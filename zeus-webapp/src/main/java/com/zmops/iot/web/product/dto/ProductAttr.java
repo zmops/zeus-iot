@@ -31,12 +31,12 @@ public class ProductAttr {
     private String key;
 
     private String units;
-    private String unitName;
 
     //来源：设备 trapper ，属性依赖 dependent
     @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private String source;
-    private String sourceName;
+
+    private Byte eventLevel = 1;
 
     private String remark;
 
@@ -53,7 +53,6 @@ public class ProductAttr {
 
     @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private String valueType;
-    private String valueTypeName;
 
     private String valuemapid;
 

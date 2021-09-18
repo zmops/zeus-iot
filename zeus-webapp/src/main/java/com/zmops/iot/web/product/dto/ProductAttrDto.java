@@ -38,6 +38,9 @@ public class ProductAttrDto {
 
     private Long depAttrId;
 
+    @CachedValue(value = "EVENT_LEVEL")
+    private String eventLevel;
+
     @JsonIgnore
     private String zbxId;
 

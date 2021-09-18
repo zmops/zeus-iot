@@ -68,6 +68,15 @@ public interface ZbxTrigger {
     String triggerGet(@ParamName("triggerIds") String triggerIds);
 
     /**
+     * 根据TRIGGER ID查询触发器及触发器标签
+     *
+     *  @param triggerIds 触发器IDs
+     */
+    @Post
+    @JsonPath("/trigger/triggerAndTags.get")
+    String triggerAndTagsGet(@ParamName("triggerIds") String triggerIds);
+
+    /**
      * 根据host 查询触发器
      *
      *  @param host 设备ID

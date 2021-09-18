@@ -2,6 +2,8 @@ package com.zmops.iot.web.device.controller;
 
 import cn.hutool.core.util.IdUtil;
 import com.zmops.iot.domain.BaseEntity;
+import com.zmops.iot.domain.product.ProductEvent;
+import com.zmops.iot.domain.product.query.QProductEvent;
 import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.model.exception.ServiceException;
@@ -14,10 +16,7 @@ import com.zmops.zeus.driver.service.ZbxTrigger;
 import io.ebean.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +42,21 @@ public class DeviceEventController {
     private static final String EXECUTE_TAG_NAME = "__execute__";
 
     /**
+     * 触发器 详情
+     *
+     * @param eventRuleId
+     * @return
+     */
+    @GetMapping("/detail")
+    public ResponseData detail(@RequestParam("eventRuleId") long eventRuleId, @RequestParam("deviceId") String deviceId) {
+        ProductEvent productEvent = new QProductEvent().eventRuleId.eq(eventRuleId).findOne();
+        if (null == productEvent) {
+            throw new ServiceException(BizExceptionEnum.EVENT_NOT_EXISTS);
+        }
+        return ResponseData.success(deviceEventService.detail(productEvent, eventRuleId, deviceId));
+    }
+
+    /**
      * 修改 触发器
      *
      * @param eventRule 触发器规则
@@ -55,7 +69,7 @@ public class DeviceEventController {
 
         List<String> deviceIds = eventRule.getExpList().parallelStream().map(ProductEventRule.Expression::getDeviceId)
                 .collect(Collectors.toList());
-        if(ToolUtil.isEmpty(deviceIds)){
+        if (ToolUtil.isEmpty(deviceIds)) {
             throw new ServiceException(BizExceptionEnum.EVENT_HAS_NOT_DEVICE);
         }
         //step 1: 删除原有的 关联关系
@@ -79,7 +93,7 @@ public class DeviceEventController {
         //step 4: zbx 触发器创建 Tag
         Map<String, String> tags = eventRule.getTags().stream()
                 .collect(Collectors.toMap(ProductEventRule.Tag::getTag, ProductEventRule.Tag::getValue, (k1, k2) -> k2));
-        if (ToolUtil.isEmpty(tags)){
+        if (ToolUtil.isEmpty(tags)) {
             tags = new HashMap<>(2);
         }
         if (!tags.containsKey(ALARM_TAG_NAME)) {
