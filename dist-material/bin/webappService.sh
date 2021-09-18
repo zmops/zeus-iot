@@ -35,7 +35,7 @@ _RUNJAVA=${JAVA_HOME}/bin/java
 eval exec "\"$_RUNJAVA\" ${JAVA_OPTS} -jar ${JAR_PATH}/zeus-webapp.jar \
          --spring.config.location=${JAR_PATH}/webapp.yml \
          --logging.file=${LOG_FILE_LOCATION} \
-        2>${WEBAPP_LOG_DIR}/webapp-console.log 1> /dev/null &"
+        &> ${WEBAPP_LOG_DIR}/webapp-console.log &"
 
 if [ $? -eq 0 ]; then
     sleep 1

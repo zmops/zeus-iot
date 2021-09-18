@@ -38,7 +38,7 @@ done
 IOT_OPTIONS=" -Doap.logDir=${IOT_LOG_DIR}"
 
 eval exec "\"$_RUNJAVA\" ${JAVA_OPTS} ${IOT_OPTIONS} -classpath $CLASSPATH com.zmops.zeus.iot.server.starter.IOTServerStartUp \
-        2>${IOT_LOG_DIR}/zeus_iot.log 1> /dev/null &"
+        &> ${IOT_LOG_DIR}/zeus_iot.log &"
 
 if [ $? -eq 0 ]; then
     sleep 1
