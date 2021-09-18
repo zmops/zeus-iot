@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.alarm.AlarmMessage;
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.query.QDevice;
+import com.zmops.iot.domain.product.ProductEvent;
+import com.zmops.iot.domain.product.query.QProductEvent;
 import com.zmops.iot.mediaType.AlarmCallback;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.alarm.dto.AlarmDto;
@@ -32,13 +34,21 @@ public class AlarmService {
     ZbxProblem zbxProblem;
 
 
-    public void test() {
+    public void alarm(Map<String, String> alarmInfo) {
+        String deviceId    = alarmInfo.get("hostname");
+        String eventRuleId = alarmInfo.get("triggername");
+        if (ToolUtil.isEmpty(deviceId) || ToolUtil.isEmpty(eventRuleId)) {
+            return;
+        }
+        Device             device        = new QDevice().deviceId.eq(deviceId).findOne();
+        ProductEvent       productEvent  = new QProductEvent().eventRuleId.eq(Long.parseLong(eventRuleId)).findOne();
+        String             alarmmessage  = "设备:" + device.getName() + "发生告警，告警内容：" + productEvent.getEventRuleName();
         List<AlarmMessage> alarmMessages = new ArrayList<>();
-        alarmMessages.add(AlarmMessage.builder().alarmMessage("DELTA 一级预警").build());
+        alarmMessages.add(AlarmMessage.builder().alarmMessage(alarmmessage).build());
         alarmCallbacks.forEach(alarmCallback -> {
-            if (alarmCallback.getType().equals("welink")) {
-                alarmCallback.doAlarm(alarmMessages);
-            }
+//            if (alarmCallback.getType().equals("welink")) {
+            alarmCallback.doAlarm(alarmMessages);
+//            }
         });
     }
 
