@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.async.executor.Async;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
+import com.zmops.iot.domain.device.Device;
+import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.Product;
 import com.zmops.iot.domain.product.ProductAttributeEvent;
 import com.zmops.iot.domain.product.query.QProduct;
@@ -26,6 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -179,21 +183,24 @@ public class ProductAttributeEventService {
     public String createTrapperItem(ProductAttrEvent productAttr) {
 
         String itemName = productAttr.getAttrId() + "";
-
-        Product prod = new QProduct().productId.eq(Long.parseLong(productAttr.getProductId())).findOne();
-        if (null == prod) {
-            throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
+        String hostId ="";
+        Device device = new QDevice().deviceId.eq(productAttr.getProductId()).findOne();
+        if(null == device){
+            Product prod = new QProduct().productId.eq(Long.parseLong(productAttr.getProductId())).findOne();
+            if (null == prod) {
+                throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
+            }
+            hostId = prod.getZbxId();
+        }else{
+            hostId = device.getZbxId();
         }
-        String hostId = prod.getZbxId();
 
         List<ZbxProcessingStep> processingSteps = new ArrayList<>();
         if (ToolUtil.isNotEmpty(productAttr.getProcessStepList())) {
             productAttr.getProcessStepList().forEach(i -> {
                 ZbxProcessingStep step = new ZbxProcessingStep();
-
                 step.setType(i.getType());
                 step.setParams(i.getParams());
-
                 processingSteps.add(step);
             });
         }

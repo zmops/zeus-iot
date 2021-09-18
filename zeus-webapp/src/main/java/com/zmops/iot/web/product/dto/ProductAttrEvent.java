@@ -36,11 +36,6 @@ public class ProductAttrEvent {
 
     private String remark;
 
-    private Long depAttrId;
-
-    @JsonIgnore
-    private String masterItemId;
-
     @JsonIgnore
     private String zbxId;
 
