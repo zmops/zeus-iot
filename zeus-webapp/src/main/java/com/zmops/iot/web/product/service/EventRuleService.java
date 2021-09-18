@@ -64,38 +64,38 @@ public class EventRuleService {
 
         DB.saveAll(expList);
 
+        List<String> relationIds = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(eventRule.getProductId())) {
+            relationIds.add(eventRule.getProductId());
+        } else {
+            relationIds = eventRule.getExpList().parallelStream().map(ProductEventRule.Expression::getDeviceId).distinct().collect(Collectors.toList());
+            if (ToolUtil.isEmpty(relationIds)) {
+                throw new ServiceException(BizExceptionEnum.EVENT_HAS_NOT_DEVICE);
+            }
+        }
         //step 3: 保存触发器 调用 本产品方法
         if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
-            eventRule.getDeviceServices().forEach(i -> {
-                DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id,execute_device_id, service_id) values (:eventRuleId, :deviceId,:executeDeviceId, :serviceId)")
-                        .setParameter("eventRuleId", eventRuleId)
-                        .setParameter("deviceId", eventRuleId)
-                        .setParameter("executeDeviceId", i.getExecuteDeviceId())
-                        .setParameter("serviceId", i.getServiceId())
-                        .execute();
+            relationIds.forEach(relationId -> {
+                eventRule.getDeviceServices().forEach(i -> {
+                    DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id,execute_device_id, service_id) values (:eventRuleId, :deviceId,:executeDeviceId, :serviceId)")
+                            .setParameter("eventRuleId", eventRuleId)
+                            .setParameter("deviceId", relationId)
+                            .setParameter("executeDeviceId", i.getExecuteDeviceId())
+                            .setParameter("serviceId", i.getServiceId())
+                            .execute();
+                });
             });
         }
 
         //step 4: 保存关联关系
-        if (ToolUtil.isNotEmpty(eventRule.getProductId())) {
+        List<ProductEventRelation> productEventRelationList = new ArrayList<>();
+        relationIds.forEach(relationId -> {
             ProductEventRelation productEventRelation = new ProductEventRelation();
             productEventRelation.setEventRuleId(eventRuleId);
-            productEventRelation.setRelationId(eventRule.getProductId());
-            DB.save(productEventRelation);
-        } else {
-            List<String> relationIds = eventRule.getExpList().parallelStream().map(ProductEventRule.Expression::getDeviceId).distinct().collect(Collectors.toList());
-            if (ToolUtil.isEmpty(relationIds)) {
-                throw new ServiceException(BizExceptionEnum.EVENT_HAS_NOT_DEVICE);
-            }
-            List<ProductEventRelation> productEventRelationList = new ArrayList<>();
-            relationIds.forEach(relationId -> {
-                ProductEventRelation productEventRelation = new ProductEventRelation();
-                productEventRelation.setEventRuleId(eventRuleId);
-                productEventRelation.setRelationId(relationId);
-                productEventRelationList.add(productEventRelation);
-            });
-            DB.saveAll(productEventRelationList);
-        }
+            productEventRelation.setRelationId(relationId);
+            productEventRelationList.add(productEventRelation);
+        });
+        DB.saveAll(productEventRelationList);
     }
 
     /**
@@ -137,7 +137,8 @@ public class EventRuleService {
             eventRule.getDeviceServices().forEach(i -> {
                 DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id, service_id) values (:eventRuleId, :deviceId, :serviceId)")
                         .setParameter("eventRuleId", eventRuleId)
-                        .setParameter("deviceId", i.getDeviceId())
+                        .setParameter("deviceId", eventRule.getProductId())
+                        .setParameter("executeDeviceId", i.getExecuteDeviceId())
                         .setParameter("serviceId", i.getServiceId())
                         .execute();
             });
@@ -174,7 +175,7 @@ public class EventRuleService {
      * 更新 触发器规则 zbxId
      *
      * @param eventRuleId 规则ID
-     * @param zbxId     triggerId
+     * @param zbxId       triggerId
      */
     public void updateProductEventRuleZbxId(Long eventRuleId, String[] zbxId) {
         String         s        = zbxTrigger.triggerGet(Arrays.toString(zbxId));

@@ -1,15 +1,16 @@
 package com.zmops.iot.web.product.dto;
 
 import com.zmops.iot.domain.BaseEntity;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author nantian created at 2021/9/14 14:47
@@ -47,7 +48,7 @@ public class ProductEventRule {
 
     private List<DeviceService> deviceServices;
 
-    private Map<String, String> tags;
+    private List<Tag> tags;
 
     @NotNull(groups = BaseEntity.Update.class)
     private Integer zbxId;
@@ -56,6 +57,16 @@ public class ProductEventRule {
 
     @NotBlank(groups = BaseEntity.Status.class)
     private String status;
+
+    @Data
+    public static class Tag {
+
+        @Max(20)
+        private String tag;
+
+        @Max(50)
+        private String value;
+    }
 
     @Getter
     @Setter
@@ -106,9 +117,9 @@ public class ProductEventRule {
     @Getter
     public static class DeviceService {
 
-        private Long deviceId;
+        private String deviceId;
 
-        private Long executeDeviceId;
+        private String executeDeviceId;
 
         private Long serviceId;
     }

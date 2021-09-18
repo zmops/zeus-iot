@@ -77,7 +77,8 @@ public class DeviceEventController {
         String[] triggerIds = deviceEventService.createZbxTrigger(eventRuleId + "", expression, eventRule.getEventLevel());
 
         //step 4: zbx 触发器创建 Tag
-        Map<String, String> tags = eventRule.getTags();
+        Map<String, String> tags = eventRule.getTags().stream()
+                .collect(Collectors.toMap(ProductEventRule.Tag::getTag, ProductEventRule.Tag::getValue, (k1, k2) -> k2));
         if (ToolUtil.isEmpty(tags)){
             tags = new HashMap<>(2);
         }
