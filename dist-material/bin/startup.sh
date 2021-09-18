@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 source /etc/profile
 PRG="$0"
 PRGDIR=`dirname "$PRG"`
