@@ -18,10 +18,10 @@ public class AlarmController {
     @Autowired
     AlarmService alarmService;
 
-    @RequestMapping("/test")
-    public void test() {
-        alarmService.test();
-    }
+//    @RequestMapping("/test")
+//    public void test() {
+//        alarmService.test();
+//    }
 
     @RequestMapping("/getAlarmByPage")
     public ResponseData getAlarmByPage(@RequestBody AlarmParam alarmParam){
