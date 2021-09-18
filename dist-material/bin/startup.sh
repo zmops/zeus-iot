@@ -18,9 +18,9 @@
 
 PRG="$0"
 PRGDIR=`dirname "$PRG"`
-OAP_EXE=oapService.sh
+IOT_EXE=IoTServer.sh
 WEBAPP_EXE=webappService.sh
 
-"$PRGDIR"/"$OAP_EXE"
+"$PRGDIR"/"$IOT_EXE"
 
 "$PRGDIR"/"$WEBAPP_EXE"
