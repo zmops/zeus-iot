@@ -13,6 +13,7 @@ import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.product.dto.ProductEventDto;
 import com.zmops.iot.web.product.dto.ProductEventRule;
+import com.zmops.iot.web.product.dto.ProductTag;
 import com.zmops.iot.web.product.dto.param.EventParm;
 import com.zmops.iot.web.product.service.EventRuleService;
 import com.zmops.zeus.driver.service.ZbxTrigger;
@@ -83,9 +84,10 @@ public class ProductEventController {
 
         //step 2: zbx 保存触发器
         String[] triggerIds = eventRuleService.createZbxTrigger(eventRuleId + "", expression, eventRule.getEventLevel());
-
+        
         //step 4: zbx 触发器创建 Tag
-        Map<String, String> tags = eventRule.getTags();
+        Map<String, String> tags = eventRule.getTags().stream()
+                .collect(Collectors.toMap(ProductEventRule.Tag::getTag, ProductEventRule.Tag::getValue, (k1, k2) -> k2));
         if (ToolUtil.isEmpty(tags)){
             tags = new HashMap<>(2);
         }
@@ -133,7 +135,8 @@ public class ProductEventController {
                 zbxTrigger.triggerUpdate(productEventRelation.getZbxId(), expression, eventRule.getEventLevel());
 
                 //step 3: zbx 触发器创建 Tag
-                Map<String, String> tags = eventRule.getTags();
+                Map<String, String> tags = eventRule.getTags().stream()
+                        .collect(Collectors.toMap(ProductEventRule.Tag::getTag, ProductEventRule.Tag::getValue, (k1, k2) -> k2));
                 if (ToolUtil.isEmpty(tags)){
                     tags = new HashMap<>(2);
                 }
