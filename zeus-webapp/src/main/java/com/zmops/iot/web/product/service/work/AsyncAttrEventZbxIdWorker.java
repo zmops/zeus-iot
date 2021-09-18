@@ -8,6 +8,7 @@ import com.zmops.iot.domain.product.ProductAttributeEvent;
 import com.zmops.iot.domain.product.query.QProductAttributeEvent;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.product.dto.ProductAttr;
+import com.zmops.iot.web.product.dto.ProductAttrEvent;
 import com.zmops.zeus.driver.entity.ZbxItemInfo;
 import com.zmops.zeus.driver.service.ZbxItem;
 import io.ebean.DB;
@@ -26,13 +27,13 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class AsyncAttrEventZbxIdWorker implements IWorker<ProductAttr, Boolean> {
+public class AsyncAttrEventZbxIdWorker implements IWorker<ProductAttrEvent, Boolean> {
 
     @Autowired
     ZbxItem zbxItem;
 
     @Override
-    public Boolean action(ProductAttr productAttr, Map<String, WorkerWrapper<?, ?>> map) {
+    public Boolean action(ProductAttrEvent productAttr, Map<String, WorkerWrapper<?, ?>> map) {
         log.debug("处理Attr zbx回填工作……");
         Long attrId = productAttr.getAttrId();
 

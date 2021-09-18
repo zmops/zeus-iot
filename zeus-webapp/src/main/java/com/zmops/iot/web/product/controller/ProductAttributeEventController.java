@@ -11,6 +11,7 @@ import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductAttr;
 import com.zmops.iot.web.product.dto.ProductAttrDto;
+import com.zmops.iot.web.product.dto.ProductAttrEvent;
 import com.zmops.iot.web.product.dto.param.ProductAttrParam;
 import com.zmops.iot.web.product.service.ProductAttributeEventService;
 import com.zmops.iot.web.product.service.ProductModelService;
@@ -73,7 +74,7 @@ public class ProductAttributeEventController {
      * @return ResponseData
      */
     @RequestMapping("/create")
-    public ResponseData prodModelAttributeCreate(@RequestBody @Validated(BaseEntity.Create.class) ProductAttr productAttr) {
+    public ResponseData prodModelAttributeCreate(@RequestBody @Validated(BaseEntity.Create.class) ProductAttrEvent productAttr) {
         int i = new QProductAttribute().productId.eq(productAttr.getProductId()).key.eq(productAttr.getKey()).findCount();
         if (i > 0) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_KEY_EXISTS);
@@ -96,7 +97,7 @@ public class ProductAttributeEventController {
      * @return ResponseData
      */
     @RequestMapping("/update")
-    public ResponseData prodModelAttributeUpdate(@RequestBody @Validated(BaseEntity.Update.class) ProductAttr productAttr) {
+    public ResponseData prodModelAttributeUpdate(@RequestBody @Validated(BaseEntity.Update.class) ProductAttrEvent productAttr) {
         int i = new QProductAttribute().productId.eq(productAttr.getProductId()).key.eq(productAttr.getKey())
                 .attrId.ne(productAttr.getAttrId()).findCount();
         if (i > 0) {
@@ -112,7 +113,7 @@ public class ProductAttributeEventController {
      * @return ResponseData
      */
     @RequestMapping("/delete")
-    public ResponseData prodModelAttributeDelete(@RequestBody @Validated(BaseEntity.Delete.class) ProductAttr productAttr) {
+    public ResponseData prodModelAttributeDelete(@RequestBody @Validated(BaseEntity.Delete.class) ProductAttrEvent productAttr) {
 
         productAttributeEventService.deleteTrapperItem(productAttr);
         return ResponseData.success();

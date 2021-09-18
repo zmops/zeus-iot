@@ -8,6 +8,7 @@ import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.ProductAttributeEvent;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.product.dto.ProductAttr;
+import com.zmops.iot.web.product.dto.ProductAttrEvent;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -23,11 +24,11 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-public class SaveProdAttrEventWorker implements IWorker<ProductAttr, Boolean> {
+public class SaveProdAttrEventWorker implements IWorker<ProductAttrEvent, Boolean> {
 
 
     @Override
-    public Boolean action(ProductAttr productAttr, Map<String, WorkerWrapper<?, ?>> map) {
+    public Boolean action(ProductAttrEvent productAttr, Map<String, WorkerWrapper<?, ?>> map) {
         log.debug("处理产品 新增Attr 同步到设备工作…………");
         String prodId = productAttr.getProductId();
 

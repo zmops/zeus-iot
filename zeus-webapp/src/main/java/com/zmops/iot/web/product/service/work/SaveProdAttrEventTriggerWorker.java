@@ -3,7 +3,7 @@ package com.zmops.iot.web.product.service.work;
 
 import com.zmops.iot.async.callback.IWorker;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
-import com.zmops.iot.web.product.dto.ProductAttr;
+import com.zmops.iot.web.product.dto.ProductAttrEvent;
 import com.zmops.zeus.driver.service.ZbxTrigger;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +18,13 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-public class SaveProdAttrEventTriggerWorker implements IWorker<ProductAttr, Boolean> {
+public class SaveProdAttrEventTriggerWorker implements IWorker<ProductAttrEvent, Boolean> {
 
     @Autowired
     private ZbxTrigger zbxTrigger;
 
     @Override
-    public Boolean action(ProductAttr productAttr, Map<String, WorkerWrapper<?, ?>> map) {
+    public Boolean action(ProductAttrEvent productAttr, Map<String, WorkerWrapper<?, ?>> map) {
         log.debug("处理产品 新增Attr事件 告警工作…………");
 
         String        prodId     = productAttr.getProductId();
