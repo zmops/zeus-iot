@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  **/
 @RestController
 @RequestMapping("/device/event/trigger")
-public class DeviceEventController {
+public class DeviceEventTriggerController {
 
     @Autowired
     DeviceEventService deviceEventService;
@@ -64,20 +64,17 @@ public class DeviceEventController {
      */
     @Transactional
     @PostMapping("/update")
-    public ResponseData updateDeviceEventRule(@RequestBody @Validated(value = BaseEntity.Update.class)
-                                                      ProductEventRule eventRule) {
-
-        List<String> deviceIds = eventRule.getExpList().parallelStream().map(ProductEventRule.Expression::getDeviceId)
-                .collect(Collectors.toList());
+    public ResponseData updateDeviceEventRule(@RequestBody @Validated(value = BaseEntity.Update.class) ProductEventRule eventRule) {
+        List<String> deviceIds = eventRule.getExpList().parallelStream().map(ProductEventRule.Expression::getDeviceId).collect(Collectors.toList());
         if (ToolUtil.isEmpty(deviceIds)) {
             throw new ServiceException(BizExceptionEnum.EVENT_HAS_NOT_DEVICE);
         }
+
         //step 1: 删除原有的 关联关系
         deviceIds.forEach(deviceId -> {
             new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId()).relationId.eq(deviceId).delete();
             new QProductEventService().eventRuleId.eq(eventRule.getEventRuleId()).deviceId.eq(deviceId).delete();
         });
-
 
         Long eventRuleId = IdUtil.getSnowflake().nextId(); // ruleId, trigger name
 

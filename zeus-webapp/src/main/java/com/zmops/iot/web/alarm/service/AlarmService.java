@@ -37,14 +37,21 @@ public class AlarmService {
     public void alarm(Map<String, String> alarmInfo) {
         String deviceId    = alarmInfo.get("hostname");
         String eventRuleId = alarmInfo.get("triggername");
+
         if (ToolUtil.isEmpty(deviceId) || ToolUtil.isEmpty(eventRuleId)) {
             return;
         }
-        Device             device        = new QDevice().deviceId.eq(deviceId).findOne();
-        ProductEvent       productEvent  = new QProductEvent().eventRuleId.eq(Long.parseLong(eventRuleId)).findOne();
-        String             alarmmessage  = "设备:" + device.getName() + "发生告警，告警内容：" + productEvent.getEventRuleName();
+
+        Device       device       = new QDevice().deviceId.eq(deviceId).findOne();
+        ProductEvent productEvent = new QProductEvent().eventRuleId.eq(Long.parseLong(eventRuleId)).findOne();
+
         List<AlarmMessage> alarmMessages = new ArrayList<>();
-        alarmMessages.add(AlarmMessage.builder().alarmMessage(alarmmessage).build());
+
+        if (null != device && null != productEvent) {
+            String alarmmessage = "设备:" + device.getName() + "发生告警，告警内容：" + productEvent.getEventRuleName();
+            alarmMessages.add(AlarmMessage.builder().alarmMessage(alarmmessage).build());
+        }
+
         alarmCallbacks.forEach(alarmCallback -> {
 //            if (alarmCallback.getType().equals("welink")) {
             alarmCallback.doAlarm(alarmMessages);
@@ -60,7 +67,9 @@ public class AlarmService {
             return Collections.emptyList();
         }
         //分页
-        List<ZbxProblemInfo> problemList = zbxProblemInfos.stream().skip((alarmParam.getPage() - 1) * alarmParam.getMaxRow()).limit(alarmParam.getMaxRow()).collect(Collectors.toList());
+        List<ZbxProblemInfo> problemList = zbxProblemInfos.stream()
+                .skip((alarmParam.getPage() - 1) * alarmParam.getMaxRow())
+                .limit(alarmParam.getMaxRow()).collect(Collectors.toList());
 
         //根据triggerid查询出 所属设备
         List<String> triggerIds = problemList.parallelStream().map(ZbxProblemInfo::getObjectid).collect(Collectors.toList());
@@ -92,11 +101,8 @@ public class AlarmService {
             hostId = one.getZbxId();
         }
         //从zbx取告警记录
-        String               problem         = zbxProblem.getProblem(hostId, alarmParam.getTimeFrom(), alarmParam.getTimeTill(), alarmParam.getRecent());
-        List<ZbxProblemInfo> zbxProblemInfos = JSONObject.parseArray(problem, ZbxProblemInfo.class);
-
-
-        return zbxProblemInfos;
+        String problem = zbxProblem.getProblem(hostId, alarmParam.getTimeFrom(), alarmParam.getTimeTill(), alarmParam.getRecent());
+        return JSONObject.parseArray(problem, ZbxProblemInfo.class);
     }
 
 }
