@@ -124,11 +124,11 @@ public class DeviceEventRuleService {
      * @param triggerId 规则ID
      * @param zbxId     triggerId
      */
-    public void updateProductEventRuleZbxId(Long triggerId, String[] zbxId) {
+    public void updateProductEventRuleZbxId(Long triggerId, Integer[] zbxId) {
 
         List<Triggers> triggers = JSONObject.parseArray(zbxTrigger.triggerGet(Arrays.toString(zbxId)), Triggers.class);
 
-        Map<String, String> map = triggers.parallelStream().collect(Collectors.toMap(o -> o.hosts.get(0).host, Triggers::getTriggerid));
+        Map<String, Integer> map = triggers.parallelStream().collect(Collectors.toMap(o -> o.hosts.get(0).host, Triggers::getTriggerid));
 
         List<ProductEventRelation> productEventRelationList = new QProductEventRelation().eventRuleId.eq(triggerId).findList();
 
@@ -151,9 +151,11 @@ public class DeviceEventRuleService {
 
         ProductEventRelation productEventRelation = new QProductEventRelation().relationId.eq(deviceId).eventRuleId.eq(eventRuleId).findOne();
 
-        JSONArray triggerInfo = JSONObject.parseArray(zbxTrigger.triggerAndTagsGet(productEventRelation.getZbxId()));
-
-        productEventRuleDto.setTags(JSONObject.parseArray(triggerInfo.getJSONObject(0).getString("tags"), ProductEventRuleDto.Tag.class));
+        if (null != productEventRelation) {
+            JSONArray triggerInfo = JSONObject.parseArray(zbxTrigger.triggerAndTagsGet(productEventRelation.getZbxId()));
+            productEventRuleDto.setTags(JSONObject.parseArray(triggerInfo.getJSONObject(0).getString("tags"), ProductEventRuleDto.Tag.class));
+            productEventRuleDto.setZbxId(productEventRelation.getZbxId());
+        }
 
         return productEventRuleDto;
     }
@@ -166,19 +168,19 @@ public class DeviceEventRuleService {
      * @param level       告警等级
      * @return 触发器ID
      */
-    public String[] createZbxTrigger(String triggerName, String expression, Byte level) {
+    public Integer[] createZbxTrigger(String triggerName, String expression, Byte level) {
         String res = zbxTrigger.triggerCreate(triggerName, expression, level);
         return JSON.parseObject(res, TriggerIds.class).getTriggerids();
     }
 
     @Data
     static class TriggerIds {
-        private String[] triggerids;
+        private Integer[] triggerids;
     }
 
     @Data
     public static class Triggers {
-        private String      triggerid;
+        private Integer     triggerid;
         private String      description;
         private List<Hosts> hosts;
     }

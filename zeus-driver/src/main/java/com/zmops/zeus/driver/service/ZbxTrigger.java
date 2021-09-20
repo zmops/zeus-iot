@@ -41,7 +41,7 @@ public interface ZbxTrigger {
      */
     @Post
     @JsonPath("/trigger/trigger.update")
-    String triggerUpdate(@ParamName("triggerId") String triggerId,
+    String triggerUpdate(@ParamName("triggerId") Integer triggerId,
                          @ParamName("expression") String expression,
                          @ParamName("ruleLevel") Byte ruleLevel);
 
@@ -55,7 +55,7 @@ public interface ZbxTrigger {
      */
     @Post
     @JsonPath("/trigger/trigger.tags.update")
-    String triggerTagCreate(@ParamName("triggerId") String triggerId,
+    String triggerTagCreate(@ParamName("triggerId") Integer triggerId,
                             @ParamName("tagMap") Map<String, String> tags);
 
     /**
@@ -67,6 +67,7 @@ public interface ZbxTrigger {
     @JsonPath("/trigger/trigger.get")
     String triggerGet(@ParamName("triggerIds") String triggerIds);
 
+
     /**
      * 根据TRIGGER ID查询触发器及触发器标签
      *
@@ -74,7 +75,8 @@ public interface ZbxTrigger {
      */
     @Post
     @JsonPath("/trigger/triggerAndTags.get")
-    String triggerAndTagsGet(@ParamName("triggerIds") String triggerIds);
+    String triggerAndTagsGet(@ParamName("triggerIds") Integer triggerIds);
+
 
     /**
      * 根据host 查询触发器

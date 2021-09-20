@@ -85,7 +85,7 @@ public class DeviceEventTriggerController {
                 .stream().map(Object::toString).collect(Collectors.joining(" " + eventRule.getExpLogic() + " "));
 
         //step 2: zbx 保存触发器
-        String[] triggerIds = deviceEventRuleService.createZbxTrigger(eventRuleId + "", expression, eventRule.getEventLevel());
+        Integer[] triggerIds = deviceEventRuleService.createZbxTrigger(eventRuleId + "", expression, eventRule.getEventLevel());
 
         //step 4: zbx 触发器创建 Tag
         Map<String, String> tags = eventRule.getTags().stream()
@@ -99,7 +99,7 @@ public class DeviceEventTriggerController {
         if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
             tags.put(EXECUTE_TAG_NAME, eventRuleId + "");
         }
-        for (String triggerId : triggerIds) {
+        for (Integer triggerId : triggerIds) {
             zbxTrigger.triggerTagCreate(triggerId, tags);
         }
 

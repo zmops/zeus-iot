@@ -73,15 +73,19 @@ public class SaveOtherWorker implements IWorker<DeviceDto, Boolean> {
                 .setParameter("deviceId", deviceId).setParameter("relationId", deviceDto.getProductId() + "").execute();
 
         //告警规则关联 并 回填zbx triggerId
-        List<ProductEventRuleService.Triggers> triggers                 = JSONObject.parseArray(zbxTrigger.triggerGetByHost(deviceId), ProductEventRuleService.Triggers.class);
-        Map<String, String>                    map                      = triggers.parallelStream().collect(Collectors.toMap(ProductEventRuleService.Triggers::getDescription, ProductEventRuleService.Triggers::getTriggerid));
-        List<ProductEventRelation>             productEventRelationList = new QProductEventRelation().relationId.eq(deviceDto.getProductId() + "").findList();
+        List<ProductEventRuleService.Triggers> triggers = JSONObject.parseArray(zbxTrigger.triggerGetByHost(deviceId), ProductEventRuleService.Triggers.class);
+
+        Map<String, Integer> map = triggers.parallelStream().collect(Collectors.toMap(ProductEventRuleService.Triggers::getDescription, ProductEventRuleService.Triggers::getTriggerid));
+
+        List<ProductEventRelation> productEventRelationList = new QProductEventRelation().relationId.eq(deviceDto.getProductId() + "").findList();
+
         for (ProductEventRelation productEventRelation : productEventRelationList) {
             productEventRelation.setId(null);
             productEventRelation.setRelationId(deviceId);
             productEventRelation.setInherit("1");
-            productEventRelation.setZbxId(Optional.ofNullable(map.get(productEventRelation.getEventRuleId())).orElse(""));
+            productEventRelation.setZbxId(productEventRelation.getZbxId());
         }
+
         DB.saveAll(productEventRelationList);
         //告警执行动作关联
         DB.sqlUpdate("insert into product_event_service (service_id,device_id,execute_device_id,event_rule_id,inherit) SELECT service_id,:deviceId,:executeDeviceId,event_rule_id,1 from product_event_service where relation_id=:relationId")
