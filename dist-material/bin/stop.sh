@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -x
-ps -ef | grep zeus-iot-bin | grep -v grep
-status=`ps -ef | grep zeus-iot-bin | grep -v grep | awk '{print $2}' | wc -l`
+ps -ef | grep zeus-iot-bin | grep -v grep > /tmp/test
+status=`ps -ef | grep zeus-iot-bin | grep java | grep -v grep | awk '{print $2}' | wc -l`
 
 if [ $status -ne 0 ]
 then
