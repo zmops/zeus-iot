@@ -12,7 +12,7 @@ import com.zmops.iot.domain.product.query.QProductServiceRelation;
 import com.zmops.iot.domain.product.query.QProductStatusFunctionRelation;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.dto.DeviceDto;
-import com.zmops.iot.web.product.service.EventRuleService;
+import com.zmops.iot.web.product.service.ProductEventRuleService;
 import com.zmops.zeus.driver.service.ZbxTrigger;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
@@ -73,9 +73,9 @@ public class SaveOtherWorker implements IWorker<DeviceDto, Boolean> {
                 .setParameter("deviceId", deviceId).setParameter("relationId", deviceDto.getProductId() + "").execute();
 
         //告警规则关联 并 回填zbx triggerId
-        List<EventRuleService.Triggers> triggers                 = JSONObject.parseArray(zbxTrigger.triggerGetByHost(deviceId), EventRuleService.Triggers.class);
-        Map<String, String>             map                      = triggers.parallelStream().collect(Collectors.toMap(EventRuleService.Triggers::getDescription, EventRuleService.Triggers::getTriggerid));
-        List<ProductEventRelation>      productEventRelationList = new QProductEventRelation().relationId.eq(deviceDto.getProductId() + "").findList();
+        List<ProductEventRuleService.Triggers> triggers                 = JSONObject.parseArray(zbxTrigger.triggerGetByHost(deviceId), ProductEventRuleService.Triggers.class);
+        Map<String, String>                    map                      = triggers.parallelStream().collect(Collectors.toMap(ProductEventRuleService.Triggers::getDescription, ProductEventRuleService.Triggers::getTriggerid));
+        List<ProductEventRelation>             productEventRelationList = new QProductEventRelation().relationId.eq(deviceDto.getProductId() + "").findList();
         for (ProductEventRelation productEventRelation : productEventRelationList) {
             productEventRelation.setId(null);
             productEventRelation.setRelationId(deviceId);
