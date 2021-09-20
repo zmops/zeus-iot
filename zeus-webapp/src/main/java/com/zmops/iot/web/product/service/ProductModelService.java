@@ -65,8 +65,12 @@ public class ProductModelService {
             qProductAttribute.key.contains(productAttr.getKey());
         }
 
-        List<ProductAttrDto> pagedList = qProductAttribute.setFirstRow((productAttr.getPage() - 1) * productAttr.getMaxRow()).setMaxRows(productAttr.getMaxRow()).asDto(ProductAttrDto.class).findList();
-        int                  count     = qProductAttribute.findCount();
+        List<ProductAttrDto> pagedList = qProductAttribute
+                .setFirstRow((productAttr.getPage() - 1) * productAttr.getMaxRow())
+                .setMaxRows(productAttr.getMaxRow())
+                .asDto(ProductAttrDto.class).findList();
+
+        int count = qProductAttribute.findCount();
         return new Pager<>(pagedList, count);
     }
 
@@ -106,9 +110,11 @@ public class ProductModelService {
         attr.setTags(JSONObject.parseArray(itemInfo.getJSONObject(0).getString("tags"), ProductTag.Tag.class));
         attr.setProcessStepList(formatProcessStep(itemInfo.getJSONObject(0).getString("preprocessing")));
         String valuemap = itemInfo.getJSONObject(0).getString("valuemap");
+
         if (ToolUtil.isNotEmpty(valuemap) && !"[]".equals(valuemap)) {
             attr.setValuemapid(JSONObject.parseObject(valuemap).getString("valuemapid"));
         }
+
         return attr;
     }
 
