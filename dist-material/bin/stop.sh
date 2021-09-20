@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -x
+ps -ef | grep zeus-iot-bin | grep -v grep
 status=`ps -ef | grep zeus-iot-bin | grep -v grep | awk '{print $2}' | wc -l`
 
 if [ $status -ne 0 ]
