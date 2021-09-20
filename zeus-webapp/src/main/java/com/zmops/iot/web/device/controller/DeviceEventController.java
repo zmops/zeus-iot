@@ -26,10 +26,10 @@ import java.util.stream.Collectors;
 /**
  * @author yefei
  * <p>
- * 设备 物模型功能【事件】 类似于 属性处理
+ * 设备告警规则
  **/
 @RestController
-@RequestMapping("/device/event")
+@RequestMapping("/device/event/trigger")
 public class DeviceEventController {
 
     @Autowired

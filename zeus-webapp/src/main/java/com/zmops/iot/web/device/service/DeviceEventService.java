@@ -72,7 +72,6 @@ public class DeviceEventService {
         }
 
         //step 4: 保存关联关系
-        //step 4: 保存关联关系
         if (ToolUtil.isNotEmpty(eventRule.getProductId())) {
             ProductEventRelation productEventRelation = new ProductEventRelation();
             productEventRelation.setEventRuleId(eventRuleId);

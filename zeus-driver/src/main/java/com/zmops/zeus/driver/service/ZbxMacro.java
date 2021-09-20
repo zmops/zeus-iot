@@ -39,8 +39,8 @@ public interface ZbxMacro {
      * 更新 宏
      *
      * @param macroid 宏 ID
-     * @param macro       宏 Key
-     * @param value       宏 Value
+     * @param macro   宏 Key
+     * @param value   宏 Value
      * @return
      */
     @Post
@@ -54,15 +54,11 @@ public interface ZbxMacro {
      * 获取 宏
      *
      * @param hostid 主机ID
-     * @param macro  宏 Key
-     * @param value  宏 Value
      * @return
      */
     @Post
     @JsonPath("/macro/usermacro.get")
-    String macroGet(@ParamName("hostid") String hostid,
-                    @ParamName("macro") String macro,
-                    @ParamName("value") String value);
+    String macroGet(@ParamName("hostid") String hostid);
 
 
     /**

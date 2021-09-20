@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
  */
 
 @RestController
-@RequestMapping("/product/trigger/status")
+@RequestMapping("/product/status/trigger")
 public class ProductStatusTriggerController {
 
 
@@ -35,13 +35,13 @@ public class ProductStatusTriggerController {
     private ProductTriggerService productTriggerService;
 
     /**
-     *  离线 或者 在线触发器 信息
+     * 离线 或者 在线触发器 信息
      *
      * @param relationId 关联产品或设备ID
      * @return ResponseData
      */
     @GetMapping("/detail")
-    public ResponseData getRule(@RequestParam("relationId") String relationId){
+    public ResponseData getRule(@RequestParam("relationId") String relationId) {
         return ResponseData.success(productTriggerService.getRule(relationId));
     }
 
@@ -63,7 +63,7 @@ public class ProductStatusTriggerController {
         }
 
         int count = new QProductStatusFunctionRelation().relationId.eq(rule.getRelationId()).findCount();
-        if(count>0){
+        if (count > 0) {
             throw new ServiceException(BizExceptionEnum.RULE_EXISTS);
         }
         return ResponseData.success(productTriggerService.createDeviceStatusJudgeTrigger(rule));

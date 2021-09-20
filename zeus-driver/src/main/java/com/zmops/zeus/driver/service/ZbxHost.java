@@ -38,7 +38,7 @@ public interface ZbxHost {
     /**
      * 修改主机
      *
-     * @param hostid   主机ID
+     * @param hostid     主机ID
      * @param groupids   主机分组IDs
      * @param templateid 主机模板ID，对应产品物模型ID
      * @return
@@ -46,13 +46,13 @@ public interface ZbxHost {
     @Post
     @JsonPath("/host/host.update")
     String hostUpdate(@ParamName("hostid") String hostid,
-                    @ParamName("groupids") List<String> groupids,
-                    @ParamName("templateid") String templateid);
+                      @ParamName("groupids") List<String> groupids,
+                      @ParamName("templateid") String templateid);
 
     /**
      * 删除主机
      *
-     * @param hostIds   主机ID
+     * @param hostIds 主机ID
      * @return
      */
     @Post
@@ -99,7 +99,18 @@ public interface ZbxHost {
     @Post
     @JsonPath("/host/host.tag.update")
     String hostTagUpdate(@ParamName("hostId") String hostId,
-                             @ParamName("tagMap") Map<String, String> tagMap);
+                         @ParamName("tagMap") Map<String, String> tagMap);
+
+
+    /**
+     * 通过主机名获取 模板IDS
+     *
+     * @param hostname
+     * @return
+     */
+    @Post
+    @JsonPath("/host/host.tempid.get")
+    String hostTempidGet(@ParamName("hostname") String hostname);
 
 
     @Data
