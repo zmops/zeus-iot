@@ -6,6 +6,6 @@ if [ $status -ne 0 ]
 then
 	for i in `ps -ef | grep zeus-iot-bin | grep -v grep | awk '{print $2}'`
 	do
-		kill $i
+		kill -9 $i
 	done
 fi
