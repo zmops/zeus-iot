@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class EventRuleService {
+public class ProductEventRuleService {
 
     @Autowired
     private ZbxTrigger zbxTrigger;
@@ -241,6 +241,14 @@ public class EventRuleService {
         return new Pager<>(list, query.findCount());
     }
 
+    /**
+     * 获取 告警规则 详情
+     *
+     * @param productEvent
+     * @param eventRuleId
+     * @param prodId
+     * @return
+     */
     public ProductEventRuleDto detail(ProductEvent productEvent, long eventRuleId, String prodId) {
         ProductEventRuleDto productEventRuleDto = new ProductEventRuleDto();
         ToolUtil.copyProperties(productEvent, productEventRuleDto);
@@ -249,8 +257,13 @@ public class EventRuleService {
         productEventRuleDto.setDeviceServices(new QProductEventService().eventRuleId.eq(eventRuleId).deviceId.isNull().findList());
 
         ProductEventRelation productEventRelation = new QProductEventRelation().relationId.eq(prodId).eventRuleId.eq(eventRuleId).findOne();
-        JSONArray            triggerInfo          = JSONObject.parseArray(zbxTrigger.triggerAndTagsGet(productEventRelation.getZbxId()));
-        productEventRuleDto.setTags(JSONObject.parseArray(triggerInfo.getJSONObject(0).getString("tags"), ProductEventRuleDto.Tag.class));
+
+        JSONArray                     triggerInfo = JSONObject.parseArray(zbxTrigger.triggerAndTagsGet(productEventRelation.getZbxId()));
+        List<ProductEventRuleDto.Tag> tagList     = JSONObject.parseArray(triggerInfo.getJSONObject(0).getString("tags"), ProductEventRuleDto.Tag.class);
+
+        productEventRuleDto.setTags(tagList.stream()
+                .filter(s -> s.getTag().equals("__execute__") || s.getTag().equals("__alarm__"))
+                .collect(Collectors.toList()));
 
         return productEventRuleDto;
     }

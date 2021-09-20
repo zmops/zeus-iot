@@ -95,8 +95,8 @@ public class GlobalExceptionHandler {
         log.warn("Method Argument Not Valid", e);
         BindingResult result = e.getBindingResult();
         FieldError    error  = result.getFieldError();
-//        String        message = String.format("%s:%s", error.getField(), error.getDefaultMessage());
-        String message = String.format("%s:不能为空", error.getField());
+
+        String message = String.format("%s:%s", error.getField(), error.getDefaultMessage());
         return new ErrorResponseData(400, message);
     }
 

@@ -34,9 +34,9 @@ public interface ZbxTrigger {
     /**
      * 更新告警触发器
      *
-     * @param triggerId   触发器ID
-     * @param expression  触发器 表达式
-     * @param ruleLevel   告警等级
+     * @param triggerId  触发器ID
+     * @param expression 触发器 表达式
+     * @param ruleLevel  告警等级
      * @return
      */
     @Post
@@ -61,7 +61,7 @@ public interface ZbxTrigger {
     /**
      * 根据TRIGGER ID查询触发器
      *
-     *  @param triggerIds 触发器IDs
+     * @param triggerIds 触发器IDs
      */
     @Post
     @JsonPath("/trigger/trigger.get")
@@ -70,7 +70,7 @@ public interface ZbxTrigger {
     /**
      * 根据TRIGGER ID查询触发器及触发器标签
      *
-     *  @param triggerIds 触发器IDs
+     * @param triggerIds 触发器IDs
      */
     @Post
     @JsonPath("/trigger/triggerAndTags.get")
@@ -79,9 +79,22 @@ public interface ZbxTrigger {
     /**
      * 根据host 查询触发器
      *
-     *  @param host 设备ID
+     * @param host 设备ID
      */
     @Post
     @JsonPath("/trigger/trigger.get")
     String triggerGetByHost(@ParamName("host") String host);
+
+
+    /**
+     * 修改触发器状态
+     *
+     * @param triggerId
+     * @param status
+     * @return
+     */
+    @Post
+    @JsonPath("/trigger/trigger.status.update")
+    String triggerStatusUpdate(@ParamName("triggerid") String triggerId,
+                               @ParamName("status") String status);
 }

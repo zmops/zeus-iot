@@ -9,7 +9,7 @@ import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.util.ToolUtil;
-import com.zmops.iot.web.device.service.DeviceEventService;
+import com.zmops.iot.web.device.service.DeviceEventRuleService;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductEventRule;
 import com.zmops.zeus.driver.service.ZbxTrigger;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public class DeviceEventTriggerController {
 
     @Autowired
-    DeviceEventService deviceEventService;
+    DeviceEventRuleService deviceEventRuleService;
 
     @Autowired
     private ZbxTrigger zbxTrigger;
@@ -53,7 +53,7 @@ public class DeviceEventTriggerController {
         if (null == productEvent) {
             throw new ServiceException(BizExceptionEnum.EVENT_NOT_EXISTS);
         }
-        return ResponseData.success(deviceEventService.detail(productEvent, eventRuleId, deviceId));
+        return ResponseData.success(deviceEventRuleService.detail(productEvent, eventRuleId, deviceId));
     }
 
     /**
@@ -78,14 +78,14 @@ public class DeviceEventTriggerController {
 
         Long eventRuleId = IdUtil.getSnowflake().nextId(); // ruleId, trigger name
 
-        deviceEventService.createProductEventRule(eventRuleId, eventRule);
+        deviceEventRuleService.createProductEventRule(eventRuleId, eventRule);
 
         //step 1: 先创建 zbx 触发器
         String expression = eventRule.getExpList()
                 .stream().map(Object::toString).collect(Collectors.joining(" " + eventRule.getExpLogic() + " "));
 
         //step 2: zbx 保存触发器
-        String[] triggerIds = deviceEventService.createZbxTrigger(eventRuleId + "", expression, eventRule.getEventLevel());
+        String[] triggerIds = deviceEventRuleService.createZbxTrigger(eventRuleId + "", expression, eventRule.getEventLevel());
 
         //step 4: zbx 触发器创建 Tag
         Map<String, String> tags = eventRule.getTags().stream()
@@ -103,9 +103,8 @@ public class DeviceEventTriggerController {
             zbxTrigger.triggerTagCreate(triggerId, tags);
         }
 
-
         //step 5: 更新 zbxId
-        deviceEventService.updateProductEventRuleZbxId(eventRuleId, triggerIds);
+        deviceEventRuleService.updateProductEventRuleZbxId(eventRuleId, triggerIds);
 
         // 返回触发器ID
         return ResponseData.success(eventRuleId);
