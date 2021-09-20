@@ -114,7 +114,6 @@ public class ProductEventTriggerController {
             zbxTrigger.triggerTagCreate(triggerId, tags);
         }
 
-
         //step 5: 更新 zbxId
         productEventRuleService.updateProductEventRuleZbxId(eventRuleId, triggerIds);
 
@@ -130,8 +129,7 @@ public class ProductEventTriggerController {
      */
     @Transactional
     @PostMapping("/update")
-    public ResponseData updateProductEventRule(@RequestBody @Validated(value = BaseEntity.Update.class)
-                                                       ProductEventRule eventRule) {
+    public ResponseData updateProductEventRule(@RequestBody @Validated(value = BaseEntity.Update.class) ProductEventRule eventRule) {
 
         //step 1: 更新所有服务
         productEventRuleService.updateProductEventRule(eventRule.getEventRuleId(), eventRule);
@@ -140,28 +138,34 @@ public class ProductEventTriggerController {
         String expression = eventRule.getExpList()
                 .stream().map(Object::toString).collect(Collectors.joining(" " + eventRule.getExpLogic() + " "));
 
-
         ProductEvent event = new QProductEvent().eventRuleId.eq(eventRule.getEventRuleId()).findOne();
-        if (null != event) {
-            List<ProductEventRelation> list = new QProductEventRelation().eventRuleId.eq(event.getEventRuleId()).findList();
-            list.forEach(productEventRelation -> {
-                zbxTrigger.triggerUpdate(productEventRelation.getZbxId(), expression, eventRule.getEventLevel());
-
-                //step 3: zbx 触发器创建 Tag
-                Map<String, String> tags = eventRule.getTags().stream()
-                        .collect(Collectors.toMap(ProductEventRule.Tag::getTag, ProductEventRule.Tag::getValue, (k1, k2) -> k2));
-                if (ToolUtil.isEmpty(tags)) {
-                    tags = new HashMap<>(2);
-                }
-                if (!tags.containsKey(ALARM_TAG_NAME)) {
-                    tags.put(ALARM_TAG_NAME, eventRule.getEventRuleId() + "");
-                }
-                if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
-                    tags.put(EXECUTE_TAG_NAME, eventRule.getEventRuleId() + "");
-                }
-                zbxTrigger.triggerTagCreate(productEventRelation.getZbxId(), tags);
-            });
+        if (event == null) {
+            throw new ServiceException(BizExceptionEnum.EVENT_NOT_EXISTS);
         }
+
+        List<ProductEventRelation> list = new QProductEventRelation().eventRuleId.eq(event.getEventRuleId()).findList();
+        if (list.isEmpty()) {
+            throw new ServiceException(BizExceptionEnum.EVENT_EXPRESSION_NOT_EXISTS);
+        }
+
+        zbxTrigger.triggerUpdate(list.get(0).getZbxId(), expression, eventRule.getEventLevel());
+
+
+        //step 3: zbx 触发器创建 Tag
+        Map<String, String> tags = eventRule.getTags().stream()
+                .collect(Collectors.toMap(ProductEventRule.Tag::getTag, ProductEventRule.Tag::getValue, (k1, k2) -> k2));
+
+        if (ToolUtil.isEmpty(tags)) {
+            tags = new HashMap<>(2);
+        }
+        if (!tags.containsKey(ALARM_TAG_NAME)) {
+            tags.put(ALARM_TAG_NAME, eventRule.getEventRuleId() + "");
+        }
+        if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
+            tags.put(EXECUTE_TAG_NAME, eventRule.getEventRuleId() + "");
+        }
+
+        zbxTrigger.triggerTagCreate(list.get(0).getZbxId(), tags);
 
         return ResponseData.success(eventRule.getEventRuleId());
     }

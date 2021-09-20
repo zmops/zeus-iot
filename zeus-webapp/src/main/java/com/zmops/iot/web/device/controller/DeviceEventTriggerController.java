@@ -59,26 +59,16 @@ public class DeviceEventTriggerController {
     /**
      * 修改 触发器
      *
-     * @param eventRule 触发器规则
+     * @param eventRule 触发器规则 TODO 此处不可以修改  产品上的 告警规则
      * @return 触发器ID
      */
     @Transactional
     @PostMapping("/update")
     public ResponseData updateDeviceEventRule(@RequestBody @Validated(value = BaseEntity.Update.class) ProductEventRule eventRule) {
-        List<String> deviceIds = eventRule.getExpList().parallelStream().map(ProductEventRule.Expression::getDeviceId).collect(Collectors.toList());
-        if (ToolUtil.isEmpty(deviceIds)) {
-            throw new ServiceException(BizExceptionEnum.EVENT_HAS_NOT_DEVICE);
-        }
-
         //step 1: 删除原有的 关联关系
-        deviceIds.forEach(deviceId -> {
-            new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId()).relationId.eq(deviceId).delete();
-            new QProductEventService().eventRuleId.eq(eventRule.getEventRuleId()).deviceId.eq(deviceId).delete();
-        });
-
         Long eventRuleId = IdUtil.getSnowflake().nextId(); // ruleId, trigger name
 
-        deviceEventRuleService.createProductEventRule(eventRuleId, eventRule);
+        deviceEventRuleService.updateDeviceEventRule(eventRuleId, eventRule);
 
         //step 1: 先创建 zbx 触发器
         String expression = eventRule.getExpList()
@@ -103,7 +93,7 @@ public class DeviceEventTriggerController {
             zbxTrigger.triggerTagCreate(triggerId, tags);
         }
 
-        //step 5: 更新 zbxId
+        //step 5: 更新 zbxId 反写
         deviceEventRuleService.updateProductEventRuleZbxId(eventRuleId, triggerIds);
 
         // 返回触发器ID

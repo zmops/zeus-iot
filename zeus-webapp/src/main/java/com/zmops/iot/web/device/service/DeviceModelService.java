@@ -196,7 +196,7 @@ public class DeviceModelService {
         }
 
         return zbxItem.createTrapperItem(itemName, productAttr.getKey(),
-                hostId, productAttr.getSource(),productAttr.getMasterItemId(),productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap);
+                hostId, productAttr.getSource(), productAttr.getMasterItemId(), productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap);
     }
 
     /**
@@ -212,15 +212,15 @@ public class DeviceModelService {
         if (null == device) {
             throw new ServiceException(BizExceptionEnum.DEVICE_NOT_EXISTS);
         }
-        String                  hostId          = device.getZbxId();
+        String hostId = device.getZbxId();
+
         List<ZbxProcessingStep> processingSteps = new ArrayList<>();
+
         if (ToolUtil.isNotEmpty(productAttr.getProcessStepList())) {
             productAttr.getProcessStepList().forEach(i -> {
                 ZbxProcessingStep step = new ZbxProcessingStep();
-
                 step.setType(i.getType());
                 step.setParams(i.getParams());
-
                 processingSteps.add(step);
             });
         }
@@ -232,7 +232,7 @@ public class DeviceModelService {
         }
 
         zbxItem.updateTrapperItem(productAttribute.getZbxId(), productAttr.getAttrId() + "", productAttr.getKey(),
-                hostId, productAttr.getSource(),productAttr.getMasterItemId(),productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap);
+                hostId, productAttr.getSource(), productAttr.getMasterItemId(), productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap);
 
         DB.update(productAttribute);
 
