@@ -4,6 +4,7 @@ import com.zmops.iot.domain.BaseEntity;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -103,7 +104,7 @@ public class ProductEventRule {
             expression.append("/");
             expression.append(productAttrKey);
 
-            if (null != scope) {
+            if (StringUtils.isNotBlank(scope)) {
                 expression.append(", ");
                 expression.append(scope);
             }

@@ -22,9 +22,9 @@ public class ProductEvent extends BaseEntity {
     private Long eventRuleId;
 
     private String eventRuleName;
-    private Byte   eventLevel;
+    private String eventLevel;
     private String expLogic;
     private String remark;
-    private Byte   eventNotify;
+    private String eventNotify;
     private String status;
 }

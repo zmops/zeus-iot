@@ -149,9 +149,9 @@ public class ProductEventRuleService {
 
     private ProductEvent initEventRule(ProductEventRule eventRule) {
         ProductEvent event = new ProductEvent();
-        event.setEventLevel(eventRule.getEventLevel());
+        event.setEventLevel(eventRule.getEventLevel().toString());
         event.setExpLogic(eventRule.getExpLogic());
-        event.setEventNotify(eventRule.getEventNotify());
+        event.setEventNotify(eventRule.getEventNotify().toString());
         event.setRemark(eventRule.getRemark());
         event.setEventRuleName(eventRule.getEventRuleName());
         event.setStatus(CommonStatus.ENABLE.getCode());

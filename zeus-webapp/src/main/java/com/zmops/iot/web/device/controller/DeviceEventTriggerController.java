@@ -65,17 +65,16 @@ public class DeviceEventTriggerController {
     @Transactional
     @PostMapping("/update")
     public ResponseData updateDeviceEventRule(@RequestBody @Validated(value = BaseEntity.Update.class) ProductEventRule eventRule) {
-        //step 1: 删除原有的 关联关系
-        Long eventRuleId = IdUtil.getSnowflake().nextId(); // ruleId, trigger name
 
-        deviceEventRuleService.updateDeviceEventRule(eventRuleId, eventRule);
+        //step 1: 删除原有的 关联关系
+        deviceEventRuleService.updateDeviceEventRule(eventRule.getEventRuleId(), eventRule);
 
         //step 1: 先创建 zbx 触发器
         String expression = eventRule.getExpList()
                 .stream().map(Object::toString).collect(Collectors.joining(" " + eventRule.getExpLogic() + " "));
 
         //step 2: zbx 保存触发器
-        Integer[] triggerIds = deviceEventRuleService.createZbxTrigger(eventRuleId + "", expression, eventRule.getEventLevel());
+        Integer[] triggerIds = deviceEventRuleService.updateZbxTrigger(eventRule.getZbxId(), expression, eventRule.getEventLevel());
 
         //step 4: zbx 触发器创建 Tag
         Map<String, String> tags = eventRule.getTags().stream()
@@ -84,20 +83,20 @@ public class DeviceEventTriggerController {
             tags = new HashMap<>(2);
         }
         if (!tags.containsKey(ALARM_TAG_NAME)) {
-            tags.put(ALARM_TAG_NAME, eventRuleId + "");
+            tags.put(ALARM_TAG_NAME, eventRule.getEventRuleId() + "");
         }
         if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
-            tags.put(EXECUTE_TAG_NAME, eventRuleId + "");
+            tags.put(EXECUTE_TAG_NAME, eventRule.getEventRuleId() + "");
         }
         for (Integer triggerId : triggerIds) {
             zbxTrigger.triggerTagCreate(triggerId, tags);
         }
 
         //step 5: 更新 zbxId 反写
-        deviceEventRuleService.updateProductEventRuleZbxId(eventRuleId, triggerIds);
+        deviceEventRuleService.updateProductEventRuleZbxId(eventRule.getEventRuleId(), triggerIds);
 
         // 返回触发器ID
-        return ResponseData.success(eventRuleId);
+        return ResponseData.success(eventRule.getEventRuleId());
     }
 
 }
