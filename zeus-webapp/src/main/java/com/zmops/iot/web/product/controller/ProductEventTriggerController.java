@@ -16,7 +16,7 @@ import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductEventDto;
 import com.zmops.iot.web.product.dto.ProductEventRule;
 import com.zmops.iot.web.product.dto.param.EventParm;
-import com.zmops.iot.web.product.service.EventRuleService;
+import com.zmops.iot.web.product.service.ProductEventRuleService;
 import com.zmops.zeus.driver.service.ZbxTrigger;
 import io.ebean.DB;
 import io.ebean.annotation.Transactional;
@@ -41,7 +41,7 @@ public class ProductEventTriggerController {
 
 
     @Autowired
-    private EventRuleService eventRuleService;
+    private ProductEventRuleService productEventRuleService;
 
     @Autowired
     private ZbxTrigger zbxTrigger;
@@ -58,7 +58,7 @@ public class ProductEventTriggerController {
      */
     @PostMapping("/getEventByPage")
     public Pager<ProductEventDto> getEventByPage(@RequestBody EventParm eventParm) {
-        return eventRuleService.getEventByPage(eventParm);
+        return productEventRuleService.getEventByPage(eventParm);
     }
 
     /**
@@ -73,7 +73,7 @@ public class ProductEventTriggerController {
         if (null == productEvent) {
             throw new ServiceException(BizExceptionEnum.EVENT_NOT_EXISTS);
         }
-        return ResponseData.success(eventRuleService.detail(productEvent, eventRuleId, prodId));
+        return ResponseData.success(productEventRuleService.detail(productEvent, eventRuleId, prodId));
     }
 
     /**
@@ -89,14 +89,14 @@ public class ProductEventTriggerController {
 
         Long eventRuleId = IdUtil.getSnowflake().nextId(); // ruleId, trigger name
 
-        eventRuleService.createProductEventRule(eventRuleId, eventRule);
+        productEventRuleService.createProductEventRule(eventRuleId, eventRule);
 
         //step 1: 先创建 zbx 触发器
         String expression = eventRule.getExpList()
                 .stream().map(Object::toString).collect(Collectors.joining(" " + eventRule.getExpLogic() + " "));
 
         //step 2: zbx 保存触发器
-        String[] triggerIds = eventRuleService.createZbxTrigger(eventRuleId + "", expression, eventRule.getEventLevel());
+        String[] triggerIds = productEventRuleService.createZbxTrigger(eventRuleId + "", expression, eventRule.getEventLevel());
 
         //step 4: zbx 触发器创建 Tag
         Map<String, String> tags = eventRule.getTags().stream()
@@ -116,7 +116,7 @@ public class ProductEventTriggerController {
 
 
         //step 5: 更新 zbxId
-        eventRuleService.updateProductEventRuleZbxId(eventRuleId, triggerIds);
+        productEventRuleService.updateProductEventRuleZbxId(eventRuleId, triggerIds);
 
         // 返回触发器ID
         return ResponseData.success(eventRuleId);
@@ -134,7 +134,7 @@ public class ProductEventTriggerController {
                                                        ProductEventRule eventRule) {
 
         //step 1: 更新所有服务
-        eventRuleService.updateProductEventRule(eventRule.getEventRuleId(), eventRule);
+        productEventRuleService.updateProductEventRule(eventRule.getEventRuleId(), eventRule);
 
         //step 2: 更新zbx表达式
         String expression = eventRule.getExpList()

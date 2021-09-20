@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  * @author yefei
  **/
 @Service
-public class DeviceEventService {
+public class DeviceEventRuleService {
 
     @Autowired
     private ZbxTrigger zbxTrigger;

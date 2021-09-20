@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class EventRuleService {
+public class ProductEventRuleService {
 
     @Autowired
     private ZbxTrigger zbxTrigger;
