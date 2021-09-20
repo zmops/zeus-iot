@@ -3,11 +3,12 @@
     "method": "usermacro.get",
     "params": {
         "output": [
+            "hostmacroid",
             "macro",
             "value",
             "description"
         ],
-        "hostids": "${hostId}"
+        "hostids": "${hostid}"
     },
     "auth": "${userAuth}",
     "id": 1

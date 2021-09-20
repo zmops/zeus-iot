@@ -24,5 +24,5 @@ public class UserMacro {
     private String description;
 
     @NotBlank(groups = {BaseEntity.Delete.class, BaseEntity.Update.class})
-    private String hostMacroId;
+    private String hostmacroid;
 }
