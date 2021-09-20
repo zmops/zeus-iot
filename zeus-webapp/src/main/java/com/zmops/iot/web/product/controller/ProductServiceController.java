@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @author nantian created at 2021/8/4 16:33
  * <p>
- * 产品 物模型 服务 【功能】
+ * 产品物模型： 服务
  */
 
 @RestController
