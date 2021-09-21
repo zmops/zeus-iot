@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
  * 模块加载启动器，动态加载模块。
  */
 @Slf4j
-public class IOTServerBootstrap {
+public class IoTServerBootstrap {
     public static void start() {
         String mode = System.getProperty("mode");
         RunningMode.setMode(mode);
@@ -53,7 +53,7 @@ public class IOTServerBootstrap {
                     .setValue(System.currentTimeMillis() / 1000d);
 
             if (RunningMode.isInitMode()) {
-                log.info("Zeus IOT starts up in init mode successfully, exit now...");
+                log.info("Zeus IoT starts up in init mode successfully, exit now...");
                 System.exit(0);
             }
         } catch (Throwable t) {

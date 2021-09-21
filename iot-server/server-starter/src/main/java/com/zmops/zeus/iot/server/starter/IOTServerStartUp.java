@@ -8,6 +8,6 @@ package com.zmops.zeus.iot.server.starter;
 public class IOTServerStartUp {
 
     public static void main(String[] args) {
-        IOTServerBootstrap.start();
+        IoTServerBootstrap.start();
     }
 }
