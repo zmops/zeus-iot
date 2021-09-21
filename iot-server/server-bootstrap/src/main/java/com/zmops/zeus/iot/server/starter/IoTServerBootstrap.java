@@ -40,7 +40,8 @@ public class IoTServerBootstrap {
         RunningMode.setMode(mode);
 
         ApplicationConfigLoader configLoader = new ApplicationConfigLoader();
-        ModuleManager           manager      = new ModuleManager();
+
+        ModuleManager manager = new ModuleManager();
         try {
             ApplicationConfiguration applicationConfiguration = configLoader.load();
             manager.init(applicationConfiguration);
@@ -56,6 +57,7 @@ public class IoTServerBootstrap {
                 log.info("Zeus IoT starts up in init mode successfully, exit now...");
                 System.exit(0);
             }
+
         } catch (Throwable t) {
             log.error(t.getMessage(), t);
             System.exit(1);
