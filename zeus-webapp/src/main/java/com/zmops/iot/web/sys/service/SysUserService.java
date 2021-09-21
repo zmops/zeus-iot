@@ -28,7 +28,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.zmops.iot.web.init.DeviceSatusScriptInit.GLOBAL_ADMIN_ROLE_CODE;
@@ -47,6 +49,23 @@ public class SysUserService implements CommandLineRunner {
 
     @Autowired
     private SysUserGroupService sysUserGroupService;
+
+
+    public Map<String, Object> getUserIndexInfo() {
+
+        //获取当前用户角色列表
+        LoginUser  user     = LoginContextHolder.getContext().getUser();
+        List<Long> roleList = user.getRoleList();
+
+        //用户没有角色无法显示首页信息
+        if (roleList == null || roleList.size() == 0) {
+            return null;
+        }
+
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("name", user.getName());
+        return result;
+    }
 
     /**
      * 用户列表

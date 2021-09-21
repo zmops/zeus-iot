@@ -52,8 +52,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         //自定义退出
         httpSecurity.logout().disable();
 
-        //禁用匿名用户
-        httpSecurity.anonymous().disable();
 
         httpSecurity.exceptionHandling().authenticationEntryPoint(unauthorizedHandler);
 
@@ -83,10 +81,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 // 静态资源放开过滤
                 .and().ignoring().antMatchers(HttpMethod.GET,
-                "/assets/**",
-                "/favicon.ico",
-                "/activiti-editor/**","/websocket/alarm/**"
-        );
+                        "/static/**",
+                        "/favicon.ico",
+                        "/websocket/alarm/**"
+                );
 
     }
 }

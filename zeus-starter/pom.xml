@@ -125,7 +125,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring.boot.version}</version>
                 <configuration>
-                    <mainClass>com.zmops.iot.IOTApplication</mainClass>
+                    <mainClass>com.zmops.iot.IoTApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>

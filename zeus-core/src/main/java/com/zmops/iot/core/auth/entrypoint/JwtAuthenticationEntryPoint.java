@@ -31,8 +31,11 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Se
                          AuthenticationException authException) throws IOException {
 
         // GET请求跳转到主页
-        if ("get".equalsIgnoreCase(request.getMethod()) && !request.getHeader("Accept").contains("application/json")) {
+        if ("get".equalsIgnoreCase(request.getMethod())
+                && !request.getHeader("Accept").contains("application/json")) {
+
             response.sendRedirect(request.getContextPath() + "/global/sessionError");
+
         } else {
             // POST请求返回json
             response.setCharacterEncoding("utf-8");

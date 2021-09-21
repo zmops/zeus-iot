@@ -33,6 +33,12 @@ spring:
   jackson:
     generator:
       write_numbers_as_strings: true
+  mvc:
+    view:
+      prefix: /public
+  freemarker:
+    suffix: .html
+    template-loader-path: classpath:/public/
 
 forest:
   log-enabled: false
@@ -42,4 +48,4 @@ forest:
     zbxApiUrl: http://${ZEUS_ZABBIX_HOST:127.0.0.1}:${ZEUS_ZABBIX_PORT:80}/zabbix/api_jsonrpc.php
     zbxServerIp: ${ZEUS_ZABBIX_HOST:127.0.0.1}
     zbxServerPort: ${ZEUS_ZABBIX_PORT:80}
-    zbxApiToken: 3464dee6b3fa3ce4173972e0497d7b84a93bdf8477ff1bdd51a7719cc0db2cd9
+    zbxApiToken: 5376d4510465d6873d6c41076f26c58dae42701941e276971e8f068b76e660d0
