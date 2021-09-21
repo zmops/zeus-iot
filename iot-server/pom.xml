@@ -30,6 +30,7 @@
         <module>server-sender</module>
         <module>server-action</module>
         <module>server-storage-plugin</module>
+        <module>server-transfer</module>
     </modules>
 
     <dependencyManagement>
