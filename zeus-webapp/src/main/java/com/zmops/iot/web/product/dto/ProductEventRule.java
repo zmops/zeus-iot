@@ -92,9 +92,13 @@ public class ProductEventRule {
         @NotNull(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
         private String productAttrKey; // 产品属性 Key
 
-        private String deviceId; // 设备ID
+        private String deviceId; // 产品 ID
 
         private String unit;
+
+        private Long   productAttrId;
+
+        private String productAttrType;
 
         @Override
         public String toString() {

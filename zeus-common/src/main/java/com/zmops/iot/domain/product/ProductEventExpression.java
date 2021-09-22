@@ -32,4 +32,6 @@ public class ProductEventExpression extends Model {
     private String deviceId;
     private String productAttrKey;
     private String unit;
+    private Long   productAttrId;
+    private String productAttrType;
 }

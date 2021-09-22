@@ -96,6 +96,10 @@ public class DeviceEventRule {
 
         private String unit;
 
+        private Long   productAttrId;
+
+        private String productAttrType;
+
         @Override
         public String toString() {
             StringBuilder expression = new StringBuilder();
