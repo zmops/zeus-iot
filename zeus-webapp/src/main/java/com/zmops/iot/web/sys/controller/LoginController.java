@@ -49,10 +49,10 @@ public class LoginController extends BaseController {
             //用户信息为空，提示账号没分配角色登录不进去
             if (userIndexInfo == null) {
                 model.addAttribute("tips", "该用户没有角色，无法登陆");
-                return "/login.html";
+                return "/login";
             } else {
                 model.addAllAttributes(userIndexInfo);
-                return "/index.html";
+                return "/index";
             }
 
         } else {
