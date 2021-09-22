@@ -113,7 +113,7 @@ public class DeviceEventTriggerController {
      */
     @PostMapping("/status")
     public ResponseData updateProductEventStatus(@RequestBody @Validated(value = BaseEntity.Status.class) DeviceEventRule eventRule) {
-        DB.update(ProductEvent.class).where().eq("eventRuleId", eventRule.getEventRuleId()).eq("relationId", eventRule.getDeviceId()).asUpdate()
+        DB.update(ProductEventRelation.class).where().eq("eventRuleId", eventRule.getEventRuleId()).eq("relationId", eventRule.getDeviceId()).asUpdate()
                 .set("status", eventRule.getStatus()).update();
 
         ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId())
@@ -135,14 +135,13 @@ public class DeviceEventTriggerController {
     @Transactional
     @PostMapping("/update")
     public ResponseData updateDeviceEventRule(@RequestBody @Validated(value = BaseEntity.Update.class) DeviceEventRule eventRule) {
-        //来自产品的告警规则 只能修改备注
-        ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId())
-                .relationId.eq(eventRule.getDeviceId()).findOne();
-        if (null == productEventRelation) {
+        int count = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId())
+                .findCount();
+        if (count == 0) {
             throw new ServiceException(BizExceptionEnum.EVENT_NOT_EXISTS);
         }
-
-        if (InheritStatus.YES.getCode().equals(productEventRelation.getInherit())) {
+        //来自产品的告警规则 只能修改备注
+        if (count > 1) {
             DB.update(ProductEventRelation.class).where().eq("eventRuleId", eventRule.getEventRuleId()).eq("relationId", eventRule.getDeviceId())
                     .asUpdate().set("remark", eventRule.getRemark()).update();
             return ResponseData.success(eventRule.getEventRuleId());

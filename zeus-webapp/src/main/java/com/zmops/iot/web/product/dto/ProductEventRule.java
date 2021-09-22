@@ -92,7 +92,7 @@ public class ProductEventRule {
         @NotNull(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
         private String productAttrKey; // 产品属性 Key
 
-        private String deviceId; // 产品 ID
+        private String productId; // 产品 ID
 
         private String unit;
 
@@ -100,12 +100,14 @@ public class ProductEventRule {
 
         private String productAttrType;
 
+        private String period;
+
         @Override
         public String toString() {
             StringBuilder expression = new StringBuilder();
             expression.append(function);
             expression.append("(/");
-            expression.append(deviceId);
+            expression.append(productId);
             expression.append("/");
             expression.append(productAttrKey);
 

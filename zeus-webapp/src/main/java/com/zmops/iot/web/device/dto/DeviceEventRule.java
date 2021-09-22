@@ -54,10 +54,10 @@ public class DeviceEventRule {
     @NotNull(groups = BaseEntity.Update.class)
     private Integer zbxId;
 
-    @NotBlank(groups = BaseEntity.Status.class)
+    @NotBlank(groups = {BaseEntity.Status.class, BaseEntity.Delete.class})
     private String deviceId;
 
-    @NotBlank(groups = {BaseEntity.Status.class, BaseEntity.Delete.class})
+    @NotBlank(groups = BaseEntity.Status.class)
     private String status;
 
     @Data
@@ -99,6 +99,8 @@ public class DeviceEventRule {
         private Long   productAttrId;
 
         private String productAttrType;
+
+        private String period;
 
         @Override
         public String toString() {

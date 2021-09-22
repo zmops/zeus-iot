@@ -13,7 +13,7 @@ import lombok.Data;
 @JsonSerialize(using = CachedValueFilter.class)
 public class ProductEventDto {
 
-    private String eventRuleId;
+    private Long eventRuleId;
 
     private Byte eventNotify;
 

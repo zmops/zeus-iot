@@ -11,6 +11,7 @@ import com.zmops.iot.domain.product.query.QProductEventExpression;
 import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.enums.CommonStatus;
+import com.zmops.iot.enums.InheritStatus;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.product.dto.ProductEventDto;
@@ -82,6 +83,7 @@ public class ProductEventRuleService {
         productEventRelation.setEventRuleId(eventRuleId);
         productEventRelation.setRelationId(eventRule.getProductId());
         productEventRelation.setStatus(CommonStatus.ENABLE.getCode());
+        productEventRelation.setInherit(InheritStatus.NO.getCode());
         productEventRelation.setRemark(eventRule.getRemark());
         DB.save(productEventRelation);
     }
@@ -159,8 +161,11 @@ public class ProductEventRuleService {
         eventExpression.setFunction(exp.getFunction());
         eventExpression.setScope(exp.getScope());
         eventExpression.setValue(exp.getValue());
-        eventExpression.setDeviceId(exp.getDeviceId());
+        eventExpression.setDeviceId(exp.getProductId());
         eventExpression.setProductAttrKey(exp.getProductAttrKey());
+        eventExpression.setProductAttrId(exp.getProductAttrId());
+        eventExpression.setProductAttrType(exp.getProductAttrType());
+        eventExpression.setPeriod(exp.getPeriod());
         eventExpression.setUnit(exp.getUnit());
         return eventExpression;
     }
@@ -218,20 +223,28 @@ public class ProductEventRuleService {
             query.eventRuleName.contains(eventParm.getEventRuleName());
         }
 
-        if (ToolUtil.isNotEmpty(eventParm.getProdId())) {
-            List<Long> eventRuleIdList = new QProductEventRelation().select(QProductEventRelation.alias().eventRuleId)
-                    .relationId.eq(eventParm.getProdId()).findSingleAttributeList();
-            if (ToolUtil.isEmpty(eventRuleIdList)) {
-                return new Pager<>();
-            }
 
-            if (ToolUtil.isNotEmpty(eventRuleIdList)) {
-                query.eventRuleId.in(eventRuleIdList);
-            }
+        List<ProductEventRelation> productEventRelationList = new QProductEventRelation().select(QProductEventRelation.alias().eventRuleId)
+                .relationId.eq(eventParm.getProdId()).findList();
+        if (ToolUtil.isEmpty(productEventRelationList)) {
+            return new Pager<>();
         }
+        List<Long> eventRuleIdList = productEventRelationList.parallelStream().map(ProductEventRelation::getEventRuleId).collect(Collectors.toList());
+        if (ToolUtil.isNotEmpty(eventRuleIdList)) {
+            query.eventRuleId.in(eventRuleIdList);
+        }
+        Map<Long, ProductEventRelation> productEventRelationMap = productEventRelationList.parallelStream().collect(Collectors.toMap(ProductEventRelation::getEventRuleId, o -> o));
+
 
         List<ProductEventDto> list = query.setFirstRow((eventParm.getPage() - 1) * eventParm.getMaxRow())
                 .setMaxRows(eventParm.getMaxRow()).orderBy(" create_time desc").asDto(ProductEventDto.class).findList();
+
+        list.forEach(productEventDto -> {
+            if (null != productEventRelationMap.get(productEventDto.getEventRuleId())) {
+                productEventDto.setStatus(productEventRelationMap.get(productEventDto.getEventRuleId()).getStatus());
+                productEventDto.setRemark(productEventRelationMap.get(productEventDto.getEventRuleId()).getRemark());
+            }
+        });
 
         return new Pager<>(list, query.findCount());
     }
@@ -252,7 +265,8 @@ public class ProductEventRuleService {
         productEventRuleDto.setDeviceServices(new QProductEventService().eventRuleId.eq(eventRuleId).deviceId.isNull().findList());
 
         ProductEventRelation productEventRelation = new QProductEventRelation().relationId.eq(prodId).eventRuleId.eq(eventRuleId).findOne();
-
+        productEventRuleDto.setStatus(productEventRelation.getStatus());
+        productEventRuleDto.setRemark(productEventRelation.getRemark());
         JSONArray triggerInfo = JSONObject.parseArray(zbxTrigger.triggerAndTagsGet(productEventRelation.getZbxId()));
 
         List<ProductEventRuleDto.Tag> tagList = JSONObject.parseArray(triggerInfo.getJSONObject(0).getString("tags"), ProductEventRuleDto.Tag.class);

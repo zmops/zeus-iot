@@ -49,6 +49,7 @@ public class ProductEventTriggerController {
 
     private static final String ALARM_TAG_NAME   = "__alarm__";
     private static final String EXECUTE_TAG_NAME = "__execute__";
+    private static final String EVENT_TAG_NAME   = "__event__";
 
 
     /**
@@ -58,7 +59,7 @@ public class ProductEventTriggerController {
      * @return
      */
     @PostMapping("/getEventByPage")
-    public Pager<ProductEventDto> getEventByPage(@RequestBody EventParm eventParm) {
+    public Pager<ProductEventDto> getEventByPage(@Validated @RequestBody EventParm eventParm) {
         return productEventRuleService.getEventByPage(eventParm);
     }
 
@@ -179,7 +180,7 @@ public class ProductEventTriggerController {
      */
     @PostMapping("/status")
     public ResponseData updateProductEventStatus(@RequestBody @Validated(value = BaseEntity.Status.class) ProductEventRule eventRule) {
-        DB.update(ProductEvent.class).where().eq("eventRuleId", eventRule.getEventRuleId()).asUpdate().set("status", eventRule.getStatus()).update();
+        DB.update(ProductEventRelation.class).where().eq("eventRuleId", eventRule.getEventRuleId()).asUpdate().set("status", eventRule.getStatus()).update();
 
         ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId()).inherit.eq("0").findOne();
 
