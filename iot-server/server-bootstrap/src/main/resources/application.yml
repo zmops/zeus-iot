@@ -26,8 +26,7 @@ receiver-mqtt:
     port: ${ZS_RECEIVER_MQTT_PORT:1883}
     host: ${ZS_RECEIVER_MQTT_HOST:127.0.0.1}
 
-
-# 核心模块
+# core module config
 core:
   selector: ${ZS_CORE:default}
   default:
@@ -42,21 +41,28 @@ core:
     restAcceptQueueSize: ${ZS_CORE_REST_JETTY_QUEUE_SIZE:0}
     httpMaxRequestHeaderSize: ${ZS_CORE_HTTP_MAX_REQUEST_HEADER_SIZE:8192}
 
+
+# ndjson file read realtime
+server-transfer:
+  selector: ${ZS_SERVER_TRANSFER:default}
+  default:
+
+# tdengine storage realtime
 storage:
-  selector: ${SW_STORAGE:tdengine}
+  selector: ${ZS_STORAGE:tdengine}
   tdengine:
     url: ${ZS_STORAGE_TDENGINE_URL:jdbc:TAOS://192.168.1.1:6030/zeus_data} # TDEngine jdbcUrl
     user: ${ZS_STORAGE_TDENGINE_USER:root}
     password: ${ZS_STORAGE_TDENGINE_PASSWORD:taosdata}
 
 
-# 健康检查
+# health check
 health-checker:
   selector: ${ZS_HEALTH_CHECKER:default}
   default:
     checkIntervalSeconds: ${ZS_HEALTH_CHECKER_INTERVAL_SECONDS:5}
 
-# 健康遥测
+# health telemetry
 telemetry:
   selector: ${ZS_TELEMETRY:prometheus}
   none:

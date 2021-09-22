@@ -17,7 +17,7 @@
 
 package com.zmops.zeus.iot.server.transfer.conf;
 
-import com.zmops.zeus.iot.server.transfer.utils.AgentUtils;
+import com.zmops.zeus.iot.server.transfer.core.utils.AgentUtils;
 
 public class AgentConstants {
 

@@ -26,7 +26,6 @@
             <artifactId>snakeyaml</artifactId>
             <version>1.26</version>
         </dependency>
-
         <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>server-health-checker</artifactId>
@@ -42,7 +41,6 @@
             <artifactId>telemetry-prometheus</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>server-sender</artifactId>
@@ -63,18 +61,20 @@
             <artifactId>mqtt-receiver-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>server-tdengine-plugin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>server-transfer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-zabbix-agent</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>com.zmops</groupId>
-            <artifactId>server-tdengine-plugin</artifactId>
-            <version>1.0-beta</version>
-        </dependency>
-
     </dependencies>
 
     <build>

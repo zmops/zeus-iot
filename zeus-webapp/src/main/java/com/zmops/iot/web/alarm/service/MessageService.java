@@ -39,24 +39,29 @@ public class MessageService {
      */
     public void push(MessageBody body) {
         Objects.requireNonNull(body.getMsg());
+
         List<Long> tos;
+
         if (!CollectionUtils.isEmpty(body.getTo())) {
             tos = body.getTo();
         } else {
             List<SysUser> userList = new QSysUser().findList();
             tos = userList.parallelStream().map(SysUser::getUserId).collect(Collectors.toList());
         }
+
         if (body.isPersist()) {
             tos.forEach(to -> {
                 Messages messages = new Messages();
                 messages.setClassify(sys);
                 messages.setTitle(body.getMsg());
                 messages.setUserId(to);
+
                 String content = "";
                 if (ToolUtil.isNotEmpty(body.getBody())) {
                     content = JSON.toJSONString(body.getBody());
                     messages.setContent(content);
                 }
+
                 messages.setClock(System.currentTimeMillis() / 1000);
                 saveMessage(messages);
             });
@@ -77,6 +82,7 @@ public class MessageService {
     public Pager<Messages> list(MessageParam messageParam) {
         LoginUser user      = LoginContextHolder.getContext().getUser();
         QMessages qMessages = new QMessages();
+
         qMessages.userId.eq(user.getId());
 
         if (messageParam.getReaded() != null) {
