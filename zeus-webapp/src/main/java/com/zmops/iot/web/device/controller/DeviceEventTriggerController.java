@@ -129,12 +129,24 @@ public class DeviceEventTriggerController {
     /**
      * 修改 触发器
      *
-     * @param eventRule 触发器规则 TODO 此处不可以修改  产品上的 告警规则
+     * @param eventRule 触发器规则
      * @return 触发器ID
      */
     @Transactional
     @PostMapping("/update")
     public ResponseData updateDeviceEventRule(@RequestBody @Validated(value = BaseEntity.Update.class) DeviceEventRule eventRule) {
+        //来自产品的告警规则 只能修改备注
+        ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId())
+                .relationId.eq(eventRule.getDeviceId()).findOne();
+        if (null == productEventRelation) {
+            throw new ServiceException(BizExceptionEnum.EVENT_NOT_EXISTS);
+        }
+
+        if (InheritStatus.YES.getCode().equals(productEventRelation.getInherit())) {
+            DB.update(ProductEventRelation.class).where().eq("eventRuleId", eventRule.getEventRuleId()).eq("relationId", eventRule.getDeviceId())
+                    .asUpdate().set("remark", eventRule.getRemark()).update();
+            return ResponseData.success(eventRule.getEventRuleId());
+        }
 
         //step 1: 删除原有的 关联关系
         deviceEventRuleService.updateDeviceEventRule(eventRule.getEventRuleId(), eventRule);

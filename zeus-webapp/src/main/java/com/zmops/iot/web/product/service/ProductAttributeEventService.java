@@ -9,7 +9,6 @@ import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.Product;
 import com.zmops.iot.domain.product.ProductAttributeEvent;
 import com.zmops.iot.domain.product.query.QProduct;
-import com.zmops.iot.domain.product.query.QProductAttribute;
 import com.zmops.iot.domain.product.query.QProductAttributeEvent;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
@@ -20,7 +19,10 @@ import com.zmops.iot.web.product.dto.ProductAttrDto;
 import com.zmops.iot.web.product.dto.ProductAttrEvent;
 import com.zmops.iot.web.product.dto.ProductTag;
 import com.zmops.iot.web.product.dto.param.ProductAttrParam;
-import com.zmops.iot.web.product.service.work.*;
+import com.zmops.iot.web.product.service.work.AsyncAttrEventZbxIdWorker;
+import com.zmops.iot.web.product.service.work.SaveProdAttrEventTriggerWorker;
+import com.zmops.iot.web.product.service.work.SaveProdAttrEventWorker;
+import com.zmops.iot.web.product.service.work.UpdateAttributeEventWorker;
 import com.zmops.zeus.driver.entity.ZbxProcessingStep;
 import com.zmops.zeus.driver.service.ZbxItem;
 import io.ebean.DB;
@@ -28,8 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -104,7 +104,7 @@ public class ProductAttributeEventService {
      * @return
      */
     public ProductAttrDto detail(Long attrId) {
-        ProductAttrDto attr = new QProductAttribute().attrId.eq(attrId).asDto(ProductAttrDto.class).findOne();
+        ProductAttrDto attr = new QProductAttributeEvent().attrId.eq(attrId).asDto(ProductAttrDto.class).findOne();
 
         if (null == attr.getZbxId()) {
             return attr;
@@ -184,15 +184,15 @@ public class ProductAttributeEventService {
     public String createTrapperItem(ProductAttrEvent productAttr) {
 
         String itemName = productAttr.getAttrId() + "";
-        String hostId ="";
-        Device device = new QDevice().deviceId.eq(productAttr.getProductId()).findOne();
-        if(null == device){
+        String hostId   = "";
+        Device device   = new QDevice().deviceId.eq(productAttr.getProductId()).findOne();
+        if (null == device) {
             Product prod = new QProduct().productId.eq(Long.parseLong(productAttr.getProductId())).findOne();
             if (null == prod) {
                 throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
             }
             hostId = prod.getZbxId();
-        }else{
+        } else {
             hostId = device.getZbxId();
         }
 
@@ -224,11 +224,17 @@ public class ProductAttributeEventService {
     public ProductAttrEvent updateTrapperItem(ProductAttrEvent productAttr) {
         ProductAttributeEvent productAttributeEvent = new QProductAttributeEvent().attrId.eq(productAttr.getAttrId()).findOne();
         buildProdAttribute(productAttributeEvent, productAttr);
-        Product prod = new QProduct().productId.eq(Long.parseLong(productAttr.getProductId())).findOne();
-        if (null == prod) {
-            throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
+        String hostId = "";
+        Device device = new QDevice().deviceId.eq(productAttr.getProductId()).findOne();
+        if (null == device) {
+            Product prod = new QProduct().productId.eq(Long.parseLong(productAttr.getProductId())).findOne();
+            if (null == prod) {
+                throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
+            }
+            hostId = prod.getZbxId();
+        } else {
+            hostId = device.getZbxId();
         }
-        String                  hostId          = prod.getZbxId();
         List<ZbxProcessingStep> processingSteps = new ArrayList<>();
         if (ToolUtil.isNotEmpty(productAttr.getProcessStepList())) {
             productAttr.getProcessStepList().forEach(i -> {
@@ -272,14 +278,14 @@ public class ProductAttributeEventService {
      */
     public void deleteTrapperItem(ProductAttrEvent productAttr) {
 
-        List<String> zbxIds = new QProductAttribute().select(QProductAttribute.alias().zbxId).attrId.in(productAttr.getAttrIds()).findSingleAttributeList();
+        List<String> zbxIds = new QProductAttributeEvent().select(QProductAttributeEvent.alias().zbxId).attrId.in(productAttr.getAttrIds()).findSingleAttributeList();
         //删除zbx item
         zbxItem.deleteTrapperItem(zbxIds);
 
         //删除 属性
-        new QProductAttribute().attrId.in(productAttr.getAttrIds()).delete();
+        new QProductAttributeEvent().attrId.in(productAttr.getAttrIds()).delete();
 
         //删除 设备 继承的属性
-        new QProductAttribute().templateId.in(productAttr.getAttrIds()).delete();
+        new QProductAttributeEvent().templateId.in(productAttr.getAttrIds()).delete();
     }
 }
