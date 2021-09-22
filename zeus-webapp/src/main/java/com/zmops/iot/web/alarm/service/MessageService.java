@@ -11,7 +11,6 @@ import com.zmops.iot.domain.sys.query.QSysUser;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.alarm.dto.param.MessageParam;
-import com.zmops.iot.web.alarm.socket.WebSocketServer;
 import io.ebean.DB;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -65,10 +64,10 @@ public class MessageService {
 
         if (!CollectionUtils.isEmpty(body.getTo())) {
             body.getTo().forEach(to -> {
-                WebSocketServer.sendMessageTo(JSON.toJSONString(body), to + "");
+                //WebSocketServer.sendMessageTo(JSON.toJSONString(body), to + "");
             });
         } else {
-            WebSocketServer.sendMessageToAll(JSON.toJSONString(body));
+            //WebSocketServer.sendMessageToAll(JSON.toJSONString(body));
         }
     }
 
@@ -119,10 +118,13 @@ public class MessageService {
      * @return
      */
     public Map<String, Object> unReadNum() {
-        LoginUser           user  = LoginContextHolder.getContext().getUser();
-        Map<String, Object> map   = new HashMap<>();
-        int                 count = new QMessages().readed.eq(0).userId.eq(user.getId()).findCount();
+        LoginUser user = LoginContextHolder.getContext().getUser();
+
+        Map<String, Object> map = new HashMap<>();
+
+        int count = new QMessages().readed.eq(0).userId.eq(user.getId()).findCount();
         map.put("count", count);
+
         return map;
     }
 
