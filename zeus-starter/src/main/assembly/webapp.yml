@@ -33,6 +33,12 @@ spring:
   jackson:
     generator:
       write_numbers_as_strings: true
+  mvc:
+    view:
+      prefix: /public
+  freemarker:
+    suffix: .html
+    template-loader-path: classpath:/public/
 
 forest:
   log-enabled: false
