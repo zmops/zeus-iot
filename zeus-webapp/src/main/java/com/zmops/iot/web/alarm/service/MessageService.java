@@ -11,6 +11,7 @@ import com.zmops.iot.domain.sys.query.QSysUser;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.alarm.dto.param.MessageParam;
+import com.zmops.iot.web.nats.NatsConnectionHolder;
 import io.ebean.DB;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -38,14 +39,14 @@ public class MessageService {
      */
     public void push(MessageBody body) {
         Objects.requireNonNull(body.getMsg());
+        List<Long> tos;
+        if (!CollectionUtils.isEmpty(body.getTo())) {
+            tos = body.getTo();
+        } else {
+            List<SysUser> userList = new QSysUser().findList();
+            tos = userList.parallelStream().map(SysUser::getUserId).collect(Collectors.toList());
+        }
         if (body.isPersist()) {
-            List<Long> tos;
-            if (!CollectionUtils.isEmpty(body.getTo())) {
-                tos = body.getTo();
-            } else {
-                List<SysUser> userList = new QSysUser().findList();
-                tos = userList.parallelStream().map(SysUser::getUserId).collect(Collectors.toList());
-            }
             tos.forEach(to -> {
                 Messages messages = new Messages();
                 messages.setClassify(sys);
@@ -62,13 +63,9 @@ public class MessageService {
         }
         body.addBody("classify", sys);
 
-        if (!CollectionUtils.isEmpty(body.getTo())) {
-            body.getTo().forEach(to -> {
-                //WebSocketServer.sendMessageTo(JSON.toJSONString(body), to + "");
-            });
-        } else {
-            //WebSocketServer.sendMessageToAll(JSON.toJSONString(body));
-        }
+        tos.forEach(to -> {
+            NatsConnectionHolder.INSTANCE.getConnection().publish(to + "", JSON.toJSONString(body));
+        });
     }
 
     /**
