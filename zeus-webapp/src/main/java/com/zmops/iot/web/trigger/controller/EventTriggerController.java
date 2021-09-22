@@ -1,4 +1,4 @@
-package com.zmops.iot.web.trigger;
+package com.zmops.iot.web.trigger.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.zmops.iot.model.response.ResponseData;
