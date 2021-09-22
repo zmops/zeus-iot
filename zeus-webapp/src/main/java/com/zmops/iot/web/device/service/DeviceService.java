@@ -338,7 +338,7 @@ public class DeviceService {
                     new QDevice().deviceId.eq(deviceId).delete();
                     return true;
                 }).param(deviceDto.getDeviceId())
-                .nextOf(delTagWork, delAttrWork, delGropusWork, delZbxWork,delOtherWork).build();
+                .nextOf(delTagWork, delAttrWork, delGropusWork, delZbxWork, delOtherWork).build();
 
         try {
 
@@ -361,21 +361,24 @@ public class DeviceService {
         if (ToolUtil.isEmpty(productTag.getProductTag())) {
             return;
         }
+
         new QTag().sid.eq(productTag.getProductId()).delete();
         List<Tag> tags = new ArrayList<>();
+
         for (ProductTag.Tag tag : productTag.getProductTag()) {
-            tags.add(
-                    Tag.builder().sid(productTag.getProductId())
-                            .tag(tag.getTag()).value(tag.getValue())
-                            .build());
+            tags.add(Tag.builder().sid(productTag.getProductId()).tag(tag.getTag()).value(tag.getValue()).build());
         }
+
         DB.saveAll(tags);
 
         if (ToolUtil.isEmpty(zbxId)) {
             return;
         }
-        List<Tag>           list   = new QTag().sid.eq(productTag.getProductId()).findList();
+
+        List<Tag> list = new QTag().sid.eq(productTag.getProductId()).findList();
+
         Map<String, String> tagMap = new HashMap<>(list.size());
+
         for (Tag tag : list) {
             tagMap.put(tag.getTag(), tag.getValue());
         }

@@ -149,6 +149,7 @@ public class ProductAttributeEventService {
 
         WorkerWrapper<ProductAttrEvent, Boolean> saveProdAttrEventTriggerWork = WorkerWrapper.<ProductAttrEvent, Boolean>builder()
                 .worker(saveProdAttrEventTriggerWorker).param(productAttr).build();
+
         WorkerWrapper<ProductAttrEvent, Boolean> asyncAttrEventZbxIdWork = WorkerWrapper.<ProductAttrEvent, Boolean>builder()
                 .worker(asyncAttrEventZbxIdWorker).param(productAttr).build();
         WorkerWrapper<ProductAttrEvent, Boolean> saveProdAttrEventWork = WorkerWrapper.<ProductAttrEvent, Boolean>builder()
