@@ -60,7 +60,7 @@ public class ProductAttributeEventService {
      * @return
      */
     public Pager<ProductAttrDto> prodAttributeEventList(ProductAttrParam productAttr) {
-        QProductAttribute qProductAttribute = new QProductAttribute();
+        QProductAttributeEvent qProductAttribute = new QProductAttributeEvent();
 
         if (ToolUtil.isNotEmpty(productAttr.getProdId())) {
             qProductAttribute.productId.eq(productAttr.getProdId());
@@ -84,7 +84,7 @@ public class ProductAttributeEventService {
      * @return
      */
     public List<ProductAttrDto> list(ProductAttrParam productAttr) {
-        QProductAttribute qProductAttribute = new QProductAttribute();
+        QProductAttributeEvent qProductAttribute = new QProductAttributeEvent();
         if (null != productAttr.getProdId()) {
             qProductAttribute.productId.eq(productAttr.getProdId());
         }
@@ -147,8 +147,8 @@ public class ProductAttributeEventService {
         productAttributeEvent.save();
 
 
-        WorkerWrapper<ProductAttrEvent, Boolean> saveProdAttrEventTriggerWork = WorkerWrapper.<ProductAttrEvent, Boolean>builder()
-                .worker(saveProdAttrEventTriggerWorker).param(productAttr).build();
+//        WorkerWrapper<ProductAttrEvent, Boolean> saveProdAttrEventTriggerWork = WorkerWrapper.<ProductAttrEvent, Boolean>builder()
+//                .worker(saveProdAttrEventTriggerWorker).param(productAttr).build();
 
         WorkerWrapper<ProductAttrEvent, Boolean> asyncAttrEventZbxIdWork = WorkerWrapper.<ProductAttrEvent, Boolean>builder()
                 .worker(asyncAttrEventZbxIdWorker).param(productAttr).build();
@@ -156,7 +156,7 @@ public class ProductAttributeEventService {
                 .worker(saveProdAttrEventWorker).param(productAttr).nextOf(asyncAttrEventZbxIdWork).build();
 
         try {
-            Async.work(10000, saveProdAttrEventWork,saveProdAttrEventTriggerWork).awaitFinish();
+            Async.work(10000, saveProdAttrEventWork).awaitFinish();
         } catch (Exception e) {
             e.printStackTrace();
         }

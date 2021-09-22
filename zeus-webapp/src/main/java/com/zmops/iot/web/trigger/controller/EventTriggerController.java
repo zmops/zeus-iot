@@ -32,17 +32,17 @@ public class EventTriggerController {
      *
      * @return
      */
-    @RequestMapping("/status/update")
-    public ResponseData updateTriggerStatus(@RequestBody @Valid TriggerStatusDto statusDto) {
-        String res = zbxTrigger.triggerStatusUpdate(statusDto.getTriggerId(), statusDto.getStatus());
-
-//        DB.update(ProductEvent.class)
-//                .where().eq("eventRuleId", statusDto.getEventRuleId())
-//                .asUpdate().set("status", statusDto.getStatus()).update(); // 0 启用，1 禁用
-
-
-        return ResponseData.success(JSON.parseObject(res, TriggerIds.class).getTriggerids()[0]);
-    }
+//    @RequestMapping("/status/update")
+//    public ResponseData updateTriggerStatus(@RequestBody @Valid TriggerStatusDto statusDto) {
+//        String res = zbxTrigger.triggerStatusUpdate(statusDto.getTriggerId(), statusDto.getStatus());
+//
+////        DB.update(ProductEvent.class)
+////                .where().eq("eventRuleId", statusDto.getEventRuleId())
+////                .asUpdate().set("status", statusDto.getStatus()).update(); // 0 启用，1 禁用
+//
+//
+//        return ResponseData.success(JSON.parseObject(res, TriggerIds.class).getTriggerids()[0]);
+//    }
 
     @Getter
     @Setter
