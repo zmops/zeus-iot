@@ -49,3 +49,6 @@ forest:
     zbxServerIp: ${ZEUS_ZABBIX_HOST:127.0.0.1}
     zbxServerPort: ${ZEUS_ZABBIX_PORT:80}
     zbxApiToken: 3464dee6b3fa3ce4173972e0497d7b84a93bdf8477ff1bdd51a7719cc0db2cd9
+
+nats:
+  url: nats://${NATS_HOST:127.0.0.1}:${NATS_PORT:4222}
