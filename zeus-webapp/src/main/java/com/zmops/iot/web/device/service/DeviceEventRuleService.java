@@ -204,8 +204,12 @@ public class DeviceEventRuleService {
 
         if (null != productEventRelation) {
             JSONArray triggerInfo = JSONObject.parseArray(zbxTrigger.triggerAndTagsGet(productEventRelation.getZbxId()));
-            productEventRuleDto.setTags(JSONObject.parseArray(triggerInfo.getJSONObject(0).getString("tags"), ProductEventRuleDto.Tag.class));
+            List<ProductEventRuleDto.Tag> tagList = JSONObject.parseArray(triggerInfo.getJSONObject(0).getString("tags"), ProductEventRuleDto.Tag.class);
+
             productEventRuleDto.setZbxId(productEventRelation.getZbxId());
+            productEventRuleDto.setTags(tagList.stream()
+                    .filter(s -> s.getTag().equals("__execute__") || s.getTag().equals("__alarm__"))
+                    .collect(Collectors.toList()));
         }
 
         return productEventRuleDto;
