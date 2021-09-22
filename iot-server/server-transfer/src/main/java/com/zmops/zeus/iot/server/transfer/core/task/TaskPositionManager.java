@@ -43,7 +43,7 @@ public class TaskPositionManager extends AbstractDaemon {
     private final AgentManager agentManager;
     private final JobProfileDb jobConfDb;
 
-    private ConcurrentHashMap<String, ConcurrentHashMap<String, Long>> jobTaskPositionMap;
+    private final ConcurrentHashMap<String, ConcurrentHashMap<String, Long>> jobTaskPositionMap;
 
     private static volatile TaskPositionManager taskPositionManager = null;
 

@@ -47,24 +47,25 @@ import java.util.regex.Pattern;
 
 public class AgentUtils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AgentUtils.class);
-    private static final AtomicLong INDEX = new AtomicLong(0);
-    private static final String HEX_PREFIX = "0x";
-    public static final String EQUAL = "=";
-    public static final String M_VALUE = "m";
-    public static final String ADDITION_SPLITTER = "&";
-    public static final String BEIJING_TIME_ZONE = "GMT+8:00";
-    public static final String HOUR_PATTERN = "yyyyMMddHH";
-    public static final String DAY_PATTERN = "yyyyMMdd";
-    public static final String DEFAULT_PATTERN = "yyyyMMddHHmm";
-    public static final String DAY = "D";
-    public static final String HOUR = "H";
-    public static final String HOUR_LOW_CASE = "h";
-    public static final String MINUTE = "m";
+    private static final Logger     LOGGER            = LoggerFactory.getLogger(AgentUtils.class);
+    private static final AtomicLong INDEX             = new AtomicLong(0);
+    private static final String     HEX_PREFIX        = "0x";
+    public static final  String     EQUAL             = "=";
+    public static final  String     M_VALUE           = "m";
+    public static final  String     ADDITION_SPLITTER = "&";
+    public static final  String     BEIJING_TIME_ZONE = "GMT+8:00";
+    public static final  String     HOUR_PATTERN      = "yyyyMMddHH";
+    public static final  String     DAY_PATTERN       = "yyyyMMdd";
+    public static final  String     DEFAULT_PATTERN   = "yyyyMMddHHmm";
+    public static final  String     DAY               = "D";
+    public static final  String     HOUR              = "H";
+    public static final  String     HOUR_LOW_CASE     = "h";
+    public static final  String     MINUTE            = "m";
 
 
     /**
      * get md5 of file.
+     *
      * @param file - file name
      * @return
      */
@@ -137,6 +138,7 @@ public class AgentUtils {
 
     /**
      * get random int of [seed, seed * 2]
+     *
      * @param seed
      * @return
      */
@@ -166,13 +168,14 @@ public class AgentUtils {
 
     /**
      * Get uniq id with timestamp and index.
-     * @param id - job id
+     *
+     * @param id    - job id
      * @param index - job index
      * @return uniq id
      */
     public static String getUniqId(String prefix, String id, long index) {
         long currentTime = System.currentTimeMillis() / 1000;
-        return  prefix + currentTime + "_" + id + "_" + index;
+        return prefix + currentTime + "_" + id + "_" + index;
     }
 
     public static void silenceSleepInMs(long millisecond) {
@@ -196,6 +199,7 @@ public class AgentUtils {
 
     /**
      * formatter for current time
+     *
      * @param formatter
      * @return
      */
@@ -211,10 +215,11 @@ public class AgentUtils {
 
     /**
      * formatter with time offset
+     *
      * @param formatter - formatter string
-     * @param day - day offset
-     * @param hour - hour offset
-     * @param min - min offset
+     * @param day       - day offset
+     * @param hour      - hour offset
+     * @param min       - min offset
      * @return current time with offset
      */
     public static String formatCurrentTimeWithOffset(String formatter, int day, int hour, int min) {
@@ -231,7 +236,7 @@ public class AgentUtils {
     /**
      * whether all class of path name are matched
      *
-     * @param pathStr - path string
+     * @param pathStr    - path string
      * @param patternStr - regex pattern
      * @return true if all match
      */
@@ -252,13 +257,14 @@ public class AgentUtils {
 
     /**
      * parse addition attr, the attributes must be send in proxy sender
+     *
      * @param additionStr
      * @return
      */
     public static Pair<String, Map<String, String>> parseAddAttr(String additionStr) {
-        Map<String, String> attr = new HashMap<>();
-        String[] split = additionStr.split(ADDITION_SPLITTER);
-        String mValue = "";
+        Map<String, String> attr   = new HashMap<>();
+        String[]            split  = additionStr.split(ADDITION_SPLITTER);
+        String              mValue = "";
         for (String s : split) {
             if (!s.contains(EQUAL)) {
                 continue;
@@ -275,6 +281,7 @@ public class AgentUtils {
 
     /**
      * the attrs in pairs can be complicated in online env
+     *
      * @param attr
      * @param s
      * @param pairs
@@ -290,6 +297,7 @@ public class AgentUtils {
 
     /**
      * get addition attributes in additionStr
+     *
      * @param additionStr
      * @return
      */
@@ -301,6 +309,7 @@ public class AgentUtils {
 
     /**
      * get m value in additionStr
+     *
      * @param addictiveAttr
      * @return
      */
@@ -311,6 +320,7 @@ public class AgentUtils {
 
     /**
      * time str convert to mill sec
+     *
      * @param time
      * @param cycleUnit
      * @return
@@ -350,9 +360,6 @@ public class AgentUtils {
         }
         return System.currentTimeMillis();
     }
-
-
-
 
 
 }

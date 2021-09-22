@@ -22,6 +22,7 @@ import com.zmops.zeus.iot.server.transfer.core.api.Channel;
 import com.zmops.zeus.iot.server.transfer.core.api.Message;
 import com.zmops.zeus.iot.server.transfer.conf.AgentConstants;
 import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
+import com.zmops.zeus.iot.server.transfer.core.metrics.PluginMetric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ public class MemoryChannel implements Channel {
 
     private LinkedBlockingQueue<Message> queue;
 
-//    private final PluginMetric metric = new PluginMetric();
+    private final PluginMetric metric = new PluginMetric();
 
     /**
      * {@inheritDoc}
@@ -43,12 +44,12 @@ public class MemoryChannel implements Channel {
     public void push(Message message) {
         try {
             if (message != null) {
-//                metric.readNum.incr();
+                metric.readNum.incr();
                 queue.put(message);
-//                metric.readSuccessNum.incr();
+                metric.readSuccessNum.incr();
             }
         } catch (InterruptedException ex) {
-//            metric.readFailedNum.incr();
+            metric.readFailedNum.incr();
             Thread.currentThread().interrupt();
         }
     }
@@ -57,17 +58,17 @@ public class MemoryChannel implements Channel {
     public boolean push(Message message, long timeout, TimeUnit unit) {
         try {
             if (message != null) {
-//                metric.readNum.incr();
+                metric.readNum.incr();
                 boolean result = queue.offer(message, timeout, unit);
                 if (result) {
-//                    metric.readSuccessNum.incr();
+                    metric.readSuccessNum.incr();
                 } else {
-//                    metric.readFailedNum.incr();
+                    metric.readFailedNum.incr();
                 }
                 return result;
             }
         } catch (InterruptedException ex) {
-//            metric.readFailedNum.incr();
+            metric.readFailedNum.incr();
             Thread.currentThread().interrupt();
         }
         return false;
@@ -81,11 +82,11 @@ public class MemoryChannel implements Channel {
         try {
             Message message = queue.poll(timeout, unit);
             if (message != null) {
-//                metric.sendSuccessNum.incr();
+                metric.sendSuccessNum.incr();
             }
             return message;
         } catch (InterruptedException ex) {
-//            metric.sendFailedNum.incr();
+            metric.sendFailedNum.incr();
             Thread.currentThread().interrupt();
             throw new IllegalStateException(ex);
         }
@@ -93,9 +94,8 @@ public class MemoryChannel implements Channel {
 
     @Override
     public void init(JobProfile jobConf) {
-        queue = new LinkedBlockingQueue<>(
-                jobConf.getInt(AgentConstants.CHANNEL_MEMORY_CAPACITY,
-                        AgentConstants.DEFAULT_CHANNEL_MEMORY_CAPACITY));
+        queue = new LinkedBlockingQueue<>(jobConf.getInt(AgentConstants.CHANNEL_MEMORY_CAPACITY,
+                AgentConstants.DEFAULT_CHANNEL_MEMORY_CAPACITY));
     }
 
     @Override
@@ -103,9 +103,12 @@ public class MemoryChannel implements Channel {
         if (queue != null) {
             queue.clear();
         }
-//        LOGGER.info("destroy channel, memory channel metric, readNum: {}, readSuccessNum: {}, "
-//            + "readFailedNum: {}, sendSuccessNum: {}, sendFailedNum: {}",
-//            metric.readNum.snapshot(), metric.readSuccessNum.snapshot(), metric.readFailedNum.snapshot(),
-//            metric.sendSuccessNum.snapshot(), metric.sendFailedNum.snapshot());
+        LOGGER.info("destroy channel, memory channel metric, readNum: {}, readSuccessNum: {}, "
+                        + "readFailedNum: {}, sendSuccessNum: {}, sendFailedNum: {}",
+                metric.readNum.snapshot(),
+                metric.readSuccessNum.snapshot(),
+                metric.readFailedNum.snapshot(),
+                metric.sendSuccessNum.snapshot(),
+                metric.sendFailedNum.snapshot());
     }
 }

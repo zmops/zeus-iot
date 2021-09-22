@@ -72,18 +72,20 @@ public class JobManager extends AbstractDaemon {
     public JobManager(AgentManager agentManager, JobProfileDb jobConfDb) {
         this.jobConfDB = jobConfDb;
         this.agentManager = agentManager;
+
         // job thread pool for running
         this.runningPool = new ThreadPoolExecutor(
                 0, Integer.MAX_VALUE,
                 60L, TimeUnit.SECONDS,
                 new SynchronousQueue<>(),
                 new AgentThreadFactory("job"));
+
         this.jobs = new ConcurrentHashMap<>();
         this.pendingJobs = new ConcurrentHashMap<>();
+
         AgentConfiguration conf = AgentConfiguration.getAgentConf();
-        this.monitorInterval = conf
-                .getInt(
-                        AgentConstants.JOB_MONITOR_INTERVAL, AgentConstants.DEFAULT_JOB_MONITOR_INTERVAL);
+
+        this.monitorInterval = conf.getInt(AgentConstants.JOB_MONITOR_INTERVAL, AgentConstants.DEFAULT_JOB_MONITOR_INTERVAL);
         this.jobDbCacheTime = conf.getLong(JOB_DB_CACHE_TIME, DEFAULT_JOB_DB_CACHE_TIME);
         this.jobDbCacheCheckInterval = conf.getLong(JOB_DB_CACHE_CHECK_INTERVAL, DEFAULT_JOB_DB_CACHE_CHECK_INTERVAL);
         this.jobMetrics = JobMetrics.create();
@@ -118,8 +120,7 @@ public class JobManager extends AbstractDaemon {
      */
     public boolean submitJobProfile(JobProfile profile) {
         if (profile == null || !profile.allRequiredKeyExist()) {
-            LOGGER.error("profile is null or not all required key exists {}", profile == null ? null
-                    : profile.toJsonStr());
+            LOGGER.error("profile is null or not all required key exists {}", profile == null ? null : profile.toJsonStr());
             return false;
         }
         String jobId = profile.get(JOB_ID);

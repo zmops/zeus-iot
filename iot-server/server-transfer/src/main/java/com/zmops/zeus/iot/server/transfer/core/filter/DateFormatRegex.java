@@ -106,8 +106,8 @@ public class DateFormatRegex implements Filter {
      * @param time
      */
     public void setRegexWithTime(String regex, String time) {
-        String[] regexList = StringUtils.splitByWholeSeparatorPreserveAllTokens(regex,
-                File.separator, 0);
+        String[] regexList = StringUtils.splitByWholeSeparatorPreserveAllTokens(regex, File.separator, 0);
+
         List<String> formattedList = new ArrayList<>();
         for (String regexStr : regexList) {
             if (regexStr.contains(YEAR)) {
@@ -126,8 +126,7 @@ public class DateFormatRegex implements Filter {
     }
 
     public void setRegexWithCurrentTime(String regex) {
-        String currentTime = AgentUtils.formatCurrentTimeWithOffset(NORMAL_FORMATTER,
-                dayOffset, hourOffset, minuteOffset);
+        String currentTime = AgentUtils.formatCurrentTimeWithOffset(NORMAL_FORMATTER, dayOffset, hourOffset, minuteOffset);
         setRegexWithTime(regex, currentTime);
     }
 

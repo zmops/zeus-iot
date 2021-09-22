@@ -1,6 +1,7 @@
 package com.zmops.zeus.iot.server.transfer.provider;
 
 import com.zmops.zeus.iot.server.library.module.*;
+import com.zmops.zeus.iot.server.transfer.core.manager.AgentManager;
 import com.zmops.zeus.iot.server.transfer.module.ServerTransferModule;
 
 /**
@@ -31,6 +32,10 @@ public class ServerTransferProvider extends ModuleProvider {
 
     @Override
     public void prepare() throws ServiceNotProvidedException, ModuleStartException {
+
+        AgentManager manager = new AgentManager();
+
+
         System.out.println(123);
     }
 

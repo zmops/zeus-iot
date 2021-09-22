@@ -63,7 +63,9 @@ public class AgentManager extends AbstractDaemon {
 
     public AgentManager() {
         conf = AgentConfiguration.getAgentConf();
+
         this.db = initDb();
+
         commandDb = new CommandDb(db);
 
         String parentConfPath = conf.get(AGENT_CONF_PARENT, DEFAULT_AGENT_CONF_PARENT);
@@ -185,11 +187,14 @@ public class AgentManager extends AbstractDaemon {
         if (configJetty != null) {
             configJetty.close();
         }
+
         if (fetcher != null) {
             fetcher.stop();
         }
+
         // TODO: change job state which is in running state.
         LOGGER.info("stopping agent manager");
+
         // close in order: trigger -> job -> task
         triggerManager.stop();
         jobManager.stop();

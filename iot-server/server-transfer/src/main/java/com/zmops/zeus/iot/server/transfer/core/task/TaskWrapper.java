@@ -115,12 +115,12 @@ public class TaskWrapper extends AbstractStateWrapper {
     private void submitThreadsAndWait() {
         CompletableFuture<?> reader = submitReadThread();
         CompletableFuture<?> writer = submitWriteThread();
-        CompletableFuture.allOf(reader, writer)
-                .exceptionally(ex -> {
-                    doChangeState(State.FAILED);
-                    LOGGER.error("exception caught", ex);
-                    return null;
-                }).join();
+
+        CompletableFuture.allOf(reader, writer).exceptionally(ex -> {
+            doChangeState(State.FAILED);
+            LOGGER.error("exception caught", ex);
+            return null;
+        }).join();
     }
 
     /**
@@ -182,10 +182,12 @@ public class TaskWrapper extends AbstractStateWrapper {
             LOGGER.info("start to run {}, retry time is {}", task.getTaskId(), retryTime.get());
             doChangeState(State.RUNNING);
             task.init();
+
             submitThreadsAndWait();
             if (!isException()) {
                 doChangeState(State.SUCCEEDED);
             }
+
             LOGGER.info("start to destroy task {}", task.getTaskId());
             task.destroy();
         } catch (Exception ex) {

@@ -76,8 +76,7 @@ public abstract class AbstractDaemon implements Service {
     public void submitWorker(Runnable worker) {
         CompletableFuture<?> future = CompletableFuture.runAsync(worker, WORKER_SERVICES);
         workerFutures.add(future);
-        LOGGER.info("{} running worker number is {}", this.getClass().getName(),
-                workerFutures.size());
+        LOGGER.info("{} running worker number is {}", this.getClass().getName(), workerFutures.size());
     }
 
     /**

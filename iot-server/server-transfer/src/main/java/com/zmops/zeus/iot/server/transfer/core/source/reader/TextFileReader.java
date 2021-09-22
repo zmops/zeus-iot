@@ -24,6 +24,7 @@ import com.zmops.zeus.iot.server.transfer.core.api.Validator;
 import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
 import com.zmops.zeus.iot.server.transfer.core.exception.FileException;
 import com.zmops.zeus.iot.server.transfer.core.message.DefaultMessage;
+import com.zmops.zeus.iot.server.transfer.core.metrics.PluginMetric;
 import com.zmops.zeus.iot.server.transfer.core.utils.AgentUtils;
 import com.zmops.zeus.iot.server.transfer.core.validator.PatternValidator;
 import org.apache.commons.lang3.StringUtils;
@@ -54,9 +55,10 @@ public class TextFileReader implements Reader {
     private       Iterator<String> iterator;
     private       Stream<String>   stream;
     private       long             timeout;
-    private       long             lastTime   = 0;
-    //    private final PluginMetric    textFileMetric;
-    private       List<Validator>  validators = new ArrayList<>();
+    private       long             lastTime = 0;
+
+    private final PluginMetric    textFileMetric;
+    private final List<Validator> validators = new ArrayList<>();
 
     public TextFileReader(File file, int position) {
         this(file, position, "");
@@ -66,8 +68,8 @@ public class TextFileReader implements Reader {
         this.file = file;
         this.position = position;
         this.md5 = md5;
-//        textFileMetric = new PluginMetric();
-//        textFileMetric.tagName.setName(file.getAbsolutePath());
+        textFileMetric = new PluginMetric();
+        textFileMetric.tagName.setName(file.getAbsolutePath());
     }
 
     public TextFileReader(File file) {
@@ -79,7 +81,7 @@ public class TextFileReader implements Reader {
         if (iterator != null && iterator.hasNext()) {
             String message = iterator.next();
             if (validateMessage(message)) {
-//                textFileMetric.readNum.incr();
+                textFileMetric.readNum.incr();
                 return new DefaultMessage(message.getBytes(StandardCharsets.UTF_8));
             }
         }
@@ -160,6 +162,6 @@ public class TextFileReader implements Reader {
     @Override
     public void destroy() {
         AgentUtils.finallyClose(stream);
-//        LOGGER.info("destroy reader with read {} num {}", textFileMetric.tagName.getName(), textFileMetric.readNum.snapshot());
+        LOGGER.info("destroy reader with read {} num {}", textFileMetric.tagName.getName(), textFileMetric.readNum.snapshot());
     }
 }

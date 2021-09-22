@@ -93,9 +93,12 @@ public class PluginUtils {
     public static JobProfile copyJobProfile(TriggerProfile triggerProfile, String dataTime,
                                             File pendingFile) {
         JobProfile copiedProfile = TriggerProfile.parseJsonStr(triggerProfile.toJsonStr());
-        String     md5           = AgentUtils.getFileMd5(pendingFile);
+
+        String md5 = AgentUtils.getFileMd5(pendingFile);
+
         copiedProfile.set(pendingFile.getAbsolutePath() + ".md5", md5);
         copiedProfile.set(JobConstants.JOB_DIR_FILTER_PATTERN, pendingFile.getAbsolutePath());
+
         // the time suit for file name is just the data time
         copiedProfile.set(JobConstants.JOB_DATA_TIME, dataTime);
         return copiedProfile;

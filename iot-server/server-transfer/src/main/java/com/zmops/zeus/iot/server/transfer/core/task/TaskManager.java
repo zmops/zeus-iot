@@ -64,6 +64,7 @@ public class TaskManager extends AbstractDaemon {
                 60L, TimeUnit.SECONDS,
                 new SynchronousQueue<>(),
                 new AgentThreadFactory("task"));
+
         // metric for task level
         taskMetrics = TaskMetrics.create();
         tasks = new ConcurrentHashMap<>();
