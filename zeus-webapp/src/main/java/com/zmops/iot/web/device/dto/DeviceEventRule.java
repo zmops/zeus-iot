@@ -1,4 +1,4 @@
-package com.zmops.iot.web.product.dto;
+package com.zmops.iot.web.device.dto;
 
 import com.zmops.iot.domain.BaseEntity;
 import lombok.Data;
@@ -21,7 +21,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ProductEventRule {
+public class DeviceEventRule {
 
     @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Delete.class, BaseEntity.Status.class})
     private Long eventRuleId;
@@ -54,10 +54,10 @@ public class ProductEventRule {
     @NotNull(groups = BaseEntity.Update.class)
     private Integer zbxId;
 
-    @NotBlank(groups = BaseEntity.Create.class)
-    private String productId; // 产品ID
-
     @NotBlank(groups = BaseEntity.Status.class)
+    private String deviceId;
+
+    @NotBlank(groups = {BaseEntity.Status.class, BaseEntity.Delete.class})
     private String status;
 
     @Data

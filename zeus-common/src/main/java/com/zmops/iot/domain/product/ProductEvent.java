@@ -24,7 +24,7 @@ public class ProductEvent extends BaseEntity {
     private String eventRuleName;
     private String eventLevel;
     private String expLogic;
-    private String remark;
+
     private String eventNotify;
-    private String status;
+
 }

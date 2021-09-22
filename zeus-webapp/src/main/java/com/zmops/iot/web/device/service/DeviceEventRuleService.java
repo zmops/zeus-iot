@@ -6,15 +6,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.product.ProductEvent;
 import com.zmops.iot.domain.product.ProductEventExpression;
 import com.zmops.iot.domain.product.ProductEventRelation;
-import com.zmops.iot.domain.product.query.QProductEvent;
 import com.zmops.iot.domain.product.query.QProductEventExpression;
 import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.enums.CommonStatus;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.util.ToolUtil;
+import com.zmops.iot.web.device.dto.DeviceEventRule;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
-import com.zmops.iot.web.product.dto.ProductEventRule;
 import com.zmops.iot.web.product.dto.ProductEventRuleDto;
 import com.zmops.zeus.driver.service.ZbxTrigger;
 import io.ebean.DB;
@@ -38,7 +37,58 @@ public class DeviceEventRuleService {
     private ZbxTrigger zbxTrigger;
 
 
-    public void updateDeviceEventRule(Long eventRuleId, ProductEventRule eventRule) {
+    /**
+     * 保存触发器
+     *
+     * @param eventRuleId 触发器ID
+     * @param eventRule   告警规则
+     */
+    public void createDeviceEventRule(Long eventRuleId, DeviceEventRule eventRule) {
+        // step 1: 保存产品告警规则
+        ProductEvent event = initEventRule(eventRule);
+        event.setEventRuleId(eventRuleId);
+        DB.save(event);
+
+        //step 2: 保存 表达式，方便回显
+        List<ProductEventExpression> expList = new ArrayList<>();
+
+        eventRule.getExpList().forEach(i -> {
+            ProductEventExpression exp = initEventExpression(i);
+            exp.setEventRuleId(eventRuleId);
+            expList.add(exp);
+        });
+
+        DB.saveAll(expList);
+
+        //step 3: 保存触发器 调用 本产品方法
+        if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
+            eventRule.getDeviceServices().forEach(i -> {
+                DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id,execute_device_id, service_id) values (:eventRuleId, :deviceId,:executeDeviceId, :serviceId)")
+                        .setParameter("eventRuleId", eventRuleId)
+                        .setParameter("executeDeviceId", i.getExecuteDeviceId())
+                        .setParameter("serviceId", i.getServiceId())
+                        .execute();
+            });
+        }
+
+        //step 4: 保存关联关系
+        List<String> relationIds = eventRule.getExpList().parallelStream().map(DeviceEventRule.Expression::getDeviceId).distinct().collect(Collectors.toList());
+        if (ToolUtil.isEmpty(relationIds)) {
+            throw new ServiceException(BizExceptionEnum.EVENT_HAS_NOT_DEVICE);
+        }
+        List<ProductEventRelation> productEventRelationList = new ArrayList<>();
+        relationIds.forEach(relationId -> {
+            ProductEventRelation productEventRelation = new ProductEventRelation();
+            productEventRelation.setEventRuleId(eventRuleId);
+            productEventRelation.setRelationId(relationId);
+            productEventRelation.setStatus(CommonStatus.ENABLE.getCode());
+            productEventRelation.setRemark(eventRule.getRemark());
+            productEventRelationList.add(productEventRelation);
+        });
+        DB.saveAll(productEventRelationList);
+    }
+
+    public void updateDeviceEventRule(Long eventRuleId, DeviceEventRule eventRule) {
 
         //step 1: 函数表达式
         DB.sqlUpdate("delete from product_event_expression where event_rule_id = :eventRuleId")
@@ -74,7 +124,7 @@ public class DeviceEventRuleService {
             eventRule.getDeviceServices().forEach(i -> {
                 DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id, service_id) values (:eventRuleId, :deviceId, :serviceId)")
                         .setParameter("eventRuleId", eventRuleId)
-                        .setParameter("deviceId", eventRule.getProductId())
+                        .setParameter("deviceId", eventRule.getDeviceId())
                         .setParameter("executeDeviceId", i.getExecuteDeviceId())
                         .setParameter("serviceId", i.getServiceId())
                         .execute();
@@ -82,7 +132,7 @@ public class DeviceEventRuleService {
         }
 
         // step 6: 保存关联关系
-        List<String> relationIds = eventRule.getExpList().parallelStream().map(ProductEventRule.Expression::getDeviceId).distinct().collect(Collectors.toList());
+        List<String> relationIds = eventRule.getExpList().parallelStream().map(DeviceEventRule.Expression::getDeviceId).distinct().collect(Collectors.toList());
         if (ToolUtil.isEmpty(relationIds)) {
             throw new ServiceException(BizExceptionEnum.EVENT_HAS_NOT_DEVICE);
         }
@@ -97,18 +147,16 @@ public class DeviceEventRuleService {
     }
 
 
-    private ProductEvent initEventRule(ProductEventRule eventRule) {
+    private ProductEvent initEventRule(DeviceEventRule eventRule) {
         ProductEvent event = new ProductEvent();
         event.setEventLevel(eventRule.getEventLevel().toString());
         event.setExpLogic(eventRule.getExpLogic());
         event.setEventNotify(eventRule.getEventNotify().toString());
-        event.setRemark(eventRule.getRemark());
         event.setEventRuleName(eventRule.getEventRuleName());
-        event.setStatus(CommonStatus.ENABLE.getCode());
         return event;
     }
 
-    private ProductEventExpression initEventExpression(ProductEventRule.Expression exp) {
+    private ProductEventExpression initEventExpression(DeviceEventRule.Expression exp) {
         ProductEventExpression eventExpression = new ProductEventExpression();
         eventExpression.setEventExpId(exp.getEventExpId());
         eventExpression.setCondition(exp.getCondition());

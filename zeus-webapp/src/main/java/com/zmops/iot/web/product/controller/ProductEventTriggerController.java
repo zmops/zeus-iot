@@ -8,6 +8,7 @@ import com.zmops.iot.domain.product.query.QProductEvent;
 import com.zmops.iot.domain.product.query.QProductEventExpression;
 import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEventService;
+import com.zmops.iot.enums.CommonStatus;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
@@ -179,6 +180,13 @@ public class ProductEventTriggerController {
     @PostMapping("/status")
     public ResponseData updateProductEventStatus(@RequestBody @Validated(value = BaseEntity.Status.class) ProductEventRule eventRule) {
         DB.update(ProductEvent.class).where().eq("eventRuleId", eventRule.getEventRuleId()).asUpdate().set("status", eventRule.getStatus()).update();
+
+        ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId()).inherit.eq("0").findOne();
+
+        if (null != productEventRelation && null != productEventRelation.getZbxId()) {
+            zbxTrigger.triggerStatusUpdate(productEventRelation.getZbxId(), eventRule.getStatus().equals(CommonStatus.ENABLE.getCode()) ? "0" : "1");
+        }
+
         return ResponseData.success();
     }
 
@@ -192,6 +200,10 @@ public class ProductEventTriggerController {
     @PostMapping("/delete")
     public ResponseData deleteProductEventRule(@RequestBody @Validated(value = BaseEntity.Delete.class)
                                                        ProductEventRule eventRule) {
+        ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId()).inherit.eq("0").findOne();
+        if (null == productEventRelation) {
+            return ResponseData.success();
+        }
         //step 1:删除 与产品 设备的关联
         new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId()).delete();
 
@@ -204,6 +216,9 @@ public class ProductEventTriggerController {
         //step 4:删除 触发器
         new QProductEvent().eventRuleId.eq(eventRule.getEventRuleId()).delete();
 
+        //step 5:删除 zbx触发器
+
+        zbxTrigger.triggerDelete(productEventRelation.getZbxId());
         return ResponseData.success();
     }
 }

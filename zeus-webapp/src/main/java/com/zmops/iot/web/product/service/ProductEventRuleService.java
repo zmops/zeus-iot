@@ -11,10 +11,8 @@ import com.zmops.iot.domain.product.query.QProductEventExpression;
 import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.enums.CommonStatus;
-import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
-import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductEventDto;
 import com.zmops.iot.web.product.dto.ProductEventRule;
 import com.zmops.iot.web.product.dto.ProductEventRuleDto;
@@ -26,7 +24,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -65,38 +66,24 @@ public class ProductEventRuleService {
 
         DB.saveAll(expList);
 
-        List<String> relationIds = new ArrayList<>();
-        if (ToolUtil.isNotEmpty(eventRule.getProductId())) {
-            relationIds.add(eventRule.getProductId());
-        } else {
-            relationIds = eventRule.getExpList().parallelStream().map(ProductEventRule.Expression::getDeviceId).distinct().collect(Collectors.toList());
-            if (ToolUtil.isEmpty(relationIds)) {
-                throw new ServiceException(BizExceptionEnum.EVENT_HAS_NOT_DEVICE);
-            }
-        }
         //step 3: 保存触发器 调用 本产品方法
         if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
-            relationIds.forEach(relationId -> {
-                eventRule.getDeviceServices().forEach(i -> {
-                    DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id,execute_device_id, service_id) values (:eventRuleId, :deviceId,:executeDeviceId, :serviceId)")
-                            .setParameter("eventRuleId", eventRuleId)
-                            .setParameter("deviceId", relationId)
-                            .setParameter("executeDeviceId", i.getExecuteDeviceId())
-                            .setParameter("serviceId", i.getServiceId())
-                            .execute();
-                });
+            eventRule.getDeviceServices().forEach(i -> {
+                DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id,execute_device_id, service_id) values (:eventRuleId, :deviceId,:executeDeviceId, :serviceId)")
+                        .setParameter("eventRuleId", eventRuleId)
+                        .setParameter("executeDeviceId", i.getExecuteDeviceId())
+                        .setParameter("serviceId", i.getServiceId())
+                        .execute();
             });
         }
 
         //step 4: 保存关联关系
-        List<ProductEventRelation> productEventRelationList = new ArrayList<>();
-        relationIds.forEach(relationId -> {
-            ProductEventRelation productEventRelation = new ProductEventRelation();
-            productEventRelation.setEventRuleId(eventRuleId);
-            productEventRelation.setRelationId(relationId);
-            productEventRelationList.add(productEventRelation);
-        });
-        DB.saveAll(productEventRelationList);
+        ProductEventRelation productEventRelation = new ProductEventRelation();
+        productEventRelation.setEventRuleId(eventRuleId);
+        productEventRelation.setRelationId(eventRule.getProductId());
+        productEventRelation.setStatus(CommonStatus.ENABLE.getCode());
+        productEventRelation.setRemark(eventRule.getRemark());
+        DB.save(productEventRelation);
     }
 
     /**
@@ -144,6 +131,13 @@ public class ProductEventRuleService {
                         .execute();
             });
         }
+
+        //step 6:保存备注
+        if (null != eventRule.getRemark()) {
+            DB.update(QProductEventRelation.class).where().eq("eventRuleId", eventRule.getEventRuleId()).eq("relationId", eventRule.getProductId())
+                    .asUpdate().set("remark", eventRule.getRemark()).update();
+        }
+
     }
 
 
@@ -152,9 +146,9 @@ public class ProductEventRuleService {
         event.setEventLevel(eventRule.getEventLevel().toString());
         event.setExpLogic(eventRule.getExpLogic());
         event.setEventNotify(eventRule.getEventNotify().toString());
-        event.setRemark(eventRule.getRemark());
+
         event.setEventRuleName(eventRule.getEventRuleName());
-        event.setStatus(CommonStatus.ENABLE.getCode());
+
         return event;
     }
 

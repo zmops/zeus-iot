@@ -7,7 +7,6 @@ import com.zmops.zeus.driver.annotation.JsonPath;
 import com.zmops.zeus.driver.annotation.ParamName;
 import com.zmops.zeus.driver.inteceptor.JsonBodyBuildInterceptor;
 
-import java.util.List;
 import java.util.Map;
 
 @BaseRequest(
@@ -97,6 +96,16 @@ public interface ZbxTrigger {
      */
     @Post
     @JsonPath("/trigger/trigger.status.update")
-    String triggerStatusUpdate(@ParamName("triggerid") String triggerId,
+    String triggerStatusUpdate(@ParamName("triggerid") Integer triggerId,
                                @ParamName("status") String status);
+
+    /**
+     * 修改触发器状态
+     *
+     * @param triggerId
+     * @return
+     */
+    @Post
+    @JsonPath("/trigger/trigger.delete")
+    String triggerDelete(@ParamName("triggerid") Integer triggerId);
 }
