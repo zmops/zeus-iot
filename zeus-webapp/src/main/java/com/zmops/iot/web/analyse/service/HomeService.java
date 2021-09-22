@@ -183,7 +183,7 @@ public class HomeService {
     public Map<String, Object> getAlarmNum(long timeFrom, long timeTill) {
         AlarmParam alarmParam = new AlarmParam();
         alarmParam.setRecent("false");
-        List<ZbxProblemInfo> alarmList = alarmService.getAlarmList(alarmParam);
+        List<ZbxProblemInfo> alarmList = alarmService.getZbxAlarm(alarmParam);
         Map<String, Object>  alarmMap  = new ConcurrentHashMap<>(3);
 
         if (ToolUtil.isNotEmpty(alarmList)) {
@@ -223,7 +223,7 @@ public class HomeService {
         Long       timeStart  = LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.getDayStart(LocalDateTime.now()));
         AlarmParam todayParam = new AlarmParam();
         todayParam.setTimeFrom(timeStart);
-        List<ZbxProblemInfo> todayAlarmList = alarmService.getAlarmList(todayParam);
+        List<ZbxProblemInfo> todayAlarmList = alarmService.getZbxAlarm(todayParam);
         Long                 todayAlarmNum  = todayAlarmList.parallelStream().filter(o -> !o.getSeverity().equals("0")).count();
         alarmMap.put("today", todayAlarmNum);
 

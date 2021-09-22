@@ -22,5 +22,9 @@ public class ServiceExecuteRecord {
 
     private LocalDateTime createTime;
 
-    private Long serviceId;
+    private String serviceName;
+
+    private String deviceId;
+
+    private String param;
 }
