@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.model.cache.filter.CachedValue;
 import com.zmops.iot.model.cache.filter.CachedValueFilter;
+import com.zmops.iot.model.cache.filter.DicType;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -55,7 +56,9 @@ public class UserGroupDto {
 
     LocalDateTime updateTime;
 
+    @CachedValue(type = DicType.SysUserName)
     Long createUser;
 
+    @CachedValue(type = DicType.SysUserName)
     Long updateUser;
 }
