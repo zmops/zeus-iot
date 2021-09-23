@@ -17,7 +17,7 @@ public class MqttRouteBuilder extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        fromF("mqtt:zeus-iot-mqtt?host=tcp://172.16.3.72:%d&subscribeTopicNames=test.mqtt.topic", mqttReceiverConfig.getPort())
+        fromF("mqtt:zeus-iot-mqtt?host=tcp://%s:%d&subscribeTopicNames=34EAE784BC4A/up", mqttReceiverConfig.getHost(),mqttReceiverConfig.getPort())
                 .process(new ByteArrayToItemValueProcess())
                 .to("Zabbix");
     }
