@@ -80,9 +80,18 @@ public class LatestService {
                 latestDto.setName(itemIdMap.get(latestDto.getItemid()).getName());
                 latestDto.setAttrId(itemIdMap.get(latestDto.getItemid()).getAttrId());
                 latestDto.setUnits(itemIdMap.get(latestDto.getItemid()).getUnits());
+                latestDto.setKey(itemIdMap.get(latestDto.getItemid()).getKey());
             }
         });
 
         return latestDtos;
+    }
+
+    public Map<String, Object> queryMap(String deviceId) {
+        List<LatestDto> latestDtos = qeuryLatest(deviceId, Collections.emptyList());
+        if (ToolUtil.isEmpty(latestDtos)) {
+            return new HashMap<>(0);
+        }
+        return latestDtos.parallelStream().collect(Collectors.toMap(LatestDto::getKey, LatestDto::getValue));
     }
 }

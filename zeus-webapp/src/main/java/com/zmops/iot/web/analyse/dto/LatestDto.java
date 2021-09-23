@@ -18,6 +18,8 @@ public class LatestDto {
 
     private Long attrId;
 
+    private String key;
+
     private String clock;
 
     private String value;
