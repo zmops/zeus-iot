@@ -60,6 +60,8 @@ public class DeviceEventRule {
     @NotBlank(groups = BaseEntity.Status.class)
     private String status;
 
+    private String classify = "0";
+
     @Data
     public static class Tag {
 
@@ -96,7 +98,7 @@ public class DeviceEventRule {
 
         private String unit;
 
-        private Long   productAttrId;
+        private Long productAttrId;
 
         private String productAttrType;
 

@@ -60,6 +60,8 @@ public class ProductEventRule {
     @NotBlank(groups = BaseEntity.Status.class)
     private String status;
 
+    private String classify = "0";
+    
     @Data
     public static class Tag {
 

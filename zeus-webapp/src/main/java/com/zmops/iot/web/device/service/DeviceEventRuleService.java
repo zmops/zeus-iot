@@ -156,6 +156,7 @@ public class DeviceEventRuleService {
         event.setEventLevel(eventRule.getEventLevel().toString());
         event.setExpLogic(eventRule.getExpLogic());
         event.setEventNotify(eventRule.getEventNotify().toString());
+        event.setClassify(eventRule.getClassify());
         event.setEventRuleName(eventRule.getEventRuleName());
         return event;
     }

@@ -15,4 +15,7 @@ public class EventParm extends BaseQueryParam {
 
     @NotBlank
     private String prodId;
+
+    @NotBlank
+    private String classify;
 }
