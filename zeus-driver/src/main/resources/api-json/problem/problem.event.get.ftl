@@ -3,9 +3,7 @@
     "method": "problem.get",
     "params": {
         "output": "extend",
-        "selectAcknowledges": "extend",
         "selectTags": "extend",
-        "selectSuppressionData": "extend",
         "recent": ${recent},
         "sortfield": ["eventid"],
         <#if hostId??>
@@ -17,8 +15,7 @@
         <#if timeTill??>
             "time_till":${timeTill},
         </#if>
-        "evaltype":2,
-        "tags":[{"tag": "__alarm__"},{"tag": "__execute__"}],
+        "tags":[{"tag": "__event__"}],
         "filter":{
             "source":"0"
         },

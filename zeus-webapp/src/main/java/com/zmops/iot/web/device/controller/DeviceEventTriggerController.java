@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +45,8 @@ public class DeviceEventTriggerController {
 
     private static final String ALARM_TAG_NAME   = "__alarm__";
     private static final String EXECUTE_TAG_NAME = "__execute__";
+    private static final String EVENT_TAG_NAME   = "__event__";
+    private static final String EVENT_TYPE_NAME  = "事件";
 
     /**
      * 触发器 详情
@@ -94,6 +97,10 @@ public class DeviceEventTriggerController {
         if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
             tags.put(EXECUTE_TAG_NAME, eventRuleId + "");
         }
+        Optional<DeviceEventRule.Expression> any = eventRule.getExpList().parallelStream().filter(o -> EVENT_TYPE_NAME.equals(o.getProductAttrType())).findAny();
+        if (any.isPresent()) {
+            tags.put(EVENT_TAG_NAME, eventRuleId + "");
+        }
         for (Integer triggerId : triggerIds) {
             zbxTrigger.triggerTagCreate(triggerId, tags);
         }
@@ -113,7 +120,7 @@ public class DeviceEventTriggerController {
      */
     @PostMapping("/status")
     public ResponseData updateProductEventStatus(@RequestBody @Validated(value = BaseEntity.Status.class) DeviceEventRule eventRule) {
-        DB.update(ProductEvent.class).where().eq("eventRuleId", eventRule.getEventRuleId()).eq("relationId", eventRule.getDeviceId()).asUpdate()
+        DB.update(ProductEventRelation.class).where().eq("eventRuleId", eventRule.getEventRuleId()).eq("relationId", eventRule.getDeviceId()).asUpdate()
                 .set("status", eventRule.getStatus()).update();
 
         ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId())
@@ -135,14 +142,13 @@ public class DeviceEventTriggerController {
     @Transactional
     @PostMapping("/update")
     public ResponseData updateDeviceEventRule(@RequestBody @Validated(value = BaseEntity.Update.class) DeviceEventRule eventRule) {
-        //来自产品的告警规则 只能修改备注
-        ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId())
-                .relationId.eq(eventRule.getDeviceId()).findOne();
-        if (null == productEventRelation) {
+        int count = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId())
+                .findCount();
+        if (count == 0) {
             throw new ServiceException(BizExceptionEnum.EVENT_NOT_EXISTS);
         }
-
-        if (InheritStatus.YES.getCode().equals(productEventRelation.getInherit())) {
+        //来自产品的告警规则 只能修改备注
+        if (count > 1) {
             DB.update(ProductEventRelation.class).where().eq("eventRuleId", eventRule.getEventRuleId()).eq("relationId", eventRule.getDeviceId())
                     .asUpdate().set("remark", eventRule.getRemark()).update();
             return ResponseData.success(eventRule.getEventRuleId());
@@ -169,6 +175,10 @@ public class DeviceEventTriggerController {
         }
         if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
             tags.put(EXECUTE_TAG_NAME, eventRule.getEventRuleId() + "");
+        }
+        Optional<DeviceEventRule.Expression> any = eventRule.getExpList().parallelStream().filter(o -> EVENT_TYPE_NAME.equals(o.getProductAttrType())).findAny();
+        if (any.isPresent()) {
+            tags.put(EVENT_TAG_NAME, eventRule.getEventRuleId() + "");
         }
         for (Integer triggerId : triggerIds) {
             zbxTrigger.triggerTagCreate(triggerId, tags);

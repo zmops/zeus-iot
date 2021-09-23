@@ -10,6 +10,7 @@ import com.zmops.iot.domain.product.query.QProductEventExpression;
 import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.enums.CommonStatus;
+import com.zmops.iot.enums.InheritStatus;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.dto.DeviceEventRule;
@@ -81,6 +82,7 @@ public class DeviceEventRuleService {
             ProductEventRelation productEventRelation = new ProductEventRelation();
             productEventRelation.setEventRuleId(eventRuleId);
             productEventRelation.setRelationId(relationId);
+            productEventRelation.setInherit(InheritStatus.NO.getCode());
             productEventRelation.setStatus(CommonStatus.ENABLE.getCode());
             productEventRelation.setRemark(eventRule.getRemark());
             productEventRelationList.add(productEventRelation);
@@ -141,6 +143,8 @@ public class DeviceEventRuleService {
             ProductEventRelation productEventRelation = new ProductEventRelation();
             productEventRelation.setEventRuleId(eventRuleId);
             productEventRelation.setRelationId(relationId);
+            productEventRelation.setStatus(CommonStatus.ENABLE.getCode());
+            productEventRelation.setRemark(eventRule.getRemark());
             productEventRelationList.add(productEventRelation);
         });
         DB.saveAll(productEventRelationList);
@@ -165,6 +169,9 @@ public class DeviceEventRuleService {
         eventExpression.setValue(exp.getValue());
         eventExpression.setDeviceId(exp.getDeviceId());
         eventExpression.setProductAttrKey(exp.getProductAttrKey());
+        eventExpression.setProductAttrId(exp.getProductAttrId());
+        eventExpression.setProductAttrType(exp.getProductAttrType());
+        eventExpression.setPeriod(exp.getPeriod());
         eventExpression.setUnit(exp.getUnit());
         return eventExpression;
     }
@@ -201,6 +208,8 @@ public class DeviceEventRuleService {
         productEventRuleDto.setDeviceServices(new QProductEventService().eventRuleId.eq(eventRuleId).deviceId.eq(deviceId).findList());
 
         ProductEventRelation productEventRelation = new QProductEventRelation().relationId.eq(deviceId).eventRuleId.eq(eventRuleId).findOne();
+        productEventRuleDto.setStatus(productEventRelation.getStatus());
+        productEventRuleDto.setRemark(productEventRelation.getRemark());
 
         if (null != productEventRelation) {
             JSONArray triggerInfo = JSONObject.parseArray(zbxTrigger.triggerAndTagsGet(productEventRelation.getZbxId()));

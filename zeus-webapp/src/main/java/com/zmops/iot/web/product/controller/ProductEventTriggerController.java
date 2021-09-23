@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -49,6 +50,8 @@ public class ProductEventTriggerController {
 
     private static final String ALARM_TAG_NAME   = "__alarm__";
     private static final String EXECUTE_TAG_NAME = "__execute__";
+    private static final String EVENT_TAG_NAME   = "__event__";
+    private static final String EVENT_TYPE_NAME  = "事件";
 
 
     /**
@@ -58,7 +61,7 @@ public class ProductEventTriggerController {
      * @return
      */
     @PostMapping("/getEventByPage")
-    public Pager<ProductEventDto> getEventByPage(@RequestBody EventParm eventParm) {
+    public Pager<ProductEventDto> getEventByPage(@Validated @RequestBody EventParm eventParm) {
         return productEventRuleService.getEventByPage(eventParm);
     }
 
@@ -103,13 +106,17 @@ public class ProductEventTriggerController {
         Map<String, String> tags = eventRule.getTags().stream()
                 .collect(Collectors.toMap(ProductEventRule.Tag::getTag, ProductEventRule.Tag::getValue, (k1, k2) -> k2));
         if (ToolUtil.isEmpty(tags)) {
-            tags = new HashMap<>(2);
+            tags = new HashMap<>(3);
         }
         if (!tags.containsKey(ALARM_TAG_NAME)) {
             tags.put(ALARM_TAG_NAME, eventRuleId + "");
         }
         if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
             tags.put(EXECUTE_TAG_NAME, eventRuleId + "");
+        }
+        Optional<ProductEventRule.Expression> any = eventRule.getExpList().parallelStream().filter(o -> EVENT_TYPE_NAME.equals(o.getProductAttrType())).findAny();
+        if(any.isPresent()){
+            tags.put(EVENT_TAG_NAME, eventRuleId + "");
         }
         for (Integer triggerId : triggerIds) {
             zbxTrigger.triggerTagCreate(triggerId, tags);
@@ -165,6 +172,10 @@ public class ProductEventTriggerController {
         if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
             tags.put(EXECUTE_TAG_NAME, eventRule.getEventRuleId() + "");
         }
+        Optional<ProductEventRule.Expression> any = eventRule.getExpList().parallelStream().filter(o -> EVENT_TYPE_NAME.equals(o.getProductAttrType())).findAny();
+        if(any.isPresent()){
+            tags.put(EVENT_TAG_NAME, eventRule.getEventRuleId() + "");
+        }
 
         zbxTrigger.triggerTagCreate(list.get(0).getZbxId(), tags);
 
@@ -179,7 +190,7 @@ public class ProductEventTriggerController {
      */
     @PostMapping("/status")
     public ResponseData updateProductEventStatus(@RequestBody @Validated(value = BaseEntity.Status.class) ProductEventRule eventRule) {
-        DB.update(ProductEvent.class).where().eq("eventRuleId", eventRule.getEventRuleId()).asUpdate().set("status", eventRule.getStatus()).update();
+        DB.update(ProductEventRelation.class).where().eq("eventRuleId", eventRule.getEventRuleId()).asUpdate().set("status", eventRule.getStatus()).update();
 
         ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId()).inherit.eq("0").findOne();
 
