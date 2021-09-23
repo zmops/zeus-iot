@@ -44,7 +44,7 @@ core:
 
 # ndjson file read realtime
 server-transfer:
-  selector: ${ZS_SERVER_TRANSFER:default}
+  selector: ${ZS_SERVER_TRANSFER:-}
   default:
 
 # tdengine storage realtime
