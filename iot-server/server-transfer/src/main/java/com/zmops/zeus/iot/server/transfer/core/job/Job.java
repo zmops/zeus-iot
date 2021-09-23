@@ -24,6 +24,9 @@ import com.zmops.zeus.iot.server.transfer.core.api.Channel;
 import com.zmops.zeus.iot.server.transfer.core.api.Reader;
 import com.zmops.zeus.iot.server.transfer.core.api.Sink;
 import com.zmops.zeus.iot.server.transfer.core.api.Source;
+import com.zmops.zeus.iot.server.transfer.core.channel.MemoryChannel;
+import com.zmops.zeus.iot.server.transfer.core.sink.NdjsonSink;
+import com.zmops.zeus.iot.server.transfer.core.source.TextFileSource;
 import com.zmops.zeus.iot.server.transfer.core.task.Task;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,12 +46,10 @@ public class Job {
 
     private final JobProfile jobConf;
 
-    // job name
     @Getter
     @Setter
     private String name;
 
-    // job description
     @Getter
     @Setter
     private String description;
@@ -68,18 +69,15 @@ public class Job {
         List<Task> taskList = new ArrayList<>();
         int        index    = 0;
         try {
-            LOGGER.info("job id: {}, source: {}, channel: {}, sink: {}",
-                    getJobInstanceId(), jobConf.get(JobConstants.JOB_SOURCE),
-                    jobConf.get(JobConstants.JOB_CHANNEL),
-                    jobConf.get(JobConstants.JOB_SINK));
+            LOGGER.info("job id: {}, job name {} ", getJobInstanceId(), getName());
 
-            Source source = (Source) Class.forName(jobConf.get(JobConstants.JOB_SOURCE)).newInstance();
+            Source source = new TextFileSource();
 
             for (Reader reader : source.split(jobConf)) {
-                Sink writer = (Sink) Class.forName(jobConf.get(JobConstants.JOB_SINK)).newInstance();
+                Sink writer = new NdjsonSink();
                 writer.setSourceFile(reader.getReadFile());
 
-                Channel channel = (Channel) Class.forName(jobConf.get(JobConstants.JOB_CHANNEL)).newInstance();
+                Channel channel = new MemoryChannel();
 
                 String taskId = String.format("%s_%d", jobInstanceId, index++);
                 taskList.add(new Task(taskId, reader, writer, channel, getJobConf()));

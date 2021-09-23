@@ -17,13 +17,13 @@
 
 package com.zmops.zeus.iot.server.transfer.core.trigger;
 
-import com.zmops.zeus.iot.server.transfer.conf.AgentConstants;
+import com.zmops.zeus.iot.server.transfer.conf.TransferConstants;
 import com.zmops.zeus.iot.server.transfer.conf.JobConstants;
 import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
 import com.zmops.zeus.iot.server.transfer.conf.TriggerProfile;
 import com.zmops.zeus.iot.server.transfer.core.api.Trigger;
 import com.zmops.zeus.iot.server.transfer.core.common.AbstractDaemon;
-import com.zmops.zeus.iot.server.transfer.core.utils.PluginUtils;
+import com.zmops.zeus.iot.server.transfer.core.utils.FileSearchUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,18 +110,22 @@ public class DirectoryTrigger extends AbstractDaemon implements Trigger {
                                    List<WatchKey> tmpWatchers) throws Exception {
         // check regex
         LOGGER.info("check whether path {} is suitable", path);
+
         if (entity.suitForWatch(path.toString())) {
+
             if (path.toFile().isDirectory()) {
                 WatchKey watchKey = path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
                 tmpWatchers.add(watchKey);
+
                 try (Stream<Path> stream = Files.list(path)) {
                     Iterator<Path> iterator = stream.iterator();
                     while (iterator.hasNext()) {
                         registerAllSubDir(entity, iterator.next().toAbsolutePath(), tmpWatchers);
                     }
                 }
+
             } else {
-                JobProfile copiedJobProfile = PluginUtils.copyJobProfile(profile, entity.getSuitTime(), path.toFile());
+                JobProfile copiedJobProfile = FileSearchUtils.copyJobProfile(profile, entity.getSuitTime(), path.toFile());
                 LOGGER.info("trigger {} generate job profile to read file {}", getTriggerProfile().getTriggerId(), path.toString());
                 queue.offer(copiedJobProfile);
             }
@@ -135,11 +139,10 @@ public class DirectoryTrigger extends AbstractDaemon implements Trigger {
      * @param watchKey    - watch key
      * @param tmpWatchers - watchers
      */
-    private void registerNewDir(PathPattern entity,
-                                WatchKey watchKey,
-                                List<WatchKey> tmpWatchers,
-                                List<WatchKey> tmpDeletedWatchers) throws Exception {
+    private void registerNewDir(PathPattern entity, WatchKey watchKey, List<WatchKey> tmpWatchers, List<WatchKey> tmpDeletedWatchers) throws Exception {
+
         Path parentPath = (Path) watchKey.watchable();
+
         for (WatchEvent<?> event : watchKey.pollEvents()) {
             // if watch event is too much, then event would be overflow.
             if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
@@ -179,6 +182,7 @@ public class DirectoryTrigger extends AbstractDaemon implements Trigger {
                     allWatchers.forEach((pathPattern, watchKeys) -> {
                         List<WatchKey> tmpWatchers        = new ArrayList<>();
                         List<WatchKey> tmpDeletedWatchers = new ArrayList<>();
+
                         pathPattern.cleanup();
                         try {
                             for (WatchKey watchKey : watchKeys) {
@@ -222,6 +226,7 @@ public class DirectoryTrigger extends AbstractDaemon implements Trigger {
     private void innerRegister(String pathPattern, PathPattern entity) throws IOException {
         List<WatchKey> tmpKeyList = new ArrayList<>();
         List<WatchKey> keyList    = allWatchers.putIfAbsent(entity, tmpKeyList);
+
         if (keyList == null) {
             Path rootPath = Paths.get(entity.getRootDir());
             LOGGER.info("watch root path is {}", rootPath);
@@ -236,8 +241,7 @@ public class DirectoryTrigger extends AbstractDaemon implements Trigger {
         PathPattern          entity  = new PathPattern(pathPattern);
         Collection<WatchKey> allKeys = allWatchers.remove(entity);
         if (allKeys != null) {
-            LOGGER.info("unregister pattern {}, total size of path {}", pathPattern,
-                    allKeys.size());
+            LOGGER.info("unregister pattern {}, total size of path {}", pathPattern, allKeys.size());
             for (WatchKey key : allKeys) {
                 key.cancel();
             }
@@ -251,7 +255,7 @@ public class DirectoryTrigger extends AbstractDaemon implements Trigger {
     @Override
     public void init(TriggerProfile profile) throws IOException {
         initWatchService();
-        interval = profile.getInt(AgentConstants.TRIGGER_CHECK_INTERVAL, AgentConstants.DEFAULT_TRIGGER_CHECK_INTERVAL);
+        interval = profile.getInt(TransferConstants.TRIGGER_CHECK_INTERVAL, TransferConstants.DEFAULT_TRIGGER_CHECK_INTERVAL);
         this.profile = profile;
 
         if (this.profile.hasKey(JobConstants.JOB_DIR_FILTER_PATTERN)) {

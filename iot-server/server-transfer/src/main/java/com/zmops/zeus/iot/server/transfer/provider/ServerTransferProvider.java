@@ -1,13 +1,17 @@
 package com.zmops.zeus.iot.server.transfer.provider;
 
 import com.zmops.zeus.iot.server.library.module.*;
-import com.zmops.zeus.iot.server.transfer.core.manager.AgentManager;
+import com.zmops.zeus.iot.server.transfer.core.manager.TransferManager;
 import com.zmops.zeus.iot.server.transfer.module.ServerTransferModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author nantian created at 2021/9/22 16:44
  */
 public class ServerTransferProvider extends ModuleProvider {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServerTransferProvider.class);
 
     private final ServerTransferConfig serverTransferConfig;
 
@@ -33,15 +37,35 @@ public class ServerTransferProvider extends ModuleProvider {
     @Override
     public void prepare() throws ServiceNotProvidedException, ModuleStartException {
 
-        AgentManager manager = new AgentManager();
+    }
 
 
-        System.out.println(123);
+    /**
+     * Stopping agent gracefully if get killed.
+     *
+     * @param manager - agent manager
+     */
+    private static void stopManagerIfKilled(TransferManager manager) {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                LOGGER.info("stopping agent gracefully");
+                manager.stop();
+            } catch (Exception ex) {
+                LOGGER.error("exception while stopping threads", ex);
+            }
+        }));
     }
 
     @Override
     public void start() throws ServiceNotProvidedException, ModuleStartException {
-
+        TransferManager manager = new TransferManager();
+        try {
+            manager.start();
+            stopManagerIfKilled(manager);
+//            manager.join();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

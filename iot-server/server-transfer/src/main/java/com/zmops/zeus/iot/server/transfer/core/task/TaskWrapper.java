@@ -18,11 +18,11 @@
 package com.zmops.zeus.iot.server.transfer.core.task;
 
 
-import com.zmops.zeus.iot.server.transfer.conf.AgentConfiguration;
-import com.zmops.zeus.iot.server.transfer.conf.AgentConstants;
+import com.zmops.zeus.iot.server.transfer.conf.TransferConfiguration;
+import com.zmops.zeus.iot.server.transfer.conf.TransferConstants;
 import com.zmops.zeus.iot.server.transfer.core.api.Message;
 import com.zmops.zeus.iot.server.transfer.core.common.AgentThreadFactory;
-import com.zmops.zeus.iot.server.transfer.core.manager.AgentManager;
+import com.zmops.zeus.iot.server.transfer.core.manager.TransferManager;
 import com.zmops.zeus.iot.server.transfer.core.message.EndMessage;
 import com.zmops.zeus.iot.server.transfer.core.state.AbstractStateWrapper;
 import com.zmops.zeus.iot.server.transfer.core.state.State;
@@ -52,16 +52,16 @@ public class TaskWrapper extends AbstractStateWrapper {
 
     private ExecutorService executorService;
 
-    public TaskWrapper(AgentManager manager, Task task) {
+    public TaskWrapper(TransferManager manager, Task task) {
         super();
         this.taskManager = manager.getTaskManager();
         this.task = task;
 
-        AgentConfiguration conf = AgentConfiguration.getAgentConf();
+        TransferConfiguration conf = TransferConfiguration.getAgentConf();
 
-        maxRetryTime = conf.getInt(AgentConstants.TASK_MAX_RETRY_TIME, AgentConstants.DEFAULT_TASK_MAX_RETRY_TIME);
-        pushMaxWaitTime = conf.getInt(AgentConstants.TASK_PUSH_MAX_SECOND, AgentConstants.DEFAULT_TASK_PUSH_MAX_SECOND);
-        pullMaxWaitTime = conf.getInt(AgentConstants.TASK_PULL_MAX_SECOND, AgentConstants.DEFAULT_TASK_PULL_MAX_SECOND);
+        maxRetryTime = conf.getInt(TransferConstants.TASK_MAX_RETRY_TIME, TransferConstants.DEFAULT_TASK_MAX_RETRY_TIME);
+        pushMaxWaitTime = conf.getInt(TransferConstants.TASK_PUSH_MAX_SECOND, TransferConstants.DEFAULT_TASK_PUSH_MAX_SECOND);
+        pullMaxWaitTime = conf.getInt(TransferConstants.TASK_PULL_MAX_SECOND, TransferConstants.DEFAULT_TASK_PULL_MAX_SECOND);
 
         if (executorService == null) {
             executorService = new ThreadPoolExecutor(0, Integer.MAX_VALUE,

@@ -22,7 +22,7 @@ import com.zmops.zeus.iot.server.transfer.core.api.Reader;
 import com.zmops.zeus.iot.server.transfer.core.api.Source;
 import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
 import com.zmops.zeus.iot.server.transfer.core.source.reader.TextFileReader;
-import com.zmops.zeus.iot.server.transfer.core.utils.PluginUtils;
+import com.zmops.zeus.iot.server.transfer.core.utils.FileSearchUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,12 +48,10 @@ public class TextFileSource implements Source {
     @Override
     public List<Reader> split(JobProfile jobConf) {
 
-        Collection<File> allFiles = PluginUtils.findSuitFiles(jobConf);
-
+        Collection<File> allFiles = FileSearchUtils.findSuitFiles(jobConf);
         List<Reader>     result   = new ArrayList<>();
 
         String filterPattern = jobConf.get(JOB_LINE_FILTER_PATTERN, DEFAULT_JOB_LINE_FILTER);
-
 
         for (File file : allFiles) {
             int seekPosition = jobConf.getInt(file.getAbsolutePath() + POSITION_SUFFIX, 0);

@@ -33,7 +33,8 @@ import java.util.*;
 
 public abstract class AbstractConfiguration {
 
-    private static final Logger     LOGGER      = LoggerFactory.getLogger(AbstractConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConfiguration.class);
+
     private static final JsonParser JSON_PARSER = new JsonParser();
 
     private final Map<String, JsonPrimitive> configStorage = new HashMap<>();
@@ -46,7 +47,7 @@ public abstract class AbstractConfiguration {
     public AbstractConfiguration() {
         classLoader = Thread.currentThread().getContextClassLoader();
         if (classLoader == null) {
-            classLoader = AgentConfiguration.class.getClassLoader();
+            classLoader = TransferConfiguration.class.getClassLoader();
         }
     }
 
@@ -75,8 +76,7 @@ public abstract class AbstractConfiguration {
                 } else {
                     Properties properties = new Properties();
                     properties.load(reader);
-                    properties.forEach((key, value) -> configStorage.put((String) key,
-                            new JsonPrimitive((String) value)));
+                    properties.forEach((key, value) -> configStorage.put((String) key, new JsonPrimitive((String) value)));
                 }
             }
         } catch (Exception ioe) {

@@ -17,27 +17,21 @@
 
 package com.zmops.zeus.iot.server.transfer.core.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.zmops.zeus.iot.server.transfer.conf.JobConstants;
 import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
 import com.zmops.zeus.iot.server.transfer.conf.TriggerProfile;
 import com.zmops.zeus.iot.server.transfer.core.trigger.PathPattern;
 import lombok.extern.slf4j.Slf4j;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
 
-import static com.zmops.zeus.iot.server.transfer.conf.CommonConstants.*;
+import static com.zmops.zeus.iot.server.transfer.conf.CommonConstants.DEFAULT_FILE_MAX_NUM;
+import static com.zmops.zeus.iot.server.transfer.conf.CommonConstants.FILE_MAX_NUM;
 import static com.zmops.zeus.iot.server.transfer.conf.JobConstants.JOB_DIR_FILTER_PATTERN;
 import static com.zmops.zeus.iot.server.transfer.conf.JobConstants.JOB_RETRY_TIME;
 
@@ -45,18 +39,9 @@ import static com.zmops.zeus.iot.server.transfer.conf.JobConstants.JOB_RETRY_TIM
  * Utils for plugin package.
  */
 @Slf4j
-public class PluginUtils {
+public class FileSearchUtils {
 
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(PluginUtils.class);
-
-    public static String toJsonStr(Object obj) {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.setPrettyPrinting();
-        Gson gson = gsonBuilder.create();
-        return gson.toJson(obj);
-    }
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileSearchUtils.class);
 
     public static Collection<File> findSuitFiles(JobProfile jobConf) {
         String dirPattern = jobConf.get(JOB_DIR_FILTER_PATTERN);
@@ -90,8 +75,7 @@ public class PluginUtils {
         }
     }
 
-    public static JobProfile copyJobProfile(TriggerProfile triggerProfile, String dataTime,
-                                            File pendingFile) {
+    public static JobProfile copyJobProfile(TriggerProfile triggerProfile, String dataTime, File pendingFile) {
         JobProfile copiedProfile = TriggerProfile.parseJsonStr(triggerProfile.toJsonStr());
 
         String md5 = AgentUtils.getFileMd5(pendingFile);
@@ -102,38 +86,6 @@ public class PluginUtils {
         // the time suit for file name is just the data time
         copiedProfile.set(JobConstants.JOB_DATA_TIME, dataTime);
         return copiedProfile;
-    }
-
-    public static List<String> getLocalIpList() {
-        List<String> allIps = new ArrayList<>();
-        try {
-            String os = System.getProperty(AGENT_OS_NAME).toLowerCase();
-            if (os.contains(AGENT_NIX_OS) || os.contains(AGENT_NUX_OS)) {
-                /* Deal with linux platform. */
-                Enumeration<NetworkInterface> nis = NetworkInterface.getNetworkInterfaces();
-                while (nis.hasMoreElements()) {
-                    NetworkInterface ni = nis.nextElement();
-                    addIp(allIps, ni);
-                }
-            } else {
-                /* Deal with windows platform. */
-                allIps.add(InetAddress.getLocalHost().getHostAddress());
-            }
-        } catch (Exception e) {
-            LOGGER.error("get local ip list fail with ex {} ", e);
-        }
-        return allIps;
-    }
-
-
-    private static void addIp(List<String> allIps, NetworkInterface ni) {
-        Enumeration<InetAddress> ias = ni.getInetAddresses();
-        while (ias.hasMoreElements()) {
-            InetAddress ia = ias.nextElement();
-            if (!ia.isLoopbackAddress() && ia.getHostAddress().contains(AGENT_COLON)) {
-                allIps.add(ia.getHostAddress());
-            }
-        }
     }
 
 }

@@ -44,18 +44,26 @@ import java.util.stream.Stream;
 import static com.zmops.zeus.iot.server.transfer.conf.JobConstants.DEFAULT_JOB_FILE_MAX_WAIT;
 import static com.zmops.zeus.iot.server.transfer.conf.JobConstants.JOB_FILE_MAX_WAIT;
 
+/**
+ * ndjson 文件读取
+ *
+ * @editor nantian
+ */
 public class TextFileReader implements Reader {
 
-    private static final Logger LOGGER          = LoggerFactory.getLogger(TextFileReader.class);
-    public static final  int    NEVER_STOP_SIGN = -1;
+    private static final Logger LOGGER = LoggerFactory.getLogger(TextFileReader.class);
 
-    private final File             file;
-    private final int              position;
-    private final String           md5;
-    private       Iterator<String> iterator;
-    private       Stream<String>   stream;
-    private       long             timeout;
-    private       long             lastTime = 0;
+    public static final int NEVER_STOP_SIGN = -1;
+
+    private final File   file;
+    private final int    position;
+    private final String md5;
+
+    private Iterator<String> iterator;
+    private Stream<String>   stream;
+
+    private long timeout;
+    private long lastTime = 0;
 
     private final PluginMetric    textFileMetric;
     private final List<Validator> validators = new ArrayList<>();
@@ -142,7 +150,9 @@ public class TextFileReader implements Reader {
             if (StringUtils.isNotBlank(this.md5) && !this.md5.equals(md5)) {
                 LOGGER.warn("md5 is differ from origin, origin: {}, new {}", this.md5, md5);
             }
+
             LOGGER.info("file name for task is {}, md5 is {}", file, md5);
+
             stream = Files.newBufferedReader(file.toPath()).lines().skip(position);
             iterator = stream.iterator();
         } catch (Exception ex) {

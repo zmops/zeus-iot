@@ -18,9 +18,9 @@
 package com.zmops.zeus.iot.server.transfer.core.job;
 
 
-import com.zmops.zeus.iot.server.transfer.conf.AgentConfiguration;
-import com.zmops.zeus.iot.server.transfer.conf.AgentConstants;
-import com.zmops.zeus.iot.server.transfer.core.manager.AgentManager;
+import com.zmops.zeus.iot.server.transfer.conf.TransferConfiguration;
+import com.zmops.zeus.iot.server.transfer.conf.TransferConstants;
+import com.zmops.zeus.iot.server.transfer.core.manager.TransferManager;
 import com.zmops.zeus.iot.server.transfer.core.state.AbstractStateWrapper;
 import com.zmops.zeus.iot.server.transfer.core.state.State;
 import com.zmops.zeus.iot.server.transfer.core.task.Task;
@@ -40,16 +40,16 @@ public class JobWrapper extends AbstractStateWrapper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JobWrapper.class);
 
-    private final AgentConfiguration agentConf;
-    private final TaskManager        taskManager;
-    private final JobManager         jobManager;
-    private final Job                job;
+    private final TransferConfiguration transferConfig;
+    private final TaskManager           taskManager;
+    private final JobManager            jobManager;
+    private final Job                   job;
 
     private final List<Task> allTasks;
 
-    public JobWrapper(AgentManager manager, Job job) {
+    public JobWrapper(TransferManager manager, Job job) {
         super();
-        this.agentConf = AgentConfiguration.getAgentConf();
+        this.transferConfig = TransferConfiguration.getAgentConf();
         this.taskManager = manager.getTaskManager();
         this.jobManager = manager.getJobManager();
         this.job = job;
@@ -63,7 +63,7 @@ public class JobWrapper extends AbstractStateWrapper {
     private void checkAllTasksStateAndWait() throws Exception {
         boolean isFinished = false;
 
-        long checkInterval = agentConf.getLong(AgentConstants.JOB_FINISH_CHECK_INTERVAL, AgentConstants.DEFAULT_JOB_FINISH_CHECK_INTERVAL);
+        long checkInterval = transferConfig.getLong(TransferConstants.JOB_FINISH_CHECK_INTERVAL, TransferConstants.DEFAULT_JOB_FINISH_CHECK_INTERVAL);
         do {
             // check whether all tasks have finished.
             isFinished = allTasks.stream().allMatch(task -> taskManager.isTaskFinished(task.getTaskId()));

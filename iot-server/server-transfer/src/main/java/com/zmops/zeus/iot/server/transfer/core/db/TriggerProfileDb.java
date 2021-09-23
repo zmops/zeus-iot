@@ -28,6 +28,8 @@ import java.util.List;
 
 /**
  * db interface for trigger profile.
+ * <p>
+ * 保存 文件夹触发器 配置文件
  */
 public class TriggerProfileDb {
 
@@ -46,11 +48,14 @@ public class TriggerProfileDb {
      */
     public List<TriggerProfile> getTriggers() {
         // potential performance issue, needs to find out the speed.
-        List<KeyValueEntity> result      = this.db.findAll(CommonConstants.TRIGGER_ID_PREFIX);
+        List<KeyValueEntity> result = this.db.findAll(CommonConstants.TRIGGER_ID_PREFIX);
+
         List<TriggerProfile> triggerList = new ArrayList<>();
+
         for (KeyValueEntity entity : result) {
             triggerList.add(entity.getAsTriggerProfile());
         }
+
         return triggerList;
     }
 

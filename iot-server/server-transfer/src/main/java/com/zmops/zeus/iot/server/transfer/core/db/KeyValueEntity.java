@@ -44,8 +44,7 @@ public class KeyValueEntity {
 
     private String jsonValue;
 
-    private KeyValueEntity() {
-
+    public KeyValueEntity() {
     }
 
     public KeyValueEntity(String key, String jsonValue, String fileName) {

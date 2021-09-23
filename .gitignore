@@ -6,3 +6,4 @@
 **/node_modules/*
 dist/
 zeus-starter/src/main/resources/public/
+.bdb/

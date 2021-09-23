@@ -21,8 +21,8 @@ import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.persist.*;
 
-import com.zmops.zeus.iot.server.transfer.conf.AgentConfiguration;
-import com.zmops.zeus.iot.server.transfer.conf.AgentConstants;
+import com.zmops.zeus.iot.server.transfer.conf.TransferConfiguration;
+import com.zmops.zeus.iot.server.transfer.conf.TransferConstants;
 import com.zmops.zeus.iot.server.transfer.conf.CommonConstants;
 import com.zmops.zeus.iot.server.transfer.core.job.CommandEntity;
 import org.slf4j.Logger;
@@ -52,16 +52,16 @@ public class BerkeleyDbImp implements Db {
     private final SecondaryIndex<String, String, KeyValueEntity> fileNameSecondaryIndex;
     private final SecondaryIndex<Boolean, String, CommandEntity> commandSecondaryIndex;
 
-    private final AgentConfiguration agentConf;
+    private final TransferConfiguration transferConfig;
 
     public BerkeleyDbImp() {
 
-        this.agentConf = AgentConfiguration.getAgentConf();
+        this.transferConfig = TransferConfiguration.getAgentConf();
 
         StoreConfig storeConfig = initStoreConfig();
         Environment environment = initEnv();
 
-        String instanceName = agentConf.get(AgentConstants.AGENT_DB_INSTANCE_NAME, AgentConstants.DEFAULT_AGENT_DB_INSTANCE_NAME);
+        String instanceName = transferConfig.get(TransferConstants.AGENT_DB_INSTANCE_NAME, TransferConstants.DEFAULT_AGENT_DB_INSTANCE_NAME);
 
         this.jobStore = new EntityStore(environment, instanceName, storeConfig);
         this.commandStore = new EntityStore(environment, CommonConstants.COMMAND_STORE_INSTANCE_NAME, storeConfig);
@@ -83,9 +83,9 @@ public class BerkeleyDbImp implements Db {
      */
     private StoreConfig initStoreConfig() {
         return new StoreConfig()
-                .setReadOnly(agentConf.getBoolean(AgentConstants.AGENT_LOCAL_STORE_READONLY, AgentConstants.DEFAULT_AGENT_LOCAL_STORE_READONLY))
-                .setAllowCreate(!agentConf.getBoolean(AgentConstants.AGENT_LOCAL_STORE_READONLY, AgentConstants.DEFAULT_AGENT_LOCAL_STORE_READONLY))
-                .setTransactional(agentConf.getBoolean(AgentConstants.AGENT_LOCAL_STORE_TRANSACTIONAL, AgentConstants.DEFAULT_AGENT_LOCAL_STORE_TRANSACTIONAL));
+                .setReadOnly(transferConfig.getBoolean(TransferConstants.AGENT_LOCAL_STORE_READONLY, TransferConstants.DEFAULT_AGENT_LOCAL_STORE_READONLY))
+                .setAllowCreate(!transferConfig.getBoolean(TransferConstants.AGENT_LOCAL_STORE_READONLY, TransferConstants.DEFAULT_AGENT_LOCAL_STORE_READONLY))
+                .setTransactional(transferConfig.getBoolean(TransferConstants.AGENT_LOCAL_STORE_TRANSACTIONAL, TransferConstants.DEFAULT_AGENT_LOCAL_STORE_TRANSACTIONAL));
     }
 
     /**
@@ -94,8 +94,8 @@ public class BerkeleyDbImp implements Db {
      * @return local path.
      */
     private File tryToInitAndGetPath() {
-        String storePath  = agentConf.get(AgentConstants.AGENT_LOCAL_STORE_PATH, AgentConstants.DEFAULT_AGENT_LOCAL_STORE_PATH);
-        String parentPath = agentConf.get(AgentConstants.AGENT_HOME, AgentConstants.DEFAULT_AGENT_HOME);
+        String storePath  = transferConfig.get(TransferConstants.AGENT_LOCAL_STORE_PATH, TransferConstants.DEFAULT_AGENT_LOCAL_STORE_PATH);
+        String parentPath = transferConfig.get(TransferConstants.AGENT_HOME, TransferConstants.DEFAULT_AGENT_HOME);
 
         File finalPath = new File(parentPath, storePath);
         try {
@@ -114,13 +114,13 @@ public class BerkeleyDbImp implements Db {
      */
     private Environment initEnv() {
         EnvironmentConfig envConfig = new EnvironmentConfig()
-                .setReadOnly(agentConf.getBoolean(AgentConstants.AGENT_LOCAL_STORE_READONLY, AgentConstants.DEFAULT_AGENT_LOCAL_STORE_READONLY))
-                .setAllowCreate(!agentConf.getBoolean(AgentConstants.AGENT_LOCAL_STORE_READONLY, AgentConstants.DEFAULT_AGENT_LOCAL_STORE_READONLY))
-                .setTransactional(agentConf.getBoolean(AgentConstants.AGENT_LOCAL_STORE_TRANSACTIONAL, AgentConstants.DEFAULT_AGENT_LOCAL_STORE_TRANSACTIONAL))
-                .setLockTimeout(agentConf.getInt(AgentConstants.AGENT_LOCAL_STORE_LOCK_TIMEOUT, AgentConstants.DEFAULT_AGENT_LOCAL_STORE_LOCK_TIMEOUT), TimeUnit.MILLISECONDS);
+                .setReadOnly(transferConfig.getBoolean(TransferConstants.AGENT_LOCAL_STORE_READONLY, TransferConstants.DEFAULT_AGENT_LOCAL_STORE_READONLY))
+                .setAllowCreate(!transferConfig.getBoolean(TransferConstants.AGENT_LOCAL_STORE_READONLY, TransferConstants.DEFAULT_AGENT_LOCAL_STORE_READONLY))
+                .setTransactional(transferConfig.getBoolean(TransferConstants.AGENT_LOCAL_STORE_TRANSACTIONAL, TransferConstants.DEFAULT_AGENT_LOCAL_STORE_TRANSACTIONAL))
+                .setLockTimeout(transferConfig.getInt(TransferConstants.AGENT_LOCAL_STORE_LOCK_TIMEOUT, TransferConstants.DEFAULT_AGENT_LOCAL_STORE_LOCK_TIMEOUT), TimeUnit.MILLISECONDS);
 
-        envConfig.setTxnNoSyncVoid(agentConf.getBoolean(AgentConstants.AGENT_LOCAL_STORE_NO_SYNC_VOID, AgentConstants.DEFAULT_AGENT_LOCAL_STORE_NO_SYNC_VOID));
-        envConfig.setTxnWriteNoSyncVoid(agentConf.getBoolean(AgentConstants.AGENT_LOCAL_STORE_WRITE_NO_SYNC_VOID, AgentConstants.DEFAULT_AGENT_LOCAL_STORE_WRITE_NO_SYNC_VOID));
+        envConfig.setTxnNoSyncVoid(transferConfig.getBoolean(TransferConstants.AGENT_LOCAL_STORE_NO_SYNC_VOID, TransferConstants.DEFAULT_AGENT_LOCAL_STORE_NO_SYNC_VOID));
+        envConfig.setTxnWriteNoSyncVoid(transferConfig.getBoolean(TransferConstants.AGENT_LOCAL_STORE_WRITE_NO_SYNC_VOID, TransferConstants.DEFAULT_AGENT_LOCAL_STORE_WRITE_NO_SYNC_VOID));
         return new Environment(tryToInitAndGetPath(), envConfig);
     }
 

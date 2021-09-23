@@ -18,14 +18,14 @@
 package com.zmops.zeus.iot.server.transfer.core.job;
 
 
-import com.zmops.zeus.iot.server.transfer.conf.AgentConfiguration;
-import com.zmops.zeus.iot.server.transfer.conf.AgentConstants;
+import com.zmops.zeus.iot.server.transfer.conf.TransferConfiguration;
+import com.zmops.zeus.iot.server.transfer.conf.TransferConstants;
 import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
 import com.zmops.zeus.iot.server.transfer.core.common.AbstractDaemon;
 import com.zmops.zeus.iot.server.transfer.core.common.AgentThreadFactory;
 import com.zmops.zeus.iot.server.transfer.core.db.JobProfileDb;
 import com.zmops.zeus.iot.server.transfer.core.db.StateSearchKey;
-import com.zmops.zeus.iot.server.transfer.core.manager.AgentManager;
+import com.zmops.zeus.iot.server.transfer.core.manager.TransferManager;
 import com.zmops.zeus.iot.server.transfer.core.utils.AgentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static com.zmops.zeus.iot.server.transfer.conf.AgentConstants.*;
+import static com.zmops.zeus.iot.server.transfer.conf.TransferConstants.*;
 import static com.zmops.zeus.iot.server.transfer.conf.JobConstants.*;
 
 /**
@@ -53,9 +53,9 @@ public class JobManager extends AbstractDaemon {
     // jobs which are not accepted by running pool.
     private final ConcurrentHashMap<String, Job>        pendingJobs;
     // job thread pool
-    private final ThreadPoolExecutor                    runningPool;
-    private final AgentManager                          agentManager;
-    private final int                                   monitorInterval;
+    private final ThreadPoolExecutor runningPool;
+    private final TransferManager    transferManager;
+    private final int                monitorInterval;
     private final long                                  jobDbCacheTime;
     private final long                                  jobDbCacheCheckInterval;
 
@@ -67,11 +67,11 @@ public class JobManager extends AbstractDaemon {
     /**
      * init job manager
      *
-     * @param agentManager - agent manager
+     * @param transferManager - agent manager
      */
-    public JobManager(AgentManager agentManager, JobProfileDb jobConfDb) {
+    public JobManager(TransferManager transferManager, JobProfileDb jobConfDb) {
         this.jobConfDB = jobConfDb;
-        this.agentManager = agentManager;
+        this.transferManager = transferManager;
 
         // job thread pool for running
         this.runningPool = new ThreadPoolExecutor(
@@ -83,9 +83,9 @@ public class JobManager extends AbstractDaemon {
         this.jobs = new ConcurrentHashMap<>();
         this.pendingJobs = new ConcurrentHashMap<>();
 
-        AgentConfiguration conf = AgentConfiguration.getAgentConf();
+        TransferConfiguration conf = TransferConfiguration.getAgentConf();
 
-        this.monitorInterval = conf.getInt(AgentConstants.JOB_MONITOR_INTERVAL, AgentConstants.DEFAULT_JOB_MONITOR_INTERVAL);
+        this.monitorInterval = conf.getInt(TransferConstants.JOB_MONITOR_INTERVAL, TransferConstants.DEFAULT_JOB_MONITOR_INTERVAL);
         this.jobDbCacheTime = conf.getLong(JOB_DB_CACHE_TIME, DEFAULT_JOB_DB_CACHE_TIME);
         this.jobDbCacheCheckInterval = conf.getLong(JOB_DB_CACHE_CHECK_INTERVAL, DEFAULT_JOB_DB_CACHE_CHECK_INTERVAL);
         this.jobMetrics = JobMetrics.create();
@@ -98,7 +98,7 @@ public class JobManager extends AbstractDaemon {
      */
     public void addJob(Job job) {
         try {
-            JobWrapper jobWrapper = new JobWrapper(agentManager, job);
+            JobWrapper jobWrapper = new JobWrapper(transferManager, job);
             this.runningPool.execute(jobWrapper);
             JobWrapper jobWrapperRet = jobs.putIfAbsent(jobWrapper.getJob().getJobInstanceId(), jobWrapper);
             if (jobWrapperRet != null) {
@@ -124,6 +124,7 @@ public class JobManager extends AbstractDaemon {
             return false;
         }
         String jobId = profile.get(JOB_ID);
+
         profile.set(JOB_INSTANCE_ID, AgentUtils.getUniqId(JOB_ID_PREFIX, jobId, index.incrementAndGet()));
         LOGGER.info("submit job profile {}", profile.toJsonStr());
 

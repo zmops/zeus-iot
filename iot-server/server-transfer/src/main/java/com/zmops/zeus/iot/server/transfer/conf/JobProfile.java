@@ -22,7 +22,6 @@ import com.google.gson.Gson;
 
 /**
  * job profile which contains details describing properties of one job.
- *
  */
 public class JobProfile extends AbstractConfiguration {
 
@@ -54,6 +53,7 @@ public class JobProfile extends AbstractConfiguration {
 
     /**
      * pase json file.
+     *
      * @param fileName - json file name.
      * @return jobConfiguration.
      */
@@ -70,9 +70,7 @@ public class JobProfile extends AbstractConfiguration {
      */
     @Override
     public boolean allRequiredKeyExist() {
-        return hasKey(JobConstants.JOB_ID) && hasKey(JobConstants.JOB_SOURCE)
-                && hasKey(JobConstants.JOB_SINK) && hasKey(JobConstants.JOB_CHANNEL) && hasKey(
-            JobConstants.JOB_NAME);
+        return hasKey(JobConstants.JOB_ID);
     }
 
     public String toJsonStr() {

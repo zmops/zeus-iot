@@ -33,11 +33,11 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * agent configuration. Only one instance in the process.
  * Basically it use properties file to store configurations.
  */
-public class AgentConfiguration extends AbstractConfiguration {
+public class TransferConfiguration extends AbstractConfiguration {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AgentConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransferConfiguration.class);
 
-    private static final String DEFAULT_CONFIG_FILE = "agent.properties";
+    private static final String DEFAULT_CONFIG_FILE = "tansfer.properties";
     private static final String TMP_CONFIG_FILE     = ".tmp.agent.properties";
 
     private static final ArrayList<String> LOCAL_RESOURCES = new ArrayList<>();
@@ -48,12 +48,12 @@ public class AgentConfiguration extends AbstractConfiguration {
         LOCAL_RESOURCES.add(DEFAULT_CONFIG_FILE);
     }
 
-    private static volatile AgentConfiguration agentConf = null;
+    private static volatile TransferConfiguration transferConfig = null;
 
     /**
      * load config from agent file.
      */
-    private AgentConfiguration() {
+    private TransferConfiguration() {
         for (String fileName : LOCAL_RESOURCES) {
             super.loadPropertiesResource(fileName);
         }
@@ -64,15 +64,15 @@ public class AgentConfiguration extends AbstractConfiguration {
      *
      * @return - static instance of AgentConfiguration
      */
-    public static AgentConfiguration getAgentConf() {
-        if (agentConf == null) {
-            synchronized (AgentConfiguration.class) {
-                if (agentConf == null) {
-                    agentConf = new AgentConfiguration();
+    public static TransferConfiguration getAgentConf() {
+        if (transferConfig == null) {
+            synchronized (TransferConfiguration.class) {
+                if (transferConfig == null) {
+                    transferConfig = new TransferConfiguration();
                 }
             }
         }
-        return agentConf;
+        return transferConfig;
     }
 
     private String getNextBackupFileName() {
@@ -88,7 +88,7 @@ public class AgentConfiguration extends AbstractConfiguration {
         LOCK.writeLock().lock();
         // TODO: flush to local file as properties file.
         try {
-            String agentConfParent = get(AgentConstants.AGENT_CONF_PARENT, AgentConstants.DEFAULT_AGENT_CONF_PARENT);
+            String agentConfParent = get(TransferConstants.AGENT_CONF_PARENT, TransferConstants.DEFAULT_AGENT_CONF_PARENT);
 
             File sourceFile = new File(agentConfParent, DEFAULT_CONFIG_FILE);
             File targetFile = new File(agentConfParent, getNextBackupFileName());

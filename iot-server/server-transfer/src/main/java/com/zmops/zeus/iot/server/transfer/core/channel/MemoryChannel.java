@@ -20,7 +20,7 @@ package com.zmops.zeus.iot.server.transfer.core.channel;
 
 import com.zmops.zeus.iot.server.transfer.core.api.Channel;
 import com.zmops.zeus.iot.server.transfer.core.api.Message;
-import com.zmops.zeus.iot.server.transfer.conf.AgentConstants;
+import com.zmops.zeus.iot.server.transfer.conf.TransferConstants;
 import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
 import com.zmops.zeus.iot.server.transfer.core.metrics.PluginMetric;
 import org.slf4j.Logger;
@@ -94,8 +94,8 @@ public class MemoryChannel implements Channel {
 
     @Override
     public void init(JobProfile jobConf) {
-        queue = new LinkedBlockingQueue<>(jobConf.getInt(AgentConstants.CHANNEL_MEMORY_CAPACITY,
-                AgentConstants.DEFAULT_CHANNEL_MEMORY_CAPACITY));
+        queue = new LinkedBlockingQueue<>(jobConf.getInt(TransferConstants.CHANNEL_MEMORY_CAPACITY,
+                TransferConstants.DEFAULT_CHANNEL_MEMORY_CAPACITY));
     }
 
     @Override

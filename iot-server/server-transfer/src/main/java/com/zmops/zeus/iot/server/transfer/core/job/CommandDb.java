@@ -31,7 +31,8 @@ public class CommandDb {
 
     public static final int MANAGER_SUCCESS_CODE = 0;
     public static final int MANAGER_FAIL_CODE    = 1;
-    private final       Db  db;
+
+    private final Db db;
 
     public CommandDb(Db db) {
         this.db = db;

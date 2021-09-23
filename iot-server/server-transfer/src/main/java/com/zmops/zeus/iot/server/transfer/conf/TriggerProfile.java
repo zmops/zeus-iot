@@ -24,7 +24,7 @@ public class TriggerProfile extends JobProfile {
 
     @Override
     public boolean allRequiredKeyExist() {
-        return hasKey(JobConstants.JOB_TRIGGER) && super.allRequiredKeyExist();
+        return hasKey(JobConstants.JOB_NAME) && super.allRequiredKeyExist();
     }
 
     public static TriggerProfile parseJsonStr(String jsonStr) {

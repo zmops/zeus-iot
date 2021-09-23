@@ -18,12 +18,12 @@
 package com.zmops.zeus.iot.server.transfer.core.task;
 
 
-import com.zmops.zeus.iot.server.transfer.conf.AgentConfiguration;
-import com.zmops.zeus.iot.server.transfer.conf.AgentConstants;
+import com.zmops.zeus.iot.server.transfer.conf.TransferConfiguration;
+import com.zmops.zeus.iot.server.transfer.conf.TransferConstants;
 import com.zmops.zeus.iot.server.transfer.core.common.AbstractDaemon;
 import com.zmops.zeus.iot.server.transfer.core.common.AgentThreadFactory;
 import com.zmops.zeus.iot.server.transfer.core.job.JobManager;
-import com.zmops.zeus.iot.server.transfer.core.manager.AgentManager;
+import com.zmops.zeus.iot.server.transfer.core.manager.TransferManager;
 import com.zmops.zeus.iot.server.transfer.core.utils.AgentUtils;
 
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ public class TaskManager extends AbstractDaemon {
 
     // task thread pool;
     private final ThreadPoolExecutor runningPool;
-    private final AgentManager       agentManager;
+    private final TransferManager    transferManager;
     private final TaskMetrics        taskMetrics;
 
     private final ConcurrentHashMap<String, TaskWrapper> tasks;
@@ -55,10 +55,10 @@ public class TaskManager extends AbstractDaemon {
     /**
      * Init task manager.
      *
-     * @param agentManager - agent manager
+     * @param transferManager - agent manager
      */
-    public TaskManager(AgentManager agentManager) {
-        this.agentManager = agentManager;
+    public TaskManager(TransferManager transferManager) {
+        this.transferManager = transferManager;
         this.runningPool = new ThreadPoolExecutor(
                 0, Integer.MAX_VALUE,
                 60L, TimeUnit.SECONDS,
@@ -69,14 +69,14 @@ public class TaskManager extends AbstractDaemon {
         taskMetrics = TaskMetrics.create();
         tasks = new ConcurrentHashMap<>();
 
-        AgentConfiguration conf = AgentConfiguration.getAgentConf();
+        TransferConfiguration conf = TransferConfiguration.getAgentConf();
 
-        retryTasks = new LinkedBlockingQueue<>(conf.getInt(AgentConstants.TASK_RETRY_MAX_CAPACITY, AgentConstants.DEFAULT_TASK_RETRY_MAX_CAPACITY));
+        retryTasks = new LinkedBlockingQueue<>(conf.getInt(TransferConstants.TASK_RETRY_MAX_CAPACITY, TransferConstants.DEFAULT_TASK_RETRY_MAX_CAPACITY));
 
-        monitorInterval = conf.getInt(AgentConstants.TASK_MONITOR_INTERVAL, AgentConstants.DEFAULT_TASK_MONITOR_INTERVAL);
-        taskRetryMaxTime = conf.getInt(AgentConstants.TASK_RETRY_SUBMIT_WAIT_SECONDS, AgentConstants.DEFAULT_TASK_RETRY_SUBMIT_WAIT_SECONDS);
-        taskMaxCapacity = conf.getInt(AgentConstants.TASK_RETRY_MAX_CAPACITY, AgentConstants.DEFAULT_TASK_RETRY_MAX_CAPACITY);
-        waitTime = conf.getLong(AgentConstants.THREAD_POOL_AWAIT_TIME, AgentConstants.DEFAULT_THREAD_POOL_AWAIT_TIME);
+        monitorInterval = conf.getInt(TransferConstants.TASK_MONITOR_INTERVAL, TransferConstants.DEFAULT_TASK_MONITOR_INTERVAL);
+        taskRetryMaxTime = conf.getInt(TransferConstants.TASK_RETRY_SUBMIT_WAIT_SECONDS, TransferConstants.DEFAULT_TASK_RETRY_SUBMIT_WAIT_SECONDS);
+        taskMaxCapacity = conf.getInt(TransferConstants.TASK_RETRY_MAX_CAPACITY, TransferConstants.DEFAULT_TASK_RETRY_MAX_CAPACITY);
+        waitTime = conf.getLong(TransferConstants.THREAD_POOL_AWAIT_TIME, TransferConstants.DEFAULT_THREAD_POOL_AWAIT_TIME);
     }
 
     /**
@@ -98,7 +98,7 @@ public class TaskManager extends AbstractDaemon {
      * @param task - task
      */
     public void submitTask(Task task) {
-        TaskWrapper taskWrapper = new TaskWrapper(agentManager, task);
+        TaskWrapper taskWrapper = new TaskWrapper(transferManager, task);
         submitTask(taskWrapper);
 
     }
@@ -133,8 +133,7 @@ public class TaskManager extends AbstractDaemon {
         try {
             boolean success = retryTasks.offer(wrapper, taskRetryMaxTime, TimeUnit.SECONDS);
             if (!success) {
-                LOGGER.error("cannot submit to retry queue, max {}, current {}", taskMaxCapacity,
-                        retryTasks.size());
+                LOGGER.error("cannot submit to retry queue, max {}, current {}", taskMaxCapacity, retryTasks.size());
             } else {
                 taskMetrics.retryingTasks.incr();
             }

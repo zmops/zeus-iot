@@ -19,7 +19,7 @@ package com.zmops.zeus.iot.server.transfer.conf;
 
 import com.zmops.zeus.iot.server.transfer.core.utils.AgentUtils;
 
-public class AgentConstants {
+public class TransferConstants {
 
     public static final String AGENT_HOME = "agent.home";
     public static final String DEFAULT_AGENT_HOME = System.getProperty("agent.home");
@@ -45,7 +45,7 @@ public class AgentConstants {
     public static final String DEFAULT_AGENT_DB_INSTANCE_NAME = "agent";
 
     public static final String AGENT_DB_CLASSNAME = "agent.db.classname";
-    public static final String DEFAULT_AGENT_DB_CLASSNAME = "org.apache.inlong.agent.db.BerkeleyDbImp";
+    public static final String DEFAULT_AGENT_DB_CLASSNAME = "com.zmops.zeus.iot.server.transfer.core.db.BerkeleyDbImp";
 
     // default is empty.
     public static final String AGENT_FETCHER_CLASSNAME = "agent.fetcher.classname";
@@ -60,7 +60,7 @@ public class AgentConstants {
     public static final int DEFAULT_AGENT_HTTP_PORT = 8008;
 
     public static final String AGENT_ENABLE_HTTP = "agent.http.enable";
-    public static final boolean DEFAULT_AGENT_ENABLE_HTTP = false;
+    public static final boolean DEFAULT_AGENT_ENABLE_HTTP = true;
 
     public static final String TRIGGER_FETCH_INTERVAL = "trigger.fetch.interval";
     public static final int DEFAULT_TRIGGER_FETCH_INTERVAL = 1;
