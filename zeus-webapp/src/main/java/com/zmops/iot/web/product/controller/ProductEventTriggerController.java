@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -108,10 +109,10 @@ public class ProductEventTriggerController {
         Integer[] triggerIds = productEventRuleService.createZbxTrigger(eventRuleId + "", expression, eventRule.getEventLevel());
 
         //step 4: zbx 触发器创建 Tag
-        Map<String, String> tags = eventRule.getTags().stream()
-                .collect(Collectors.toMap(ProductEventRule.Tag::getTag, ProductEventRule.Tag::getValue, (k1, k2) -> k2));
-        if (ToolUtil.isEmpty(tags)) {
-            tags = new HashMap<>(3);
+        Map<String, String> tags = new ConcurrentHashMap<>(3);
+        if (ToolUtil.isNotEmpty(eventRule.getTags())) {
+            tags = eventRule.getTags().stream()
+                    .collect(Collectors.toMap(ProductEventRule.Tag::getTag, ProductEventRule.Tag::getValue, (k1, k2) -> k2));
         }
         if (!tags.containsKey(ALARM_TAG_NAME)) {
             tags.put(ALARM_TAG_NAME, eventRuleId + "");
