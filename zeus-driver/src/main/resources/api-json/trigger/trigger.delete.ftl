@@ -1,6 +1,6 @@
 {
     "jsonrpc": "2.0",
-    "method": "trigger.get",
+    "method": "trigger.delete",
     "params": [
         ${triggerid}
     ],

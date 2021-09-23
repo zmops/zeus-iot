@@ -9,6 +9,11 @@
         <#if host??>
             "host":"${host}",
         </#if>
+        <#if description??>
+        "filter":{
+            "description":${description}
+        },
+        </#if>
         "output": "extend"
     },
     "id": 1,

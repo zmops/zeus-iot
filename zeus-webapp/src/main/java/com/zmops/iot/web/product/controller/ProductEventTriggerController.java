@@ -1,6 +1,8 @@
 package com.zmops.iot.web.product.controller;
 
 import cn.hutool.core.util.IdUtil;
+import com.zmops.iot.async.executor.Async;
+import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.domain.product.ProductEvent;
 import com.zmops.iot.domain.product.ProductEventRelation;
@@ -18,6 +20,7 @@ import com.zmops.iot.web.product.dto.ProductEventDto;
 import com.zmops.iot.web.product.dto.ProductEventRule;
 import com.zmops.iot.web.product.dto.param.EventParm;
 import com.zmops.iot.web.product.service.ProductEventRuleService;
+import com.zmops.iot.web.product.service.work.SaveProductEventTriggerWorker;
 import com.zmops.zeus.driver.service.ZbxTrigger;
 import io.ebean.DB;
 import io.ebean.annotation.Transactional;
@@ -53,6 +56,8 @@ public class ProductEventTriggerController {
     private static final String EVENT_TAG_NAME   = "__event__";
     private static final String EVENT_TYPE_NAME  = "事件";
 
+    @Autowired
+    SaveProductEventTriggerWorker saveProductEventTriggerWorker;
 
     /**
      * 触发器 分页列表
@@ -92,8 +97,8 @@ public class ProductEventTriggerController {
                                                        ProductEventRule eventRule) {
 
         Long eventRuleId = IdUtil.getSnowflake().nextId(); // ruleId, trigger name
-
-        productEventRuleService.createProductEventRule(eventRuleId, eventRule);
+        eventRule.setEventRuleId(eventRuleId);
+        productEventRuleService.createProductEventRule(eventRule);
 
         //step 1: 先创建 zbx 触发器
         String expression = eventRule.getExpList()
@@ -115,7 +120,7 @@ public class ProductEventTriggerController {
             tags.put(EXECUTE_TAG_NAME, eventRuleId + "");
         }
         Optional<ProductEventRule.Expression> any = eventRule.getExpList().parallelStream().filter(o -> EVENT_TYPE_NAME.equals(o.getProductAttrType())).findAny();
-        if(any.isPresent()){
+        if (any.isPresent()) {
             tags.put(EVENT_TAG_NAME, eventRuleId + "");
         }
         for (Integer triggerId : triggerIds) {
@@ -124,6 +129,16 @@ public class ProductEventTriggerController {
 
         //step 5: 更新 zbxId
         productEventRuleService.updateProductEventRuleZbxId(eventRuleId, triggerIds);
+
+        //step 6: 同步到产品下的设备
+        WorkerWrapper<ProductEventRule, Boolean> saveProductEventTriggerWork = WorkerWrapper.<ProductEventRule, Boolean>builder().worker(saveProductEventTriggerWorker).param(eventRule).build();
+
+        try {
+            Async.work(100, saveProductEventTriggerWork).awaitFinish();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
 
         // 返回触发器ID
         return ResponseData.success(eventRuleId);
@@ -173,7 +188,7 @@ public class ProductEventTriggerController {
             tags.put(EXECUTE_TAG_NAME, eventRule.getEventRuleId() + "");
         }
         Optional<ProductEventRule.Expression> any = eventRule.getExpList().parallelStream().filter(o -> EVENT_TYPE_NAME.equals(o.getProductAttrType())).findAny();
-        if(any.isPresent()){
+        if (any.isPresent()) {
             tags.put(EVENT_TAG_NAME, eventRule.getEventRuleId() + "");
         }
 

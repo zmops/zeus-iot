@@ -47,13 +47,12 @@ public class ProductEventRuleService {
     /**
      * 保存触发器
      *
-     * @param eventRuleId 触发器ID
      * @param eventRule   告警规则
      */
-    public void createProductEventRule(Long eventRuleId, ProductEventRule eventRule) {
+    public void createProductEventRule(ProductEventRule eventRule) {
         // step 1: 保存产品告警规则
         ProductEvent event = initEventRule(eventRule);
-        event.setEventRuleId(eventRuleId);
+        event.setEventRuleId(eventRule.getEventRuleId());
         DB.save(event);
 
         //step 2: 保存 表达式，方便回显
@@ -61,7 +60,7 @@ public class ProductEventRuleService {
 
         eventRule.getExpList().forEach(i -> {
             ProductEventExpression exp = initEventExpression(i);
-            exp.setEventRuleId(eventRuleId);
+            exp.setEventRuleId(eventRule.getEventRuleId());
             expList.add(exp);
         });
 
@@ -71,7 +70,7 @@ public class ProductEventRuleService {
         if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
             eventRule.getDeviceServices().forEach(i -> {
                 DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id,execute_device_id, service_id) values (:eventRuleId, :deviceId,:executeDeviceId, :serviceId)")
-                        .setParameter("eventRuleId", eventRuleId)
+                        .setParameter("eventRuleId", eventRule.getEventRuleId())
                         .setParameter("executeDeviceId", i.getExecuteDeviceId())
                         .setParameter("serviceId", i.getServiceId())
                         .execute();
@@ -80,7 +79,7 @@ public class ProductEventRuleService {
 
         //step 4: 保存关联关系
         ProductEventRelation productEventRelation = new ProductEventRelation();
-        productEventRelation.setEventRuleId(eventRuleId);
+        productEventRelation.setEventRuleId(eventRule.getEventRuleId());
         productEventRelation.setRelationId(eventRule.getProductId());
         productEventRelation.setStatus(CommonStatus.ENABLE.getCode());
         productEventRelation.setInherit(InheritStatus.NO.getCode());
@@ -293,7 +292,7 @@ public class ProductEventRuleService {
     }
 
     @Data
-    static class Hosts {
+    public static class Hosts {
         private String hostid;
         private String host;
     }

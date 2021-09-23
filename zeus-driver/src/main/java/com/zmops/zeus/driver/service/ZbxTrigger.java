@@ -86,6 +86,15 @@ public interface ZbxTrigger {
     @JsonPath("/trigger/trigger.get")
     String triggerGetByHost(@ParamName("host") String host);
 
+    /**
+     * 根据触发器名称 查询触发器
+     *
+     * @param description 触发器名称
+     */
+    @Post
+    @JsonPath("/trigger/trigger.get")
+    String triggerGetByName(@ParamName("description") String description);
+
 
     /**
      * 修改触发器状态
