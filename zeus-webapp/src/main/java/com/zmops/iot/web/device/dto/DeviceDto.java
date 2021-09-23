@@ -66,6 +66,6 @@ public class DeviceDto {
 
     private String position;
 
-    private Integer online;
+    private Integer online = 1;
 
 }
