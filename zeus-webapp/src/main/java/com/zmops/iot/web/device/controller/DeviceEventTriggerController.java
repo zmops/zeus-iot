@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +45,8 @@ public class DeviceEventTriggerController {
 
     private static final String ALARM_TAG_NAME   = "__alarm__";
     private static final String EXECUTE_TAG_NAME = "__execute__";
+    private static final String EVENT_TAG_NAME   = "__event__";
+    private static final String EVENT_TYPE_NAME  = "事件";
 
     /**
      * 触发器 详情
@@ -93,6 +96,10 @@ public class DeviceEventTriggerController {
         }
         if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
             tags.put(EXECUTE_TAG_NAME, eventRuleId + "");
+        }
+        Optional<DeviceEventRule.Expression> any = eventRule.getExpList().parallelStream().filter(o -> EVENT_TYPE_NAME.equals(o.getProductAttrType())).findAny();
+        if (any.isPresent()) {
+            tags.put(EVENT_TAG_NAME, eventRuleId + "");
         }
         for (Integer triggerId : triggerIds) {
             zbxTrigger.triggerTagCreate(triggerId, tags);
@@ -168,6 +175,10 @@ public class DeviceEventTriggerController {
         }
         if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
             tags.put(EXECUTE_TAG_NAME, eventRule.getEventRuleId() + "");
+        }
+        Optional<DeviceEventRule.Expression> any = eventRule.getExpList().parallelStream().filter(o -> EVENT_TYPE_NAME.equals(o.getProductAttrType())).findAny();
+        if (any.isPresent()) {
+            tags.put(EVENT_TAG_NAME, eventRule.getEventRuleId() + "");
         }
         for (Integer triggerId : triggerIds) {
             zbxTrigger.triggerTagCreate(triggerId, tags);
