@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
  * 宙斯服务 协议层启动
  */
 @Slf4j
-public class IOTServerStartUp {
+public class IoTServerStartUp {
 
     public static void main(String[] args) {
         IoTServerBootstrap.start();

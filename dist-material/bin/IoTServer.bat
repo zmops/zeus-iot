@@ -33,5 +33,5 @@ if not defined JAVA_HOME (
  set _EXECJAVA=java
 )
 
-start "%OAP_PROCESS_TITLE%" %_EXECJAVA% "%OAP_OPTS%" -cp "%CLASSPATH%" com.zmops.zeus.iot.server.starter.IOTServerStartUp
+start "%OAP_PROCESS_TITLE%" %_EXECJAVA% "%OAP_OPTS%" -cp "%CLASSPATH%" com.zmops.zeus.iot.server.starter.IoTServerStartUp
 endlocal
