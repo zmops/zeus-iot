@@ -1,4 +1,4 @@
-package com.zmops.zeus.iot.server.transfer.core.utils;
+package com.zmops.zeus.iot.server.transfer.utils;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;

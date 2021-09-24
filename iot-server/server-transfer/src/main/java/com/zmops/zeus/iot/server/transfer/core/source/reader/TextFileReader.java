@@ -7,7 +7,7 @@ import com.zmops.zeus.iot.server.transfer.api.Validator;
 import com.zmops.zeus.iot.server.transfer.core.FileException;
 import com.zmops.zeus.iot.server.transfer.core.message.DefaultMessage;
 import com.zmops.zeus.iot.server.transfer.metrics.PluginMetric;
-import com.zmops.zeus.iot.server.transfer.core.utils.TransferUtils;
+import com.zmops.zeus.iot.server.transfer.utils.TransferUtils;
 import com.zmops.zeus.iot.server.transfer.core.validator.PatternValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

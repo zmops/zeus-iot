@@ -1,4 +1,4 @@
-package com.zmops.zeus.iot.server.transfer.core.utils;
+package com.zmops.zeus.iot.server.transfer.utils;
 
 import com.zmops.zeus.iot.server.transfer.conf.JobConstants;
 import com.zmops.zeus.iot.server.transfer.conf.JobProfile;

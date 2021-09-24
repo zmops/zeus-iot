@@ -1,4 +1,4 @@
-package com.zmops.zeus.iot.server.transfer.core.sink;
+package com.zmops.zeus.iot.server.transfer.sender;
 
 import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
 import com.zmops.zeus.iot.server.transfer.metrics.PluginMetric;

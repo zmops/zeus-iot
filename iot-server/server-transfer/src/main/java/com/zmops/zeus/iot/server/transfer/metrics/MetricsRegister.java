@@ -7,7 +7,7 @@ import com.zmops.zeus.iot.server.transfer.metrics.gauge.GaugeInt;
 import com.zmops.zeus.iot.server.transfer.metrics.gauge.GaugeLong;
 import com.zmops.zeus.iot.server.transfer.metrics.meta.MetricMeta;
 import com.zmops.zeus.iot.server.transfer.metrics.meta.MetricsMeta;
-import com.zmops.zeus.iot.server.transfer.core.utils.TransferUtils;
+import com.zmops.zeus.iot.server.transfer.utils.TransferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

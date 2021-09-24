@@ -1,7 +1,7 @@
 package com.zmops.zeus.iot.server.transfer.core.filter;
 
 import com.zmops.zeus.iot.server.transfer.api.Filter;
-import com.zmops.zeus.iot.server.transfer.core.utils.TransferUtils;
+import com.zmops.zeus.iot.server.transfer.utils.TransferUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
