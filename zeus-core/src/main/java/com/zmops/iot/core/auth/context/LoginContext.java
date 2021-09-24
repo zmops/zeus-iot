@@ -2,8 +2,6 @@ package com.zmops.iot.core.auth.context;
 
 import com.zmops.iot.core.auth.model.LoginUser;
 
-import java.util.List;
-
 /**
  * 当前登录用户信息获取的接口
  *

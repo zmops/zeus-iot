@@ -1,6 +1,5 @@
 package com.zmops.iot.domain.product;
 
-import com.zmops.iot.domain.BaseEntity;
 import lombok.Getter;
 import lombok.Setter;
 

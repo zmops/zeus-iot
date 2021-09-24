@@ -4,7 +4,6 @@ package com.zmops.iot.web.product.service.work;
 import com.zmops.iot.async.callback.IWorker;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.device.query.QDevice;
-import com.zmops.iot.domain.product.ProductServiceRelation;
 import com.zmops.iot.domain.product.ProductStatusFunctionRelation;
 import com.zmops.iot.web.product.dto.ProductServiceDto;
 import io.ebean.DB;

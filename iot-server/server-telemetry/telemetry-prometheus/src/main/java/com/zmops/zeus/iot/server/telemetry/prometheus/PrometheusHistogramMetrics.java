@@ -18,9 +18,9 @@
 
 package com.zmops.zeus.iot.server.telemetry.prometheus;
 
-import io.prometheus.client.Histogram;
 import com.zmops.zeus.iot.server.telemetry.api.HistogramMetrics;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsTag;
+import io.prometheus.client.Histogram;
 
 /**
  * HistogramMetrics metrics in Prometheus implementor.

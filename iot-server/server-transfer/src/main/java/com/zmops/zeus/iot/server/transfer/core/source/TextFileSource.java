@@ -1,9 +1,9 @@
 package com.zmops.zeus.iot.server.transfer.core.source;
 
 
-import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
 import com.zmops.zeus.iot.server.transfer.api.Reader;
 import com.zmops.zeus.iot.server.transfer.api.Source;
+import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
 import com.zmops.zeus.iot.server.transfer.core.source.reader.TextFileReader;
 import com.zmops.zeus.iot.server.transfer.utils.FileSearchUtils;
 import org.slf4j.Logger;

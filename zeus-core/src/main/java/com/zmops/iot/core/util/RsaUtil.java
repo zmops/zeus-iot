@@ -1,7 +1,6 @@
 package com.zmops.iot.core.util;
 
 
-import com.zmops.iot.util.ToolUtil;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Cipher;

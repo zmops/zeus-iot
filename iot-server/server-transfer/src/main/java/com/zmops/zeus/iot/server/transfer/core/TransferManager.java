@@ -1,10 +1,10 @@
 package com.zmops.zeus.iot.server.transfer.core;
 
+import com.zmops.zeus.iot.server.transfer.common.AbstractDaemon;
 import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
 import com.zmops.zeus.iot.server.transfer.conf.TransferConfiguration;
 import com.zmops.zeus.iot.server.transfer.conf.TransferConstants;
 import com.zmops.zeus.iot.server.transfer.conf.TriggerProfile;
-import com.zmops.zeus.iot.server.transfer.common.AbstractDaemon;
 import com.zmops.zeus.iot.server.transfer.core.db.Db;
 import com.zmops.zeus.iot.server.transfer.core.db.JobProfileDb;
 import com.zmops.zeus.iot.server.transfer.core.db.TriggerProfileDb;

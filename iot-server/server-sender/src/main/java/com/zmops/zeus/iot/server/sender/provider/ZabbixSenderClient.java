@@ -1,6 +1,5 @@
 package com.zmops.zeus.iot.server.sender.provider;
 
-import com.zmops.zeus.iot.server.sender.provider.ZabbixSenderModuleConfig;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;

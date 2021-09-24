@@ -1,10 +1,10 @@
 package com.zmops.zeus.iot.server.transfer.core.task;
 
 
-import com.zmops.zeus.iot.server.transfer.conf.TransferConfiguration;
-import com.zmops.zeus.iot.server.transfer.conf.TransferConstants;
 import com.zmops.zeus.iot.server.transfer.api.Message;
 import com.zmops.zeus.iot.server.transfer.common.TransferThreadFactory;
+import com.zmops.zeus.iot.server.transfer.conf.TransferConfiguration;
+import com.zmops.zeus.iot.server.transfer.conf.TransferConstants;
 import com.zmops.zeus.iot.server.transfer.core.TransferManager;
 import com.zmops.zeus.iot.server.transfer.core.message.EndMessage;
 import com.zmops.zeus.iot.server.transfer.core.state.AbstractStateWrapper;

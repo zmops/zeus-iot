@@ -11,7 +11,6 @@ import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.sys.dto.SysDictTypeDto;
 import com.zmops.iot.web.sys.dto.param.DictTypeParam;
 import io.ebean.DB;
-import io.ebean.PagedList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

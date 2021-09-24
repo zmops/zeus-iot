@@ -7,7 +7,6 @@ import com.zmops.iot.domain.product.query.QProductAttribute;
 import com.zmops.iot.domain.product.query.QProductStatusFunction;
 import com.zmops.iot.domain.product.query.QProductStatusFunctionRelation;
 import com.zmops.iot.model.exception.ServiceException;
-import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductStatusJudgeRule;

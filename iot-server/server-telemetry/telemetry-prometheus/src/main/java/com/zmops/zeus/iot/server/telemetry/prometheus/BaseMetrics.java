@@ -18,9 +18,9 @@
 
 package com.zmops.zeus.iot.server.telemetry.prometheus;
 
-import io.prometheus.client.SimpleCollector;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsTag;
 import com.zmops.zeus.iot.server.telemetry.api.TelemetryRelatedContext;
+import io.prometheus.client.SimpleCollector;
 
 import java.util.HashMap;
 import java.util.Map;

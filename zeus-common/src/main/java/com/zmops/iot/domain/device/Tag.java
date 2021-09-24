@@ -1,14 +1,11 @@
 package com.zmops.iot.domain.device;
 
-import com.zmops.iot.constant.IdTypeConsts;
 import com.zmops.iot.domain.BaseEntity;
 import lombok.*;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.sql.PreparedStatement;
 
 /**
  * @author yefei

@@ -19,9 +19,9 @@
 package com.zmops.zeus.iot.server.starter;
 
 import com.zmops.zeus.iot.server.core.RunningMode;
-import com.zmops.zeus.iot.server.starter.config.ApplicationConfigLoader;
 import com.zmops.zeus.iot.server.library.module.ApplicationConfiguration;
 import com.zmops.zeus.iot.server.library.module.ModuleManager;
+import com.zmops.zeus.iot.server.starter.config.ApplicationConfigLoader;
 import com.zmops.zeus.iot.server.telemetry.TelemetryModule;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsCreator;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsTag;

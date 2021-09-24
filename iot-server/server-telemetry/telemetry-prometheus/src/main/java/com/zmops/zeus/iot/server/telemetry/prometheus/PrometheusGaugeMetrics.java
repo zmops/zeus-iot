@@ -18,9 +18,9 @@
 
 package com.zmops.zeus.iot.server.telemetry.prometheus;
 
-import io.prometheus.client.Gauge;
 import com.zmops.zeus.iot.server.telemetry.api.GaugeMetrics;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsTag;
+import io.prometheus.client.Gauge;
 
 import java.util.Optional;
 

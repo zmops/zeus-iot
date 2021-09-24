@@ -1,6 +1,5 @@
 package com.zmops.iot.web.sys.controller;
 
-import com.zmops.iot.domain.sys.SysOperationLog;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.web.sys.dto.SysOperationLogDto;
 import com.zmops.iot.web.sys.service.OperationLogService;

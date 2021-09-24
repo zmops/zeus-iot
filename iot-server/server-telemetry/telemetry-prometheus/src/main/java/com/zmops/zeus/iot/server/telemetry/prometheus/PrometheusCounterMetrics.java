@@ -18,9 +18,9 @@
 
 package com.zmops.zeus.iot.server.telemetry.prometheus;
 
-import io.prometheus.client.Counter;
 import com.zmops.zeus.iot.server.telemetry.api.CounterMetrics;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsTag;
+import io.prometheus.client.Counter;
 
 /**
  * Counter metrics in Prometheus implementor.

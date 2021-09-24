@@ -16,7 +16,6 @@
 package com.zmops.iot.web.log.factory;
 
 
-import cn.hutool.core.util.IdUtil;
 import com.zmops.iot.domain.sys.SysLoginLog;
 import com.zmops.iot.domain.sys.SysOperationLog;
 import com.zmops.iot.util.ToolUtil;

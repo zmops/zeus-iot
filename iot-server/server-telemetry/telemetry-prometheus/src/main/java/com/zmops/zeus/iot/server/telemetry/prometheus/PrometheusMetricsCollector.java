@@ -18,10 +18,10 @@
 
 package com.zmops.zeus.iot.server.telemetry.prometheus;
 
-import io.prometheus.client.Collector;
-import io.prometheus.client.CollectorRegistry;
 import com.zmops.zeus.iot.server.telemetry.api.MetricFamily;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsCollector;
+import io.prometheus.client.Collector;
+import io.prometheus.client.CollectorRegistry;
 
 import java.util.ArrayList;
 import java.util.Enumeration;

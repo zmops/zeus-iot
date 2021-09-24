@@ -6,8 +6,6 @@ import com.zmops.zeus.driver.annotation.JsonPath;
 import com.zmops.zeus.driver.annotation.ParamName;
 import com.zmops.zeus.driver.inteceptor.JsonBodyBuildInterceptor;
 
-import java.util.Map;
-
 /**
  * @author nantian created at 2021/8/10 16:32
  * <p>

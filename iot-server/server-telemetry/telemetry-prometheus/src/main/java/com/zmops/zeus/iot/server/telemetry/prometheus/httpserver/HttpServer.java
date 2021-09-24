@@ -20,6 +20,7 @@ package com.zmops.zeus.iot.server.telemetry.prometheus.httpserver;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.zmops.zeus.iot.server.library.server.ssl.HttpDynamicSslContext;
+import com.zmops.zeus.iot.server.telemetry.prometheus.PrometheusConfig;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -28,8 +29,6 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import com.zmops.zeus.iot.server.telemetry.prometheus.PrometheusConfig;
 
 import java.util.Optional;
 import java.util.concurrent.ThreadFactory;

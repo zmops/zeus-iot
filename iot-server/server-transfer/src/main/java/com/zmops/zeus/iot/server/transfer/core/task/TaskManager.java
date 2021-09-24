@@ -1,12 +1,12 @@
 package com.zmops.zeus.iot.server.transfer.core.task;
 
 
-import com.zmops.zeus.iot.server.transfer.conf.TransferConfiguration;
-import com.zmops.zeus.iot.server.transfer.conf.TransferConstants;
 import com.zmops.zeus.iot.server.transfer.common.AbstractDaemon;
 import com.zmops.zeus.iot.server.transfer.common.TransferThreadFactory;
-import com.zmops.zeus.iot.server.transfer.core.job.JobManager;
+import com.zmops.zeus.iot.server.transfer.conf.TransferConfiguration;
+import com.zmops.zeus.iot.server.transfer.conf.TransferConstants;
 import com.zmops.zeus.iot.server.transfer.core.TransferManager;
+import com.zmops.zeus.iot.server.transfer.core.job.JobManager;
 import com.zmops.zeus.iot.server.transfer.utils.TransferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

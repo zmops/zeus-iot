@@ -3,7 +3,6 @@ package com.zmops.iot.mediaType.welink;
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.alarm.MediaTypeSetting;
 import com.zmops.iot.domain.alarm.query.QMediaTypeSetting;
-import com.zmops.iot.mediaType.wechat.WechatSettings;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;

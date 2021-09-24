@@ -25,19 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import static com.zmops.iot.async.wrapper.WorkerWrapper.State.AFTER_WORK;
-import static com.zmops.iot.async.wrapper.WorkerWrapper.State.BUILDING;
-import static com.zmops.iot.async.wrapper.WorkerWrapper.State.ERROR;
-import static com.zmops.iot.async.wrapper.WorkerWrapper.State.INIT;
-import static com.zmops.iot.async.wrapper.WorkerWrapper.State.SKIP;
-import static com.zmops.iot.async.wrapper.WorkerWrapper.State.STARTED;
-import static com.zmops.iot.async.wrapper.WorkerWrapper.State.SUCCESS;
-import static com.zmops.iot.async.wrapper.WorkerWrapper.State.isState;
-import static com.zmops.iot.async.wrapper.WorkerWrapper.State.of;
-import static com.zmops.iot.async.wrapper.WorkerWrapper.State.setState;
-import static com.zmops.iot.async.wrapper.WorkerWrapper.State.states_all;
-import static com.zmops.iot.async.wrapper.WorkerWrapper.State.states_of_beforeWorkingEnd;
-import static com.zmops.iot.async.wrapper.WorkerWrapper.State.states_of_notWorked;
+import static com.zmops.iot.async.wrapper.WorkerWrapper.State.*;
 
 /**
  * 对每个worker及callback进行包装，一对一

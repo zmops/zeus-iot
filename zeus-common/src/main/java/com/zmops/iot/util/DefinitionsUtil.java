@@ -1,7 +1,6 @@
 package com.zmops.iot.util;
 
 import com.google.common.collect.Table;
-import com.zmops.iot.domain.product.ProductType;
 import com.zmops.iot.domain.sys.SysUser;
 import com.zmops.iot.model.cache.DictionaryCache;
 import com.zmops.iot.model.cache.ProductTypeCache;

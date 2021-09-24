@@ -1,12 +1,7 @@
 package com.zmops.zeus.iot.server.core.worker.data;
 
-import afu.org.checkerframework.checker.igj.qual.I;
-import com.zmops.zeus.iot.server.core.camel.IOTDeviceValue;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author nantian created at 2021/8/23 15:15

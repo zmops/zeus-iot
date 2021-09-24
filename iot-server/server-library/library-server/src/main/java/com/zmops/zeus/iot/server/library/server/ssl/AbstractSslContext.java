@@ -25,7 +25,6 @@ import io.netty.handler.ssl.SslContext;
 import lombok.AccessLevel;
 import lombok.Setter;
 
-
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLSessionContext;
 import java.util.List;

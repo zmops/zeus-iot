@@ -3,7 +3,6 @@ package com.zmops.zeus.iot.server.core.analysis.manual.history;
 import com.zmops.zeus.iot.server.core.analysis.Stream;
 import com.zmops.zeus.iot.server.core.analysis.record.Record;
 import com.zmops.zeus.iot.server.core.analysis.worker.RecordStreamProcessor;
-
 import lombok.Getter;
 import lombok.Setter;
 
