@@ -27,8 +27,8 @@ public class SenderManager {
 
     private final TaskPositionManager taskPositionManager;
     private final String              sourceFilePath;
-    private final PluginMetric metric = new PluginMetric();
-    private final     Gson         gson   = new Gson();
+    private final PluginMetric        metric = new PluginMetric();
+    private final Gson                gson   = new Gson();
 
     public SenderManager(JobProfile jobConf, String bid, String sourceFilePath) {
         taskPositionManager = TaskPositionManager.getTaskPositionManager();
@@ -45,15 +45,17 @@ public class SenderManager {
      */
     public void sendBatch(String jobId, String bid, String tid, List<byte[]> bodyList, int retry, long dataTime) {
         try {
-            bodyList.forEach(body->{
+            bodyList.forEach(body -> {
                 ItemValue itemValue = gson.fromJson(new String(body), ItemValue.class);
 
                 Record record;
 
                 if (itemValue.getType() == 3) { //uint
                     record = new UIntHistory();
-                } else {
+                } else if (itemValue.getType() == 0) {
                     record = new History();
+                } else {
+                    return;
                 }
 
                 record.setItemid(itemValue.itemid);
