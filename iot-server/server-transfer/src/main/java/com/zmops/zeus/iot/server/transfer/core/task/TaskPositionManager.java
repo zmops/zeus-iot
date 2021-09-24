@@ -20,8 +20,9 @@ import static com.zmops.zeus.iot.server.transfer.conf.CommonConstants.POSITION_S
  */
 public class TaskPositionManager extends AbstractDaemon {
 
-    private static final Logger LOGGER                = LoggerFactory.getLogger(TaskPositionManager.class);
-    public static final  int    DEFAULT_FLUSH_TIMEOUT = 3;
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskPositionManager.class);
+
+    public static final int DEFAULT_FLUSH_TIMEOUT = 3;
 
     private final TransferManager transferManager;
     private final JobProfileDb    jobConfDb;
@@ -101,7 +102,6 @@ public class TaskPositionManager extends AbstractDaemon {
     private void flushJobProfile(String jobId, JobProfile jobProfile) {
         jobTaskPositionMap.get(jobId).forEach(
                 (fileName, position) -> {
-                    LOGGER.info(" ==========> 写入本地存储行号：{}", position);
                     jobProfile.setLong(fileName + POSITION_SUFFIX, position);
                 }
         );
