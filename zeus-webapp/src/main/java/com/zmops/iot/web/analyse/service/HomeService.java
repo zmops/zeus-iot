@@ -11,6 +11,7 @@ import com.zmops.iot.domain.device.query.QServiceExecuteRecord;
 import com.zmops.iot.domain.product.query.QProduct;
 import com.zmops.iot.enums.ValueType;
 import com.zmops.iot.util.LocalDateTimeUtils;
+import com.zmops.iot.util.ParseUtil;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.alarm.dto.AlarmDto;
 import com.zmops.iot.web.alarm.dto.param.AlarmParam;
@@ -374,11 +375,11 @@ public class HomeService {
 
         Map<String, Object> dataMap = new ConcurrentHashMap<>(4);
 
-        dataMap.put("totalRecordNum", getRecordNum());
-        dataMap.put("todayRecordNum", getTodayRecordNum(LocalDateTimeUtils.formatTime(LocalDateTimeUtils.getDayStart(LocalDateTime.now()))));
+        dataMap.put("totalRecordNum", ParseUtil.getCommaFormat(getRecordNum() + ""));
+        dataMap.put("todayRecordNum", ParseUtil.getCommaFormat(getTodayRecordNum(LocalDateTimeUtils.formatTime(LocalDateTimeUtils.getDayStart(LocalDateTime.now()))) + ""));
 
         int serviceExecuteNum = new QServiceExecuteRecord().findCount();
-        dataMap.put("serviceExecuteNum", serviceExecuteNum);
+        dataMap.put("serviceExecuteNum", ParseUtil.getCommaFormat(serviceExecuteNum + ""));
 
         return dataMap;
     }
