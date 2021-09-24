@@ -42,11 +42,13 @@ public class SyncTaosTagSchedule {
         if (ToolUtil.isEmpty(tagList)) {
             return;
         }
-        Map<String, List<Tag>> tagMap           = tagList.parallelStream().collect(Collectors.groupingBy(Tag::getSid));
-        String                 describe         = tdEngineRest.executeSql("DESCRIBE history;");
-        TaosResponseData       taosResponseData = JSON.parseObject(describe, TaosResponseData.class);
-        String[][]             data             = taosResponseData.getData();
-        List<String>           taosTagNames     = new ArrayList<>();
+        Map<String, List<Tag>> tagMap   = tagList.parallelStream().collect(Collectors.groupingBy(Tag::getSid));
+        String                 describe = tdEngineRest.executeSql("DESCRIBE history;");
+
+        TaosResponseData taosResponseData = JSON.parseObject(describe, TaosResponseData.class);
+        String[][]       data             = taosResponseData.getData();
+
+        List<String> taosTagNames = new ArrayList<>();
         for (String[] datum : data) {
             if (ToolUtil.isNotEmpty(datum[3]) && "TAG".equals(datum[3])) {
                 taosTagNames.add(datum[0]);
@@ -56,6 +58,7 @@ public class SyncTaosTagSchedule {
         if (ToolUtil.isEmpty(taosTagNames)) {
             return;
         }
+
         List<String> tagNames = tagList.parallelStream().map(Tag::getTag).collect(Collectors.toList());
         //新增taos没有的标签
         addTaosTag(tagNames, taosTagNames);
@@ -81,10 +84,13 @@ public class SyncTaosTagSchedule {
     private void delTaosTag(List<String> list1, List<String> list2) {
         List<String> tagNames     = list2;
         List<String> taosTagNames = list1;
+
         taosTagNames.removeAll(tagNames);
+
         if (ToolUtil.isEmpty(taosTagNames)) {
             return;
         }
+
         taosTagNames.forEach(tagName -> {
             if ("deviceid".equals(tagName) || "itemid".equals(tagName)) {
                 return;
@@ -97,10 +103,12 @@ public class SyncTaosTagSchedule {
     private void addTaosTag(List<String> list1, List<String> list2) {
         List<String> tagNames     = list1;
         List<String> taosTagNames = list2;
+
         tagNames.removeAll(taosTagNames);
         if (ToolUtil.isEmpty(tagNames)) {
             return;
         }
+
         tagNames.forEach(tagName -> {
             tdEngineRest.executeSql("ALTER STABLE history_uint ADD TAG " + tagName + " NCHAR(16)");
             tdEngineRest.executeSql("ALTER STABLE history ADD TAG " + tagName + " NCHAR(16)");
