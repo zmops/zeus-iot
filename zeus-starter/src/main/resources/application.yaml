@@ -49,6 +49,9 @@ forest:
     zbxServerIp: ${ZEUS_ZABBIX_HOST:127.0.0.1}
     zbxServerPort: ${ZEUS_ZABBIX_PORT:80}
     zbxApiToken: 5376d4510465d6873d6c41076f26c58dae42701941e276971e8f068b76e660d0
+    taosUrl: http://${ZEUS_TAOS_HOST:127.0.0.1}:${ZEUS_TAOS_REST_PORT:6041}/rest/sql/${ZEUS_TAOS_DB:zeus_data}
+    taosUser: root
+    taosPwd: taosdata
 
 nats:
   url: nats://${NATS_HOST:127.0.0.1}:${NATS_PORT:4222}
