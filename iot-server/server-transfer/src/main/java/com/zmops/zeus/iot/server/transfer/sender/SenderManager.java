@@ -5,10 +5,9 @@ import com.zmops.zeus.iot.server.core.analysis.manual.history.History;
 import com.zmops.zeus.iot.server.core.analysis.manual.history.UIntHistory;
 import com.zmops.zeus.iot.server.core.analysis.record.Record;
 import com.zmops.zeus.iot.server.core.analysis.worker.RecordStreamProcessor;
-import com.zmops.zeus.iot.server.core.servlet.DataTransferHandler;
 import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
-import com.zmops.zeus.iot.server.transfer.metrics.PluginMetric;
 import com.zmops.zeus.iot.server.transfer.core.task.TaskPositionManager;
+import com.zmops.zeus.iot.server.transfer.metrics.PluginMetric;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -28,8 +27,8 @@ public class SenderManager {
 
     private final TaskPositionManager taskPositionManager;
     private final String              sourceFilePath;
-    private final PluginMetric metric = new PluginMetric();
-    private final     Gson         gson   = new Gson();
+    private final PluginMetric        metric = new PluginMetric();
+    private final Gson                gson   = new Gson();
 
     public SenderManager(JobProfile jobConf, String bid, String sourceFilePath) {
         taskPositionManager = TaskPositionManager.getTaskPositionManager();
@@ -46,15 +45,17 @@ public class SenderManager {
      */
     public void sendBatch(String jobId, String bid, String tid, List<byte[]> bodyList, int retry, long dataTime) {
         try {
-            bodyList.forEach(body->{
+            bodyList.forEach(body -> {
                 ItemValue itemValue = gson.fromJson(new String(body), ItemValue.class);
 
                 Record record;
 
                 if (itemValue.getType() == 3) { //uint
                     record = new UIntHistory();
-                } else {
+                } else if (itemValue.getType() == 0) {
                     record = new History();
+                } else {
+                    return;
                 }
 
                 record.setItemid(itemValue.itemid);
