@@ -4,19 +4,25 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.DeviceOnlineReport;
+import com.zmops.iot.domain.device.ServiceExecuteRecord;
 import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.device.query.QDeviceOnlineReport;
+import com.zmops.iot.domain.device.query.QServiceExecuteRecord;
 import com.zmops.iot.domain.product.query.QProduct;
 import com.zmops.iot.enums.ValueType;
 import com.zmops.iot.util.LocalDateTimeUtils;
 import com.zmops.iot.util.ToolUtil;
+import com.zmops.iot.web.alarm.dto.AlarmDto;
 import com.zmops.iot.web.alarm.dto.param.AlarmParam;
 import com.zmops.iot.web.alarm.service.AlarmService;
 import com.zmops.iot.web.analyse.dto.LatestDto;
+import com.zmops.iot.web.device.dto.DeviceDto;
 import com.zmops.zeus.driver.entity.ZbxItemInfo;
 import com.zmops.zeus.driver.entity.ZbxProblemInfo;
 import com.zmops.zeus.driver.service.ZbxHost;
 import com.zmops.zeus.driver.service.ZbxItem;
+import io.ebean.DB;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -228,5 +234,113 @@ public class HomeService {
         alarmMap.put("today", todayAlarmNum);
 
         return alarmMap;
+    }
+
+    public Map<String, Object> getEventNum(long timeFrom, long timeTill) {
+        AlarmParam           alarmParam = new AlarmParam();
+        List<ZbxProblemInfo> alarmList  = alarmService.getEventProblem(alarmParam);
+        Map<String, Object>  alarmMap   = new ConcurrentHashMap<>(3);
+
+        if (ToolUtil.isNotEmpty(alarmList)) {
+
+            alarmMap.put("total", alarmList.size());
+            Collections.reverse(alarmList);
+            //过滤出指定时间段内的告警 并顺序排序
+            Map<String, Map<String, Long>> tmpMap = alarmList.parallelStream()
+                    .filter(o -> !o.getSeverity().equals("0")
+                            && Long.parseLong(o.getClock()) >= timeFrom
+                            && Long.parseLong(o.getClock()) < timeTill
+                    ).collect(
+                            Collectors.groupingBy(ZbxProblemInfo::getSeverity,
+                                    Collectors.groupingBy(o -> LocalDateTimeUtils.convertTimeToString(Integer.parseInt(o.getClock()), "yyyy-MM-dd"), Collectors.counting()
+                                    )
+                            )
+                    );
+            List<Map<String, Object>> trendsList = new ArrayList<>();
+            tmpMap.forEach((key, value) -> {
+                Map<String, Object> trendsMap = new ConcurrentHashMap<>(2);
+                List                list      = new ArrayList<>();
+                value.forEach((date, val) -> {
+                    Map<String, Object> valMap = new ConcurrentHashMap<>(2);
+                    valMap.put("date", date);
+                    valMap.put("val", val);
+                    list.add(valMap);
+                });
+                trendsMap.put("name", severity[Integer.parseInt(key)]);
+                trendsMap.put("data", list);
+                trendsList.add(trendsMap);
+            });
+            alarmMap.put("trends", trendsList);
+        }
+
+
+        //今日开始时间
+        Long       timeStart  = LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.getDayStart(LocalDateTime.now()));
+        AlarmParam todayParam = new AlarmParam();
+        todayParam.setTimeFrom(timeStart);
+        List<ZbxProblemInfo> todayAlarmList = alarmService.getZbxAlarm(todayParam);
+        Long                 todayAlarmNum  = todayAlarmList.parallelStream().count();
+        alarmMap.put("today", todayAlarmNum);
+
+        return alarmMap;
+    }
+
+    public Map<String, Long> getAlarmTop(long timeFrom, long timeTill) {
+        AlarmParam alarmParam = new AlarmParam();
+        alarmParam.setTimeTill(timeTill);
+        alarmParam.setTimeFrom(timeFrom);
+        List<ZbxProblemInfo> alarmList = alarmService.getZbxAlarm(alarmParam);
+        Map<String, Long>    alarmMap  = new ConcurrentHashMap<>(3);
+
+        if (ToolUtil.isNotEmpty(alarmList)) {
+
+            List<Integer> triggerIds = alarmList.parallelStream().map(ZbxProblemInfo::getObjectid).map(Integer::parseInt).collect(Collectors.toList());
+            List<DeviceDto> deviceList = DB.findDto(DeviceDto.class, "select name,r.zbx_id from device d INNER JOIN (select relation_id,zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.relation_id=d.device_id")
+                    .setParameter("zbxIds", triggerIds).findList();
+            Map<String, String> deviceMap = deviceList.parallelStream().collect(Collectors.toMap(DeviceDto::getZbxId, DeviceDto::getName));
+
+
+            List<AlarmDto> alarmDtoList = new ArrayList<>();
+            alarmList.forEach(zbxProblemInfo -> {
+                AlarmDto alarmDto = new AlarmDto();
+                BeanUtils.copyProperties(zbxProblemInfo, alarmDto);
+                alarmDto.setRClock(zbxProblemInfo.getR_clock());
+                alarmDto.setDeviceName("未知设备");
+                if (null != deviceMap.get(zbxProblemInfo.getObjectid())) {
+                    alarmDto.setDeviceName(deviceMap.get(zbxProblemInfo.getObjectid()));
+                }
+                alarmDtoList.add(alarmDto);
+            });
+
+            alarmMap = alarmDtoList.parallelStream().collect(Collectors.groupingBy(AlarmDto::getDeviceName, Collectors.counting()));
+        }
+        return alarmMap;
+    }
+
+    public Map<String, Object> serviceExecuteNum(long timeFrom, long timeTill) {
+        List<ServiceExecuteRecord> list = new QServiceExecuteRecord().createTime.ge(LocalDateTimeUtils.getLDTBySeconds((int) timeFrom))
+                .createTime.lt(LocalDateTimeUtils.getLDTBySeconds((int) timeTill)).orderBy().createTime.asc().findList();
+        Map<String, Object> executeMap = new ConcurrentHashMap<>(3);
+        if (ToolUtil.isNotEmpty(list)) {
+            executeMap.put("total", list.size());
+
+            Map<String, Long> tmpMap = list.parallelStream().collect(Collectors.groupingBy(o -> LocalDateTimeUtils.formatTime(o.getCreateTime(),
+                    "yyyy-MM-dd"), Collectors.counting()));
+
+            List<Map<String, Object>> trendsList = new ArrayList<>();
+            tmpMap.forEach((key, value) -> {
+                Map<String, Object> valMap = new ConcurrentHashMap<>(2);
+                valMap.put("date", key);
+                valMap.put("val", value);
+                trendsList.add(valMap);
+            });
+            executeMap.put("trends", trendsList);
+        }
+        //今日开始时间
+        long timeStart = LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.getDayStart(LocalDateTime.now()));
+        long todayNum  = new QServiceExecuteRecord().createTime.ge(LocalDateTimeUtils.getLDTBySeconds((int) timeStart)).findCount();
+        executeMap.put("today", todayNum);
+
+        return executeMap;
     }
 }

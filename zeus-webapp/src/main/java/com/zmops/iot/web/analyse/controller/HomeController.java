@@ -54,6 +54,31 @@ public class HomeController {
     }
 
     /**
+     * 事件数量统计
+     */
+    @RequestMapping("/eventNum")
+    public ResponseData getEventNum(@RequestParam("timeFrom") long timeFrom, @RequestParam("timeTill") long timeTill) {
+        return ResponseData.success(homeService.getEventNum(timeFrom, timeTill));
+    }
+
+    /**
+     * 告警TOP统计
+     */
+    @RequestMapping("/alarmTop")
+    public ResponseData getAlarmTop(@RequestParam("timeFrom") long timeFrom, @RequestParam("timeTill") long timeTill) {
+        return ResponseData.success(homeService.getAlarmTop(timeFrom, timeTill));
+    }
+
+
+    /**
+     * 服务调用统计
+     */
+    @RequestMapping("/serviceExecuteNum")
+    public ResponseData serviceExecuteNum(@RequestParam("timeFrom") long timeFrom, @RequestParam("timeTill") long timeTill) {
+        return ResponseData.success(homeService.serviceExecuteNum(timeFrom, timeTill));
+    }
+
+    /**
      * 获取 数据图形展示
      *
      * @param response http响应
