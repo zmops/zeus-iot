@@ -1,7 +1,7 @@
 package com.zmops.zeus.iot.server.transfer.core.sink;
 
 import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
-import com.zmops.zeus.iot.server.transfer.core.metrics.PluginMetric;
+import com.zmops.zeus.iot.server.transfer.metrics.PluginMetric;
 import com.zmops.zeus.iot.server.transfer.core.task.TaskPositionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

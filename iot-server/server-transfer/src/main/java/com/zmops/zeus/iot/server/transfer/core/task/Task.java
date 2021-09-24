@@ -1,9 +1,9 @@
 package com.zmops.zeus.iot.server.transfer.core.task;
 
 import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
-import com.zmops.zeus.iot.server.transfer.core.api.Channel;
-import com.zmops.zeus.iot.server.transfer.core.api.Reader;
-import com.zmops.zeus.iot.server.transfer.core.api.Sink;
+import com.zmops.zeus.iot.server.transfer.api.Channel;
+import com.zmops.zeus.iot.server.transfer.api.Reader;
+import com.zmops.zeus.iot.server.transfer.api.Sink;
 
 
 /**

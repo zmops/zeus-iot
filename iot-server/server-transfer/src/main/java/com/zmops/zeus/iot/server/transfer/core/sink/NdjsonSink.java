@@ -2,9 +2,9 @@ package com.zmops.zeus.iot.server.transfer.core.sink;
 
 import com.zmops.zeus.iot.server.transfer.conf.CommonConstants;
 import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
-import com.zmops.zeus.iot.server.transfer.core.api.Message;
-import com.zmops.zeus.iot.server.transfer.core.api.Sink;
-import com.zmops.zeus.iot.server.transfer.core.common.AgentThreadFactory;
+import com.zmops.zeus.iot.server.transfer.api.Message;
+import com.zmops.zeus.iot.server.transfer.api.Sink;
+import com.zmops.zeus.iot.server.transfer.common.TransferThreadFactory;
 import com.zmops.zeus.iot.server.transfer.core.message.EndMessage;
 import com.zmops.zeus.iot.server.transfer.core.message.PackProxyMessage;
 import com.zmops.zeus.iot.server.transfer.core.message.ProxyMessage;
@@ -39,7 +39,7 @@ public class NdjsonSink implements Sink {
     private int maxQueueNumber;
 
     private final ExecutorService executorService =
-            new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new AgentThreadFactory("ProxySink"));
+            new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new TransferThreadFactory("ProxySink"));
 
     private volatile boolean shutdown = false;
 

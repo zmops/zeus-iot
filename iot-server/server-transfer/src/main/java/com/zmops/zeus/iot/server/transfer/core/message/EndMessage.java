@@ -1,6 +1,6 @@
 package com.zmops.zeus.iot.server.transfer.core.message;
 
-import com.zmops.zeus.iot.server.transfer.core.api.Message;
+import com.zmops.zeus.iot.server.transfer.api.Message;
 
 import java.util.HashMap;
 import java.util.Map;

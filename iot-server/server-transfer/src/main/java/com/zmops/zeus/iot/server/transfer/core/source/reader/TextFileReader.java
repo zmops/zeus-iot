@@ -1,12 +1,12 @@
 package com.zmops.zeus.iot.server.transfer.core.source.reader;
 
 import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
-import com.zmops.zeus.iot.server.transfer.core.api.Message;
-import com.zmops.zeus.iot.server.transfer.core.api.Reader;
-import com.zmops.zeus.iot.server.transfer.core.api.Validator;
-import com.zmops.zeus.iot.server.transfer.core.exception.FileException;
+import com.zmops.zeus.iot.server.transfer.api.Message;
+import com.zmops.zeus.iot.server.transfer.api.Reader;
+import com.zmops.zeus.iot.server.transfer.api.Validator;
+import com.zmops.zeus.iot.server.transfer.core.FileException;
 import com.zmops.zeus.iot.server.transfer.core.message.DefaultMessage;
-import com.zmops.zeus.iot.server.transfer.core.metrics.PluginMetric;
+import com.zmops.zeus.iot.server.transfer.metrics.PluginMetric;
 import com.zmops.zeus.iot.server.transfer.core.utils.TransferUtils;
 import com.zmops.zeus.iot.server.transfer.core.validator.PatternValidator;
 import org.apache.commons.lang3.StringUtils;

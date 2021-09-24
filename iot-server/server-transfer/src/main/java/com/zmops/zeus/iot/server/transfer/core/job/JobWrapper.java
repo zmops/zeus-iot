@@ -3,7 +3,7 @@ package com.zmops.zeus.iot.server.transfer.core.job;
 
 import com.zmops.zeus.iot.server.transfer.conf.TransferConfiguration;
 import com.zmops.zeus.iot.server.transfer.conf.TransferConstants;
-import com.zmops.zeus.iot.server.transfer.core.manager.TransferManager;
+import com.zmops.zeus.iot.server.transfer.core.TransferManager;
 import com.zmops.zeus.iot.server.transfer.core.state.AbstractStateWrapper;
 import com.zmops.zeus.iot.server.transfer.core.state.State;
 import com.zmops.zeus.iot.server.transfer.core.task.Task;

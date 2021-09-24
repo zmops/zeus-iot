@@ -4,11 +4,11 @@ package com.zmops.zeus.iot.server.transfer.core.job;
 import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
 import com.zmops.zeus.iot.server.transfer.conf.TransferConfiguration;
 import com.zmops.zeus.iot.server.transfer.conf.TransferConstants;
-import com.zmops.zeus.iot.server.transfer.core.common.AbstractDaemon;
-import com.zmops.zeus.iot.server.transfer.core.common.AgentThreadFactory;
+import com.zmops.zeus.iot.server.transfer.common.AbstractDaemon;
+import com.zmops.zeus.iot.server.transfer.common.TransferThreadFactory;
 import com.zmops.zeus.iot.server.transfer.core.db.JobProfileDb;
 import com.zmops.zeus.iot.server.transfer.core.db.StateSearchKey;
-import com.zmops.zeus.iot.server.transfer.core.manager.TransferManager;
+import com.zmops.zeus.iot.server.transfer.core.TransferManager;
 import com.zmops.zeus.iot.server.transfer.core.utils.TransferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +61,7 @@ public class JobManager extends AbstractDaemon {
                 0, Integer.MAX_VALUE,
                 60L, TimeUnit.SECONDS,
                 new SynchronousQueue<>(),
-                new AgentThreadFactory("job"));
+                new TransferThreadFactory("job"));
 
         this.jobs = new ConcurrentHashMap<>();
         this.pendingJobs = new ConcurrentHashMap<>();

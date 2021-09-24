@@ -3,9 +3,9 @@ package com.zmops.zeus.iot.server.transfer.core.channel;
 
 import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
 import com.zmops.zeus.iot.server.transfer.conf.TransferConstants;
-import com.zmops.zeus.iot.server.transfer.core.api.Channel;
-import com.zmops.zeus.iot.server.transfer.core.api.Message;
-import com.zmops.zeus.iot.server.transfer.core.metrics.PluginMetric;
+import com.zmops.zeus.iot.server.transfer.api.Channel;
+import com.zmops.zeus.iot.server.transfer.api.Message;
+import com.zmops.zeus.iot.server.transfer.metrics.PluginMetric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

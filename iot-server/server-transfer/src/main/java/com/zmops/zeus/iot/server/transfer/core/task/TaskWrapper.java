@@ -3,9 +3,9 @@ package com.zmops.zeus.iot.server.transfer.core.task;
 
 import com.zmops.zeus.iot.server.transfer.conf.TransferConfiguration;
 import com.zmops.zeus.iot.server.transfer.conf.TransferConstants;
-import com.zmops.zeus.iot.server.transfer.core.api.Message;
-import com.zmops.zeus.iot.server.transfer.core.common.AgentThreadFactory;
-import com.zmops.zeus.iot.server.transfer.core.manager.TransferManager;
+import com.zmops.zeus.iot.server.transfer.api.Message;
+import com.zmops.zeus.iot.server.transfer.common.TransferThreadFactory;
+import com.zmops.zeus.iot.server.transfer.core.TransferManager;
 import com.zmops.zeus.iot.server.transfer.core.message.EndMessage;
 import com.zmops.zeus.iot.server.transfer.core.state.AbstractStateWrapper;
 import com.zmops.zeus.iot.server.transfer.core.state.State;
@@ -50,7 +50,7 @@ public class TaskWrapper extends AbstractStateWrapper {
             executorService = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
                     60L, TimeUnit.SECONDS,
                     new SynchronousQueue<Runnable>(),
-                    new AgentThreadFactory("task-reader-writer"));
+                    new TransferThreadFactory("task-reader-writer"));
         }
 
         doChangeState(State.ACCEPTED);

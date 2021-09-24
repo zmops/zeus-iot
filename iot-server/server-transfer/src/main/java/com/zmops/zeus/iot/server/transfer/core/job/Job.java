@@ -3,10 +3,10 @@ package com.zmops.zeus.iot.server.transfer.core.job;
 
 import com.zmops.zeus.iot.server.transfer.conf.JobConstants;
 import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
-import com.zmops.zeus.iot.server.transfer.core.api.Channel;
-import com.zmops.zeus.iot.server.transfer.core.api.Reader;
-import com.zmops.zeus.iot.server.transfer.core.api.Sink;
-import com.zmops.zeus.iot.server.transfer.core.api.Source;
+import com.zmops.zeus.iot.server.transfer.api.Channel;
+import com.zmops.zeus.iot.server.transfer.api.Reader;
+import com.zmops.zeus.iot.server.transfer.api.Sink;
+import com.zmops.zeus.iot.server.transfer.api.Source;
 import com.zmops.zeus.iot.server.transfer.core.channel.MemoryChannel;
 import com.zmops.zeus.iot.server.transfer.core.sink.NdjsonSink;
 import com.zmops.zeus.iot.server.transfer.core.source.TextFileSource;

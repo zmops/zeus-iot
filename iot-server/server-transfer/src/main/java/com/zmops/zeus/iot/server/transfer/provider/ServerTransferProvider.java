@@ -2,7 +2,7 @@ package com.zmops.zeus.iot.server.transfer.provider;
 
 import com.zmops.zeus.iot.server.core.CoreModule;
 import com.zmops.zeus.iot.server.library.module.*;
-import com.zmops.zeus.iot.server.transfer.core.manager.TransferManager;
+import com.zmops.zeus.iot.server.transfer.core.TransferManager;
 import com.zmops.zeus.iot.server.transfer.module.ServerTransferModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

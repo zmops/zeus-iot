@@ -3,10 +3,10 @@ package com.zmops.zeus.iot.server.transfer.core.task;
 
 import com.zmops.zeus.iot.server.transfer.conf.TransferConfiguration;
 import com.zmops.zeus.iot.server.transfer.conf.TransferConstants;
-import com.zmops.zeus.iot.server.transfer.core.common.AbstractDaemon;
-import com.zmops.zeus.iot.server.transfer.core.common.AgentThreadFactory;
+import com.zmops.zeus.iot.server.transfer.common.AbstractDaemon;
+import com.zmops.zeus.iot.server.transfer.common.TransferThreadFactory;
 import com.zmops.zeus.iot.server.transfer.core.job.JobManager;
-import com.zmops.zeus.iot.server.transfer.core.manager.TransferManager;
+import com.zmops.zeus.iot.server.transfer.core.TransferManager;
 import com.zmops.zeus.iot.server.transfer.core.utils.TransferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public class TaskManager extends AbstractDaemon {
                 0, Integer.MAX_VALUE,
                 60L, TimeUnit.SECONDS,
                 new SynchronousQueue<>(),
-                new AgentThreadFactory("task"));
+                new TransferThreadFactory("task"));
 
         // metric for task level
         taskMetrics = TaskMetrics.create();

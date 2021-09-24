@@ -1,10 +1,10 @@
 package com.zmops.zeus.iot.server.transfer.core.job;
 
 
-import com.zmops.zeus.iot.server.transfer.core.metrics.Metric;
-import com.zmops.zeus.iot.server.transfer.core.metrics.Metrics;
-import com.zmops.zeus.iot.server.transfer.core.metrics.MetricsRegister;
-import com.zmops.zeus.iot.server.transfer.core.metrics.gauge.GaugeInt;
+import com.zmops.zeus.iot.server.transfer.metrics.Metric;
+import com.zmops.zeus.iot.server.transfer.metrics.Metrics;
+import com.zmops.zeus.iot.server.transfer.metrics.MetricsRegister;
+import com.zmops.zeus.iot.server.transfer.metrics.gauge.GaugeInt;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

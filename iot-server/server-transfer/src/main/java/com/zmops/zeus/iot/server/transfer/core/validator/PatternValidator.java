@@ -1,7 +1,7 @@
 package com.zmops.zeus.iot.server.transfer.core.validator;
 
 
-import com.zmops.zeus.iot.server.transfer.core.api.Validator;
+import com.zmops.zeus.iot.server.transfer.api.Validator;
 
 public class PatternValidator implements Validator {
 
