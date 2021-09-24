@@ -113,7 +113,7 @@ public class LocalDateTimeUtils {
 
     // 获取一天的开始时间，2017,7,22 00:00
     public static LocalDateTime getDayStart(LocalDateTime time) {
-        return time.withHour(0).withMinute(0).withSecond(0).withNano(0);
+        return time.withHour(0).withMinute(0).withSecond(1).withNano(0);
     }
 
     // 获取一天的结束时间，2017,7,22 23:59:59.999999999
@@ -193,6 +193,6 @@ public class LocalDateTimeUtils {
     }
 
     public static void main(String[] args) {
-        System.out.println(getSecondsByStr("2021-08-18T14:25:38.059"));
+        System.out.println(formatTime(getDayStart(LocalDateTime.now())));
     }
 }

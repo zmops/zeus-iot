@@ -17,8 +17,10 @@ import com.zmops.iot.web.alarm.dto.param.AlarmParam;
 import com.zmops.iot.web.alarm.service.AlarmService;
 import com.zmops.iot.web.analyse.dto.LatestDto;
 import com.zmops.iot.web.device.dto.DeviceDto;
+import com.zmops.iot.web.device.dto.TaosResponseData;
 import com.zmops.zeus.driver.entity.ZbxItemInfo;
 import com.zmops.zeus.driver.entity.ZbxProblemInfo;
+import com.zmops.zeus.driver.service.TDEngineRest;
 import com.zmops.zeus.driver.service.ZbxHost;
 import com.zmops.zeus.driver.service.ZbxItem;
 import io.ebean.DB;
@@ -50,6 +52,9 @@ public class HomeService {
 
     @Autowired
     AlarmService alarmService;
+
+    @Autowired
+    TDEngineRest tdEngineRest;
 
     private static String hostId = "";
 
@@ -236,6 +241,9 @@ public class HomeService {
         return alarmMap;
     }
 
+    /**
+     * 事件数量统计
+     */
     public Map<String, Object> getEventNum(long timeFrom, long timeTill) {
         AlarmParam           alarmParam = new AlarmParam();
         List<ZbxProblemInfo> alarmList  = alarmService.getEventProblem(alarmParam);
@@ -285,12 +293,15 @@ public class HomeService {
         return alarmMap;
     }
 
-    public Map<String, Long> getAlarmTop(long timeFrom, long timeTill) {
+    /**
+     * 告警TOP统计
+     */
+    public List<Map<String, Object>> getAlarmTop(long timeFrom, long timeTill) {
         AlarmParam alarmParam = new AlarmParam();
         alarmParam.setTimeTill(timeTill);
         alarmParam.setTimeFrom(timeFrom);
         List<ZbxProblemInfo> alarmList = alarmService.getZbxAlarm(alarmParam);
-        Map<String, Long>    alarmMap  = new ConcurrentHashMap<>(3);
+        Map<String, Long>    tmpMap    = new ConcurrentHashMap<>();
 
         if (ToolUtil.isNotEmpty(alarmList)) {
 
@@ -312,11 +323,23 @@ public class HomeService {
                 alarmDtoList.add(alarmDto);
             });
 
-            alarmMap = alarmDtoList.parallelStream().collect(Collectors.groupingBy(AlarmDto::getDeviceName, Collectors.counting()));
+            tmpMap = alarmDtoList.parallelStream().collect(Collectors.groupingBy(AlarmDto::getDeviceName, Collectors.counting()));
         }
-        return alarmMap;
+        List<Map<String, Object>> topList = new ArrayList<>();
+        tmpMap.forEach((key, value) -> {
+            Map<String, Object> alarmMap = new ConcurrentHashMap<>(2);
+            alarmMap.put("name", key);
+            alarmMap.put("value", value);
+            topList.add(alarmMap);
+        });
+        topList.sort(Comparator.comparing(o -> Integer.parseInt(o.get("value").toString())));
+        topList.subList(0, Math.min(topList.size(), 5));
+        return topList;
     }
 
+    /**
+     * 服务调用统计
+     */
     public Map<String, Object> serviceExecuteNum(long timeFrom, long timeTill) {
         List<ServiceExecuteRecord> list = new QServiceExecuteRecord().createTime.ge(LocalDateTimeUtils.getLDTBySeconds((int) timeFrom))
                 .createTime.lt(LocalDateTimeUtils.getLDTBySeconds((int) timeTill)).orderBy().createTime.asc().findList();
@@ -342,5 +365,53 @@ public class HomeService {
         executeMap.put("today", todayNum);
 
         return executeMap;
+    }
+
+    /**
+     * 数据量统计
+     */
+    public Map<String, Object> dataLevel() {
+
+        Map<String, Object> dataMap = new ConcurrentHashMap<>(4);
+
+        dataMap.put("totalRecordNum", getRecordNum());
+        dataMap.put("todayRecordNum", getTodayRecordNum(LocalDateTimeUtils.formatTime(LocalDateTimeUtils.getDayStart(LocalDateTime.now()))));
+
+        int serviceExecuteNum = new QServiceExecuteRecord().findCount();
+        dataMap.put("serviceExecuteNum", serviceExecuteNum);
+
+        return dataMap;
+    }
+
+    private int getRecordNum() {
+        int    totalRecord = 0;
+        String sql         = "select count(1) from history";
+        totalRecord += getRecordNum(sql);
+
+        sql = "select count(1) from history_uint";
+        totalRecord += getRecordNum(sql);
+
+        return totalRecord;
+    }
+
+    private int getTodayRecordNum(String time) {
+        int    totalRecord = 0;
+        String sql         = "select count(1) from history where clock>'" + time + "'";
+        totalRecord += getRecordNum(sql);
+
+        sql = "select count(1) from history_uint where clock>'" + time + "'";
+        totalRecord += getRecordNum(sql);
+
+        return totalRecord;
+    }
+
+    private int getRecordNum(String sql) {
+        String           res_history      = tdEngineRest.executeSql(sql);
+        TaosResponseData taosResponseData = JSON.parseObject(res_history, TaosResponseData.class);
+        String[][]       data_history     = taosResponseData.getData();
+        if (data_history.length > 0) {
+            return Integer.parseInt(data_history[0][0]);
+        }
+        return 0;
     }
 }

@@ -79,6 +79,15 @@ public class HomeController {
     }
 
     /**
+     * 数据量统计
+     */
+    @RequestMapping("/dataLevel")
+    public ResponseData dataLevel() {
+        return ResponseData.success(homeService.dataLevel());
+    }
+
+
+    /**
      * 获取 数据图形展示
      *
      * @param response http响应

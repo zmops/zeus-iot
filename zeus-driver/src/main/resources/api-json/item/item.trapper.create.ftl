@@ -6,6 +6,8 @@
         "key_": "${itemKey}",
         "hostid": "${hostId}",
         "type": ${source},
+        "trends":"0",
+        "history":"30d"
         <#if source == '18'>
             "master_itemid":${masterItemid},
         </#if>
