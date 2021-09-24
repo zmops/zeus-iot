@@ -44,8 +44,11 @@ core:
 
 # ndjson file read realtime
 server-transfer:
-  selector: ${ZS_SERVER_TRANSFER:-}
+  selector: ${ZS_SERVER_TRANSFER:default}
   default:
+    name: ${ZS_TRANSFER_NAME:zeus-transfer}
+    pattern: ${ZS_TRANSFER_PATTERN:E:\data\history-history-syncer-\\d.ndjson}
+    fileMaxWait: ${ZS_TRANSFER_FILE_MAXWAIT:5}
 
 # tdengine storage realtime
 storage:

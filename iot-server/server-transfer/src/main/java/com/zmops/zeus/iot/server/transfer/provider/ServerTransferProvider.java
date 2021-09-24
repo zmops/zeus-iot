@@ -1,5 +1,6 @@
 package com.zmops.zeus.iot.server.transfer.provider;
 
+import com.zmops.zeus.iot.server.core.CoreModule;
 import com.zmops.zeus.iot.server.library.module.*;
 import com.zmops.zeus.iot.server.transfer.core.manager.TransferManager;
 import com.zmops.zeus.iot.server.transfer.module.ServerTransferModule;
@@ -13,10 +14,10 @@ public class ServerTransferProvider extends ModuleProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerTransferProvider.class);
 
-    private final ServerTransferConfig serverTransferConfig;
+    private final ServerTransferConfig config;
 
     public ServerTransferProvider() {
-        this.serverTransferConfig = new ServerTransferConfig();
+        this.config = new ServerTransferConfig();
     }
 
     @Override
@@ -31,7 +32,7 @@ public class ServerTransferProvider extends ModuleProvider {
 
     @Override
     public ModuleConfig createConfigBeanIfAbsent() {
-        return serverTransferConfig;
+        return config;
     }
 
     @Override
@@ -58,7 +59,7 @@ public class ServerTransferProvider extends ModuleProvider {
 
     @Override
     public void start() throws ServiceNotProvidedException, ModuleStartException {
-        TransferManager manager = new TransferManager();
+        TransferManager manager = new TransferManager(config);
         try {
             manager.start();
             stopManagerIfKilled(manager);
@@ -75,6 +76,8 @@ public class ServerTransferProvider extends ModuleProvider {
 
     @Override
     public String[] requiredModules() {
-        return new String[0];
+        return new String[]{
+                CoreModule.NAME
+        };
     }
 }

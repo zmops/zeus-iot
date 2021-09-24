@@ -17,7 +17,6 @@
 
 package com.zmops.zeus.iot.server.transfer.core.sink;
 
-
 import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
 import com.zmops.zeus.iot.server.transfer.core.metrics.PluginMetric;
 import com.zmops.zeus.iot.server.transfer.core.task.TaskPositionManager;
@@ -29,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * proxy client
+ * 发送管理
  */
 public class SenderManager {
 
@@ -54,15 +53,10 @@ public class SenderManager {
      */
     public void sendBatch(String jobId, String bid, String tid, List<byte[]> bodyList, int retry, long dataTime) {
         try {
-
-            bodyList.forEach(i -> {
-                LOGGER.info(new String(i));
-            });
+//          RecordStreamProcessor.getInstance().in(record); //TODO
 
             metric.sendSuccessNum.incr(bodyList.size());
             taskPositionManager.updateFileSinkPosition(jobId, sourceFilePath, bodyList.size());
-
-            System.out.println(metric.sendSuccessNum.snapshot());
 
         } catch (Exception exception) {
             LOGGER.error("Exception caught", exception);

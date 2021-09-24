@@ -1,22 +1,4 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements. See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.zmops.zeus.iot.server.transfer.core.manager;
-
 
 import com.zmops.zeus.iot.server.transfer.conf.*;
 import com.zmops.zeus.iot.server.transfer.core.common.AbstractDaemon;
@@ -28,11 +10,14 @@ import com.zmops.zeus.iot.server.transfer.core.job.JobManager;
 import com.zmops.zeus.iot.server.transfer.core.task.TaskManager;
 import com.zmops.zeus.iot.server.transfer.core.task.TaskPositionManager;
 import com.zmops.zeus.iot.server.transfer.core.trigger.TriggerManager;
+import com.zmops.zeus.iot.server.transfer.provider.ServerTransferConfig;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.zmops.zeus.iot.server.transfer.conf.JobConstants.JOB_TRIGGER;
+import static com.zmops.zeus.iot.server.transfer.conf.JobConstants.JOB_FILE_MAX_WAIT;
+import static com.zmops.zeus.iot.server.transfer.conf.JobConstants.JOB_NAME;
+import static com.zmops.zeus.iot.server.transfer.conf.JobConstants.JOB_DIR_FILTER_PATTERN;
 
 /**
  * Zabbix History Data Transfer
@@ -61,7 +46,12 @@ public class TransferManager extends AbstractDaemon {
     @Getter
     private final CommandDb commandDb;
 
-    public TransferManager() {
+    @Getter
+    private final ServerTransferConfig moduleConfig;
+
+    public TransferManager(ServerTransferConfig config) {
+        moduleConfig = config;
+
         conf = TransferConfiguration.getAgentConf();
         this.db = initDb();
         commandDb = new CommandDb(db);
@@ -103,7 +93,9 @@ public class TransferManager extends AbstractDaemon {
         taskPositionManager.start();
 
         JobProfile profile = JobProfile.parseJsonFile("job.json");
-
+        profile.setInt(JOB_FILE_MAX_WAIT, moduleConfig.getFileMaxWait());
+        profile.set(JOB_NAME, moduleConfig.getName());
+        profile.set(JOB_DIR_FILTER_PATTERN, moduleConfig.getPattern());
 
         TriggerProfile triggerProfile = TriggerProfile.parseJobProfile(profile);
         triggerManager.addTrigger(triggerProfile);

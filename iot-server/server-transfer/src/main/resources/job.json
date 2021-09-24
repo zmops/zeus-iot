@@ -1,21 +1,9 @@
 {
   "job": {
-    "dir": {
-      "path": "",
-      "pattern": "E:\\data\\2.ndjson"
-    },
     "id": 1,
-    "thread": {
-      "running": {
-        "core": "4"
-      }
-    },
-    "file": {
-      "max": {
-        "wait": -1
-      }
-    },
-    "name": "zeus-transfer"
+    "dir": {
+      "path": ""
+    }
   },
   "proxy": {
     "bid": "bid10",
