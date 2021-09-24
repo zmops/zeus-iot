@@ -24,7 +24,7 @@ import com.zmops.zeus.iot.server.transfer.core.metrics.gauge.GaugeInt;
 import com.zmops.zeus.iot.server.transfer.core.metrics.gauge.GaugeLong;
 import com.zmops.zeus.iot.server.transfer.core.metrics.meta.MetricMeta;
 import com.zmops.zeus.iot.server.transfer.core.metrics.meta.MetricsMeta;
-import com.zmops.zeus.iot.server.transfer.core.utils.AgentUtils;
+import com.zmops.zeus.iot.server.transfer.core.utils.TransferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,7 +131,7 @@ public class MetricsRegister {
      */
     private static List<MetricMeta> handleFieldAnnotation(Object source) {
         List<MetricMeta> result = new ArrayList<>();
-        for (Field field : AgentUtils.getDeclaredFieldsIncludingInherited(source.getClass())) {
+        for (Field field : TransferUtils.getDeclaredFieldsIncludingInherited(source.getClass())) {
             field.setAccessible(true);
             for (Annotation fieldAnnotation : field.getAnnotations()) {
                 if (fieldAnnotation instanceof Metric) {

@@ -17,7 +17,7 @@
 
 package com.zmops.zeus.iot.server.transfer.conf;
 
-import com.zmops.zeus.iot.server.transfer.core.utils.AgentUtils;
+import com.zmops.zeus.iot.server.transfer.core.utils.TransferUtils;
 
 public class TransferConstants {
 
@@ -39,7 +39,7 @@ public class TransferConstants {
 
     public static final String AGENT_UNIQ_ID = "agent.uniq.id";
     // default use local ip as uniq id for agent.
-    public static final String DEFAULT_AGENT_UNIQ_ID = AgentUtils.getLocalIp();
+    public static final String DEFAULT_AGENT_UNIQ_ID = TransferUtils.getLocalIp();
 
     public static final String AGENT_DB_INSTANCE_NAME = "agent.db.instance.name";
     public static final String DEFAULT_AGENT_DB_INSTANCE_NAME = "agent";

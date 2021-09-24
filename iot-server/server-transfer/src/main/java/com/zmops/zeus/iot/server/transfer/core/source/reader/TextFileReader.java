@@ -25,7 +25,7 @@ import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
 import com.zmops.zeus.iot.server.transfer.core.exception.FileException;
 import com.zmops.zeus.iot.server.transfer.core.message.DefaultMessage;
 import com.zmops.zeus.iot.server.transfer.core.metrics.PluginMetric;
-import com.zmops.zeus.iot.server.transfer.core.utils.AgentUtils;
+import com.zmops.zeus.iot.server.transfer.core.utils.TransferUtils;
 import com.zmops.zeus.iot.server.transfer.core.validator.PatternValidator;
 import org.apache.commons.lang3.StringUtils;
 
@@ -145,7 +145,7 @@ public class TextFileReader implements Reader {
     public void init(JobProfile jobConf) {
         try {
             initReadTimeout(jobConf);
-            String md5 = AgentUtils.getFileMd5(file);
+            String md5 = TransferUtils.getFileMd5(file);
 
             if (StringUtils.isNotBlank(this.md5) && !this.md5.equals(md5)) {
                 LOGGER.warn("md5 is differ from origin, origin: {}, new {}", this.md5, md5);
@@ -171,7 +171,7 @@ public class TextFileReader implements Reader {
 
     @Override
     public void destroy() {
-        AgentUtils.finallyClose(stream);
+        TransferUtils.finallyClose(stream);
         LOGGER.info("destroy reader with read {} num {}", textFileMetric.tagName.getName(), textFileMetric.readNum.snapshot());
     }
 }

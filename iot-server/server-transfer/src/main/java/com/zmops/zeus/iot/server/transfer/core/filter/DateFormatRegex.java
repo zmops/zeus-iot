@@ -20,7 +20,7 @@ package com.zmops.zeus.iot.server.transfer.core.filter;
 import com.zmops.zeus.iot.server.transfer.core.api.Filter;
 
 
-import com.zmops.zeus.iot.server.transfer.core.utils.AgentUtils;
+import com.zmops.zeus.iot.server.transfer.core.utils.TransferUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import org.slf4j.Logger;
@@ -70,7 +70,7 @@ public class DateFormatRegex implements Filter {
     @Override
     public boolean match() {
         // TODO: check with more regex
-        return AgentUtils.regexMatch(file.getAbsolutePath(), formattedRegex);
+        return TransferUtils.regexMatch(file.getAbsolutePath(), formattedRegex);
     }
 
     public DateFormatRegex withOffset(String timeOffset) {
@@ -126,7 +126,7 @@ public class DateFormatRegex implements Filter {
     }
 
     public void setRegexWithCurrentTime(String regex) {
-        String currentTime = AgentUtils.formatCurrentTimeWithOffset(NORMAL_FORMATTER, dayOffset, hourOffset, minuteOffset);
+        String currentTime = TransferUtils.formatCurrentTimeWithOffset(NORMAL_FORMATTER, dayOffset, hourOffset, minuteOffset);
         setRegexWithTime(regex, currentTime);
     }
 

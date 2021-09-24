@@ -55,6 +55,10 @@ public class SenderManager {
     public void sendBatch(String jobId, String bid, String tid, List<byte[]> bodyList, int retry, long dataTime) {
         try {
 
+            bodyList.forEach(i -> {
+                LOGGER.info(new String(i));
+            });
+
             metric.sendSuccessNum.incr(bodyList.size());
             taskPositionManager.updateFileSinkPosition(jobId, sourceFilePath, bodyList.size());
 

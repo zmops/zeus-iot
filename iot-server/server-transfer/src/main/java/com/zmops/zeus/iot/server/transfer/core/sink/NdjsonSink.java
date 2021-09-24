@@ -25,7 +25,7 @@ import com.zmops.zeus.iot.server.transfer.core.common.AgentThreadFactory;
 import com.zmops.zeus.iot.server.transfer.core.message.EndMessage;
 import com.zmops.zeus.iot.server.transfer.core.message.PackProxyMessage;
 import com.zmops.zeus.iot.server.transfer.core.message.ProxyMessage;
-import com.zmops.zeus.iot.server.transfer.core.utils.AgentUtils;
+import com.zmops.zeus.iot.server.transfer.core.utils.TransferUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import org.slf4j.Logger;
@@ -115,7 +115,7 @@ public class NdjsonSink implements Sink {
                                     + "dataTime is {}", bid, result.getRight().size(), jobInstanceId, sourceFile, dataTime);
                         }
                     });
-                    AgentUtils.silenceSleepInMs(batchFlushInterval);
+                    TransferUtils.silenceSleepInMs(batchFlushInterval);
                 } catch (Exception ex) {
                     LOGGER.error("error caught", ex);
                 }
@@ -136,7 +136,7 @@ public class NdjsonSink implements Sink {
         cache = new ConcurrentHashMap<>(10);
 
         bid = jobConf.get(PROXY_BID);
-        dataTime = AgentUtils.timeStrConvertToMillSec(jobConf.get(JOB_DATA_TIME, ""), jobConf.get(JOB_CYCLE_UNIT, ""));
+        dataTime = TransferUtils.timeStrConvertToMillSec(jobConf.get(JOB_DATA_TIME, ""), jobConf.get(JOB_CYCLE_UNIT, ""));
 
         bid = jobConf.get(PROXY_BID);
         tid = jobConf.get(PROXY_TID);
@@ -150,7 +150,7 @@ public class NdjsonSink implements Sink {
 
         String additionStr = jobProfile.get(JOB_ADDITION_STR, "");
         if (!additionStr.isEmpty()) {
-            Map<String, String> addAttr = AgentUtils.getAdditionAttr(additionStr);
+            Map<String, String> addAttr = TransferUtils.getAdditionAttr(additionStr);
             attr.putAll(addAttr);
         }
 
@@ -169,7 +169,7 @@ public class NdjsonSink implements Sink {
         LOGGER.info("destroy sink which sink from source file {}", sourceFile);
         while (!sinkFinish()) {
             LOGGER.info("job {} wait until cache all flushed to proxy", jobInstanceId);
-            AgentUtils.silenceSleepInMs(batchFlushInterval);
+            TransferUtils.silenceSleepInMs(batchFlushInterval);
         }
         shutdown = true;
         executorService.shutdown();

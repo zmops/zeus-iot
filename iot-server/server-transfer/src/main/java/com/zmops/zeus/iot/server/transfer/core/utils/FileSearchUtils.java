@@ -78,7 +78,7 @@ public class FileSearchUtils {
     public static JobProfile copyJobProfile(TriggerProfile triggerProfile, String dataTime, File pendingFile) {
         JobProfile copiedProfile = TriggerProfile.parseJsonStr(triggerProfile.toJsonStr());
 
-        String md5 = AgentUtils.getFileMd5(pendingFile);
+        String md5 = TransferUtils.getFileMd5(pendingFile);
 
         copiedProfile.set(pendingFile.getAbsolutePath() + ".md5", md5);
         copiedProfile.set(JobConstants.JOB_DIR_FILTER_PATTERN, pendingFile.getAbsolutePath());

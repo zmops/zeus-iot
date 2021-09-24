@@ -24,7 +24,7 @@ import com.zmops.zeus.iot.server.transfer.core.common.AbstractDaemon;
 import com.zmops.zeus.iot.server.transfer.core.common.AgentThreadFactory;
 import com.zmops.zeus.iot.server.transfer.core.job.JobManager;
 import com.zmops.zeus.iot.server.transfer.core.manager.TransferManager;
-import com.zmops.zeus.iot.server.transfer.core.utils.AgentUtils;
+import com.zmops.zeus.iot.server.transfer.core.utils.TransferUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +114,7 @@ public class TaskManager extends AbstractDaemon {
                     this.runningPool.submit(wrapper);
                     notSubmitted = false;
                 } catch (Exception ex) {
-                    AgentUtils.silenceSleepInMs(waitTime);
+                    TransferUtils.silenceSleepInMs(waitTime);
                     LOGGER.warn("reject task {}", wrapper.getTask().getTaskId(), ex);
                 }
             }

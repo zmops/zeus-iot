@@ -18,7 +18,7 @@
 package com.zmops.zeus.iot.server.transfer.conf;
 
 import com.google.gson.*;
-import com.zmops.zeus.iot.server.transfer.core.utils.AgentUtils;
+import com.zmops.zeus.iot.server.transfer.core.utils.TransferUtils;
 import org.apache.commons.lang3.StringUtils;
 
 
@@ -82,7 +82,7 @@ public abstract class AbstractConfiguration {
         } catch (Exception ioe) {
             LOGGER.error("error init {}", fileName, ioe);
         } finally {
-            AgentUtils.finallyClose(reader);
+            TransferUtils.finallyClose(reader);
         }
     }
 

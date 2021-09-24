@@ -104,6 +104,7 @@ public class TransferManager extends AbstractDaemon {
 
         JobProfile profile = JobProfile.parseJsonFile("job.json");
 
+
         TriggerProfile triggerProfile = TriggerProfile.parseJobProfile(profile);
         triggerManager.addTrigger(triggerProfile);
 

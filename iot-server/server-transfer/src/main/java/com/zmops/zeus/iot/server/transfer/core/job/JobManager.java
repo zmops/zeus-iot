@@ -26,7 +26,7 @@ import com.zmops.zeus.iot.server.transfer.core.common.AgentThreadFactory;
 import com.zmops.zeus.iot.server.transfer.core.db.JobProfileDb;
 import com.zmops.zeus.iot.server.transfer.core.db.StateSearchKey;
 import com.zmops.zeus.iot.server.transfer.core.manager.TransferManager;
-import com.zmops.zeus.iot.server.transfer.core.utils.AgentUtils;
+import com.zmops.zeus.iot.server.transfer.core.utils.TransferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,7 +125,7 @@ public class JobManager extends AbstractDaemon {
         }
         String jobId = profile.get(JOB_ID);
 
-        profile.set(JOB_INSTANCE_ID, AgentUtils.getUniqId(JOB_ID_PREFIX, jobId, index.incrementAndGet()));
+        profile.set(JOB_INSTANCE_ID, TransferUtils.getUniqId(JOB_ID_PREFIX, jobId, index.incrementAndGet()));
         LOGGER.info("submit job profile {}", profile.toJsonStr());
 
         getJobConfDb().storeJobFirstTime(profile);
