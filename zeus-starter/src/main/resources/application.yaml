@@ -52,8 +52,3 @@ forest:
 
 nats:
   url: nats://${NATS_HOST:127.0.0.1}:${NATS_PORT:4222}
-
-taos:
-  url: jdbc:TAOS://${TAOS_HOST:127.0.0.1}:${TAOS_PORT:6030}/zeus_data
-  username: root
-  password: taosdata
