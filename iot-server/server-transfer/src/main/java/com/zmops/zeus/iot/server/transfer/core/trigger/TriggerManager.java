@@ -1,12 +1,14 @@
 package com.zmops.zeus.iot.server.transfer.core.trigger;
 
-import com.zmops.zeus.iot.server.transfer.conf.*;
+import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
+import com.zmops.zeus.iot.server.transfer.conf.TransferConfiguration;
+import com.zmops.zeus.iot.server.transfer.conf.TransferConstants;
+import com.zmops.zeus.iot.server.transfer.conf.TriggerProfile;
 import com.zmops.zeus.iot.server.transfer.core.api.Trigger;
 import com.zmops.zeus.iot.server.transfer.core.common.AbstractDaemon;
 import com.zmops.zeus.iot.server.transfer.core.db.TriggerProfileDb;
 import com.zmops.zeus.iot.server.transfer.core.job.JobWrapper;
 import com.zmops.zeus.iot.server.transfer.core.manager.TransferManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,10 +17,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import static com.zmops.zeus.iot.server.transfer.conf.TransferConstants.DEFAULT_TRIGGER_MAX_RUNNING_NUM;
-import static com.zmops.zeus.iot.server.transfer.conf.TransferConstants.TRIGGER_MAX_RUNNING_NUM;
 import static com.zmops.zeus.iot.server.transfer.conf.JobConstants.JOB_ID;
 import static com.zmops.zeus.iot.server.transfer.conf.JobConstants.TRIGGER_ONLY_ONE_JOB;
+import static com.zmops.zeus.iot.server.transfer.conf.TransferConstants.DEFAULT_TRIGGER_MAX_RUNNING_NUM;
+import static com.zmops.zeus.iot.server.transfer.conf.TransferConstants.TRIGGER_MAX_RUNNING_NUM;
 
 /**
  * 文件变动监听触发器管理

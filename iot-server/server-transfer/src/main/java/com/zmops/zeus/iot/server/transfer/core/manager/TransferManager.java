@@ -1,6 +1,9 @@
 package com.zmops.zeus.iot.server.transfer.core.manager;
 
-import com.zmops.zeus.iot.server.transfer.conf.*;
+import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
+import com.zmops.zeus.iot.server.transfer.conf.TransferConfiguration;
+import com.zmops.zeus.iot.server.transfer.conf.TransferConstants;
+import com.zmops.zeus.iot.server.transfer.conf.TriggerProfile;
 import com.zmops.zeus.iot.server.transfer.core.common.AbstractDaemon;
 import com.zmops.zeus.iot.server.transfer.core.db.Db;
 import com.zmops.zeus.iot.server.transfer.core.db.JobProfileDb;
@@ -15,9 +18,7 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.zmops.zeus.iot.server.transfer.conf.JobConstants.JOB_FILE_MAX_WAIT;
-import static com.zmops.zeus.iot.server.transfer.conf.JobConstants.JOB_NAME;
-import static com.zmops.zeus.iot.server.transfer.conf.JobConstants.JOB_DIR_FILTER_PATTERN;
+import static com.zmops.zeus.iot.server.transfer.conf.JobConstants.*;
 
 /**
  * Zabbix History Data Transfer

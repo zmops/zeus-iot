@@ -1,20 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements. See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.zmops.zeus.iot.server.transfer.core.db;
 
 import com.zmops.zeus.iot.server.transfer.core.job.CommandEntity;
@@ -33,6 +16,7 @@ public interface Db extends Closeable {
 
     /**
      * get command by command id
+     *
      * @param commandId
      * @return
      */
@@ -40,6 +24,7 @@ public interface Db extends Closeable {
 
     /**
      * put command entity in db
+     *
      * @param entity
      * @return
      */
@@ -49,7 +34,7 @@ public interface Db extends Closeable {
      * store keyValue, if key has exists, throw exception.
      *
      * @param entity - key/value
-     * @throws NullPointerException key should not be null
+     * @throws NullPointerException      key should not be null
      * @throws KeyAlreadyExistsException key already exists
      */
     void set(KeyValueEntity entity);
@@ -83,6 +68,7 @@ public interface Db extends Closeable {
 
     /**
      * search commands using ack status
+     *
      * @param isAcked
      * @return
      */
@@ -90,6 +76,7 @@ public interface Db extends Closeable {
 
     /**
      * search one keyValue by search key
+     *
      * @param searchKey - search key
      * @return null or keyValue
      */
@@ -97,6 +84,7 @@ public interface Db extends Closeable {
 
     /**
      * search one keyValue by fileName
+     *
      * @param fileName
      * @return
      */
@@ -104,6 +92,7 @@ public interface Db extends Closeable {
 
     /**
      * find all by prefix key.
+     *
      * @param prefix - prefix string
      * @return list of k/v
      */
