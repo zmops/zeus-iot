@@ -22,7 +22,7 @@ public interface TDEngineRest {
      * @param sql
      * @return String
      */
-    @Post(headers = "authTag: noAuth")
+    @Post
     @JsonPath("/tdengine/execute")
     @BasicAuth(username = "${taosUser}", password = "${taosPwd}")
     String executeSql(@ParamName("sql") String sql);

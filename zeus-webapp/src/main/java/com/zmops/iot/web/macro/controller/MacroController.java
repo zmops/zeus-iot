@@ -46,9 +46,9 @@ public class MacroController {
     @RequestMapping("/create")
     public ResponseData createUserMacro(@Validated(BaseEntity.Create.class) @RequestBody UserMacro userMacro) {
         // 获取 host id
-        String zbxId = new QProduct().select(QProduct.alias().zbxId).productId.eq(Long.parseLong(userMacro.getDeviceId())).findSingleAttribute();
+        String zbxId = new QDevice().select(QDevice.alias().zbxId).deviceId.eq(userMacro.getDeviceId()).findSingleAttribute();
         if (ToolUtil.isEmpty(zbxId)) {
-            zbxId = new QDevice().select(QDevice.alias().zbxId).deviceId.eq(userMacro.getDeviceId()).findSingleAttribute();
+            zbxId = new QProduct().select(QProduct.alias().zbxId).productId.eq(Long.parseLong(userMacro.getDeviceId())).findSingleAttribute();
         }
 
         if (ToolUtil.isEmpty(zbxId)) {
@@ -86,7 +86,13 @@ public class MacroController {
     public ResponseData getUserMacro(@Validated(BaseEntity.Get.class) @RequestBody UserMacro userMacro) {
 
         // 获取 模板ID 或者 设备ID
-        String zbxId = new QProduct().select(QProduct.alias().zbxId).productId.eq(Long.parseLong(userMacro.getDeviceId())).findSingleAttribute();
+        String zbxId = new QDevice().select(QDevice.alias().zbxId).deviceId.eq(userMacro.getDeviceId()).findSingleAttribute();
+        if (ToolUtil.isEmpty(zbxId)) {
+            zbxId = new QProduct().select(QProduct.alias().zbxId).productId.eq(Long.parseLong(userMacro.getDeviceId())).findSingleAttribute();
+        }
+        if (ToolUtil.isEmpty(zbxId)) {
+            throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
+        }
 
         // 模板ID
         if (ToolUtil.isNotEmpty(zbxId)) {

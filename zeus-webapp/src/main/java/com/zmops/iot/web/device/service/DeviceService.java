@@ -65,6 +65,9 @@ public class DeviceService {
     @Autowired
     private ZbxValueMap zbxValueMap;
 
+    @Autowired
+    DeviceGroupService deviceGroupService;
+
     /**
      * 设备列表
      *
@@ -72,11 +75,28 @@ public class DeviceService {
      * @return
      */
     public List<Device> deviceList(DeviceParam deviceParam) {
+        List<String> deviceIds = getDeviceIds();
+        if (ToolUtil.isEmpty(deviceIds)) {
+            return Collections.emptyList();
+        }
         QDevice qDevice = new QDevice();
+
+        qDevice.deviceId.in(deviceIds);
+
         if (ToolUtil.isNotEmpty(deviceParam.getName())) {
             qDevice.name.contains(deviceParam.getName());
         }
         return qDevice.findList();
+    }
+
+    /**
+     * 获取当前用户 绑定的设备ID
+     *
+     * @return
+     */
+    public List<String> getDeviceIds() {
+        List<Long> devGroupIds = deviceGroupService.getDevGroupIds();
+        return new QDevicesGroups().select(QDevicesGroups.alias().deviceId).deviceGroupId.in(devGroupIds).findSingleAttributeList();
     }
 
     /**
@@ -86,13 +106,12 @@ public class DeviceService {
      * @return
      */
     public Pager<DeviceDto> devicePageList(DeviceParam deviceParam) {
+        List<Long> devGroupIds = deviceGroupService.getDevGroupIds();
+        if (ToolUtil.isEmpty(devGroupIds)) {
+            return new Pager<>();
+        }
         StringBuilder sql = generateBaseSql();
 
-        if (null != deviceParam.getDeviceGroupId()) {
-            sql.append(" where ds.groupIds like  :deviceGroupId");
-        } else {
-            sql.append(" where 1=1 ");
-        }
         List<Long> sids = new ArrayList<>();
         if (ToolUtil.isNotEmpty(deviceParam.getTag())) {
             QTag qTag = new QTag().select(QTag.Alias.sid).templateId.isNull();
@@ -139,6 +158,18 @@ public class DeviceService {
             dto.setParameter("name", "%" + deviceParam.getName() + "%");
             count.setParameter("name", "%" + deviceParam.getName() + "%");
         }
+        if (null != deviceParam.getDeviceGroupId()) {
+            if (devGroupIds.contains(deviceParam.getDeviceGroupId())) {
+                dto.setParameter("deviceGroupIds", deviceParam.getDeviceGroupId());
+                count.setParameter("deviceGroupIds", deviceParam.getDeviceGroupId());
+            } else {
+                return new Pager<>();
+            }
+        } else {
+            dto.setParameter("deviceGroupIds", devGroupIds);
+            count.setParameter("deviceGroupIds", devGroupIds);
+        }
+
 
         List<DeviceDto> list = dto.setFirstRow((deviceParam.getPage() - 1) * deviceParam.getMaxRow())
                 .setMaxRows(deviceParam.getMaxRow()).findList();
@@ -147,6 +178,7 @@ public class DeviceService {
     }
 
     private StringBuilder generateBaseSql() {
+
         return new StringBuilder("SELECT " +
                 " d.device_id," +
                 " d.NAME, " +
@@ -175,6 +207,7 @@ public class DeviceService {
                         "   device d  " +
                         "   LEFT JOIN devices_groups dgs ON dgs.device_id = d.device_id  " +
                         "   LEFT JOIN device_group dg ON dg.device_group_id = dgs.device_group_id   " +
+                        " where dg.device_group_id in (:deviceGroupIds) " +
                         "  GROUP BY  d.device_id   " +
                         "  ) ds ON ds.device_id = d.device_id ");
     }

@@ -56,6 +56,10 @@ public class LoginUser implements UserDetails, Serializable {
      */
     private String email;
 
+    /**
+     * 用户组
+     */
+    private Long       userGroupId;
 
     /**
      * 角色集

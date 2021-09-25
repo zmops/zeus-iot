@@ -3,6 +3,7 @@ package com.zmops.iot.web.device.service;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.domain.device.DeviceGroup;
 import com.zmops.iot.domain.device.query.QDeviceGroup;
 import com.zmops.iot.domain.device.query.QDevicesGroups;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,8 +43,15 @@ public class DeviceGroupService {
      * @return
      */
     public Pager<DeviceGroup> deviceGroupPageList(DeviceGroupParam devGroupParam) {
+        List<Long> devGroupIds = getDevGroupIds();
+        if (ToolUtil.isEmpty(devGroupIds)) {
+            return new Pager<>();
+        }
 
         QDeviceGroup qDeviceGroup = new QDeviceGroup();
+
+        qDeviceGroup.deviceGroupId.in(devGroupIds);
+
         if (ToolUtil.isNotEmpty(devGroupParam.getName())) {
             qDeviceGroup.name.contains(devGroupParam.getName());
         }
@@ -60,8 +69,12 @@ public class DeviceGroupService {
      * @return
      */
     public List<DeviceGroup> deviceGroupList(DeviceGroupParam devGroupParam) {
-
+        List<Long> devGroupIds = getDevGroupIds();
+        if (ToolUtil.isEmpty(devGroupIds)) {
+            return Collections.emptyList();
+        }
         QDeviceGroup qDeviceGroup = new QDeviceGroup();
+        qDeviceGroup.deviceGroupId.in(devGroupIds);
         if (ToolUtil.isNotEmpty(devGroupParam.getName())) {
             qDeviceGroup.name.contains(devGroupParam.getName());
         }
@@ -69,6 +82,15 @@ public class DeviceGroupService {
         return qDeviceGroup.findList();
     }
 
+    /**
+     * 获取当前登录用户绑定的主机组ID
+     *
+     * @return
+     */
+    public List<Long> getDevGroupIds() {
+        Long curUserGrpId = LoginContextHolder.getContext().getUser().getUserGroupId();
+        return new QSysUserGrpDevGrp().select(QSysUserGrpDevGrp.alias().deviceGroupId).userGroupId.eq(curUserGrpId).findSingleAttributeList();
+    }
 
     /**
      * 添加设备組

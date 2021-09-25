@@ -107,6 +107,7 @@ public class UserFactory {
 
         loginUser.setId(user.getUserId());
         loginUser.setAccount(user.getAccount());
+        loginUser.setUserGroupId(user.getUserGroupId());
 //        loginUser.setDeptId(user.getDeptId());
 //        loginUser.setDeptName(ConstantFactory.me().getDeptName(user.getDeptId()));
         loginUser.setName(user.getName());
