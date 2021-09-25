@@ -4,9 +4,9 @@ package com.zmops.iot.web.product.service.work;
 import cn.hutool.core.util.IdUtil;
 import com.zmops.iot.async.callback.IWorker;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
-import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.ProductAttribute;
 import com.zmops.iot.util.ToolUtil;
+import com.zmops.iot.web.device.dto.DeviceDto;
 import com.zmops.iot.web.product.dto.ProductAttr;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
@@ -32,16 +32,20 @@ public class SaveProdAttrWorker implements IWorker<ProductAttr, Boolean> {
 
         String prodId = productAttr.getProductId();
 
-        List<String> deviceIds = new QDevice().select(QDevice.Alias.deviceId).productId.eq(Long.parseLong(prodId)).findSingleAttributeList();
+        String sql = "select device_id from device " +
+                " where product_id = :productId and device_id not in (" +
+                " select product_id from product_attribute " +
+                " where template_id is null and key = :key)";
 
+        List<DeviceDto>        deviceDtoList        = DB.findDto(DeviceDto.class, sql).setParameter("productId", productAttr.getProductId()).findList();
         List<ProductAttribute> productAttributeList = new ArrayList<>();
 
-        for (String deviceId : deviceIds) {
+        for (DeviceDto deviceDto : deviceDtoList) {
             ProductAttribute productAttrbute = new ProductAttribute();
             ToolUtil.copyProperties(productAttr, productAttrbute);
             productAttrbute.setAttrId(IdUtil.getSnowflake().nextId());
             productAttrbute.setName(productAttr.getAttrName());
-            productAttrbute.setProductId(deviceId);
+            productAttrbute.setProductId(deviceDto.getDeviceId());
             productAttrbute.setTemplateId(productAttr.getAttrId());
             productAttributeList.add(productAttrbute);
         }
