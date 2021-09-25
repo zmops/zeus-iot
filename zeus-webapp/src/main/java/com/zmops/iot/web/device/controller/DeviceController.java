@@ -9,6 +9,7 @@ import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.util.ToolUtil;
+import com.zmops.iot.web.auth.Permission;
 import com.zmops.iot.web.device.dto.DeviceDto;
 import com.zmops.iot.web.device.dto.param.DeviceParam;
 import com.zmops.iot.web.device.service.DeviceService;
@@ -38,6 +39,7 @@ public class DeviceController {
      *
      * @return
      */
+    @Permission(code = "dev")
     @PostMapping("/getDeviceByPage")
     public Pager<DeviceDto> devicePageList(@RequestBody DeviceParam deviceParam) {
         return deviceService.devicePageList(deviceParam);
@@ -48,6 +50,7 @@ public class DeviceController {
      *
      * @return
      */
+    @Permission(code = "dev")
     @PostMapping("/list")
     public ResponseData deviceList(@RequestBody DeviceParam deviceParam) {
         return ResponseData.success(deviceService.deviceList(deviceParam));
@@ -56,6 +59,7 @@ public class DeviceController {
     /**
      * 设备创建
      */
+    @Permission(code = "dev")
     @RequestMapping("/create")
     public ResponseData create(@Validated(BaseEntity.Create.class) @RequestBody DeviceDto deviceDto) {
         QDevice qDevice = new QDevice().or().name.eq(deviceDto.getName());
@@ -78,6 +82,7 @@ public class DeviceController {
     /**
      * 设备创建
      */
+    @Permission(code = "dev")
     @RequestMapping("/update")
     public ResponseData update(@Validated(BaseEntity.Update.class) @RequestBody DeviceDto deviceDto) {
         int count = new QDevice().deviceId.ne(deviceDto.getDeviceId()).name.eq(deviceDto.getName()).findCount();
@@ -95,6 +100,7 @@ public class DeviceController {
     /**
      * 设备删除
      */
+    @Permission(code = "dev")
     @RequestMapping("/delete")
     public ResponseData delete(@Validated(BaseEntity.Delete.class) @RequestBody DeviceDto deviceDto) {
         return ResponseData.success(deviceService.delete(deviceDto));
@@ -103,6 +109,7 @@ public class DeviceController {
     /**
      * 设备详情
      */
+    @Permission(code = "dev")
     @GetMapping("/detail")
     public ResponseData prodDetail(@RequestParam("deviceId") String deviceId) {
         return ResponseData.success(deviceService.deviceDetail(deviceId));
@@ -111,6 +118,7 @@ public class DeviceController {
     /**
      * 设备标签列表
      */
+    @Permission(code = "dev")
     @GetMapping("/tag/list")
     public ResponseData prodTagList(@RequestParam("deviceId") String deviceId) {
         return ResponseData.success(deviceService.deviceTagList(deviceId));
@@ -119,6 +127,7 @@ public class DeviceController {
     /**
      * 设备值映射列表
      */
+    @Permission(code = "dev")
     @GetMapping("/valueMap/list")
     public ResponseData valueMapList(@RequestParam("deviceId") String deviceId) {
         return ResponseData.success(deviceService.valueMapList(deviceId));
@@ -129,6 +138,7 @@ public class DeviceController {
      *
      * @return
      */
+    @Permission(code = "dev")
     @PostMapping("/tag/update")
     public ResponseData deviceTagCreate(@RequestBody @Valid ProductTag productTag) {
 
@@ -151,6 +161,7 @@ public class DeviceController {
      * @param valueMap
      * @return
      */
+    @Permission(code = "dev")
     @PostMapping("/valueMap/update")
     public ResponseData prodValueMapCreate(@RequestBody @Validated(BaseEntity.Create.class) ValueMap valueMap) {
 
@@ -175,6 +186,7 @@ public class DeviceController {
      * @param valueMap
      * @return
      */
+    @Permission(code = "dev")
     @PostMapping("/valuemap/delete")
     public ResponseData prodValueMapDelete(@RequestBody @Validated(BaseEntity.Delete.class) ValueMap valueMap) {
         String response = deviceService.valueMapDelete(valueMap.getValuemapid());

@@ -1,6 +1,7 @@
 package com.zmops.iot.web.sys.controller;
 
 import com.zmops.iot.model.page.Pager;
+import com.zmops.iot.web.auth.Permission;
 import com.zmops.iot.web.sys.dto.SysLoginLogDto;
 import com.zmops.iot.web.sys.service.LoginLogService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ public class LoginLogController {
     /**
      * 登录日志列表
      */
+    @Permission(code = "businessLog")
     @RequestMapping("/getLoginLogByPage")
     @ResponseBody
     public Pager<SysLoginLogDto> list(@RequestParam(required = false) Long beginTime,

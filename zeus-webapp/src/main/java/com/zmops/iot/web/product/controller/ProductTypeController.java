@@ -3,6 +3,7 @@ package com.zmops.iot.web.product.controller;
 import com.zmops.iot.core.log.BussinessLog;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.model.response.ResponseData;
+import com.zmops.iot.web.auth.Permission;
 import com.zmops.iot.web.product.dto.param.ProductTypeParam;
 import com.zmops.iot.web.product.service.ProductTypeService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ public class ProductTypeController {
     /**
      * 产品分类树
      */
+    @Permission(code = "product_type")
     @RequestMapping("/tree")
     public ResponseData tree() {
         return ResponseData.success(productTypeService.tree());
@@ -36,6 +38,7 @@ public class ProductTypeController {
     /**
      * 新增产品分类
      */
+    @Permission(code = "product_type")
     @RequestMapping("/create")
     @BussinessLog("新增产品分类")
     public ResponseData create(@Validated(BaseEntity.Create.class) @RequestBody ProductTypeParam productType) {
@@ -45,6 +48,7 @@ public class ProductTypeController {
     /**
      * 修改产品分类
      */
+    @Permission(code = "product_type")
     @RequestMapping("/update")
     @BussinessLog("修改产品分类")
     public ResponseData update(@Validated(BaseEntity.Update.class) @RequestBody ProductTypeParam productType) {
@@ -54,6 +58,7 @@ public class ProductTypeController {
     /**
      * 删除产品分类
      */
+    @Permission(code = "product_type")
     @RequestMapping("/delete")
     @BussinessLog("删除产品分类")
     public ResponseData delete(@Validated(BaseEntity.Delete.class) @RequestBody ProductTypeParam productType) {

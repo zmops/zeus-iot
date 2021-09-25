@@ -12,6 +12,7 @@ import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.util.ToolUtil;
+import com.zmops.iot.web.auth.Permission;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductBasicInfo;
 import com.zmops.iot.web.product.dto.ProductDto;
@@ -45,6 +46,7 @@ public class ProductController {
     /**
      * 产品分页列表
      */
+    @Permission(code = "product")
     @PostMapping("/getProductByPage")
     public Pager<ProductDto> getProductByPage(@RequestBody ProductBasicInfo prodBasicInfo) {
         return productService.getProductByPage(prodBasicInfo);
@@ -53,6 +55,7 @@ public class ProductController {
     /**
      * 产品列表
      */
+    @Permission(code = "product")
     @PostMapping("/list")
     public ResponseData prodList(@RequestBody ProductBasicInfo prodBasicInfo) {
         return ResponseData.success(productService.prodList(prodBasicInfo));
@@ -61,6 +64,7 @@ public class ProductController {
     /**
      * 产品详情
      */
+    @Permission(code = "product")
     @GetMapping("/detail")
     public ResponseData prodDetail(@RequestParam("productId") Long prodId) {
         return ResponseData.success(productService.prodDetail(prodId));
@@ -69,6 +73,7 @@ public class ProductController {
     /**
      * 产品标签列表
      */
+    @Permission(code = "product")
     @GetMapping("/tag/list")
     public ResponseData prodTagList(@RequestParam("productId") String prodId) {
         return ResponseData.success(productService.prodTagList(prodId));
@@ -77,6 +82,7 @@ public class ProductController {
     /**
      * 值映射列表
      */
+    @Permission(code = "product")
     @GetMapping("/valueMap/list")
     public ResponseData valueMapList(@RequestParam("productId") Long prodId) {
         return ResponseData.success(productService.valueMapList(prodId));
@@ -88,6 +94,7 @@ public class ProductController {
      * @param prodBasicInfo 产品基本信息
      * @return
      */
+    @Permission(code = "product")
     @PostMapping("/create")
     public ResponseData prodCreate(@RequestBody @Validated(value = BaseEntity.Create.class) ProductBasicInfo prodBasicInfo) {
 
@@ -113,6 +120,7 @@ public class ProductController {
      *
      * @return
      */
+    @Permission(code = "product")
     @PostMapping("/update")
     public ResponseData prodUpdate(@RequestBody @Validated(value = BaseEntity.Update.class)
                                            ProductBasicInfo prodBasicInfo) {
@@ -135,6 +143,7 @@ public class ProductController {
      * @param prodBasicInfo 产品基础信息
      * @return
      */
+    @Permission(code = "product")
     @PostMapping("/delete")
     public ResponseData prodDelete(@RequestBody @Validated(value = BaseEntity.Delete.class)
                                            ProductBasicInfo prodBasicInfo) {
@@ -168,6 +177,7 @@ public class ProductController {
      *
      * @return
      */
+    @Permission(code = "product")
     @PostMapping("/tag/update")
     public ResponseData prodTagCreate(@RequestBody @Valid ProductTag productTag) {
 
@@ -207,6 +217,7 @@ public class ProductController {
      * @param valueMap
      * @return
      */
+    @Permission(code = "product")
     @PostMapping("/valuemap/update")
     public ResponseData prodValueMapCreate(@RequestBody @Validated(BaseEntity.Create.class) ValueMap valueMap) {
 
@@ -232,6 +243,7 @@ public class ProductController {
      * @param valueMap
      * @return
      */
+    @Permission(code = "product")
     @PostMapping("/valueMap/delete")
     public ResponseData prodValueMapDelete(@RequestBody @Validated(BaseEntity.Delete.class) ValueMap valueMap) {
         String response   = productService.valueMapDelete(valueMap.getValuemapid());

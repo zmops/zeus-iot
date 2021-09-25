@@ -4,6 +4,7 @@ import com.zmops.iot.core.log.BussinessLog;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
+import com.zmops.iot.web.auth.Permission;
 import com.zmops.iot.web.sys.dto.param.DictTypeParam;
 import com.zmops.iot.web.sys.service.DictTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ public class DictTypeController {
     /**
      * 新增字典
      */
+    @Permission(code = "dict")
     @RequestMapping("/create")
     @BussinessLog("新增字典")
     public ResponseData addItem(@Validated(BaseEntity.Create.class) @RequestBody DictTypeParam dictTypeParam) {
@@ -36,6 +38,7 @@ public class DictTypeController {
     /**
      * 编辑字典
      */
+    @Permission(code = "dict")
     @RequestMapping("/update")
     @BussinessLog("编辑字典")
     public ResponseData editItem(@Validated(BaseEntity.Update.class) @RequestBody DictTypeParam dictTypeParam) {
@@ -45,6 +48,7 @@ public class DictTypeController {
     /**
      * 删除字典
      */
+    @Permission(code = "dict")
     @RequestMapping("/delete")
     @BussinessLog("删除字典")
     public ResponseData delete(@Validated(BaseEntity.MassRemove.class) @RequestBody DictTypeParam dictTypeParam) {
@@ -56,6 +60,7 @@ public class DictTypeController {
     /**
      * 查询列表
      */
+    @Permission(code = "dict")
     @PostMapping("/getDictTypeByPage")
     public Pager list(@RequestBody DictTypeParam dictTypeParam) {
         return dictTypeService.findPageBySpec(dictTypeParam);

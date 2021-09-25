@@ -55,6 +55,7 @@ public class DeviceEventTriggerController {
      * @param eventRuleId
      * @return
      */
+
     @GetMapping("/detail")
     public ResponseData detail(@RequestParam("eventRuleId") long eventRuleId, @RequestParam("deviceId") String deviceId) {
         ProductEvent productEvent = new QProductEvent().eventRuleId.eq(eventRuleId).findOne();

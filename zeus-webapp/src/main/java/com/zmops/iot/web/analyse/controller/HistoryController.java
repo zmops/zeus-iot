@@ -4,6 +4,7 @@ import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.web.analyse.dto.LatestDto;
 import com.zmops.iot.web.analyse.dto.param.HistoryParam;
 import com.zmops.iot.web.analyse.service.HistoryService;
+import com.zmops.iot.web.auth.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +24,7 @@ public class HistoryController {
     HistoryService historyService;
 
     @RequestMapping("/query")
+    @Permission(code = "latest")
     public Pager<LatestDto> qeuryHistory(@Validated @RequestBody HistoryParam historyParam) {
         return historyService.queryHistory(historyParam);
     }

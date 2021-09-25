@@ -4,6 +4,7 @@ import com.zmops.iot.core.log.BussinessLog;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
+import com.zmops.iot.web.auth.Permission;
 import com.zmops.iot.web.sys.dto.UserGroupDto;
 import com.zmops.iot.web.sys.dto.param.UserGroupParam;
 import com.zmops.iot.web.sys.service.SysUserGroupService;
@@ -31,6 +32,7 @@ public class SysUserGroupController {
      *
      * @return
      */
+    @Permission(code = "usrGrp")
     @PostMapping("/getUsrGrpByPage")
     public Pager<UserGroupDto> getUsrGrpByPage(@RequestBody UserGroupParam userGroupParam) {
         return sysUserGroupService.userGroupPageList(userGroupParam);
@@ -41,6 +43,7 @@ public class SysUserGroupController {
      *
      * @return
      */
+    @Permission(code = "usrGrp")
     @PostMapping("/list")
     public ResponseData userGroupList() {
         return ResponseData.success(sysUserGroupService.userGroupList());
@@ -51,6 +54,7 @@ public class SysUserGroupController {
      *
      * @return
      */
+    @Permission(code = "usrGrp")
     @PostMapping("/create")
     @BussinessLog(value = "创建用户组")
     public ResponseData createUserGroup(@Validated @RequestBody UserGroupDto userGroup) {
@@ -63,6 +67,7 @@ public class SysUserGroupController {
      *
      * @return
      */
+    @Permission(code = "usrGrp")
     @PostMapping("/update")
     @BussinessLog(value = "更新用户组")
     public ResponseData updateUserGroup(@Validated(BaseEntity.Update.class) @RequestBody UserGroupDto userGroup) {
@@ -74,6 +79,7 @@ public class SysUserGroupController {
      *
      * @return
      */
+    @Permission(code = "usrGrp")
     @PostMapping("/delete")
     @BussinessLog(value = "删除用户组")
     public ResponseData deleteUserGroup(@Validated @RequestBody UserGroupParam userGroup) {
@@ -86,6 +92,7 @@ public class SysUserGroupController {
      *
      * @return
      */
+    @Permission(code = "usrGrp")
     @PostMapping("/bindHostGrp")
     @BussinessLog(value = "用户组绑定主机组")
     public ResponseData bindHostGrp(@Validated(BaseEntity.BindDevice.class) @RequestBody UserGroupParam userGroup) {
