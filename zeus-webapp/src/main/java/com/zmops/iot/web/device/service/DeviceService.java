@@ -462,9 +462,13 @@ public class DeviceService {
      * @return
      */
     public DeviceDto deviceDetail(String deviceId) {
+        List<Long> devGroupIds = deviceGroupService.getDevGroupIds();
+        if (ToolUtil.isEmpty(devGroupIds)) {
+            return new DeviceDto();
+        }
         StringBuilder sql = generateBaseSql();
         sql.append(" where d.device_id=:deviceId");
-        DeviceDto deviceDto = DB.findDto(DeviceDto.class, sql.toString()).setParameter("deviceId", deviceId).findOne();
+        DeviceDto deviceDto = DB.findDto(DeviceDto.class, sql.toString()).setParameter("deviceId", deviceId).setParameter("deviceGroupIds",devGroupIds).findOne();
         return deviceDto;
     }
 
