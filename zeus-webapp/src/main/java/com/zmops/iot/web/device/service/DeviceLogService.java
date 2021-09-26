@@ -64,10 +64,10 @@ public class DeviceLogService {
         if (ToolUtil.isEmpty(logType) || (ToolUtil.isNotEmpty(logType) && LOG_TYPE_SERVICE.equals(logType))) {
             QServiceExecuteRecord query = new QServiceExecuteRecord().deviceId.eq(deviceId);
             if (null != timeFrom) {
-                query.createTime.ge(LocalDateTimeUtils.getLDTByMilliSeconds(timeFrom));
+                query.createTime.ge(LocalDateTimeUtils.getLDTByMilliSeconds(timeFrom * 1000));
             }
             if (null != timeTill) {
-                query.createTime.lt(LocalDateTimeUtils.getLDTByMilliSeconds(timeTill));
+                query.createTime.lt(LocalDateTimeUtils.getLDTByMilliSeconds(timeTill * 1000));
             }
             List<ServiceExecuteRecord> list = query.findList();
             if (ToolUtil.isNotEmpty(list)) {
