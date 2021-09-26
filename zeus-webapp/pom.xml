@@ -24,7 +24,7 @@
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>
-            <artifactId>zeus-alarm</artifactId>
+            <artifactId>zeus-message</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -36,10 +36,6 @@
             <groupId>com.zmops</groupId>
             <artifactId>toolkit-async</artifactId>
             <version>1.0-beta</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-httpclient</groupId>

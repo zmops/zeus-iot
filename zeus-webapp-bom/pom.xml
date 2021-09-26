@@ -22,7 +22,7 @@
 
     <modules>
         <module>../zeus-common</module>
-        <module>../zeus-alarm</module>
+        <module>../zeus-message</module>
         <module>../zeus-core</module>
         <module>../zeus-driver</module>
         <module>../zeus-rest</module>

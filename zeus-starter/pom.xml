@@ -47,7 +47,7 @@
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>
-            <artifactId>zeus-alarm</artifactId>
+            <artifactId>zeus-message</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

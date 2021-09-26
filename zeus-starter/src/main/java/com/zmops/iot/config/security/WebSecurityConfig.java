@@ -80,8 +80,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 静态资源放开过滤
                 .and().ignoring().antMatchers(HttpMethod.GET,
                         "/static/**",
-                        "/favicon.ico",
-                        "/websocket/alarm/**"
+                        "/favicon.ico"
                 );
 
     }
