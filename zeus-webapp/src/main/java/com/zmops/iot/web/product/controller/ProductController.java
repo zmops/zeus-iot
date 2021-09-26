@@ -46,7 +46,7 @@ public class ProductController {
     /**
      * 产品分页列表
      */
-    @Permission(code = "product")
+    @Permission(code = "product_list")
     @PostMapping("/getProductByPage")
     public Pager<ProductDto> getProductByPage(@RequestBody ProductBasicInfo prodBasicInfo) {
         return productService.getProductByPage(prodBasicInfo);
@@ -55,7 +55,7 @@ public class ProductController {
     /**
      * 产品列表
      */
-    @Permission(code = "product")
+    @Permission(code = "product_list")
     @PostMapping("/list")
     public ResponseData prodList(@RequestBody ProductBasicInfo prodBasicInfo) {
         return ResponseData.success(productService.prodList(prodBasicInfo));
@@ -64,7 +64,7 @@ public class ProductController {
     /**
      * 产品详情
      */
-    @Permission(code = "product")
+    @Permission(code = "product_detail")
     @GetMapping("/detail")
     public ResponseData prodDetail(@RequestParam("productId") Long prodId) {
         return ResponseData.success(productService.prodDetail(prodId));
@@ -94,7 +94,7 @@ public class ProductController {
      * @param prodBasicInfo 产品基本信息
      * @return
      */
-    @Permission(code = "product")
+    @Permission(code = "product_add")
     @PostMapping("/create")
     public ResponseData prodCreate(@RequestBody @Validated(value = BaseEntity.Create.class) ProductBasicInfo prodBasicInfo) {
 
@@ -120,7 +120,7 @@ public class ProductController {
      *
      * @return
      */
-    @Permission(code = "product")
+    @Permission(code = "product_update")
     @PostMapping("/update")
     public ResponseData prodUpdate(@RequestBody @Validated(value = BaseEntity.Update.class)
                                            ProductBasicInfo prodBasicInfo) {
@@ -143,7 +143,7 @@ public class ProductController {
      * @param prodBasicInfo 产品基础信息
      * @return
      */
-    @Permission(code = "product")
+    @Permission(code = "product_delete")
     @PostMapping("/delete")
     public ResponseData prodDelete(@RequestBody @Validated(value = BaseEntity.Delete.class)
                                            ProductBasicInfo prodBasicInfo) {
