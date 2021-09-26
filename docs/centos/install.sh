@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
+
 set -e
 
 ROOT_UID=0
-E_NOTROOT=67
-E_BADOD=68
 release=Centos
 basename=$(pwd)
 zabbixsrc=$basename/zabbix-5.4.3
@@ -23,12 +22,12 @@ function logprint() {
 ## 系统环境检测
 if [ "$(uname)" != Linux ]; then
         echo "该脚本只使用 Linux 系统"
-        exit $E_BADOD
+        exit
 fi
 
 if [ "$UID" -ne "$ROOT_UID" ]; then
-        echo "Must be root to install"
-        exit $E_NOTROOT
+        echo -e "Error: Must be root to install"
+        exit
 fi
 ### 操作系统
 if [ ! -f /etc/redhat-release ]; then
@@ -49,12 +48,12 @@ disks=$(df -T | awk '/(xfs|ext4|ext3)/{if($3/1024/1024 > 10)printf("%s\t%d\n",$7
 
 if [ "$cores" -lt 0 ] || [ "$memstotal" -lt 0 ] || [ "$disks" -eq 0 ]; then
         echo "要求最低配置为 CPU 2核 内存 4GB 存储空间 100G"
-        exit 70
+        exit 
 fi
 
 ## 系统环境初始化
 function InitSystem() {
-        echo "初始化系统环境"
+        echo -e -n "\033[32mStep1: 初始化系统安装环境。。。  \033[0m"
         if ! hostnamectl set-hostname zeus-server; then
                 echo "主机名修改失败"
                 exit
@@ -85,11 +84,16 @@ function InitSystem() {
 
         ### 添加安装目录
         [ ! -d /opt/zeus ] && mkdir -p /opt/zeus
+        echo -e "\033[32m  [ OK ] \033[0m"
 }
 
 # 开始安装
 ## 配置 YUM 源
 function AddInstallRepo() {
+
+        echo -e -n "\033[32mStep2: 配置安装 YUM 源 。。。  \033[0m"
+        ### 备份原有yum
+        mv /etc/yum.repos.d/* /tmp/
         ### 基础 YUM 源
         if ! curl -s -o /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo; then
                 echo "YUM 仓库配置异常,请检查网络"
@@ -103,12 +107,6 @@ baseurl=http://mirrors.aliyun.com/epel/7/\$basearch
 failovermethod=priority
 enabled=1
 gpgcheck=0
-
-[timescale_timescaledb]
-name=timescale_timescaledb
-baseurl=https://packagecloud.io/timescale/timescaledb/el/$(rpm -E %{rhel})/\$basearch
-gpgcheck=0
-enabled=1
 
 [centos-sclo-rh]
 name=CentOS-7 - SCLo rh
@@ -129,30 +127,25 @@ baseurl=https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-\$releaseve
 enabled=1
 gpgcheck=0
 
-[pgdg12]
-name=PostgreSQL 12 for RHEL/CentOS \$releasever - \$basearch
-baseurl=https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-\$releasever-\$basearch
-enabled=1
-gpgcheck=0
 EOL
 
-        echo "配置安装 YUM 源 。。。"
         yum clean all 1>/dev/null && yum makecache 1>/dev/null
         logprint "yum 源配置失败详细看安装日志输出"
+        echo -e "\033[32m  [ OK ] \033[0m"
 }
 
 ## 安装 PostgreSQL
 function PGInstall() {
+        echo -e -n "\033[32mStep3: 安装 PostgreSQL....  \033[0m"
         yum -y install postgresql13.x86_64 \
                 postgresql13-devel.x86_64 \
-                postgresql13-plpython3.x86_64 \
-                timescaledb-2-postgresql-13.x86_64 1>/dev/null
+                postgresql13-plpython3.x86_64 1>/dev/null
 
         logprint "yum 源配置失败详细看安装日志输出"
 
         ### 创建 PostgreSQL 用户
         ### 修改启动文件
-        echo "安装 PG-timescaledb "
+
         [ ! -d $PGDATA ] && mkdir -p $PGDATA
         if ! chown postgres. $PGDATA; then
                 echo "修改PGDATA用户失败"
@@ -164,26 +157,27 @@ function PGInstall() {
         #sed -i 's/\(^Group\=\).*/\1zeus/g' $startfile
         sed -i 's/\(^Environment\=PGDATA\=\).*/\1\/opt\/zeus\/pgdata/g' $startfile
         ### 初始化数据库
-        echo "开始初始化 PG"
         /usr/pgsql-13/bin/postgresql-13-setup initdb 1>/dev/null
         logprint "初始化错误"
 
-        echo "shared_preload_libraries = 'timescaledb'" >>/opt/zeus/pgdata/postgresql.conf
+#        echo "shared_preload_libraries = 'timescaledb'" >>/opt/zeus/pgdata/postgresql.conf
         ### 启动数据库
         systemctl enable postgresql-13 &>/dev/null
         systemctl start postgresql-13
         ### 修改数据库管理员密码
         cd /tmp || exit
-        sudo -u postgres /usr/pgsql-13/bin/psql -c "ALTER USER postgres WITH PASSWORD 'zeusiot';" 2>/tmp/pg.log
+        sudo -u postgres /usr/pgsql-13/bin/psql -c "ALTER USER postgres WITH PASSWORD 'zeusiot';" 1> /dev/null
+        echo -e "\033[32m  [ OK ] \033[0m"
 }
 
 ## 编译安装 zabbix 5.4
 function ZbxInstall() {
-        echo "编译 zabbix"
+        echo -e -n "\033[32mStep4: 编译安装 zabbix 。。。  \033[0m"
         ### 安装编译依赖
         cd "$basename" || exit
         yum -y install vim \
                 wget \
+                expect \
                 gcc \
                 gcc-c++ \
                 net-snmp \
@@ -215,7 +209,7 @@ function ZbxInstall() {
                 --with-openssl \
                 --with-ssh2 1>/dev/null
         logprint "zabbix 编译异常"
-        echo "安装 zabbix"
+
         make install 1>/dev/null
         logprint "zabbix 编译异常"
         ### 前端内容部署
@@ -223,21 +217,23 @@ function ZbxInstall() {
         mv $ZABBIX_HOME/zabbix/conf/zabbix.conf.php.example $ZABBIX_HOME/zabbix/conf/zabbix.conf.php
         sed -i "s/\($DB\['PASSWORD'\]\s*=\).*/\1 'zabbix';/g" $ZABBIX_HOME/zabbix/conf/zabbix.conf.php
         sed -i "s/\($DB\['TYPE'\]\s*=\).*/\1 \'POSTGRESQL\';/g" $ZABBIX_HOME/zabbix/conf/zabbix.conf.php
-
+        echo -e "\033[32m  [ OK ] \033[0m"
         ### 数据初始化
-        echo "初始化 zabbix 数据库"
+        echo -e -n "\033[32mStep5: 初始化 zabbix 数据库 。。。  \033[0m"
         cd /tmp/ || exit
         sudo -u postgres createuser zabbix
-        sudo -u postgres /usr/pgsql-13/bin/psql -c "ALTER USER zabbix WITH PASSWORD 'zabbix';"
+        sudo -u postgres /usr/pgsql-13/bin/psql -c "ALTER USER zabbix WITH PASSWORD 'zabbix';" 1> /dev/null
         sudo -u postgres createdb -O zabbix -E Unicode -T template0 zabbix
         cat $zabbixsrc/database/postgresql/schema.sql | sudo -u zabbix psql zabbix 1>/dev/null
         cat $zabbixsrc/database/postgresql/images.sql | sudo -u zabbix psql zabbix 1>/dev/null
         cat $zabbixsrc/database/postgresql/data.sql | sudo -u zabbix psql zabbix 1>/dev/null
-        echo "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;" | sudo -u postgres psql zabbix &>/dev/null
-        cat $zabbixsrc/database/postgresql/timescaledb.sql | sudo -u zabbix psql zabbix 1>/dev/null
+#        echo "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;" | sudo -u postgres psql zabbix &>/dev/null
+#        cat $zabbixsrc/database/postgresql/timescaledb.sql | sudo -u zabbix psql zabbix 1>/dev/null
+#        
+        echo -e "\033[32m  [ OK ] \033[0m"
         cd "$basename" || exit
         ### 配置zabbix配置文件
-        echo "启动zabbix"
+        echo -e -n "\033[32mStep6: 启动 zabbix ....  \033[0m"
         sed -i 's/^# DBPassword=/DBPassword=zabbix/g' $ZABBIX_HOME/etc/zabbix_server.conf
         ### 配置启动文件
         tee /usr/lib/systemd/system/zabbix-server.service <<EOL 1>/dev/null
@@ -290,10 +286,11 @@ EOL
         systemctl enable zabbix-agent
         systemctl start zabbix-server
         systemctl start zabbix-agent
+        echo -e "\033[32m  [ OK ] \033[0m"
 }
 ## 安装 php
 function PHPInstall() {
-        echo "安装 zabbix-web"
+        echo -e -n "\033[32mStep7: 安装 zabbix-web ....  \033[0m"
         yum -y install rh-php73.x86_64 \
                 rh-php73-php-fpm.x86_64 \
                 rh-php73-php-bcmath.x86_64 \
@@ -313,47 +310,29 @@ function PHPInstall() {
         sed -i 's/;listen.owner = nobody/listen.owner = zeus/g' $PHP_CONF/php-fpm.d/www.conf
         sed -i 's/;listen.group = nobody/listen.group = zeus/g' $PHP_CONF/php-fpm.d/www.conf
         sed -i 's/\(^listen =\).*/\1\/var\/run\/php-fpm.sock/g' $PHP_CONF/php-fpm.d/www.conf
+        echo -e "\033[32m  [ OK ] \033[0m"
 }
 
-function ZeusInstall() {
-
+function WebInstall() {
+        echo -e -n "\033[32mStep8: 启动 zabbix-web ....  \033[0m"
         ## 安装 nginx
         yum -y install nginx 1>/dev/null
 
 
         cd /opt/zeus
-        wget -c https://packages.zmops.cn/zeus-iot/app-1.0.tar.gz -o /dev/null -O - | tar -xz
-        wget -c https://packages.zmops.cn/zeus-iot/web-1.0.tar.gz -o /dev/null -O - | tar -xz
-        wget -c https://packages.zmops.cn/zeus-iot/zeus-iot.sql
-        sudo -u postgres createdb zeus-iot
-        cat zeus-iot.sql | sudo -u postgres psql zeus-iot
         
         ## 编辑 nginx 配置文件
         tee /etc/nginx/conf.d/zabbix.conf <<EOL 1>/dev/null
 server {
     listen       80;
 
-
-    location / {
-      root   /opt/zeus/web;
-      index  index.html;
-      try_files \$uri \$uri/ /index.html;
-    }
-
-    location ^~/api/ {
-        client_body_buffer_size 10m;
-        proxy_set_header  X-Real-IP        \$remote_addr;
-        proxy_set_header  X-Forwarded-For  \$proxy_add_x_forwarded_for;
-        proxy_pass http://127.0.0.1:9090/;
-    }
-
-   location /zabbix {
+    location /zabbix {
         alias $ZABBIX_HOME/zabbix;
         index index.html index.htm index.php;
     }
 
     location ~ ^/zabbix/.+\.php$ {
-            fastcgi_pass   unix:/var/run/php/zabbix.sock;
+            fastcgi_pass   unix:/var/run/php-fpm.sock;
             fastcgi_index  index.php;
             fastcgi_param  SCRIPT_FILENAME  $ZABBIX_HOME\$fastcgi_script_name;
             include        fastcgi_params;
@@ -382,8 +361,67 @@ EOL
         systemctl enable nginx
         systemctl start rh-php73-php-fpm
         systemctl start nginx
+        echo -e "\033[32m  [ OK ] \033[0m"
 }
-echo "安装完成。。。请访问 "http://localIP""
+
+
+
+function gettoken(){
+        ## 获取 API 永久 token
+        local zabbix_api_url=http://127.0.0.1/zabbix/api_jsonrpc.php
+        local data='{"jsonrpc": "2.0","method": "user.login","params":{"user":"Admin","password":"zabbix"},"id":1,"auth":null}'
+        local res=`eval exec "curl -d '$data' -H 'Content-Type: application/json' -X POST -s $zabbix_api_url"`
+        local auth=`echo $res | python -c 'import sys, json; print(json.load(sys.stdin)["result"])'`
+        local data='{"jsonrpc": "2.0","method": "token.create","params":{"name":"zeus","userid":"1"},"id":1,"auth":"'${auth}'"}'
+        local res=`eval exec "curl -d '$data' -H 'Content-Type: application/json' -X POST -s $zabbix_api_url"`
+        local tokenid=`echo $res | python -c 'import sys, json; print(json.load(sys.stdin)["result"]["tokenids"][0])'`
+        local data='{"jsonrpc": "2.0","method": "token.generate","params":["'${tokenid}'"],"id":1,"auth":"'${auth}'"}'
+        local res=`eval exec "curl -d '$data' -H 'Content-Type: application/json' -X POST -s $zabbix_api_url"`
+        token=`echo $res | python -c 'import sys, json; print(json.load(sys.stdin)["result"][0]["token"])'`     
+}
+
+
+function taosinstall() {
+        ### taos 数据安装
+        echo -e -n "\033[32mStep9: 安装 taos 数据库。。。  \033[0m"
+        expect << EOF 1> /dev/null
+          spawn rpm -ivh https://www.taosdata.com/assets-download/TDengine-server-2.2.0.2-Linux-x64.rpm
+          expect {
+            "*one:" { send "\n";exp_continue}
+            "*skip:" { send "\n" }
+          }
+EOF
+        ## 启动taos
+        systemctl enable taosd
+        systemctl start taosd
+
+        echo -e "\033[32m  [ OK ] \033[0m"
+}
+
+function natsinstall() {
+        echo -e -n "\033[32mStep10: 安装 nats 服务。。。  \033[0m"
+        wget -c https://github.com/nats-io/nats-server/releases/download/v2.6.0/nats-server-v2.6.0-linux-amd64.tar.gz -o /dev/null -O - | tar -xz
+        mv ./nats-server-v2.6.0-linux-amd64/nats-server /usr/bin/nats-server
+        nohup nats-server &> /dev/null &
+        echo -e "\033[32m  [ OK ] \033[0m"
+}
+
+function ZeusInstall() {
+        echo -e -n "\033[32mStep11: 安装 Zeus-IoT 服务。。。  \033[0m"
+        cd /opt/zeus || exit
+        ## 创建taos 数据库
+        taos -s "create database zeus_data" 1> /dev/null
+        wget -c https://packages.zmops.cn/zeus-iot/zeus-iot-bin.tar.gz -o /dev/null -O - | tar -xz
+        gettoken
+        ## 数据库导入
+        cat ./zeus-iot-bin/bin/sql/zeus-iot.sql | sudo -u zabbix psql zabbix 1>/dev/null
+
+        sed -i "s%\(zbxApiToken: \).*%\1$token%" ./zeus-iot-bin/webapp/webapp.yml
+        sed -i '19i export ZEUS_DB_PASSWORD=zeusiot' ./zeus-iot-bin/bin/startup.sh
+        ./zeus-iot-bin/bin/startup.sh
+        echo -e "\033[32m  [ OK ] \033[0m"
+}
+
 
 ##
 InitSystem
@@ -391,5 +429,8 @@ AddInstallRepo
 PGInstall
 ZbxInstall
 PHPInstall
+WebInstall
+taosinstall
+natsinstall
 ZeusInstall
 # 安装结束
