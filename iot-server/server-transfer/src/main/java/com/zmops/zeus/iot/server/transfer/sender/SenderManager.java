@@ -1,7 +1,6 @@
 package com.zmops.zeus.iot.server.transfer.sender;
 
 import com.alibaba.fastjson.JSON;
-import com.google.gson.Gson;
 import com.zmops.zeus.iot.server.core.analysis.manual.history.History;
 import com.zmops.zeus.iot.server.core.analysis.manual.history.UIntHistory;
 import com.zmops.zeus.iot.server.core.analysis.record.Record;
@@ -68,8 +67,16 @@ public class SenderManager {
             metric.sendSuccessNum.incr(bodyList.size());
             taskPositionManager.updateFileSinkPosition(jobId, sourceFilePath, bodyList.size());
 
+            String fileName;
+            if (!System.getProperty("os.name").toLowerCase().startsWith("win")) {
+                String[] i = sourceFilePath.split("/");
+                fileName = i[i.length - 1];
+            } else {
+                fileName = sourceFilePath;
+            }
+
             LOGGER.info("send bid [{}] with message size [{}], the job id is [{}],the tid is [{}], read file is {}, "
-                    + "dataTime is {}", bid, bodyList.size(), jobId, tid, sourceFilePath, dataTime);
+                    + "dataTime is {}", bid, bodyList.size(), jobId, tid, fileName, dataTime);
 
         } catch (Exception exception) {
             LOGGER.error("Exception caught", exception);
