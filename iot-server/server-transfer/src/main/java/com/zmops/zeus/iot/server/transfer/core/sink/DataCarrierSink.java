@@ -22,10 +22,9 @@ import java.util.concurrent.*;
 import static com.zmops.zeus.iot.server.transfer.conf.CommonConstants.*;
 import static com.zmops.zeus.iot.server.transfer.conf.JobConstants.*;
 
+public class DataCarrierSink implements Sink {
 
-public class NdjsonSink implements Sink {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(NdjsonSink.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataCarrierSink.class);
 
     private SenderManager senderManager;
 
