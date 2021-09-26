@@ -68,7 +68,7 @@ public class SenderManager {
             metric.sendSuccessNum.incr(bodyList.size());
             taskPositionManager.updateFileSinkPosition(jobId, sourceFilePath, bodyList.size());
 
-            LOGGER.info("send bid {} with message size {}, the job id is {},the tid is {}, read file is {}"
+            LOGGER.info("send bid [{}] with message size [{}], the job id is [{}],the tid is [{}], read file is {}, "
                     + "dataTime is {}", bid, bodyList.size(), jobId, tid, sourceFilePath, dataTime);
 
         } catch (Exception exception) {
