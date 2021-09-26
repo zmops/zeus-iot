@@ -16,7 +16,7 @@
  *
  */
 
-package com.zmops.iot.mediaType;
+package com.zmops.iot.media;
 
 
 import java.util.ArrayList;

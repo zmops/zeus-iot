@@ -1,4 +1,4 @@
-package com.zmops.iot.mediaType.feishu;
+package com.zmops.iot.media.feishu;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.alarm.MediaTypeSetting;

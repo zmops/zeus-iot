@@ -16,13 +16,13 @@
  *
  */
 
-package com.zmops.iot.mediaType.welink;
+package com.zmops.iot.media.welink;
 
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.alarm.AlarmMessage;
-import com.zmops.iot.mediaType.AlarmCallback;
+import com.zmops.iot.media.AlarmCallback;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;

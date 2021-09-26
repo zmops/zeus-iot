@@ -16,7 +16,7 @@
  *
  */
 
-package com.zmops.iot.mediaType.feishu;
+package com.zmops.iot.media.wechat;
 
 import lombok.*;
 
@@ -26,21 +26,12 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
-@Getter
+@Data
 @ToString
-public class FeishuSettings {
+public class WechatSettings {
 
-    private String           textTemplate;
+    private String textTemplate;
+
     @Builder.Default
-    private List<WebHookUrl> webhooks = new ArrayList<>();
-
-    @AllArgsConstructor
-    @Setter
-    @Getter
-    @ToString
-    public static class WebHookUrl {
-        private final String secret;
-        private final String url;
-    }
+    private List<String> webhooks = new ArrayList<>();
 }

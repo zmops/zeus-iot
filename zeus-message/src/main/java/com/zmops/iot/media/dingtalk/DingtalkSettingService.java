@@ -1,4 +1,4 @@
-package com.zmops.iot.mediaType.dingtalk;
+package com.zmops.iot.media.dingtalk;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.alarm.MediaTypeSetting;

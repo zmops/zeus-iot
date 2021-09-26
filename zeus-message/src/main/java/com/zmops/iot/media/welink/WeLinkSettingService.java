@@ -1,4 +1,4 @@
-package com.zmops.iot.mediaType.welink;
+package com.zmops.iot.media.welink;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.alarm.MediaTypeSetting;

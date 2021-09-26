@@ -1,5 +1,5 @@
 
-package com.zmops.iot.mediaType.welink;
+package com.zmops.iot.media.welink;
 
 import lombok.*;
 

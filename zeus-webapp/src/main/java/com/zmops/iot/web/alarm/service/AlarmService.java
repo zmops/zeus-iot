@@ -6,7 +6,7 @@ import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.ProductEvent;
 import com.zmops.iot.domain.product.query.QProductEvent;
-import com.zmops.iot.mediaType.AlarmCallback;
+import com.zmops.iot.media.AlarmCallback;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.alarm.dto.AlarmDto;
 import com.zmops.iot.web.alarm.dto.param.AlarmParam;

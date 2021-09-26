@@ -8,6 +8,7 @@ import com.corundumstudio.socketio.annotation.OnDisconnect;
 import com.corundumstudio.socketio.annotation.OnEvent;
 
 import com.zmops.iot.message.config.Event;
+import com.zmops.iot.message.config.UserClientMap;
 import com.zmops.iot.message.payload.BroadcastMessageRequest;
 import com.zmops.iot.message.payload.GroupMessageRequest;
 import com.zmops.iot.message.payload.JoinRequest;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.UUID;
 
 /**
  * @author nantian created at 2021/9/26 23:13
@@ -29,55 +31,38 @@ public class MessageEventHandler {
     @Autowired
     private SocketIOServer server;
 
-    /**
-     * 添加connect事件，当客户端发起连接时调用
-     *
-     * @param client 客户端对象
-     */
+    @Autowired
+    private UserClientMap userClient;
+
+
     @OnConnect
     public void onConnect(SocketIOClient client) {
         if (client != null) {
 
-            String token = client.getHandshakeData().getSingleUrlParam("token");
-
-            // 模拟用户id 和token一致
+            String token  = client.getHandshakeData().getSingleUrlParam("token");
             String userId = client.getHandshakeData().getSingleUrlParam("token");
 
-        } else {
-            log.error("客户端为空");
+            UUID sessionId = client.getSessionId();
+
+            userClient.save(userId, sessionId);
+
+            log.info("socketio connect successfully,【token】= {},【sessionId】= {}", token, sessionId);
         }
     }
 
-    /**
-     * 添加disconnect事件，客户端断开连接时调用，刷新客户端信息
-     *
-     * @param client 客户端对象
-     */
     @OnDisconnect
     public void onDisconnect(SocketIOClient client) {
         if (client != null) {
-            String token = client.getHandshakeData().getSingleUrlParam("token");
-
-            // 模拟用户id 和token一致
             String userId = client.getHandshakeData().getSingleUrlParam("token");
-
+            userClient.deleteByUserId(userId);
             client.disconnect();
-        } else {
-            log.error("客户端为空");
         }
     }
 
-    /**
-     * 加入群聊
-     *
-     * @param client  客户端
-     * @param request 请求
-     * @param data    群聊
-     */
     @OnEvent(value = Event.JOIN)
     public void onJoinEvent(SocketIOClient client, AckRequest request, JoinRequest data) {
 
-        log.info("用户：{} 已加入群聊：{}", data.getUserId(), data.getGroupId());
+        log.info("user：{} has join group chat：{}", data.getUserId(), data.getGroupId());
         client.joinRoom(data.getGroupId());
 
         server.getRoomOperations(data.getGroupId()).sendEvent(Event.JOIN, data);
@@ -86,7 +71,7 @@ public class MessageEventHandler {
 
     @OnEvent(value = Event.CHAT)
     public void onChatEvent(SocketIOClient client, AckRequest request, SingleMessageRequest data) {
-
+        System.out.println(data.getMessage());
     }
 
     @OnEvent(value = Event.GROUP)
@@ -95,18 +80,16 @@ public class MessageEventHandler {
     }
 
 
-    /**
-     * 广播
-     */
     public void sendToBroadcast(BroadcastMessageRequest message) {
-        log.info("系统紧急广播一条通知：{}", message.getMessage());
+        for (UUID clientId : userClient.findAll()) {
+            if (server.getClient(clientId) == null) {
+                continue;
+            }
 
-
+            server.getClient(clientId).sendEvent(Event.BROADCAST, message);
+        }
     }
 
-    /**
-     * 群聊
-     */
     public void sendToGroup(GroupMessageRequest message) {
         server.getRoomOperations(message.getGroupId()).sendEvent(Event.GROUP, message);
     }

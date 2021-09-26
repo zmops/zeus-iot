@@ -1,4 +1,4 @@
-package com.zmops.iot.mediaType.wechat;
+package com.zmops.iot.media.wechat;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.alarm.MediaTypeSetting;

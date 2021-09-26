@@ -1,6 +1,6 @@
 
 
-package com.zmops.iot.mediaType.dingtalk;
+package com.zmops.iot.media.dingtalk;
 
 import lombok.*;
 

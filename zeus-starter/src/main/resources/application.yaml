@@ -41,7 +41,7 @@ spring:
     template-loader-path: classpath:/public/
 
 forest:
-  log-enabled: true
+  log-enabled: false
   timeout: 5000
   variables:
     ## Zabbix API IP And ServerIp and ServerPort

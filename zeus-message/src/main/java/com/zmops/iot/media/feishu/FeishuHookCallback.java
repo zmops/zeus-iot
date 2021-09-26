@@ -16,12 +16,12 @@
  *
  */
 
-package com.zmops.iot.mediaType.feishu;
+package com.zmops.iot.media.feishu;
 
 
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.alarm.AlarmMessage;
-import com.zmops.iot.mediaType.AlarmCallback;
+import com.zmops.iot.media.AlarmCallback;
 import com.zmops.iot.util.ToolUtil;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import lombok.extern.slf4j.Slf4j;

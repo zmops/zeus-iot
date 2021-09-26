@@ -53,5 +53,7 @@ forest:
     taosUser: root
     taosPwd: taosdata
 
-nats:
-  url: nats://${NATS_HOST:127.0.0.1}:${NATS_PORT:4222}
+socketio:
+  server:
+    port: 9080
+    host: 0.0.0.0
