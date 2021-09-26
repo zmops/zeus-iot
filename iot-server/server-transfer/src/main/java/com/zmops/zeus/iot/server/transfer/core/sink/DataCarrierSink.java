@@ -22,7 +22,6 @@ import java.util.concurrent.*;
 import static com.zmops.zeus.iot.server.transfer.conf.CommonConstants.*;
 import static com.zmops.zeus.iot.server.transfer.conf.JobConstants.*;
 
-
 public class DataCarrierSink implements Sink {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataCarrierSink.class);

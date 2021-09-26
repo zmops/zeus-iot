@@ -7,10 +7,6 @@ public class CommonConstants {
 
     public static final String PROXY_TID = "proxy.tid";
 
-    public static final String PROXY_MAX_SENDER_PER_BID = "proxy.max.sender.per.pid";
-
-    public static final int DEFAULT_PROXY_MAX_SENDER_PER_PID = 10;
-
     // max size of message list
     public static final String PROXY_PACKAGE_MAX_SIZE = "proxy.package.maxSize";
 
@@ -29,22 +25,6 @@ public class CommonConstants {
 
     public static final int DEFAULT_PROXY_BATCH_FLUSH_INTERVAL = 100;
 
-    public static final String PROXY_SENDER_MAX_TIMEOUT = "proxy.sender.maxTimeout";
-
-    // max timeout in seconds.
-    public static final int DEFAULT_PROXY_SENDER_MAX_TIMEOUT = 20;
-
-    public static final String PROXY_SENDER_MAX_RETRY = "proxy.sender.maxRetry";
-
-    public static final int DEFAULT_PROXY_SENDER_MAX_RETRY = 5;
-
-    public static final String  PROXY_IS_FILE   = "proxy.isFile";
-    public static final boolean DEFAULT_IS_FILE = false;
-
-    public static final String PROXY_RETRY_SLEEP = "proxy.retry.sleep";
-
-    public static final long DEFAULT_PROXY_RETRY_SLEEP = 500;
-
     public static final String PROXY_KEY_BID      = "bid";
     public static final String PROXY_KEY_TID      = "tid";
     public static final String PROXY_KEY_ID       = "id";
@@ -60,10 +40,5 @@ public class CommonConstants {
     public static final String TRIGGER_ID_PREFIX = "trigger_";
 
     public static final String COMMAND_STORE_INSTANCE_NAME = "commandStore";
-
-    public static final String AGENT_OS_NAME = "os.name";
-    public static final String AGENT_NIX_OS  = "nix";
-    public static final String AGENT_NUX_OS  = "nux";
-    public static final String AGENT_COLON   = ":";
 
 }
