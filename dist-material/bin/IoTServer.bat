@@ -19,7 +19,7 @@
 setlocal
 set OAP_PROCESS_TITLE=Zeus-IoT-Server
 set OAP_HOME=%~dp0%..
-set OAP_OPTS="-Xms1024M -Xmx1024M -Doap.logDir=%OAP_HOME%\logs"
+set OAP_OPTS="-Xms1024M -Xmx1024M -Doap.logDir=%OAP_HOME%\logs -Duser.timezone=GMT+08"
 
 set CLASSPATH=%OAP_HOME%\config;.;
 set CLASSPATH=%OAP_HOME%\iot-server-libs\*;%CLASSPATH%

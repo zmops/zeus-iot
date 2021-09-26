@@ -35,7 +35,7 @@ do
     CLASSPATH="$i:$CLASSPATH"
 done
 
-IOT_OPTIONS=" -Doap.logDir=${IOT_LOG_DIR}"
+IOT_OPTIONS=" -Doap.logDir=${IOT_LOG_DIR} -Duser.timezone=GMT+08"
 
 eval exec "\"$_RUNJAVA\" ${JAVA_OPTS} ${IOT_OPTIONS} -classpath $CLASSPATH com.zmops.zeus.iot.server.starter.IoTServerStartUp \
         &> ${IOT_LOG_DIR}/zeus_iot.log &"
