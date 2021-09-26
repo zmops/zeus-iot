@@ -74,6 +74,7 @@ public class TextFileReader implements Reader {
                 return new DefaultMessage(message.getBytes(StandardCharsets.UTF_8));
             }
         }
+        TransferUtils.silenceSleepInMs(100);
         return null;
     }
 

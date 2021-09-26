@@ -8,7 +8,7 @@ import com.zmops.zeus.iot.server.transfer.api.Source;
 import com.zmops.zeus.iot.server.transfer.conf.JobConstants;
 import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
 import com.zmops.zeus.iot.server.transfer.core.channel.MemoryChannel;
-import com.zmops.zeus.iot.server.transfer.core.sink.NdjsonSink;
+import com.zmops.zeus.iot.server.transfer.core.sink.DataCarrierSink;
 import com.zmops.zeus.iot.server.transfer.core.source.TextFileSource;
 import com.zmops.zeus.iot.server.transfer.core.task.Task;
 import lombok.Getter;
@@ -56,7 +56,7 @@ public class Job {
             Source source = new TextFileSource();
 
             for (Reader reader : source.split(jobConf)) {
-                Sink writer = new NdjsonSink();
+                Sink writer = new DataCarrierSink();
                 writer.setSourceFile(reader.getReadFile());
 
                 Channel channel = new MemoryChannel();
