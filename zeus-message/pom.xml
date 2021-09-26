@@ -22,6 +22,11 @@
             <artifactId>netty-codec-http</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.corundumstudio.socketio</groupId>
+            <artifactId>netty-socketio</artifactId>
+            <version>1.7.12</version>
+        </dependency>
+        <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>zeus-driver</artifactId>
             <version>1.0-beta</version>

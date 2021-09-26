@@ -11,7 +11,6 @@ import com.zmops.iot.domain.sys.query.QSysUser;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.alarm.dto.param.MessageParam;
-import com.zmops.iot.web.nats.NatsConnectionHolder;
 import io.ebean.DB;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -68,9 +67,9 @@ public class MessageService {
         }
         body.addBody("classify", sys);
 
-        tos.forEach(to -> {
-            NatsConnectionHolder.INSTANCE.getConnection().publish(to + "", JSON.toJSONString(body));
-        });
+//        tos.forEach(to -> {
+//            NatsConnectionHolder.INSTANCE.getConnection().publish(to + "", JSON.toJSONString(body));
+//        });
     }
 
     /**
