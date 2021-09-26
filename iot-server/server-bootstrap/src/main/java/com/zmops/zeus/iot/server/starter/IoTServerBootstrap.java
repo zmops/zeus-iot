@@ -27,6 +27,8 @@ import com.zmops.zeus.iot.server.telemetry.api.MetricsCreator;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsTag;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.TimeZone;
+
 
 /**
  * Starter core. Load the core configuration file, and initialize the startup sequence through {@link ModuleManager}.
@@ -36,6 +38,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class IoTServerBootstrap {
     public static void start() {
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Shanghai"));
+
         String mode = System.getProperty("mode");
         RunningMode.setMode(mode);
 
