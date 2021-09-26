@@ -39,7 +39,7 @@ public class SenderManager {
     /**
      * Send message to proxy by batch, use message cache.
      *
-     * @param bid      - bid
+     * @param bid      - bid 方便以后企业版 区分数据来源
      * @param tid      - tid
      * @param bodyList - body list
      * @param retry    - retry time
@@ -67,6 +67,9 @@ public class SenderManager {
 
             metric.sendSuccessNum.incr(bodyList.size());
             taskPositionManager.updateFileSinkPosition(jobId, sourceFilePath, bodyList.size());
+
+            LOGGER.info("send bid {} with message size {}, the job id is {},the tid is {}, read file is {}"
+                    + "dataTime is {}", bid, bodyList.size(), jobId, tid, sourceFilePath, dataTime);
 
         } catch (Exception exception) {
             LOGGER.error("Exception caught", exception);

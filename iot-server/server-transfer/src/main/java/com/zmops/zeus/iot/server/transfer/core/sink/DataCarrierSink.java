@@ -87,14 +87,10 @@ public class DataCarrierSink implements Sink {
             while (!shutdown) {
                 try {
                     cache.forEach((s, packProxyMessage) -> {
-
                         Pair<String, List<byte[]>> result = packProxyMessage.fetchBatch();
 
                         if (result != null) {
                             senderManager.sendBatch(jobInstanceId, bid, result.getKey(), result.getValue(), 0, dataTime);
-
-                            LOGGER.info("send bid {} with message size {}, the job id is {}, read file is {}"
-                                    + "dataTime is {}", bid, result.getRight().size(), jobInstanceId, sourceFile, dataTime);
                         }
                     });
                     TransferUtils.silenceSleepInMs(batchFlushInterval);
