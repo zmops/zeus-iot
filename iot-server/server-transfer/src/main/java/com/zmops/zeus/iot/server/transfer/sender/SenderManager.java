@@ -1,5 +1,6 @@
 package com.zmops.zeus.iot.server.transfer.sender;
 
+import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
 import com.zmops.zeus.iot.server.core.analysis.manual.history.History;
 import com.zmops.zeus.iot.server.core.analysis.manual.history.UIntHistory;
@@ -13,6 +14,7 @@ import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -28,7 +30,6 @@ public class SenderManager {
     private final TaskPositionManager taskPositionManager;
     private final String              sourceFilePath;
     private final PluginMetric        metric = new PluginMetric();
-    private final Gson                gson   = new Gson();
 
     public SenderManager(JobProfile jobConf, String bid, String sourceFilePath) {
         taskPositionManager = TaskPositionManager.getTaskPositionManager();
@@ -46,7 +47,7 @@ public class SenderManager {
     public void sendBatch(String jobId, String bid, String tid, List<byte[]> bodyList, int retry, long dataTime) {
         try {
             bodyList.forEach(body -> {
-                ItemValue itemValue = gson.fromJson(new String(body), ItemValue.class);
+                ItemValue itemValue = JSON.parseObject(new String(body, StandardCharsets.UTF_8), ItemValue.class);
 
                 Record record;
 
@@ -90,6 +91,10 @@ public class SenderManager {
         private Long clock;
 
         private Integer itemid;
+
+        private List<Map<String, String>> item_tags;
+
+        private List<String> groups;
 
         private Long ns;
 

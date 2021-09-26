@@ -44,17 +44,17 @@ core:
 
 # ndjson file read realtime
 server-transfer:
-  selector: ${ZS_SERVER_TRANSFER:-}
+  selector: ${ZS_SERVER_TRANSFER:default}
   default:
     name: ${ZS_TRANSFER_NAME:zeus-transfer}
-    pattern: ${ZS_TRANSFER_PATTERN:E:\data\history-history-syncer-[0-9]{1}.ndjson}
-    fileMaxWait: ${ZS_TRANSFER_FILE_MAXWAIT:5}
+    pattern: ${ZS_TRANSFER_PATTERN:/home/data/history-history-syncer-[0-9]{1}.ndjson}
+    fileMaxWait: ${ZS_TRANSFER_FILE_MAXWAIT:30}
 
 # tdengine storage realtime
 storage:
   selector: ${ZS_STORAGE:tdengine}
   tdengine:
-    url: ${ZS_STORAGE_TDENGINE_URL:jdbc:TAOS://192.168.1.1:6030/zeus_data} # TDEngine jdbcUrl
+    url: ${ZS_STORAGE_TDENGINE_URL:jdbc:TAOS://127.0.0.1:6030/zeus_data} # TDEngine jdbcUrl
     user: ${ZS_STORAGE_TDENGINE_USER:root}
     password: ${ZS_STORAGE_TDENGINE_PASSWORD:taosdata}
 
