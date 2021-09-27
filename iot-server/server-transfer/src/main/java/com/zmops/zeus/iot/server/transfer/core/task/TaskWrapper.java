@@ -21,8 +21,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class TaskWrapper extends AbstractStateWrapper {
 
-    private static final Logger LOGGER               = LoggerFactory.getLogger(TaskWrapper.class);
-    public static final  int    WAIT_FINISH_TIME_OUT = 1;
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskWrapper.class);
+
+    public static final int WAIT_FINISH_TIME_OUT = 1;
 
     private final TaskManager taskManager;
     private final Task        task;
