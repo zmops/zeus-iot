@@ -306,7 +306,7 @@ public class HomeService {
 
         if (ToolUtil.isNotEmpty(alarmList)) {
 
-            List<Integer> triggerIds = alarmList.parallelStream().map(ZbxProblemInfo::getObjectid).map(Integer::parseInt).collect(Collectors.toList());
+            List<String> triggerIds = alarmList.parallelStream().map(ZbxProblemInfo::getObjectid).map(Objects::toString).collect(Collectors.toList());
             List<DeviceDto> deviceList = DB.findDto(DeviceDto.class, "select name,r.zbx_id from device d INNER JOIN (select relation_id,zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.relation_id=d.device_id")
                     .setParameter("zbxIds", triggerIds).findList();
             Map<String, String> deviceMap = deviceList.parallelStream().collect(Collectors.toMap(DeviceDto::getZbxId, DeviceDto::getName));
