@@ -22,7 +22,7 @@ Zeus-IoT supports Linux operating systems based on the x86_64 platform, such as 
   curl -sL https://github.com/zmops/zeus-iot/raw/develop/docs/ubuntu/install.sh | bash
   ```
 
-访问 `http://<your-host-ip>` 登录 Zeus-IOT 系统[快速开始](./docs/quick-start.rst) 。
+访问 `http://<your-host-ip>:9090` 登录 Zeus-IOT 系统[快速开始](./docs/quick-start.rst) 。
 
 假如您已经有自己的 **zabbix** 且 **zabbix** 版本是 **5.4.0+**。可以选择[自定义安装 Zeus iot](./docs/README.md)
 
