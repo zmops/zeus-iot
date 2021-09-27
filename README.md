@@ -44,6 +44,12 @@ The following screenshots give a close insight into Zeus IoT.
 - IoT Server: **Apache Camel 2.2 , Modular design**
 - Visualization: **Grafana 8.0+**
 
+## Features
+<details>
+  <summary><b>🕸 Based on zabbix secondary development</b></summary>
+  Based on the powerful distributed capabilities of zabbix, cross-regional collection can be realized
+</details>
+
 ## Demo Environment
 
 Using the account `Admin / zeus123` to log in the [demo environment](https://zeusdemo.zmops.cn/). Please note the account is granted view access. 
