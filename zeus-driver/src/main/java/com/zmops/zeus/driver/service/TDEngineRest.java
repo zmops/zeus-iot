@@ -1,6 +1,7 @@
 package com.zmops.zeus.driver.service;
 
 import com.dtflys.forest.annotation.BaseRequest;
+import com.dtflys.forest.annotation.Body;
 import com.dtflys.forest.annotation.Post;
 import com.dtflys.forest.extensions.BasicAuth;
 
@@ -18,7 +19,9 @@ public interface TDEngineRest {
      * @param sql
      * @return String
      */
-    @Post
+    @Post(
+            contentType = "application/json;charset=utf-8"
+    )
     @BasicAuth(username = "${taosUser}", password = "${taosPwd}")
-    String executeSql(String sql);
+    String executeSql(@Body String sql);
 }
