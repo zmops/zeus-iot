@@ -111,7 +111,7 @@ public class DeviceService {
             return new Pager<>();
         }
         StringBuilder sql = generateBaseSql();
-
+        sql.append(" where 1=1");
         List<Long> sids = new ArrayList<>();
         if (ToolUtil.isNotEmpty(deviceParam.getTag())) {
             QTag qTag = new QTag().select(QTag.Alias.sid).templateId.isNull();
@@ -468,7 +468,7 @@ public class DeviceService {
         }
         StringBuilder sql = generateBaseSql();
         sql.append(" where d.device_id=:deviceId");
-        DeviceDto deviceDto = DB.findDto(DeviceDto.class, sql.toString()).setParameter("deviceId", deviceId).setParameter("deviceGroupIds",devGroupIds).findOne();
+        DeviceDto deviceDto = DB.findDto(DeviceDto.class, sql.toString()).setParameter("deviceId", deviceId).setParameter("deviceGroupIds", devGroupIds).findOne();
         return deviceDto;
     }
 
