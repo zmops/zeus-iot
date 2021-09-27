@@ -8,10 +8,12 @@ import com.zmops.iot.domain.messages.Messages;
 import com.zmops.iot.domain.messages.query.QMessages;
 import com.zmops.iot.domain.sys.SysUser;
 import com.zmops.iot.domain.sys.query.QSysUser;
+import com.zmops.iot.message.handler.MessageEventHandler;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.alarm.dto.param.MessageParam;
 import io.ebean.DB;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -31,6 +33,8 @@ public class MessageService {
 
     protected final static int sys = 1;
 
+    @Autowired
+    MessageEventHandler messageEventHandler;
     /**
      * 发送消息
      *
@@ -67,9 +71,9 @@ public class MessageService {
         }
         body.addBody("classify", sys);
 
-//        tos.forEach(to -> {
-//            NatsConnectionHolder.INSTANCE.getConnection().publish(to + "", JSON.toJSONString(body));
-//        });
+        tos.forEach(to -> {
+            messageEventHandler.sendToUser(to + "", JSON.toJSONString(body));
+        });
     }
 
     /**
