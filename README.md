@@ -1,5 +1,5 @@
 <p align="center">
-<img src="docs/images/zeus-iot-logo.png" alt="banner" width="300px">
+<img src="docs/images/zeus-iot-logo.png" alt="banner" width="200px">
 </p>
 
 ## Zeus IoT distributed collection platform
