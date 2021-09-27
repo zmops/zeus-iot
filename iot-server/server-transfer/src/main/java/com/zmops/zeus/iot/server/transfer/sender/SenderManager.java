@@ -28,7 +28,8 @@ public class SenderManager {
 
     private final TaskPositionManager taskPositionManager;
     private final String              sourceFilePath;
-    private final PluginMetric        metric = new PluginMetric();
+
+    private final PluginMetric metric = new PluginMetric();
 
     public SenderManager(JobProfile jobConf, String bid, String sourceFilePath) {
         taskPositionManager = TaskPositionManager.getTaskPositionManager();
