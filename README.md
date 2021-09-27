@@ -6,6 +6,10 @@
 ![Version](https://img.shields.io/badge/version-1.0.0--RELEASE-brightgreen)
 [![QQ群736541577](https://img.shields.io/badge/QQ群-736541577-brightgreen)](https://qm.qq.com/cgi-bin/qm/qr?k=CcWBdkXjkgt99bBu5d_-1TeS36DhCkU4&jump_from=webapi)
 
+<p align="left">
+<img src="docs/images/zeus-iot-logo.png" alt="banner" width="600px">
+</p>
+
 ### Quick install
 
 Zeus-IoT supports Linux operating systems based on the x86_64 platform, such as Centos 7, Ubuntu 20.04, Debain 10, Kylin, and UOS.
