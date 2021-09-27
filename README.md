@@ -13,13 +13,13 @@ Zeus-IoT supports Linux operating systems based on the x86_64 platform, such as 
 - Centos7、RedHat 7
 
   ```shell
-  curl -L https://github.com/zmops/zeus-iot/raw/develop/docs/rhel/quick-install.sh | bash
+  curl -sL https://github.com/zmops/zeus-iot/raw/develop/docs/centos/install.sh | bash
   ```
 
 - Ubuntu 20.04
 
   ```shell
-  curl -L https://github.com/zmops/zeus-iot/raw/develop/docs/ubuntu/install.sh | bash
+  curl -sL https://github.com/zmops/zeus-iot/raw/develop/docs/ubuntu/install.sh | bash
   ```
 
 访问 `http://<your-host-ip>` 登录 Zeus-IOT 系统[快速开始](./docs/quick-start.rst) 。
