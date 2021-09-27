@@ -36,3 +36,7 @@ The following screenshots give a close insight into Zeus IoT.
      <td><img src="docs/images/snapshot_4.jpg"/></td>
   </tr>
 </table>
+
+## Demo Environment
+
+Using the account `Admin / zeus123` to log in the [demo environment](https://zeusdemo.zmops.cn/). Please note the account is granted view access. 
