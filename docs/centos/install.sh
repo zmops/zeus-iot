@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+
 set -e
 
 ROOT_UID=0
@@ -13,7 +14,7 @@ PGDATA=/opt/zeus/pgdata
 
 function logprint() {
         if [ $? != 0 ]; then
-                echo "$1"
+                echo -e "\033[31m Error: $1 \033[0m"
                 exit
         fi
 }
@@ -95,41 +96,36 @@ function AddInstallRepo() {
         ### 备份原有yum
         mv /etc/yum.repos.d/* /tmp/
         ### 基础 YUM 源
-        if ! curl -s -o /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo; then
-                echo "YUM 仓库配置异常,请检查网络"
-        fi
-        sed -i '/mirrors.aliyuncs.com/,/mirrors.cloud.aliyuncs.com/d' /etc/yum.repos.d/CentOS-Base.repo
-        ### Postgresql && timescaleDB
-        tee /etc/yum.repos.d/postgresql_timescaledb.repo <<EOL &>/dev/null
+        ### Postgresql && php
+        tee /etc/yum.repos.d/Centos-Base.repo <<EOL &>/dev/null
+[base]
+name=CentOS-\$releasever - Base
+baseurl=http://mirrors.tuna.tsinghua.edu.cn/centos/\$releasever/os/\$basearch/
+gpgcheck=0
+
 [epel]
 name=Extra Packages for Enterprise Linux 7 - \$basearch
-baseurl=http://mirrors.aliyun.com/epel/7/\$basearch
+baseurl=https://mirrors.tuna.tsinghua.edu.cn/epel/7/\$basearch
 failovermethod=priority
 enabled=1
 gpgcheck=0
 
 [centos-sclo-rh]
 name=CentOS-7 - SCLo rh
-baseurl=https://mirrors.aliyun.com/centos/7/sclo/\$basearch/rh/
+baseurl=http://mirrors.tuna.tsinghua.edu.cn/centos/7/sclo/\$basearch/rh/
 gpgcheck=0
 enabled=1
-
-[pgdg-common]
-name=PostgreSQL common RPMs for RHEL/CentOS \$releasever - \$basearch
-baseurl=https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-\$releasever-\$basearch
-enabled=1
-gpgcheck=0
-
 
 [pgdg13]
 name=PostgreSQL 13 for RHEL/CentOS \$releasever - \$basearch
-baseurl=https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-\$releasever-\$basearch
+baseurl=https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/13/redhat/rhel-\$releasever-\$basearch
 enabled=1
 gpgcheck=0
 
 EOL
 
         yum clean all 1>/dev/null && yum makecache 1>/dev/null
+        yum -y install java-1.8.0-openjdk expect 1> /dev/null
         logprint "yum 源配置失败详细看安装日志输出"
         echo -e "\033[32m  [ OK ] \033[0m"
 }
@@ -166,7 +162,7 @@ function PGInstall() {
         systemctl start postgresql-13
         ### 修改数据库管理员密码
         cd /tmp || exit
-        sudo -u postgres /usr/pgsql-13/bin/psql -c "ALTER USER postgres WITH PASSWORD 'zeusiot';" 1> /dev/null
+        sudo -u postgres /usr/pgsql-13/bin/psql -c "ALTER USER postgres WITH PASSWORD 'postgres';" 1> /dev/null
         echo -e "\033[32m  [ OK ] \033[0m"
 }
 
@@ -177,7 +173,6 @@ function ZbxInstall() {
         cd "$basename" || exit
         yum -y install vim \
                 wget \
-                expect \
                 gcc \
                 gcc-c++ \
                 net-snmp \
@@ -282,8 +277,8 @@ WantedBy=multi-user.target
 EOL
 
         systemctl daemon-reload
-        systemctl enable zabbix-server
-        systemctl enable zabbix-agent
+        systemctl enable zabbix-server &> /dev/null
+        systemctl enable zabbix-agent &> /dev/null
         systemctl start zabbix-server
         systemctl start zabbix-agent
         echo -e "\033[32m  [ OK ] \033[0m"
@@ -357,8 +352,8 @@ EOL
 
         ## 修改 nginx 配置用户
         sed -i 's/user nginx;/user zeus;/g' /etc/nginx/nginx.conf
-        systemctl enable rh-php73-php-fpm
-        systemctl enable nginx
+        systemctl enable rh-php73-php-fpm &> /dev/null
+        systemctl enable nginx &> /dev/null
         systemctl start rh-php73-php-fpm
         systemctl start nginx
         echo -e "\033[32m  [ OK ] \033[0m"
@@ -392,19 +387,12 @@ function taosinstall() {
           }
 EOF
         ## 启动taos
-        systemctl enable taosd
-        systemctl start taosd
+        systemctl enable taosd &> /dev/null
+        systemctl start taosd 
 
         echo -e "\033[32m  [ OK ] \033[0m"
 }
 
-function natsinstall() {
-        echo -e -n "\033[32mStep10: 安装 nats 服务。。。  \033[0m"
-        wget -c https://github.com/nats-io/nats-server/releases/download/v2.6.0/nats-server-v2.6.0-linux-amd64.tar.gz -o /dev/null -O - | tar -xz
-        mv ./nats-server-v2.6.0-linux-amd64/nats-server /usr/bin/nats-server
-        nohup nats-server &> /dev/null &
-        echo -e "\033[32m  [ OK ] \033[0m"
-}
 
 function ZeusInstall() {
         echo -e -n "\033[32mStep11: 安装 Zeus-IoT 服务。。。  \033[0m"
@@ -414,11 +402,12 @@ function ZeusInstall() {
         wget -c https://packages.zmops.cn/zeus-iot/zeus-iot-bin.tar.gz -o /dev/null -O - | tar -xz
         gettoken
         ## 数据库导入
-        cat ./zeus-iot-bin/bin/sql/zeus-iot.sql | sudo -u zabbix psql zabbix 1>/dev/null
-
+        sudo -u postgres createdb -E Unicode -T template0 zeus-iot
+        cat ./zeus-iot-bin/bin/sql/zeus-iot.sql | sudo -u postgres psql zeus-iot &>/dev/null
+        logprint "文件未找到"
         sed -i "s%\(zbxApiToken: \).*%\1$token%" ./zeus-iot-bin/webapp/webapp.yml
         sed -i '19i export ZEUS_DB_PASSWORD=zeusiot' ./zeus-iot-bin/bin/startup.sh
-        ./zeus-iot-bin/bin/startup.sh
+        ./zeus-iot-bin/bin/startup.sh 1> /dev/null
         echo -e "\033[32m  [ OK ] \033[0m"
 }
 
@@ -431,6 +420,5 @@ ZbxInstall
 PHPInstall
 WebInstall
 taosinstall
-natsinstall
 ZeusInstall
 # 安装结束
