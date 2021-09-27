@@ -37,6 +37,13 @@ The following screenshots give a close insight into Zeus IoT.
   </tr>
 </table>
 
+## Technology stack
+- Basic components: Zabbix 5.4+
+- Database: Postgresql 12+
+- Webapp: SpringBoot 2  +  [Ebean](https://ebean.io/)  +  Vue Element + Socket.IO
+- IoT Server:  Apache Camel 2.2 + Modular design
+- Visualization: Grafana 8.0+
+
 ## Demo Environment
 
 Using the account `Admin / zeus123` to log in the [demo environment](https://zeusdemo.zmops.cn/). Please note the account is granted view access. 
