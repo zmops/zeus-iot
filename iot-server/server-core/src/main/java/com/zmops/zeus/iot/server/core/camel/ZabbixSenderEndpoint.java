@@ -12,21 +12,23 @@ import org.apache.camel.impl.DefaultEndpoint;
  */
 public class ZabbixSenderEndpoint extends DefaultEndpoint {
 
-    private final ModuleManager moduleManager;
+    private final ModuleManager         moduleManager;
+    private final ZabbixTrapperProducer producer;
 
     public ZabbixSenderEndpoint(String endpointUri, Component component, ModuleManager moduleManager) {
         super(endpointUri, component);
         this.moduleManager = moduleManager;
+        this.producer = new ZabbixTrapperProducer(this, moduleManager);
     }
 
     @Override
     public Producer createProducer() throws Exception {
-        return new ZabbixTrapperProducer(this, moduleManager);
+        return producer; // 每次 process 都会创建一个对象
     }
 
     @Override
     public Consumer createConsumer(Processor processor) throws Exception {
-        return new ZabbixSenderConsumer(this, processor);
+        return new ZabbixSenderConsumer(this, processor); //TODO
     }
 
     @Override
