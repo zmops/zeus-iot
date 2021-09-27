@@ -16,3 +16,23 @@
 
 ## Abstract
 [Zeus IoT](https://www.zmops.com/) is a **distributed IoT collection, analysis, and storage platform**,It is the world's first IoT open source platform based on zabbix secondary development, all this relies on a group of engineers with rich experience in zabbix development.It is hoped that through the community’s open source ecology, continuous improvement and continuous updates will make some contributions to the development of the Internet of Things industry.
+
+The following screenshots give a close insight into Zeus IoT.
+<table>
+  <tr>
+      <td width="50%" align="center"><b>Home Screen</b></td>
+      <td width="50%" align="center"><b>Device Resources</b></td>
+  </tr>
+  <tr>
+     <td><img src="docs/images/snapshot_1.jpg"/></td>
+     <td><img src="docs/images/snapshot_3.jpg"/></td>
+  </tr>
+  <tr>
+      <td width="50%" align="center"><b>Realtime Data</b></td>
+      <td width="50%" align="center"><b>System Users</b></td>
+  </tr>
+  <tr>
+     <td><img src="docs/images/snapshot_2.jpg"/></td>
+     <td><img src="docs/images/snapshot_4.jpg"/></td>
+  </tr>
+</table>
