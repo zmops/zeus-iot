@@ -110,7 +110,6 @@ public class DeviceGroupService {
         JSONArray  grpids = result.getJSONArray("groupids");
         newDeviceGroup.setZbxId(grpids.get(0).toString());
         DB.save(newDeviceGroup);
-
         return newDeviceGroup;
     }
 
