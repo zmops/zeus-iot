@@ -4,7 +4,7 @@
     "params": {
         "output": "extend",
         "filter": {
-            "name":"Admin role"
+            "name":"Super admin role"
         }
     },
     "auth": "${userAuth}",
