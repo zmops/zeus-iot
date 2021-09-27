@@ -43,7 +43,7 @@ public class SaveProductEventTriggerWorker implements IWorker<ProductEventRule, 
         List<String>                           deviceIds = new QDevice().select(QDevice.Alias.deviceId).productId.eq(Long.parseLong(prodId)).findSingleAttributeList();
         List<ProductEventRuleService.Triggers> triggers  = JSONObject.parseArray(zbxTrigger.triggerGetByName(productEventRule.getEventRuleId() + ""), ProductEventRuleService.Triggers.class);
 
-        Map<String, Integer>       treiggerMap              = triggers.parallelStream().collect(Collectors.toMap(o -> o.getHosts().get(0).getHost(), ProductEventRuleService.Triggers::getTriggerid));
+        Map<String, String>       treiggerMap              = triggers.parallelStream().collect(Collectors.toMap(o -> o.getHosts().get(0).getHost(), ProductEventRuleService.Triggers::getTriggerid));
         List<ProductEventRelation> productEventRelationList = new ArrayList<>();
         for (String deviceId : deviceIds) {
             ProductEventRelation productEventRelation = new ProductEventRelation();

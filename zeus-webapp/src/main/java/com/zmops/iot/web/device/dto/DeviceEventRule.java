@@ -52,7 +52,7 @@ public class DeviceEventRule {
     private List<Tag> tags;
 
     @NotNull(groups = BaseEntity.Update.class)
-    private Integer zbxId;
+    private String zbxId;
 
     @NotBlank(groups = {BaseEntity.Status.class, BaseEntity.Delete.class})
     private String deviceId;

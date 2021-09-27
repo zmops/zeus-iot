@@ -36,7 +36,7 @@ public class ProductEventRuleDto {
 
     private List<Tag> tags;
 
-    private Integer zbxId;
+    private String zbxId;
 
     private String productId;
 

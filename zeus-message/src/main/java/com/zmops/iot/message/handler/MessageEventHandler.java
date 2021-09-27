@@ -40,7 +40,7 @@ public class MessageEventHandler {
         if (client != null) {
 
             String token  = client.getHandshakeData().getSingleUrlParam("token");
-            String userId = client.getHandshakeData().getSingleUrlParam("token");
+            String userId = client.getHandshakeData().getSingleUrlParam("userId");
 
             UUID sessionId = client.getSessionId();
 
@@ -79,6 +79,12 @@ public class MessageEventHandler {
         Collection<SocketIOClient> clients = server.getRoomOperations(data.getGroupId()).getClients();
     }
 
+    public void sendDisconnectMsg(String userId) {
+        if (userClient.findByUserId(userId).isPresent()) {
+            UUID uuid = userClient.findByUserId(userId).get();
+            server.getClient(uuid).sendEvent(Event.BROADCAST, "disconnect");
+        }
+    }
 
     public void sendToBroadcast(BroadcastMessageRequest message) {
         for (UUID clientId : userClient.findAll()) {

@@ -52,7 +52,7 @@ public class ProductEventRule {
     private List<Tag> tags;
 
     @NotNull(groups = BaseEntity.Update.class)
-    private Integer zbxId;
+    private String zbxId;
 
     @NotBlank(groups = BaseEntity.Create.class)
     private String productId; // 产品ID

@@ -40,7 +40,7 @@ public interface ZbxTrigger {
      */
     @Post
     @JsonPath("/trigger/trigger.update")
-    String triggerUpdate(@ParamName("triggerId") Integer triggerId,
+    String triggerUpdate(@ParamName("triggerId") String triggerId,
                          @ParamName("expression") String expression,
                          @ParamName("ruleLevel") Byte ruleLevel);
 
@@ -54,7 +54,7 @@ public interface ZbxTrigger {
      */
     @Post
     @JsonPath("/trigger/trigger.tags.update")
-    String triggerTagCreate(@ParamName("triggerId") Integer triggerId,
+    String triggerTagCreate(@ParamName("triggerId") String triggerId,
                             @ParamName("tagMap") Map<String, String> tags);
 
     /**
@@ -74,7 +74,7 @@ public interface ZbxTrigger {
      */
     @Post
     @JsonPath("/trigger/triggerAndTags.get")
-    String triggerAndTagsGet(@ParamName("triggerIds") Integer triggerIds);
+    String triggerAndTagsGet(@ParamName("triggerIds") String triggerIds);
 
 
     /**
@@ -105,7 +105,7 @@ public interface ZbxTrigger {
      */
     @Post
     @JsonPath("/trigger/trigger.status.update")
-    String triggerStatusUpdate(@ParamName("triggerid") Integer triggerId,
+    String triggerStatusUpdate(@ParamName("triggerid") String triggerId,
                                @ParamName("status") String status);
 
     /**
@@ -116,5 +116,5 @@ public interface ZbxTrigger {
      */
     @Post
     @JsonPath("/trigger/trigger.delete")
-    String triggerDelete(@ParamName("triggerid") Integer triggerId);
+    String triggerDelete(@ParamName("triggerid") String triggerId);
 }

@@ -106,7 +106,7 @@ public class ProductEventTriggerController {
                 .stream().map(Object::toString).collect(Collectors.joining(" " + eventRule.getExpLogic() + " "));
 
         //step 2: zbx 保存触发器
-        Integer[] triggerIds = productEventRuleService.createZbxTrigger(eventRuleId + "", expression, eventRule.getEventLevel());
+        String[] triggerIds = productEventRuleService.createZbxTrigger(eventRuleId + "", expression, eventRule.getEventLevel());
 
         //step 4: zbx 触发器创建 Tag
         Map<String, String> tags = new ConcurrentHashMap<>(3);
@@ -124,7 +124,7 @@ public class ProductEventTriggerController {
         if (any.isPresent()) {
             tags.put(EVENT_TAG_NAME, eventRuleId + "");
         }
-        for (Integer triggerId : triggerIds) {
+        for (String triggerId : triggerIds) {
             zbxTrigger.triggerTagCreate(triggerId, tags);
         }
 

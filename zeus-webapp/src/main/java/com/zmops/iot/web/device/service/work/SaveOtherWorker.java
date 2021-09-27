@@ -74,7 +74,7 @@ public class SaveOtherWorker implements IWorker<DeviceDto, Boolean> {
         //告警规则关联 并 回填zbx triggerId
         List<ProductEventRuleService.Triggers> triggers = JSONObject.parseArray(zbxTrigger.triggerGetByHost(deviceId), ProductEventRuleService.Triggers.class);
 
-        Map<String, Integer> map = triggers.parallelStream().collect(Collectors.toMap(ProductEventRuleService.Triggers::getDescription, ProductEventRuleService.Triggers::getTriggerid));
+        Map<String, String> map = triggers.parallelStream().collect(Collectors.toMap(ProductEventRuleService.Triggers::getDescription, ProductEventRuleService.Triggers::getTriggerid));
 
         List<ProductEventRelation> productEventRelationList = new QProductEventRelation().relationId.eq(deviceDto.getProductId() + "").findList();
 

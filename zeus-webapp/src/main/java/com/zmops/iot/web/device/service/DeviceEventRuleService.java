@@ -183,11 +183,11 @@ public class DeviceEventRuleService {
      * @param triggerId 规则ID
      * @param zbxId     triggerId
      */
-    public void updateProductEventRuleZbxId(Long triggerId, Integer[] zbxId) {
+    public void updateProductEventRuleZbxId(Long triggerId, String[] zbxId) {
 
         List<Triggers> triggers = JSONObject.parseArray(zbxTrigger.triggerGet(Arrays.toString(zbxId)), Triggers.class);
 
-        Map<String, Integer> map = triggers.parallelStream().collect(Collectors.toMap(o -> o.hosts.get(0).host, Triggers::getTriggerid));
+        Map<String, String> map = triggers.parallelStream().collect(Collectors.toMap(o -> o.hosts.get(0).host, Triggers::getTriggerid));
 
         List<ProductEventRelation> productEventRelationList = new QProductEventRelation().eventRuleId.eq(triggerId).findList();
 
@@ -233,7 +233,7 @@ public class DeviceEventRuleService {
      * @param level       告警等级
      * @return 触发器ID
      */
-    public Integer[] createZbxTrigger(String triggerName, String expression, Byte level) {
+    public String[] createZbxTrigger(String triggerName, String expression, Byte level) {
         String res = zbxTrigger.triggerCreate(triggerName, expression, level);
         return JSON.parseObject(res, TriggerIds.class).getTriggerids();
     }
@@ -246,19 +246,19 @@ public class DeviceEventRuleService {
      * @param level
      * @return
      */
-    public Integer[] updateZbxTrigger(Integer triggerId, String expression, Byte level) {
+    public String[] updateZbxTrigger(String triggerId, String expression, Byte level) {
         String res = zbxTrigger.triggerUpdate(triggerId, expression, level);
         return JSON.parseObject(res, TriggerIds.class).getTriggerids();
     }
 
     @Data
     static class TriggerIds {
-        private Integer[] triggerids;
+        private String[] triggerids;
     }
 
     @Data
     public static class Triggers {
-        private Integer     triggerid;
+        private String     triggerid;
         private String      description;
         private List<Hosts> hosts;
     }

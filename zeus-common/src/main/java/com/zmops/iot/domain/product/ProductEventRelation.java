@@ -24,7 +24,7 @@ public class ProductEventRelation {
 
     private String relationId;
 
-    private Integer zbxId;
+    private String zbxId;
 
     private String inherit;
     private String status;
