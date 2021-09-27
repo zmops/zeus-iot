@@ -2,6 +2,10 @@
 <img src="docs/images/zeus-iot-logo.png" alt="banner" width="200px">
 </p>
 
+<p align="center">
+<b>Zeus IoT is the world's first open source IoT <i>distributed collection platform</i> based on Zabbix</b>
+</p>
+
 ## Zeus IoT distributed collection platform
 
 [![GitHub stars](https://img.shields.io/github/stars/zmops/zeus-iot.svg?label=Stars&logo=github)](https://github.com/zmops/zeus-iot)
