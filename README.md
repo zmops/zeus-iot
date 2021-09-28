@@ -1,5 +1,5 @@
 <p align="center">
-<img src="docs/images/zeus-iot-logo-1.png" alt="banner" width="220px">
+<img src="docs/images/zeus-iot-logo-2.png" alt="banner" width="220px">
 </p>
 
 <p align="center">
