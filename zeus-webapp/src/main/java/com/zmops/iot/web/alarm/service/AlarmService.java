@@ -131,7 +131,7 @@ public class AlarmService {
 
     public List<ZbxProblemInfo> getZbxAlarm(AlarmParam alarmParam) {
         String hostId = null;
-        if (null != alarmParam.getDeviceId()) {
+        if (ToolUtil.isNotEmpty(alarmParam.getDeviceId())) {
             Device one = new QDevice().deviceId.eq(alarmParam.getDeviceId()).findOne();
             if (null == one) {
                 return Collections.EMPTY_LIST;
