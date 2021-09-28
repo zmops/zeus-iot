@@ -38,7 +38,6 @@ public class NoneAuthedResources {
     public static final String[] BACKEND_RESOURCES = {
             //主页
             "/",
-            "/index",
 
             //获取验证码
             "/kaptcha",

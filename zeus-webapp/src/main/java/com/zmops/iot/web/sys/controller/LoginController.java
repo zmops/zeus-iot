@@ -33,22 +33,10 @@ public class LoginController extends BaseController {
     @Autowired
     private SysUserService userService;
 
-
-    /**
-     * 重定向到 /index
-     *
-     * @param model
-     * @return
-     */
-    @GetMapping("/")
-    public String index(Model model) {
-        return "redirect:/index";
-    }
-
     /**
      * 跳转到主页
      */
-    @RequestMapping(value = "/index", method = RequestMethod.GET)
+    @RequestMapping(value = "/", method = RequestMethod.GET)
     public String reindex(Model model) {
         if (LoginContextHolder.getContext().hasLogin()) {
             Map<String, Object> userIndexInfo = userService.getUserIndexInfo();
