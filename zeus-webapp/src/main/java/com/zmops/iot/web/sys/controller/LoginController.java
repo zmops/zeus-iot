@@ -14,10 +14,7 @@ import com.zmops.iot.web.sys.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Map;
@@ -36,25 +33,32 @@ public class LoginController extends BaseController {
     @Autowired
     private SysUserService userService;
 
+
+    /**
+     * 重定向到 /index
+     *
+     * @param model
+     * @return
+     */
+    @GetMapping("/")
+    public String index(Model model) {
+        return "redirect:/index";
+    }
+
     /**
      * 跳转到主页
      */
-    @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String index(Model model) {
-
-        //判断用户是否登录
+    @RequestMapping(value = "/index", method = RequestMethod.GET)
+    public String reindex(Model model) {
         if (LoginContextHolder.getContext().hasLogin()) {
             Map<String, Object> userIndexInfo = userService.getUserIndexInfo();
 
-            //用户信息为空，提示账号没分配角色登录不进去
             if (userIndexInfo == null) {
-                model.addAttribute("tips", "该用户没有角色，无法登陆");
                 return "/login";
             } else {
                 model.addAllAttributes(userIndexInfo);
                 return "/index";
             }
-
         } else {
             return "/index";
         }
