@@ -66,8 +66,11 @@ The following screenshots give a close insight into Zeus IoT.
   Thanks to Zabbix's excellent architecture design, it has natural distributed collection capabilities, can be well horizontally expanded, and has the ability to cross-region and cross-network collection
 </details>
 
-##Architecture
+## Architecture
 
+## Installation
+
+## Latest Release
 
 ## Demo Environment
 
