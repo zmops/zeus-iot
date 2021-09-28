@@ -46,19 +46,19 @@ The following screenshots give a close insight into Zeus IoT.
 
 ## Features
 <details>
-  <summary><b>Based on **zabbix** secondary development</b></summary>
+  <summary><b>Based on <i>zabbix</i> secondary development</b></summary>
   Based on the powerful distributed capabilities of zabbix, cross-regional collection can be realized
 </details>
 <details>
-  <summary><b>Based on **Apache Camel** as the pre-routing rule</b></summary>
+  <summary><b>Based on <i>Apache Camel</i> as the pre-routing rule</b></summary>
   Very powerful rule-based routing engine, supports 300+ module access, including IoT protocols, born for low code; one line of code can start the protocol service interface.
 </details>
 <details>
-  <summary><b>Use **[TDEngine](https://www.taosdata.com/)** for time series data storage by default</b></summary>
+  <summary><b>Use <i>[TDEngine](https://www.taosdata.com/)</i> for time series data storage by default</b></summary>
   An ultra-high performance distributed database designed and optimized for time series data.
 </details>
 <details>
-  <summary><b>IoT Server is developed with a **modular architecture**</b></summary>
+  <summary><b>IoT Server is developed with a <i>modular architecture</i></b></summary>
   IoT Server adopts the [Skywalking](https://github.com/apache/skywalking) modular architecture design, which can dynamically configure and enable modules, which is very easy to expand; at the same time, combined with the multi-point collection of Zabbix Proxy, a modular cluster can be implemented well.
 </details>
 <details>
