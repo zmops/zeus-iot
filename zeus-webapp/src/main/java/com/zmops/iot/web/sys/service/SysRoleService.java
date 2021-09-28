@@ -6,6 +6,7 @@ import com.zmops.iot.core.auth.model.LoginUser;
 import com.zmops.iot.core.tree.DefaultTreeBuildFactory;
 import com.zmops.iot.domain.sys.SysRole;
 import com.zmops.iot.domain.sys.SysRoleMenu;
+import com.zmops.iot.domain.sys.query.QSysMenu;
 import com.zmops.iot.domain.sys.query.QSysRole;
 import com.zmops.iot.domain.sys.query.QSysRoleMenu;
 import com.zmops.iot.domain.sys.query.QSysUser;
@@ -126,6 +127,8 @@ public class SysRoleService {
         if (null == user) {
             throw new ServiceException(AuthExceptionEnum.NOT_LOGIN_ERROR);
         }
+        List<Long> adminMenuIds = new QSysMenu().select(QSysMenu.alias().menuId).adminFlag.eq("Y").findSingleAttributeList();
+        menuIds.removeAll(adminMenuIds);
         List<Long> lists = new QSysRoleMenu().select(QSysRoleMenu.Alias.menuId).menuId.in(menuIds).roleId.in(user.getRoleList()).findSingleAttributeList();
         paramMuenuIds.removeAll(lists);
         if (ToolUtil.isNotEmpty(paramMuenuIds)) {
@@ -168,7 +171,7 @@ public class SysRoleService {
                 " WHERE" +
                 "       m1.status = 'ENABLE' " +
                 " AND " +
-                "       m1.menu_id in (select menu_id from sys_role_menu where role_id in (:roleIds) )" +
+                "       m1.menu_id in (select menu_id from sys_role_menu where role_id in (:roleIds) and admin_flag ='N' )" +
                 " ORDER BY" +
                 "       m1.sort ASC";
         List<TreeNode> allMenuList = DB.findDto(TreeNode.class, sql).setParameter("roleIds", user.getRoleList()).findList();

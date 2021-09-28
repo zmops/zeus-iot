@@ -31,7 +31,6 @@ public class SysRoleController {
     /**
      * 角色列表
      */
-    @Permission(code = "role")
     @RequestMapping("/list")
     public ResponseData list(@RequestParam(value = "name", required = false) String name) {
         return ResponseData.success(sysRoleService.list(name));
