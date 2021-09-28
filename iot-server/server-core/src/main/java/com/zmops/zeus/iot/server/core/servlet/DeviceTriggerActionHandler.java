@@ -52,6 +52,7 @@ public class DeviceTriggerActionHandler extends JettyJsonHandler {
 
         ActionParam actionParam = new ActionParam();
         actionParam.setTriggerDevice("10084");
+
         eventBusService.postExecuteActionMsg(ActionRouteIdentifier.helloworld, actionParam);
 
         return null;

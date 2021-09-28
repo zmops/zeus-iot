@@ -43,9 +43,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-/**
- * Use SkyWalking alarm WeLink webhook API.
- */
 @Slf4j
 @Service
 public class WeLinkHookCallback implements AlarmCallback {

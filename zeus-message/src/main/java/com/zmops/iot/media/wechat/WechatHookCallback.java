@@ -38,9 +38,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Use SkyWalking alarm wechat webhook API.
- */
 @Slf4j
 @Service
 public class WechatHookCallback implements AlarmCallback {

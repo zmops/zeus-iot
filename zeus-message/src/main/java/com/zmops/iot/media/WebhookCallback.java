@@ -24,9 +24,6 @@ import org.apache.http.client.config.RequestConfig;
 
 import java.util.List;
 
-/**
- * Use SkyWalking alarm webhook API call a remote endpoints.
- */
 @Slf4j
 public class WebhookCallback implements AlarmCallback {
     private static final int HTTP_CONNECT_TIMEOUT            = 1000;

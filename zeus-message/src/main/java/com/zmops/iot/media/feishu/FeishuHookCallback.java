@@ -51,9 +51,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Use SkyWalking alarm feishu webhook API.
- */
 @Slf4j
 @Service
 public class FeishuHookCallback implements AlarmCallback {

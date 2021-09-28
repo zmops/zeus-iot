@@ -48,9 +48,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.List;
 
-/**
- * Use SkyWalking alarm dingtalk webhook API.
- */
 @Slf4j
 @Service
 public class DingtalkHookCallback implements AlarmCallback {
