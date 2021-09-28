@@ -54,7 +54,7 @@ The following screenshots give a close insight into Zeus IoT.
   Very powerful rule-based routing engine, supports 300+ module access, including IoT protocols, born for low code; one line of code can start the protocol service interface.
 </details>
 <details>
-  <summary><b>Use <i>[TDEngine](https://www.taosdata.com/)</i> for time series data storage by default</b></summary>
+  <summary><b>Use [<i>TDEngine</i>](https://www.taosdata.com/) for time series data storage by default</b></summary>
   An ultra-high performance distributed database designed and optimized for time series data.
 </details>
 <details>
