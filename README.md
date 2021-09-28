@@ -73,6 +73,20 @@ The following screenshots give a close insight into Zeus IoT.
 ---
 
 ## Installation
+The Zeus IoT production environment can only be installed on a Linux system, either Centos7 or Ubuntu 18.04. In the development and test environment: The IoT Server service can be developed and debugged in the Windows environment.
+
+### Quick Start
+- Centos7/Redhat7
+
+  ```shell
+  curl -L https://github.com/zmops/zeus-iot/raw/develop/docs/centos/install.sh | bash
+  ```
+
+- Ubuntu 18.04
+
+  ```shell
+   curl -L https://github.com/zmops/zeus-iot/raw/develop/docs/ubuntu/install.sh | bash
+  ```
 
 ## Demo Environment
 
