@@ -68,9 +68,11 @@ The following screenshots give a close insight into Zeus IoT.
 
 ## Architecture
 
-## Installation
+![Architecture](docs/images/arch.gif)
 
-## Latest Release
+---
+
+## Installation
 
 ## Demo Environment
 
