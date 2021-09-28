@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -89,7 +90,17 @@ public class DeviceGroupService {
      */
     public List<Long> getDevGroupIds() {
         Long curUserGrpId = LoginContextHolder.getContext().getUser().getUserGroupId();
-        return new QSysUserGrpDevGrp().select(QSysUserGrpDevGrp.alias().deviceGroupId).userGroupId.eq(curUserGrpId).findSingleAttributeList();
+
+        List<Long> devGroupIds = new ArrayList<>();
+        if (null != curUserGrpId) {
+            devGroupIds = new QSysUserGrpDevGrp().select(QSysUserGrpDevGrp.alias().deviceGroupId).userGroupId.eq(curUserGrpId).findSingleAttributeList();
+        }
+
+        if (ToolUtil.isEmpty(devGroupIds) && null != curUserGrpId) {
+            QDeviceGroup qDeviceGroup = new QDeviceGroup().select(QDeviceGroup.alias().deviceGroupId);
+            devGroupIds = qDeviceGroup.findSingleAttributeList();
+        }
+        return devGroupIds;
     }
 
     /**
