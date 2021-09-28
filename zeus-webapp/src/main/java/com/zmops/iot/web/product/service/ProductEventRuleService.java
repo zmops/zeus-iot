@@ -221,8 +221,9 @@ public class ProductEventRuleService {
         if (ToolUtil.isNotEmpty(eventParm.getEventRuleName())) {
             query.eventRuleName.contains(eventParm.getEventRuleName());
         }
-
-
+        if (ToolUtil.isNotEmpty(eventParm.getClassify())) {
+            query.classify.eq(eventParm.getClassify());
+        }
         List<ProductEventRelation> productEventRelationList = new QProductEventRelation().select(QProductEventRelation.alias().eventRuleId)
                 .relationId.eq(eventParm.getProdId()).findList();
         if (ToolUtil.isEmpty(productEventRelationList)) {
