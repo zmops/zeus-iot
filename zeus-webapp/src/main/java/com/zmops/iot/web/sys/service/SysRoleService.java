@@ -94,6 +94,7 @@ public class SysRoleService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void bindMenu(RoleParam roleParam) {
+        checkRoleId(roleParam.getRoleId());
         checkMenuId(roleParam.getMenuIds());
         new QSysRoleMenu().roleId.eq(roleParam.getRoleId()).delete();
         List<SysRoleMenu> sysRoleMenuList = new ArrayList<>();
@@ -104,6 +105,16 @@ public class SysRoleService {
             sysRoleMenuList.add(sysRoleMenu);
         }
         DB.saveAll(sysRoleMenuList);
+    }
+
+    private void checkRoleId(Long roleId) {
+        LoginUser user = LoginContextHolder.getContext().getUser();
+        if (null == user) {
+            return;
+        }
+        if (user.getRoleList().contains(roleId)) {
+            throw new ServiceException(BizExceptionEnum.CANNOT_MODIFY_OWNER_MENUS);
+        }
     }
 
     /**
@@ -156,11 +167,11 @@ public class SysRoleService {
                 "       LEFT JOIN sys_menu m2 ON m1.pcode = m2.CODE " +
                 " WHERE" +
                 "       m1.status = 'ENABLE' " +
-//                " AND " +
-//                "       m1.menu_id in (select menu_id from sys_role_menu where role_id in (:roleIds) )" +
+                " AND " +
+                "       m1.menu_id in (select menu_id from sys_role_menu where role_id in (:roleIds) )" +
                 " ORDER BY" +
                 "       m1.sort ASC";
-        List<TreeNode> allMenuList = DB.findDto(TreeNode.class, sql).findList();
+        List<TreeNode> allMenuList = DB.findDto(TreeNode.class, sql).setParameter("roleIds", user.getRoleList()).findList();
 
         //取被授权用户 已授权的菜单
         List<Long> selectMenuIdList = new QSysRoleMenu().select(QSysRoleMenu.Alias.menuId).roleId.eq(roleId).findSingleAttributeList();
