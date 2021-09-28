@@ -87,7 +87,9 @@ The Zeus IoT production environment can only be installed on a Linux system, eit
   ```shell
    curl -L https://github.com/zmops/zeus-iot/raw/develop/docs/ubuntu/install.sh | bash
   ```
+After Zeus IoT is successfully installed, you can use http://IP:9090 to access the ZeusIoT Console with the default account and password (Admin/zabbix).
 
+> 
 ## Demo Environment
 
 Using the account `Admin / zeus123` to log in the [demo environment](https://zeusdemo.zmops.cn/). Please note the account is granted view access. 
