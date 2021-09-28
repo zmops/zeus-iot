@@ -24,4 +24,8 @@ public class AlarmDto {
     private String severity;
 
     private String deviceName;
+
+    private String status;
+
+    private String acknowledged;
 }

@@ -93,6 +93,8 @@ public class AlarmService {
             AlarmDto alarmDto = new AlarmDto();
             BeanUtils.copyProperties(zbxProblemInfo, alarmDto);
             alarmDto.setRClock(zbxProblemInfo.getR_clock());
+            alarmDto.setStatus("0".equals(zbxProblemInfo.getR_clock()) ? "未解决" : "已解决");
+            alarmDto.setAcknowledged("0".equals(zbxProblemInfo.getAcknowledged()) ? "未确认" : "已确认");
             if (null != deviceMap.get(zbxProblemInfo.getObjectid())) {
                 alarmDto.setDeviceName(deviceMap.get(zbxProblemInfo.getObjectid()));
             }
