@@ -33,4 +33,8 @@ public interface ZbxProblem {
                       @ParamName("timeFrom") Long timeFrom,
                       @ParamName("timeTill") Long timeTill,
                       @ParamName("recent") String recent);
+
+    @Post
+    @JsonPath("/problem/problem.acknowledgement")
+    void acknowledgement(@ParamName("eventId") String  eventId,@ParamName("action") int  action);
 }

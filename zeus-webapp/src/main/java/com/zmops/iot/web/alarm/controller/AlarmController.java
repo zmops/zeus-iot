@@ -7,6 +7,7 @@ import com.zmops.iot.web.auth.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -23,9 +24,26 @@ public class AlarmController {
 //    public void test() {
 //        alarmService.test();
 //    }
+
     @Permission(code = "alarmList")
     @RequestMapping("/getAlarmByPage")
     public ResponseData getAlarmByPage(@RequestBody AlarmParam alarmParam) {
         return ResponseData.success(alarmService.getAlarmByPage(alarmParam));
     }
+
+    @Permission(code = "alarmList")
+    @RequestMapping("/acknowledgement")
+    public ResponseData acknowledgement(@RequestParam String eventId) {
+        alarmService.acknowledgement(eventId);
+        return ResponseData.success();
+    }
+
+
+    @Permission(code = "alarmList")
+    @RequestMapping("/resolve")
+    public ResponseData resolve(@RequestParam String eventId) {
+        alarmService.resolve(eventId);
+        return ResponseData.success();
+    }
+
 }

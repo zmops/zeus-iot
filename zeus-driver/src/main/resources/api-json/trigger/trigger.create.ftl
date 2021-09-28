@@ -4,7 +4,8 @@
     "params": {
         "description": "${triggerName}",
         "expression": "${expression}",
-        "priority" : ${ruleLevel}
+        "priority" : ${ruleLevel},
+        "manual_close":1
     },
     "auth": "${userAuth}",
     "id": 1

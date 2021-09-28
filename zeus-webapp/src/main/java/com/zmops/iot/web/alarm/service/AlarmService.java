@@ -11,6 +11,7 @@ import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.alarm.dto.AlarmDto;
 import com.zmops.iot.web.alarm.dto.param.AlarmParam;
 import com.zmops.iot.web.device.dto.DeviceDto;
+import com.zmops.iot.web.device.service.DeviceService;
 import com.zmops.iot.web.product.dto.ProductEventRuleDto;
 import com.zmops.zeus.driver.entity.ZbxProblemInfo;
 import com.zmops.zeus.driver.service.ZbxProblem;
@@ -34,6 +35,9 @@ public class AlarmService {
 
     @Autowired
     ZbxProblem zbxProblem;
+
+    @Autowired
+    DeviceService deviceService;
 
 
     public void alarm(Map<String, String> alarmInfo) {
@@ -131,13 +135,18 @@ public class AlarmService {
 
     public List<ZbxProblemInfo> getZbxAlarm(AlarmParam alarmParam) {
         String hostId = null;
+        List<String> deviceIds ;
         if (ToolUtil.isNotEmpty(alarmParam.getDeviceId())) {
-            Device one = new QDevice().deviceId.eq(alarmParam.getDeviceId()).findOne();
-            if (null == one) {
-                return Collections.EMPTY_LIST;
-            }
-            hostId = one.getZbxId();
+            deviceIds = Collections.singletonList(alarmParam.getDeviceId());
+        } else {
+            deviceIds = deviceService.getDeviceIds();
         }
+
+        List<String> zbxIds = new QDevice().select(QDevice.alias().zbxId).deviceId.in(deviceIds).findSingleAttributeList();
+        if (ToolUtil.isEmpty(zbxIds)) {
+            return Collections.EMPTY_LIST;
+        }
+        hostId = zbxIds.toString();
         //从zbx取告警记录
         String problem = zbxProblem.getProblem(hostId, alarmParam.getTimeFrom(), alarmParam.getTimeTill(), alarmParam.getRecent());
         return JSONObject.parseArray(problem, ZbxProblemInfo.class);
@@ -187,4 +196,11 @@ public class AlarmService {
     }
 
 
+    public void acknowledgement(String eventId) {
+        zbxProblem.acknowledgement(eventId,2);
+    }
+
+    public void resolve(String eventId) {
+        zbxProblem.acknowledgement(eventId,1);
+    }
 }
