@@ -37,7 +37,7 @@ public class SaveProdAttrWorker implements IWorker<ProductAttr, Boolean> {
                 " select product_id from product_attribute " +
                 " where template_id is null and key = :key)";
 
-        List<DeviceDto>        deviceDtoList        = DB.findDto(DeviceDto.class, sql).setParameter("productId", productAttr.getProductId())
+        List<DeviceDto>        deviceDtoList        = DB.findDto(DeviceDto.class, sql).setParameter("productId", Long.parseLong(productAttr.getProductId()))
                 .setParameter("key",productAttr.getKey()).findList();
         List<ProductAttribute> productAttributeList = new ArrayList<>();
 
