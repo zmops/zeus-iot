@@ -120,7 +120,7 @@ public class AlarmService {
         }
         List<Integer> triggerIds = problemList.parallelStream().map(ZbxProblemInfo::getObjectid).map(Integer::parseInt).collect(Collectors.toList());
         List<ProductEventRuleDto> ruleList = DB.findDto(ProductEventRuleDto.class, "select d.event_rule_name,r.zbx_id from product_event d INNER JOIN (select event_rule_id," +
-                        "zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.event_rule_id=d.event_rule_id")
+                "zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.event_rule_id=d.event_rule_id")
                 .setParameter("zbxIds", triggerIds).findList();
         Map<String, String> ruleMap = ruleList.parallelStream().collect(Collectors.toMap(ProductEventRuleDto::getZbxId, ProductEventRuleDto::getEventRuleName));
 
@@ -140,8 +140,8 @@ public class AlarmService {
     }
 
     public List<ZbxProblemInfo> getZbxAlarm(AlarmParam alarmParam) {
-        String hostId = null;
-        List<String> deviceIds ;
+        String       hostId = null;
+        List<String> deviceIds;
         if (ToolUtil.isNotEmpty(alarmParam.getDeviceId())) {
             deviceIds = Collections.singletonList(alarmParam.getDeviceId());
         } else {
@@ -168,7 +168,7 @@ public class AlarmService {
         }
         List<String> triggerIds = problemList.parallelStream().map(ZbxProblemInfo::getObjectid).map(Objects::toString).collect(Collectors.toList());
         List<ProductEventRuleDto> ruleList = DB.findDto(ProductEventRuleDto.class, "select event_rule_name,r.zbx_id from product_event d INNER JOIN (select event_rule_id," +
-                        "zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.event_rule_id=d.event_rule_id")
+                "zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.event_rule_id=d.event_rule_id")
                 .setParameter("zbxIds", triggerIds).findList();
         Map<String, String> ruleMap = ruleList.parallelStream().collect(Collectors.toMap(ProductEventRuleDto::getZbxId, ProductEventRuleDto::getEventRuleName));
 
@@ -201,12 +201,11 @@ public class AlarmService {
         return JSONObject.parseArray(problem, ZbxProblemInfo.class);
     }
 
-
     public void acknowledgement(String eventId) {
-        zbxProblem.acknowledgement(eventId,2);
+        zbxProblem.acknowledgement(eventId, 2);
     }
 
     public void resolve(String eventId) {
-        zbxProblem.acknowledgement(eventId,1);
+        zbxProblem.acknowledgement(eventId, 1);
     }
 }

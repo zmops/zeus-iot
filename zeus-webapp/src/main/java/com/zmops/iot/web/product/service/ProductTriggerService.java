@@ -6,6 +6,7 @@ import com.zmops.iot.domain.product.ProductStatusFunction;
 import com.zmops.iot.domain.product.ProductStatusFunctionRelation;
 import com.zmops.iot.domain.product.query.QProductStatusFunction;
 import com.zmops.iot.domain.product.query.QProductStatusFunctionRelation;
+import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.dto.DeviceDto;
 import com.zmops.iot.web.product.dto.ProductStatusFunctionDto;
 import com.zmops.iot.web.product.dto.ProductStatusJudgeRule;
@@ -83,12 +84,15 @@ public class ProductTriggerService {
         DB.save(productStatusFunctionRelation);
 
         //step 4:同步到设备
-        String          sql           = "select device_id from device where product_id = :productId and device_id not in (select relation_id from product_status_function_relation where inherit='0')";
-        List<DeviceDto> deviceDtoList = DB.findDto(DeviceDto.class, sql).setParameter("productId", judgeRule.getRelationId()).findList();
-        deviceDtoList.forEach(deviceDto -> {
-            DB.sqlUpdate("insert into product_status_function_relation (relation_id,rule_id,inherit) SELECT :deviceId,rule_id,1 from product_status_function_relation where relation_id=:relationId")
-                    .setParameter("deviceId", deviceDto.getDeviceId()).setParameter("relationId", judgeRule.getRelationId() + "").execute();
-        });
+        String relationId = judgeRule.getRelationId();
+        if (ToolUtil.isNum(relationId)) {
+            String          sql           = "select device_id from device where product_id = :productId and device_id not in (select relation_id from product_status_function_relation where inherit='0')";
+            List<DeviceDto> deviceDtoList = DB.findDto(DeviceDto.class, sql).setParameter("productId", Long.parseLong(relationId)).findList();
+            deviceDtoList.forEach(deviceDto -> {
+                DB.sqlUpdate("insert into product_status_function_relation (relation_id,rule_id,inherit) SELECT :deviceId,rule_id,1 from product_status_function_relation where relation_id=:relationId")
+                        .setParameter("deviceId", deviceDto.getDeviceId()).setParameter("relationId", judgeRule.getRelationId() + "").execute();
+            });
+        }
 
         return productStatusFunction.getRuleId();
     }

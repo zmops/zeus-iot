@@ -225,7 +225,7 @@ public class ToolUtil {
      */
     public static boolean isNum(Object obj) {
         try {
-            Integer.parseInt(obj.toString());
+            Long.parseLong(obj.toString());
         } catch (Exception e) {
             return false;
         }
