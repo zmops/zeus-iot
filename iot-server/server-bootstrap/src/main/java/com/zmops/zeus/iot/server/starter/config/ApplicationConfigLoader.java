@@ -72,7 +72,7 @@ public class ApplicationConfigLoader implements ConfigLoader<ApplicationConfigur
                             log.info("Get a provider define belong to {} module, provider name: {}", moduleName, providerName);
 
                             final Map<String, ?> propertiesConfig = (Map<String, ?>) config;
-                            final Properties     properties       = new Properties();
+                            final Properties properties = new Properties();
 
                             if (propertiesConfig != null) {
                                 propertiesConfig.forEach((propertyName, propertyValue) -> {
@@ -136,7 +136,7 @@ public class ApplicationConfigLoader implements ConfigLoader<ApplicationConfigur
         while (moduleIterator.hasNext()) {
             Map.Entry<String, Map<String, Object>> entry = moduleIterator.next();
 
-            final String              moduleName     = entry.getKey();
+            final String moduleName = entry.getKey();
             final Map<String, Object> providerConfig = entry.getValue();
 
             if (!providerConfig.containsKey(SELECTOR)) {
@@ -173,7 +173,7 @@ public class ApplicationConfigLoader implements ConfigLoader<ApplicationConfigur
         if (moduleAndConfigSeparator <= 0) {
             return;
         }
-        String moduleName            = key.substring(0, moduleAndConfigSeparator);
+        String moduleName = key.substring(0, moduleAndConfigSeparator);
         String providerSettingSubKey = key.substring(moduleAndConfigSeparator + 1);
 
         ApplicationConfiguration.ModuleConfiguration moduleConfiguration = configuration.getModuleConfiguration(moduleName);
@@ -187,7 +187,7 @@ public class ApplicationConfigLoader implements ConfigLoader<ApplicationConfigur
         }
 
         String providerName = providerSettingSubKey.substring(0, providerAndConfigSeparator);
-        String settingKey   = providerSettingSubKey.substring(providerAndConfigSeparator + 1);
+        String settingKey = providerSettingSubKey.substring(providerAndConfigSeparator + 1);
         if (!moduleConfiguration.has(providerName)) {
             return;
         }
@@ -197,8 +197,8 @@ public class ApplicationConfigLoader implements ConfigLoader<ApplicationConfigur
             return;
         }
 
-        Object   originValue = providerSettings.get(settingKey);
-        Class<?> type        = originValue.getClass();
+        Object originValue = providerSettings.get(settingKey);
+        Class<?> type = originValue.getClass();
         if (type.equals(int.class) || type.equals(Integer.class))
             providerSettings.put(settingKey, Integer.valueOf(value));
         else if (type.equals(String.class))
