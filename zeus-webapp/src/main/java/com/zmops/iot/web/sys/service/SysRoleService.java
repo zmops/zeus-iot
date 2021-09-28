@@ -170,8 +170,9 @@ public class SysRoleService {
                 "       LEFT JOIN sys_menu m2 ON m1.pcode = m2.CODE " +
                 " WHERE" +
                 "       m1.status = 'ENABLE' " +
+                " AND m1.admin_flag = 'N' " +
                 " AND " +
-                "       m1.menu_id in (select menu_id from sys_role_menu where role_id in (:roleIds) and admin_flag ='N' )" +
+                "       m1.menu_id in (select menu_id from sys_role_menu where role_id in (:roleIds))" +
                 " ORDER BY" +
                 "       m1.sort ASC";
         List<TreeNode> allMenuList = DB.findDto(TreeNode.class, sql).setParameter("roleIds", user.getRoleList()).findList();
