@@ -35,7 +35,7 @@ do
     CLASSPATH="$i:$CLASSPATH"
 done
 
-IOT_OPTIONS=" -Doap.logDir=${IOT_LOG_DIR} -Duser.timezone=GMT+08"
+IOT_OPTIONS=" -Diot.logDir=${IOT_LOG_DIR} -Duser.timezone=GMT+08"
 
 eval exec "\"$_RUNJAVA\" ${JAVA_OPTS} ${IOT_OPTIONS} -classpath $CLASSPATH com.zmops.zeus.iot.server.starter.IoTServerStartUp \
         &> ${IOT_LOG_DIR}/zeus_iot.log &"
@@ -44,6 +44,6 @@ if [ $? -eq 0 ]; then
     sleep 1
 	echo "Zeus IOT started successfully!"
 else
-	echo "Zeus IOT OAP started failure!"
+	echo "Zeus IoT Server started failure!"
 	exit 1
 fi

@@ -17,33 +17,33 @@
 
 PRG="$0"
 PRGDIR=$(dirname "$PRG")
-[ -z "$OAP_HOME" ] && OAP_HOME=$(cd "$PRGDIR/.." > /dev/null || exit 1; pwd)
+[ -z "$IOT_SERVER_HOME" ] && IOT_SERVER_HOME=$(cd "$PRGDIR/.." > /dev/null || exit 1; pwd)
 
-OAP_LOG_DIR="${OAP_HOME}/logs"
+IOT_LOG_DIR="${IOT_SERVER_HOME}/logs"
 JAVA_OPTS="${JAVA_OPTS:-  -Xms256M -Xmx512M}"
 
-if [ ! -d "${OAP_HOME}/logs" ]; then
-    mkdir -p "${OAP_LOG_DIR}"
+if [ ! -d "${IOT_SERVER_HOME}/logs" ]; then
+    mkdir -p "${IOT_LOG_DIR}"
 fi
 
 _RUNJAVA=${JAVA_HOME}/bin/java
 [ -z "$JAVA_HOME" ] && _RUNJAVA=java
 
-CLASSPATH="$OAP_HOME/config:$CLASSPATH"
-for i in "$OAP_HOME"/oap-libs/*.jar
+CLASSPATH="$IOT_SERVER_HOME/config:$CLASSPATH"
+for i in "$IOT_SERVER_HOME"/iot-server-libs/*.jar
 do
     CLASSPATH="$i:$CLASSPATH"
 done
 
-OAP_OPTIONS=" -Doap.logDir=${OAP_LOG_DIR}"
+IOT_OPTIONS=" -Diot.logDir=${IOT_LOG_DIR}"
 
-eval exec "\"$_RUNJAVA\" ${JAVA_OPTS} ${OAP_OPTIONS} -classpath $CLASSPATH -Dmode=init org.apache.skywalking.oap.server.starter.OAPServerStartUp \
-        2>${OAP_LOG_DIR}/oap.log 1> /dev/null &"
+eval exec "\"$_RUNJAVA\" ${JAVA_OPTS} ${IOT_OPTIONS} -classpath $CLASSPATH -Dmode=init com.zmops.zeus.iot.server.starter.IoTServerStartUp \
+        2>${IOT_LOG_DIR}/iot_server.log 1> /dev/null &"
 
 if [ $? -eq 0 ]; then
     sleep 1
-	echo "SkyWalking OAP started successfully!"
+	echo "Zeus IoT Server started successfully!"
 else
-	echo "SkyWalking OAP started failure!"
+	echo "Zeus IoT Server started failure!"
 	exit 1
 fi

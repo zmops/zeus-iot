@@ -17,7 +17,7 @@
 @echo off
 
 setlocal
-set WEBAPP_PROCESS_TITLE=Skywalking-Webapp
+set WEBAPP_PROCESS_TITLE=Zeus-Webapp
 set WEBAPP_HOME=%~dp0%..
 set JARPATH=%WEBAPP_HOME%\webapp
 set WEBAPP_LOG_DIR=%WEBAPP_HOME%\logs
@@ -37,5 +37,5 @@ if not defined JAVA_HOME (
  set _EXECJAVA=java
 )
 
-start "%WEBAPP_PROCESS_TITLE%" %_EXECJAVA%  -jar %JARPATH%/skywalking-webapp.jar --spring.config.location=%JARPATH%/webapp.yml --logging.file=%LOG_FILE_LOCATION%
+start "%WEBAPP_PROCESS_TITLE%" %_EXECJAVA%  -jar %JARPATH%/zeus-webapp.jar --spring.config.location=%JARPATH%/webapp.yml --logging.file=%LOG_FILE_LOCATION%
 endlocal

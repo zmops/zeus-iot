@@ -17,12 +17,12 @@
 @echo off
 
 setlocal
-set OAP_PROCESS_TITLE=Zeus-IoT-Server
-set OAP_HOME=%~dp0%..
-set OAP_OPTS="-Xms1024M -Xmx1024M -Doap.logDir=%OAP_HOME%\logs -Duser.timezone=GMT+08"
+set IOT_PROCESS_TITLE=Zeus-IoT-Server
+set IOT_SERVER_HOME=%~dp0%..
+set IOT_OPTS="-Xms1024M -Xmx1024M -Diot.logDir=%IOT_SERVER_HOME%\logs -Duser.timezone=GMT+08"
 
-set CLASSPATH=%OAP_HOME%\config;.;
-set CLASSPATH=%OAP_HOME%\iot-server-libs\*;%CLASSPATH%
+set CLASSPATH=%IOT_SERVER_HOME%\config;.;
+set CLASSPATH=%IOT_SERVER_HOME%\iot-server-libs\*;%CLASSPATH%
 
 if defined JAVA_HOME (
  set _EXECJAVA="%JAVA_HOME%\bin\java"
@@ -33,5 +33,5 @@ if not defined JAVA_HOME (
  set _EXECJAVA=java
 )
 
-start "%OAP_PROCESS_TITLE%" %_EXECJAVA% "%OAP_OPTS%" -cp "%CLASSPATH%" com.zmops.zeus.iot.server.starter.IoTServerStartUp
+start "%IOT_PROCESS_TITLE%" %_EXECJAVA% "%IOT_OPTS%" -cp "%CLASSPATH%" com.zmops.zeus.iot.server.starter.IoTServerStartUp
 endlocal
