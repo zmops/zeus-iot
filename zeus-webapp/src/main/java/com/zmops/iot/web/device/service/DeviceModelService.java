@@ -109,6 +109,9 @@ public class DeviceModelService {
             return attr;
         }
         JSONArray itemInfo = JSONObject.parseArray(zbxItem.getItemInfo(attr.getZbxId(), null));
+        if (itemInfo.size() == 0) {
+            return attr;
+        }
         attr.setTags(JSONObject.parseArray(itemInfo.getJSONObject(0).getString("tags"), ProductTag.Tag.class));
         attr.setProcessStepList(formatProcessStep(itemInfo.getJSONObject(0).getString("preprocessing")));
         String valuemap = itemInfo.getJSONObject(0).getString("valuemap");

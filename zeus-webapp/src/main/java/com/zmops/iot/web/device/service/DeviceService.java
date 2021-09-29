@@ -192,6 +192,7 @@ public class DeviceService {
                 " d.TYPE, " +
                 " d.addr, " +
                 " d.position, " +
+                " d.online," +
                 " P.NAME product_name, " +
                 " ds.group_name, " +
                 " ds.groupIds  " +
