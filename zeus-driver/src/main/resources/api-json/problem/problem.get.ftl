@@ -9,7 +9,7 @@
         "recent": ${recent},
         "sortfield": ["eventid"],
         <#if hostId??>
-            "hostids":"${hostId}",
+            "hostids":${hostId},
         </#if>
         <#if timeFrom??>
             "time_from":${timeFrom},
