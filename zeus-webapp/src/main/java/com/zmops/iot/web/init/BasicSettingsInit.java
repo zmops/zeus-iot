@@ -42,7 +42,7 @@ public class BasicSettingsInit {
 
     @PostConstruct
     public void init() {
-        zbxApiToken = configuration.getVariables().get("zbxApiToken").toString();
+        zbxApiToken = configuration.getVariableValue("zbxApiToken").toString();
     }
 
     /**
@@ -166,14 +166,14 @@ public class BasicSettingsInit {
     }
 
 
-    public String createAction(String name,String tagName,String scriptId, String groupId) {
-        String response = zbxAction.createOfflineStatusAction(zbxApiToken,name,tagName, scriptId, groupId);
+    public String createAction(String name, String tagName, String scriptId, String groupId) {
+        String response = zbxAction.createOfflineStatusAction(zbxApiToken, name, tagName, scriptId, groupId);
         return JSON.parseObject(response, ZbxResponseIds.class).getActionids()[0];
     }
 
 
     public String getAction(String name) {
-        String                    response = zbxAction.getOfflineStatusAction(zbxApiToken,name);
+        String                    response = zbxAction.getOfflineStatusAction(zbxApiToken, name);
         List<Map<String, String>> ids      = JSON.parseObject(response, List.class);
         if (null != ids && ids.size() > 0) {
             return ids.get(0).get("actionid");
