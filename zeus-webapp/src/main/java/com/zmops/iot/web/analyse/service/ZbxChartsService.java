@@ -1,13 +1,17 @@
 package com.zmops.iot.web.analyse.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.product.query.QProductAttribute;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.util.LocalDateTimeUtils;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
+import com.zmops.zeus.driver.entity.ZbxItemInfo;
+import com.zmops.zeus.driver.service.ZbxItem;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +42,8 @@ public class ZbxChartsService {
 
     private static LocalDateTime COOKIE_TIME;
 
+    @Autowired
+    ZbxItem zbxItem;
 
     /**
      * 获取 数据图形展示
@@ -60,6 +66,11 @@ public class ZbxChartsService {
 
         List<String> itemids = getItemIds(attrIds);
         if (ToolUtil.isEmpty(itemids)) {
+            throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_KEY_NOT_EXISTS);
+        }
+
+        List<ZbxItemInfo> itemInfos = JSONObject.parseArray(zbxItem.getItemInfo(itemids.toString(), null), ZbxItemInfo.class);
+        if (ToolUtil.isEmpty(itemInfos)) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_KEY_NOT_EXISTS);
         }
 

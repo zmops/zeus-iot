@@ -33,7 +33,7 @@ public class DeviceOnlineReprotSchedule {
         List<Device> deviceList = new QDevice().findList();
 
         Map<String, Map<Integer, Long>> onLinemap = deviceList.parallelStream()
-                .collect(Collectors.groupingBy(Device::getType, Collectors.groupingBy(Device::getOnline, Collectors.counting())));
+                .collect(Collectors.groupingBy(Device::getType, Collectors.groupingBy(o -> Optional.ofNullable(o.getOnline()).orElse(0), Collectors.counting())));
 
         List<DeviceOnlineReport> list = new ArrayList<>();
 
