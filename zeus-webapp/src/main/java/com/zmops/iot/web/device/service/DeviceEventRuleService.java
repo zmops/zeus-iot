@@ -218,7 +218,7 @@ public class DeviceEventRuleService {
 
             productEventRuleDto.setZbxId(productEventRelation.getZbxId());
             productEventRuleDto.setTags(tagList.stream()
-                    .filter(s -> s.getTag().equals("__execute__") || s.getTag().equals("__alarm__"))
+                    .filter(s ->!s.getTag().equals("__execute__") && !s.getTag().equals("__alarm__") && !s.getTag().equals("__event__"))
                     .collect(Collectors.toList()));
         }
 
