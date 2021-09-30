@@ -43,7 +43,7 @@ public class SaveTagWorker implements IWorker<DeviceDto, Boolean> {
         }
 
         DB.sqlUpdate("insert into tag (sid,tag,value,template_id) SELECT :deviceId,tag,value,id template_id from tag where sid=:sid")
-                .setParameter("deviceId", deviceId).setParameter("sid", deviceDto.getProductId()).execute();
+                .setParameter("deviceId", deviceId).setParameter("sid", deviceDto.getProductId() + "").execute();
 
         return true;
     }

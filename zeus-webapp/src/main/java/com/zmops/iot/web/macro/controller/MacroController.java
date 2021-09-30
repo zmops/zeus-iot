@@ -3,6 +3,7 @@ package com.zmops.iot.web.macro.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.BaseEntity;
+import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.query.QProduct;
 import com.zmops.iot.model.exception.ServiceException;
@@ -86,23 +87,22 @@ public class MacroController {
     public ResponseData getUserMacro(@Validated(BaseEntity.Get.class) @RequestBody UserMacro userMacro) {
 
         // 获取 模板ID 或者 设备ID
-        String zbxId = new QDevice().select(QDevice.alias().zbxId).deviceId.eq(userMacro.getDeviceId()).findSingleAttribute();
-        if (ToolUtil.isEmpty(zbxId)) {
+        String zbxId  = "";
+        Device device = new QDevice().deviceId.eq(userMacro.getDeviceId()).findOne();
+        if (device != null) {
+            zbxId = device.getZbxId();
+        } else {
             zbxId = new QProduct().select(QProduct.alias().zbxId).productId.eq(Long.parseLong(userMacro.getDeviceId())).findSingleAttribute();
         }
+
         if (ToolUtil.isEmpty(zbxId)) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }
 
         // 模板ID
-        if (ToolUtil.isNotEmpty(zbxId)) {
+        if (device == null) {
             List<UserMacro> tempMacroList = JSONObject.parseArray(zbxMacro.macroGet(zbxId + ""), UserMacro.class);
             return ResponseData.success(tempMacroList);
-        }
-
-        // 主机ID
-        if (ToolUtil.isEmpty(zbxId)) {
-            zbxId = new QDevice().select(QDevice.alias().zbxId).deviceId.eq(userMacro.getDeviceId()).findSingleAttribute();
         }
 
         // 模板IDs
