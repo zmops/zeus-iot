@@ -67,7 +67,7 @@ public class ZbxChartsService {
         if (!validItemInfo(itemids)) {
             try {
                 ClassPathResource classPathResource = new ClassPathResource("/nodata.jpg");
-                InputStream       inputStream       = classPathResource.getInputStream();
+                InputStream inputStream = classPathResource.getInputStream();
 
                 response.setContentType("image/jpeg");
 
@@ -99,8 +99,7 @@ public class ZbxChartsService {
         nameValuePairs[2] = new NameValuePair("width", width);
         nameValuePairs[3] = new NameValuePair("height", height);
 
-        for (
-                int index = 0; index < itemids.size(); index++) {
+        for (int index = 0; index < itemids.size(); index++) {
             nameValuePairs[4 + index] = new NameValuePair("itemids[" + index + "]", itemids.get(index));
         }
 
@@ -117,8 +116,7 @@ public class ZbxChartsService {
             out.write(toByteArray(responseBody));
 
             out.flush();
-        } catch (
-                IOException ioException) {
+        } catch (IOException ioException) {
             ioException.printStackTrace();
         } finally {
             try {
@@ -147,7 +145,7 @@ public class ZbxChartsService {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
         byte[] buffer = new byte[4096];
-        int    n      = 0;
+        int n = 0;
 
         while (-1 != (n = input.read(buffer))) {
             output.write(buffer, 0, n);
@@ -165,14 +163,14 @@ public class ZbxChartsService {
      * 用户访客 获取cookie
      */
     private void getCookie() {
-        HttpClient client     = new HttpClient();
+        HttpClient client = new HttpClient();
         PostMethod postMethod = new PostMethod("http://" + zbxServerIp + ":" + zbxServerPort + "/zabbix/index.php");
 
         //TODO 使用了一个只读权限的访客用户
-        NameValuePair namePair      = new NameValuePair("name", "cookie");
-        NameValuePair pwdPair       = new NameValuePair("password", "cookie");
+        NameValuePair namePair = new NameValuePair("name", "cookie");
+        NameValuePair pwdPair = new NameValuePair("password", "cookie");
         NameValuePair autologinPair = new NameValuePair("autologin", "1");
-        NameValuePair enterPair     = new NameValuePair("enter", "Sign in");
+        NameValuePair enterPair = new NameValuePair("enter", "Sign in");
 
         postMethod.setRequestBody(new NameValuePair[]{namePair, pwdPair, autologinPair, enterPair});
         postMethod.setRequestHeader("Content_Type", "application/json");
