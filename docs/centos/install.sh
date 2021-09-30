@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
 
-set -e
-
 ROOT_UID=0
 release=Centos
 basename=$(pwd)
@@ -22,12 +20,12 @@ function logprint() {
 # 安装前准备
 ## 系统环境检测
 if [ "$(uname)" != Linux ]; then
-        echo "该脚本只使用 Linux 系统"
+        echo "Error: 该脚本只适用 Linux 系统"
         exit
 fi
 
 if [ "$UID" -ne "$ROOT_UID" ]; then
-        echo -e "Error: Must be root to install"
+        echo -e "Error: 请使用root账户执行安装"
         exit
 fi
 ### 操作系统
@@ -37,8 +35,8 @@ if [ ! -f /etc/redhat-release ]; then
         fi
 fi
 ### 网络
-if ! ping -c 3 mirrors.aliyun.com &>/dev/null; then
-        echo "网络异常。。。"
+if ! ping -c 3 mirrors.tuna.tsinghua.edu.cn &>/dev/null; then
+        echo "Error: 无法访问外网 。。。"
         exit
 fi
 
@@ -48,21 +46,21 @@ memstotal=$(grep </proc/meminfo "MemTotal" | awk '{printf("%.f\n",$2/1024/1024)}
 disks=$(df -T | awk '/(xfs|ext4|ext3)/{if($3/1024/1024 > 10)printf("%s\t%d\n",$7,$3/1024/1024)}' | grep -v -c "/boot")
 
 if [ "$cores" -lt 0 ] || [ "$memstotal" -lt 0 ] || [ "$disks" -eq 0 ]; then
-        echo "要求最低配置为 CPU 2核 内存 4GB 存储空间 100G"
+        echo "Error: 要求系统最低配置为 CPU 2核 内存 4GB 存储空间 100G"
         exit 
 fi
 
 ## 系统环境初始化
 function InitSystem() {
-        echo -e -n "\033[32mStep1: 初始化系统安装环境。。。  \033[0m"
+        echo -e -n "\033[32mStep1: 初始化系统安装环境...  \033[0m"
         if ! hostnamectl set-hostname zeus-server; then
-                echo "主机名修改失败"
+                echo "Error: 主机名修改失败"
                 exit
         fi
 
         ### 修改时区
         if ! ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime; then
-                echo "时区修改失败"
+                echo "Error: 时区修改失败"
                 exit 0
         fi
 
@@ -126,7 +124,7 @@ EOL
 
         yum clean all 1>/dev/null && yum makecache 1>/dev/null
         yum -y install java-1.8.0-openjdk expect 1> /dev/null
-        logprint "yum 源配置失败详细看安装日志输出"
+        logprint "yum源配置失败"
         echo -e "\033[32m  [ OK ] \033[0m"
 }
 
@@ -137,7 +135,7 @@ function PGInstall() {
                 postgresql13-devel.x86_64 \
                 postgresql13-plpython3.x86_64 1>/dev/null
 
-        logprint "yum 源配置失败详细看安装日志输出"
+        logprint "yum安装postgresql失败"
 
         ### 创建 PostgreSQL 用户
         ### 修改启动文件
@@ -154,7 +152,7 @@ function PGInstall() {
         sed -i 's/\(^Environment\=PGDATA\=\).*/\1\/opt\/zeus\/pgdata/g' $startfile
         ### 初始化数据库
         /usr/pgsql-13/bin/postgresql-13-setup initdb 1>/dev/null
-        logprint "初始化错误"
+        logprint "初始化PG错误"
 
 #        echo "shared_preload_libraries = 'timescaledb'" >>/opt/zeus/pgdata/postgresql.conf
         ### 启动数据库
@@ -203,10 +201,10 @@ function ZbxInstall() {
                 --with-openipmi \
                 --with-openssl \
                 --with-ssh2 1>/dev/null
-        logprint "zabbix 编译异常"
+        logprint "zabbix编译异常"
 
         make install 1>/dev/null
-        logprint "zabbix 编译异常"
+        logprint "zabbix编译异常"
         ### 前端内容部署
         mv ui $ZABBIX_HOME/zabbix && chown zeus. $ZABBIX_HOME/zabbix -R
         mv $ZABBIX_HOME/zabbix/conf/zabbix.conf.php.example $ZABBIX_HOME/zabbix/conf/zabbix.conf.php
@@ -321,6 +319,10 @@ function WebInstall() {
 server {
     listen       80;
 
+    location / {
+        rewrite ^/(.*) http://$host:9090/$1 permanent;
+    }
+
     location /zabbix {
         alias $ZABBIX_HOME/zabbix;
         index index.html index.htm index.php;
@@ -406,7 +408,6 @@ function ZeusInstall() {
         cat ./zeus-iot-bin/bin/sql/zeus-iot.sql | sudo -u postgres psql zeus-iot &>/dev/null
         logprint "文件未找到"
         sed -i "s%\(zbxApiToken: \).*%\1$token%" ./zeus-iot-bin/webapp/webapp.yml
-        sed -i '19i export ZEUS_DB_PASSWORD=zeusiot' ./zeus-iot-bin/bin/startup.sh
         ./zeus-iot-bin/bin/startup.sh 1> /dev/null
         echo -e "\033[32m  [ OK ] \033[0m"
 }
