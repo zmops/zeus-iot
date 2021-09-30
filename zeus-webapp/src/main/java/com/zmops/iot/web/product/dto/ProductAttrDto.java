@@ -70,5 +70,8 @@ public class ProductAttrDto {
 
     private String value;
 
-
+    private Integer delay;
+    private String delayName;
+    //取数间隔单位
+    private String  unit;
 }

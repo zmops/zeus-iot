@@ -64,6 +64,10 @@ public class ProductAttr {
     @NotEmpty(groups = BaseEntity.Delete.class)
     private List<Long> attrIds;
 
+    private Integer delay;
+    //取数间隔单位
+    private String  unit;
+
     LocalDateTime createTime;
     LocalDateTime updateTime;
     Long          createUser;

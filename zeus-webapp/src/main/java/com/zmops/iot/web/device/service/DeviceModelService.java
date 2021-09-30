@@ -6,6 +6,7 @@ import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.ProductAttribute;
 import com.zmops.iot.domain.product.query.QProductAttribute;
+import com.zmops.iot.enums.CommonTimeUnit;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
@@ -69,6 +70,7 @@ public class DeviceModelService {
             if (null != map.get(productAttrDto.getAttrId())) {
                 productAttrDto.setClock(map.get(productAttrDto.getAttrId()).getClock());
                 productAttrDto.setValue(map.get(productAttrDto.getAttrId()).getValue());
+                productAttrDto.setDelayName(productAttrDto.getDelay() + CommonTimeUnit.getDescription(productAttrDto.getUnit()));
             }
         });
 
@@ -157,6 +159,8 @@ public class DeviceModelService {
             prodAttribute.setUnits(productAttr.getUnits());
             prodAttribute.setDepAttrId(productAttr.getDepAttrId());
             prodAttribute.setValueType(productAttr.getValueType());
+            prodAttribute.setDelay(prodAttribute.getDelay());
+            prodAttribute.setUnit(prodAttribute.getUnit());
         }
         prodAttribute.setProductId(productAttr.getProductId());
         prodAttribute.setRemark(productAttr.getRemark());

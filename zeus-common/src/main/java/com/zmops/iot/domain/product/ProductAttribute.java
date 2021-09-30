@@ -42,4 +42,8 @@ public class ProductAttribute extends BaseEntity {
     private String zbxId;  // Zabbix itemId
 
     private Long templateId;//继承的ID
+
+    private Integer delay;
+
+    private String unit;
 }
