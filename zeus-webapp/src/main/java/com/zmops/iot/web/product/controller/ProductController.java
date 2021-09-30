@@ -218,7 +218,7 @@ public class ProductController {
      * @return
      */
     @Permission(code = "product")
-    @PostMapping("/valuemap/update")
+    @PostMapping("/valueMap/update")
     public ResponseData prodValueMapCreate(@RequestBody @Validated(BaseEntity.Create.class) ValueMap valueMap) {
 
         Product product = new QProduct().productId.eq(Long.parseLong(valueMap.getProductId())).findOne();

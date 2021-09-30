@@ -187,7 +187,7 @@ public class DeviceController {
      * @return
      */
     @Permission(code = "dev")
-    @PostMapping("/valuemap/delete")
+    @PostMapping("/valueMap/delete")
     public ResponseData prodValueMapDelete(@RequestBody @Validated(BaseEntity.Delete.class) ValueMap valueMap) {
         String response = deviceService.valueMapDelete(valueMap.getValuemapid());
         return ResponseData.success(JSONObject.parseObject(response).getJSONArray("valuemapids").get(0));
