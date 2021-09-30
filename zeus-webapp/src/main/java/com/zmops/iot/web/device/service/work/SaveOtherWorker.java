@@ -10,6 +10,7 @@ import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.domain.product.query.QProductServiceRelation;
 import com.zmops.iot.domain.product.query.QProductStatusFunctionRelation;
+import com.zmops.iot.enums.CommonStatus;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.dto.DeviceDto;
 import com.zmops.iot.web.product.service.ProductEventRuleService;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -76,14 +78,19 @@ public class SaveOtherWorker implements IWorker<DeviceDto, Boolean> {
 
         Map<String, String> map = triggers.parallelStream().collect(Collectors.toMap(ProductEventRuleService.Triggers::getDescription, ProductEventRuleService.Triggers::getTriggerid));
 
-        List<ProductEventRelation> productEventRelationList = new QProductEventRelation().relationId.eq(deviceDto.getProductId() + "").findList();
-
+        List<ProductEventRelation> productEventRelationList = new QProductEventRelation().status.eq(CommonStatus.ENABLE.getCode()).relationId.eq(deviceDto.getProductId() + "").findList();
+        List<ProductEventRelation> newRelationList          = new ArrayList<>();
         for (ProductEventRelation productEventRelation : productEventRelationList) {
-            productEventRelation.setId(null);
-            productEventRelation.setRelationId(deviceId);
-            productEventRelation.setInherit("1");
-            productEventRelation.setZbxId(productEventRelation.getZbxId());
+            ProductEventRelation newEventRelation = new ProductEventRelation();
+            newEventRelation.setRelationId(deviceId);
+            newEventRelation.setInherit("1");
+            newEventRelation.setZbxId(map.get(productEventRelation.getEventRuleId() + ""));
+            newEventRelation.setRemark(productEventRelation.getRemark());
+            newEventRelation.setStatus(productEventRelation.getStatus());
+            newEventRelation.setEventRuleId(productEventRelation.getEventRuleId());
+            newRelationList.add(newEventRelation);
         }
+        DB.saveAll(newRelationList);
 
         DB.saveAll(productEventRelationList);
         //告警执行动作关联

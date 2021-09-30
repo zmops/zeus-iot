@@ -160,7 +160,7 @@ public class ProductEventRuleService {
         eventExpression.setFunction(exp.getFunction());
         eventExpression.setScope(exp.getScope());
         eventExpression.setValue(exp.getValue());
-        eventExpression.setDeviceId(exp.getProductId());
+//        eventExpression.setDeviceId(exp.getProductId());
         eventExpression.setProductAttrKey(exp.getProductAttrKey());
         eventExpression.setProductAttrId(exp.getProductAttrId());
         eventExpression.setProductAttrType(exp.getProductAttrType());
@@ -261,7 +261,12 @@ public class ProductEventRuleService {
         ProductEventRuleDto productEventRuleDto = new ProductEventRuleDto();
         ToolUtil.copyProperties(productEvent, productEventRuleDto);
 
-        productEventRuleDto.setExpList(new QProductEventExpression().eventRuleId.eq(eventRuleId).findList());
+        List<ProductEventExpression> expList = new QProductEventExpression().eventRuleId.eq(eventRuleId).findList();
+        expList.forEach(productEventExpression -> {
+            if (ToolUtil.isEmpty(productEventExpression.getDeviceId())) {
+                productEventExpression.setDeviceId(prodId);
+            }
+        });
         productEventRuleDto.setDeviceServices(new QProductEventService().eventRuleId.eq(eventRuleId).deviceId.isNull().findList());
 
         ProductEventRelation productEventRelation = new QProductEventRelation().relationId.eq(prodId).eventRuleId.eq(eventRuleId).findOne();

@@ -205,7 +205,13 @@ public class DeviceEventRuleService {
         ProductEventRuleDto productEventRuleDto = new ProductEventRuleDto();
         ToolUtil.copyProperties(productEvent, productEventRuleDto);
 
-        productEventRuleDto.setExpList(new QProductEventExpression().eventRuleId.eq(eventRuleId).findList());
+        List<ProductEventExpression> expList = new QProductEventExpression().eventRuleId.eq(eventRuleId).findList();
+        expList.forEach(productEventExpression -> {
+            if (ToolUtil.isEmpty(productEventExpression.getDeviceId())) {
+                productEventExpression.setDeviceId(deviceId);
+            }
+        });
+        productEventRuleDto.setExpList(expList);
         productEventRuleDto.setDeviceServices(new QProductEventService().eventRuleId.eq(eventRuleId).deviceId.eq(deviceId).findList());
 
         ProductEventRelation productEventRelation = new QProductEventRelation().relationId.eq(deviceId).eventRuleId.eq(eventRuleId).findOne();
