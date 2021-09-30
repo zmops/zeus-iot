@@ -102,8 +102,8 @@ public class AlarmService {
             if (null != deviceMap.get(zbxProblemInfo.getObjectid())) {
                 alarmDto.setDeviceName(deviceMap.get(zbxProblemInfo.getObjectid()));
             }
-            if (null != ruleMap.get(Integer.parseInt(zbxProblemInfo.getObjectid()))) {
-                alarmDto.setName(ruleMap.get(Integer.parseInt(zbxProblemInfo.getObjectid())));
+            if (null != ruleMap.get(zbxProblemInfo.getObjectid())) {
+                alarmDto.setName(ruleMap.get(zbxProblemInfo.getObjectid()));
             }
             alarmDtoList.add(alarmDto);
         });
@@ -129,8 +129,8 @@ public class AlarmService {
             AlarmDto alarmDto = new AlarmDto();
             BeanUtils.copyProperties(zbxProblemInfo, alarmDto);
             alarmDto.setRClock(zbxProblemInfo.getR_clock());
-            if (null != ruleMap.get(Integer.parseInt(zbxProblemInfo.getObjectid()))) {
-                alarmDto.setName(ruleMap.get(Integer.parseInt(zbxProblemInfo.getObjectid())));
+            if (null != ruleMap.get(zbxProblemInfo.getObjectid())) {
+                alarmDto.setName(ruleMap.get(zbxProblemInfo.getObjectid()));
             }
             alarmDtoList.add(alarmDto);
         });
