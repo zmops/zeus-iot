@@ -66,7 +66,8 @@ public class DeviceEventRuleService {
             List<String> deviceIds = eventRule.getExpList().parallelStream().map(DeviceEventRule.Expression::getDeviceId).collect(Collectors.toList());
             deviceIds.forEach(deviceId -> {
                 eventRule.getDeviceServices().forEach(i -> {
-                    DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id,execute_device_id, service_id) values (:eventRuleId, :deviceId,:executeDeviceId, :serviceId)")
+                    DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id,execute_device_id, service_id) " +
+                                    "values (:eventRuleId, :deviceId,:executeDeviceId, :serviceId)")
                             .setParameter("eventRuleId", eventRuleId)
                             .setParameter("executeDeviceId", i.getExecuteDeviceId())
                             .setParameter("serviceId", i.getServiceId())
@@ -203,10 +204,16 @@ public class DeviceEventRuleService {
                         .asUpdate().set("zbxId", map.get(productEventRelation.getRelationId())).update();
             }
         });
-
     }
 
-
+    /**
+     * 获取产品事件规则详情
+     *
+     * @param productEvent
+     * @param eventRuleId
+     * @param deviceId
+     * @return
+     */
     public ProductEventRuleDto detail(ProductEvent productEvent, long eventRuleId, String deviceId) {
         ProductEventRuleDto productEventRuleDto = new ProductEventRuleDto();
         ToolUtil.copyProperties(productEvent, productEventRuleDto);
@@ -229,15 +236,13 @@ public class DeviceEventRuleService {
             productEventRuleDto.setInheritProductId(one.getRelationId());
         }
 
-        if (null != productEventRelation) {
-            JSONArray                     triggerInfo = JSONObject.parseArray(zbxTrigger.triggerAndTagsGet(productEventRelation.getZbxId()));
-            List<ProductEventRuleDto.Tag> tagList     = JSONObject.parseArray(triggerInfo.getJSONObject(0).getString("tags"), ProductEventRuleDto.Tag.class);
+        JSONArray triggerInfo = JSONObject.parseArray(zbxTrigger.triggerAndTagsGet(productEventRelation.getZbxId()));
+        List<ProductEventRuleDto.Tag> tagList = JSONObject.parseArray(triggerInfo.getJSONObject(0).getString("tags"), ProductEventRuleDto.Tag.class);
 
-            productEventRuleDto.setZbxId(productEventRelation.getZbxId());
-            productEventRuleDto.setTags(tagList.stream()
-                    .filter(s -> !s.getTag().equals("__execute__") && !s.getTag().equals("__alarm__") && !s.getTag().equals("__event__"))
-                    .collect(Collectors.toList()));
-        }
+        productEventRuleDto.setZbxId(productEventRelation.getZbxId());
+        productEventRuleDto.setTags(tagList.stream()
+                .filter(s -> !s.getTag().equals("__execute__") && !s.getTag().equals("__alarm__") && !s.getTag().equals("__event__"))
+                .collect(Collectors.toList()));
 
         return productEventRuleDto;
     }
