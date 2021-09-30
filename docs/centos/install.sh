@@ -320,7 +320,7 @@ server {
     listen       80;
 
     location / {
-        rewrite ^/(.*) http://$host:9090/$1 permanent;
+        rewrite ^/(.*) http://\$host:9090/$1 permanent;
     }
 
     location /zabbix {
