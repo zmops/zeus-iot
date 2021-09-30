@@ -2,10 +2,8 @@ package com.zmops.iot.web.analyse.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.product.query.QProductAttribute;
-import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.util.LocalDateTimeUtils;
 import com.zmops.iot.util.ToolUtil;
-import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.zeus.driver.entity.ZbxItemInfo;
 import com.zmops.zeus.driver.service.ZbxItem;
 import org.apache.commons.httpclient.HttpClient;
@@ -13,6 +11,7 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
@@ -58,20 +57,36 @@ public class ZbxChartsService {
     public void getCharts(HttpServletResponse response,
                           String from, String to,
                           List<Long> attrIds, String width, String height) {
-
+        OutputStream out = null;
         if (ToolUtil.isEmpty(COOKIE) ||
                 LocalDateTimeUtils.betweenTwoTime(COOKIE_TIME, LocalDateTime.now(), ChronoUnit.DAYS) >= 30) {
             getCookie();
         }
 
         List<String> itemids = getItemIds(attrIds);
-        if (ToolUtil.isEmpty(itemids)) {
-            throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_KEY_NOT_EXISTS);
-        }
+        if (!validItemInfo(itemids)) {
+            try {
+                ClassPathResource classPathResource = new ClassPathResource("/nodata.jpg");
+                InputStream       inputStream       = classPathResource.getInputStream();
 
-        List<ZbxItemInfo> itemInfos = JSONObject.parseArray(zbxItem.getItemInfo(itemids.toString(), null), ZbxItemInfo.class);
-        if (ToolUtil.isEmpty(itemInfos)) {
-            throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_KEY_NOT_EXISTS);
+                response.setContentType("image/jpeg");
+
+                out = response.getOutputStream();
+                out.write(toByteArray(inputStream));
+
+                out.flush();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            } finally {
+                try {
+                    if (null != out) {
+                        out.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return;
         }
 
         HttpClient client = new HttpClient();
@@ -84,7 +99,8 @@ public class ZbxChartsService {
         nameValuePairs[2] = new NameValuePair("width", width);
         nameValuePairs[3] = new NameValuePair("height", height);
 
-        for (int index = 0; index < itemids.size(); index++) {
+        for (
+                int index = 0; index < itemids.size(); index++) {
             nameValuePairs[4 + index] = new NameValuePair("itemids[" + index + "]", itemids.get(index));
         }
 
@@ -92,7 +108,6 @@ public class ZbxChartsService {
         postMethod.setRequestHeader("Content_Type", "application/json-rpc");
         postMethod.setRequestHeader("Cookie", COOKIE);
 
-        OutputStream out = null;
         try {
             client.executeMethod(postMethod);
             InputStream responseBody = postMethod.getResponseBodyAsStream();
@@ -102,7 +117,8 @@ public class ZbxChartsService {
             out.write(toByteArray(responseBody));
 
             out.flush();
-        } catch (IOException ioException) {
+        } catch (
+                IOException ioException) {
             ioException.printStackTrace();
         } finally {
             try {
@@ -113,7 +129,18 @@ public class ZbxChartsService {
                 e.printStackTrace();
             }
         }
+    }
 
+    private boolean validItemInfo(List<String> itemids) {
+        if (ToolUtil.isEmpty(itemids)) {
+            return false;
+        }
+
+        List<ZbxItemInfo> itemInfos = JSONObject.parseArray(zbxItem.getItemInfo(itemids.toString(), null), ZbxItemInfo.class);
+        if (ToolUtil.isEmpty(itemInfos)) {
+            return false;
+        }
+        return true;
     }
 
     private static byte[] toByteArray(InputStream input) throws IOException {
