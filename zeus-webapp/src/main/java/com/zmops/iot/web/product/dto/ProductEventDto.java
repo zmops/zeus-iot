@@ -25,6 +25,9 @@ public class ProductEventDto {
     @CachedValue(value = "STATUS")
     private String status;
 
+    @CachedValue(value = "WHETHER")
+    private String inherit;
+
     private String remark;
     private String classify;
     private String  expLogic;

@@ -42,6 +42,8 @@ public class ProductEventRuleDto {
 
     private String status;
 
+    private String inherit;
+
     @Data
     public static class Tag {
 

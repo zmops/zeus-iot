@@ -243,6 +243,7 @@ public class ProductEventRuleService {
             if (null != productEventRelationMap.get(productEventDto.getEventRuleId())) {
                 productEventDto.setStatus(productEventRelationMap.get(productEventDto.getEventRuleId()).getStatus());
                 productEventDto.setRemark(productEventRelationMap.get(productEventDto.getEventRuleId()).getRemark());
+                productEventDto.setIn(productEventRelationMap.get(productEventDto.getEventRuleId()).getStatus());
             }
         });
 
