@@ -42,7 +42,7 @@ public class MacroController {
     /**
      * 创建 变量
      *
-     * @return
+     * @return ResponseData
      */
     @RequestMapping("/create")
     public ResponseData createUserMacro(@Validated(BaseEntity.Create.class) @RequestBody UserMacro userMacro) {
@@ -68,7 +68,7 @@ public class MacroController {
      * 变量更新
      *
      * @param userMacro
-     * @return
+     * @return ResponseData
      */
     @RequestMapping("/update")
     public ResponseData updateUserMacro(@Validated(BaseEntity.Update.class) @RequestBody UserMacro userMacro) {
@@ -81,7 +81,7 @@ public class MacroController {
      * 变量列表
      *
      * @param userMacro
-     * @return
+     * @return ResponseData
      */
     @RequestMapping("/list")
     public ResponseData getUserMacro(@Validated(BaseEntity.Get.class) @RequestBody UserMacro userMacro) {
@@ -130,7 +130,7 @@ public class MacroController {
      * 变量删除
      *
      * @param userMacro
-     * @return
+     * @return ResponseData
      */
     @RequestMapping("/delete")
     public ResponseData deleteUserMacro(@Validated(BaseEntity.Delete.class) @RequestBody UserMacro userMacro) {
