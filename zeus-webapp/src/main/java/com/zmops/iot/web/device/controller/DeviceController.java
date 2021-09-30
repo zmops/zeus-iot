@@ -169,7 +169,7 @@ public class DeviceController {
         if (null == device) {
             throw new ServiceException(BizExceptionEnum.DEVICE_NOT_EXISTS);
         }
-        String response = "";
+        String response;
         if (ToolUtil.isEmpty(valueMap.getValuemapid())) {
             response = deviceService.valueMapCreate(device.getZbxId(), valueMap.getValueMapName(), valueMap.getValueMaps());
         } else {
