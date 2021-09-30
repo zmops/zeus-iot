@@ -142,8 +142,8 @@ public class DeviceController {
     @PostMapping("/tag/update")
     public ResponseData deviceTagCreate(@RequestBody @Valid ProductTag productTag) {
 
-        String   deviceId = productTag.getProductId();
-        Device device   = new QDevice().deviceId.eq(deviceId).findOne();
+        String deviceId = productTag.getProductId();
+        Device device = new QDevice().deviceId.eq(deviceId).findOne();
 
         if (null == device) {
             throw new ServiceException(BizExceptionEnum.DEVICE_NOT_EXISTS);
