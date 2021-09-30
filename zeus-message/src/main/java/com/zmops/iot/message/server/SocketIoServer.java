@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PreDestroy;
+
 /**
  * @author nantian created at 2021/9/26 23:21
  */
@@ -20,6 +22,16 @@ public class SocketIoServer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         server.start();
+    }
+
+    /**
+     * 退出时 销毁 SocketIOServer
+     *
+     * @throws Exception
+     */
+    @PreDestroy
+    public void stop() throws Exception {
+        server.stop();
     }
 }
 
