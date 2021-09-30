@@ -47,7 +47,7 @@ public class ProductEventRuleService {
     /**
      * 保存触发器
      *
-     * @param eventRule   告警规则
+     * @param eventRule 告警规则
      */
     public void createProductEventRule(ProductEventRule eventRule) {
         // step 1: 保存产品告警规则
@@ -243,7 +243,7 @@ public class ProductEventRuleService {
             if (null != productEventRelationMap.get(productEventDto.getEventRuleId())) {
                 productEventDto.setStatus(productEventRelationMap.get(productEventDto.getEventRuleId()).getStatus());
                 productEventDto.setRemark(productEventRelationMap.get(productEventDto.getEventRuleId()).getRemark());
-                productEventDto.setIn(productEventRelationMap.get(productEventDto.getEventRuleId()).getStatus());
+                productEventDto.setInherit(productEventRelationMap.get(productEventDto.getEventRuleId()).getInherit());
             }
         });
 
@@ -268,6 +268,7 @@ public class ProductEventRuleService {
                 productEventExpression.setDeviceId(prodId);
             }
         });
+        productEventRuleDto.setExpList(expList);
         productEventRuleDto.setDeviceServices(new QProductEventService().eventRuleId.eq(eventRuleId).deviceId.isNull().findList());
 
         ProductEventRelation productEventRelation = new QProductEventRelation().relationId.eq(prodId).eventRuleId.eq(eventRuleId).findOne();
@@ -293,7 +294,7 @@ public class ProductEventRuleService {
 
     @Data
     public static class Triggers {
-        private String     triggerid;
+        private String      triggerid;
         private String      description;
         private List<Hosts> hosts;
     }
