@@ -18,6 +18,7 @@ import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductEventRuleDto;
 import com.zmops.zeus.driver.service.ZbxTrigger;
 import io.ebean.DB;
+import io.ebean.annotation.Transactional;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,7 @@ public class DeviceEventRuleService {
      * @param eventRuleId 触发器ID
      * @param eventRule   告警规则
      */
+    @Transactional(rollbackFor = Exception.class)
     public void createDeviceEventRule(Long eventRuleId, DeviceEventRule eventRule) {
         // step 1: 保存产品告警规则
         ProductEvent event = initEventRule(eventRule);
@@ -93,6 +95,7 @@ public class DeviceEventRuleService {
         DB.saveAll(productEventRelationList);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void updateDeviceEventRule(Long eventRuleId, DeviceEventRule eventRule) {
 
         //step 1: 函数表达式
