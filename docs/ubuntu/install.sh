@@ -16,7 +16,7 @@ if [ "$(uname)" != Linux ]; then
         exit $E_BADOD
 fi
 
-if [ "$UID" -ne "$ROOT_UID" ]; then
+if [ "$UID" -ne 0 ]; then
         echo "Must be root to install"
         exit $E_NOTROOT
 fi
@@ -45,6 +45,7 @@ fi
 
 
 function InitSystem() {
+    echo -e -n "\033[32mStep1: 初始化系统安装环境。。。  \033[0m"
     ## 修改主机名
     if ! hostnamectl set-hostname zeus-server; then
         echo "主机名修改失败"
@@ -56,58 +57,48 @@ function InitSystem() {
         exit 0
     fi
     ## 更新下载源
-    mv /etc/apt/sources.list /etc/apt/sources.listbak
-    tee /etc/apt/sources.list <<EOL &>/dev/null
-deb http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse
-
-deb http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse
-
-deb http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse
-
-deb http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse
-
-deb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse
-EOL
+    cp /etc/apt/sources.list /etc/apt/sources.listbak
+    sed -i 's%\(^deb https\:\/\/\).*\(/ubuntu.*\)%\1mirrors.tuna.tsinghua.edu.cn\2%g' /etc/apt/sources.list
+    echo -e "\033[32m  [ OK ] \033[0m"
 }
 
 function AddInstallRepo() {
+    echo -e -n "\033[32mStep2: 配置安装 YUM 源 。。。  \033[0m"
     ## 安装PGsql源
-    echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -c -s)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
-    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-    sudo sh -c "echo 'deb https://packagecloud.io/timescale/timescaledb/ubuntu/ $(lsb_release -c -s) main' > /etc/apt/sources.list.d/timescaledb.list"
-    wget --quiet -O - https://packagecloud.io/timescale/timescaledb/gpgkey | sudo apt-key add -
+    echo "deb https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/apt/ $(lsb_release -c -s)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list &> /dev/null
+    wget --quiet -O - https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/apt/ACCC4CF8.asc | sudo apt-key add -
+    #sudo sh -c "echo 'deb https://packagecloud.io/timescale/timescaledb/ubuntu/ $(lsb_release -c -s) main' > /etc/apt/sources.list.d/timescaledb.list"
+    #wget --quiet -O - https://packagecloud.io/timescale/timescaledb/gpgkey | sudo apt-key add -
     ## 安装zabbix 5.4 源
-    wget https://repo.zabbix.com/zabbix/5.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_5.4-1+ubuntu20.04_all.deb
-    dpkg -i zabbix-release_5.4-1+ubuntu20.04_all.deb
-    apt update
-
+    wget -q https://repo.zabbix.com/zabbix/5.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_5.4-1+ubuntu20.04_all.deb
+    dpkg -i zabbix-release_5.4-1+ubuntu20.04_all.deb 1> /dev/null
+    apt update 1> /dev/null && apt install -y openjdk-8-jdk expect 1> /dev/null
+    echo -e "\033[32m  [ OK ] \033[0m"
 }
 
 function PGInstall() {
+    echo -e -n "\033[32mStep3: 安装 PostgreSQL....  \033[0m"
     # PG 安装
-    apt install timescaledb-2-postgresql-13 -y
-    echo "shared_preload_libraries = 'timescaledb'" >> /etc/postgresql/13/main/postgresql.conf
+    apt install postgresql-13 -y 1> /dev/null
+    #echo "shared_preload_libraries = 'timescaledb'" >> /etc/postgresql/13/main/postgresql.conf
     cd /tmp || exit
-    sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'zeusiot';" 2> /tmp/pg.log
+    sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';" 2> /tmp/pg.log
     systemctl restart postgresql
+    echo -e "\033[32m  [ OK ] \033[0m"
 }
 
 function ZbxInstall() {
+    echo -e -n "\033[32mStep4: 编译安装 zabbix 。。。  \033[0m" 
     # zabbix 安装
-    apt install zabbix-server-pgsql zabbix-frontend-php php7.4-pgsql zabbix-nginx-conf zabbix-sql-scripts zabbix-agent -y
+    apt install zabbix-server-pgsql zabbix-frontend-php php7.4-pgsql zabbix-nginx-conf zabbix-sql-scripts zabbix-agent -y 1> /dev/null
     # 初始化 zabbix 配置
     cd /tmp || exit
     sudo -u postgres createuser zabbix
     sudo -u postgres psql -c "ALTER USER zabbix WITH PASSWORD 'zabbix';"
     sudo -u postgres createdb -O zabbix zabbix
-    zcat /usr/share/doc/zabbix-sql-scripts/postgresql/create.sql.gz | sudo -u zabbix psql zabbix
-    echo "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;" | sudo -u postgres psql zabbix
-    cat /usr/share/doc/zabbix-sql-scripts/postgresql/timescaledb.sql | sudo -u zabbix psql zabbix 1>/dev/null
+    zcat /usr/share/doc/zabbix-sql-scripts/postgresql/create.sql.gz | sudo -u zabbix psql zabbix 1> /dev/null
+    #echo "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;" | sudo -u postgres psql zabbix
+    #cat /usr/share/doc/zabbix-sql-scripts/postgresql/timescaledb.sql | sudo -u zabbix psql zabbix 1>/dev/null
 
     sed -i 's/^# DBPassword=/DBPassword=zabbix/g' /etc/zabbix/zabbix_server.conf
     mv /usr/share/zabbix/conf/zabbix.conf.php.example /usr/share/zabbix/conf/zabbix.conf.php
@@ -123,37 +114,13 @@ function ZbxInstall() {
     sed -i '/sites-enabled/d' /etc/nginx/nginx.conf
     sed -i '/listen/s/#//' /etc/nginx/conf.d/zabbix.conf
     sed -i '/listen/s/80/8871/' /etc/nginx/conf.d/zabbix.conf
-    systemctl restart zabbix-server zabbix-agent nginx php7.4-fpm    
-}
 
-function ZeusInstall() {
-    ## 安装web
-    [ ! -d /opt/zeus ] && mkdir -p /opt/zeus
-    cd /opt/zeus
-    wget -c https://packages.zmops.cn/zeus-iot/app-1.0.tar.gz -o /dev/null -O - | tar -xz
-    wget -c https://packages.zmops.cn/zeus-iot/web-1.0.tar.gz -o /dev/null -O - | tar -xz
-    wget -c https://packages.zmops.cn/zeus-iot/zeus-iot.sql
-    sudo -u postgres createdb zeus-iot
-    cat zeus-iot.sql | sudo -u postgres psql zeus-iot
-
-    # 配置 nginx
+    # 配置 zabbix web
+    
     tee /etc/nginx/conf.d/zeus.conf <<EOL 1>/dev/null
 server {
     listen       80;
 
-
-    location / {
-      root   /opt/zeus/web;
-      index  index.html;
-      try_files \$uri \$uri/ /index.html;
-    }
-
-    location ^~/api/ {
-        client_body_buffer_size 10m;
-        proxy_set_header  X-Real-IP        \$remote_addr;
-        proxy_set_header  X-Forwarded-For  \$proxy_add_x_forwarded_for;
-        proxy_pass http://127.0.0.1:9090/;
-    }
     location /zabbix {
             alias /usr/share/zabbix;
             index index.html index.htm index.php;
@@ -184,13 +151,68 @@ server {
 }
 EOL
 
-    # 启动
-    systemctl restart nginx 
-    cd /opt/zeus/app && ./start.sh
-
+    systemctl restart zabbix-server zabbix-agent nginx php7.4-fpm  
+    echo -e "\033[32m  [ OK ] \033[0m"  
 }
+
+
+function gettoken(){
+        ## 获取 API 永久 token
+        local zabbix_api_url=http://127.0.0.1/zabbix/api_jsonrpc.php
+        local data='{"jsonrpc": "2.0","method": "user.login","params":{"user":"Admin","password":"zabbix"},"id":1,"auth":null}'
+        local res=`eval exec "curl -d '$data' -H 'Content-Type: application/json' -X POST -s $zabbix_api_url"`
+        local auth=`echo $res | python3 -c 'import sys, json; print(json.load(sys.stdin)["result"])'`
+        local data='{"jsonrpc": "2.0","method": "token.create","params":{"name":"zeus","userid":"1"},"id":1,"auth":"'${auth}'"}'
+        local res=`eval exec "curl -d '$data' -H 'Content-Type: application/json' -X POST -s $zabbix_api_url"`
+        local tokenid=`echo $res | python3 -c 'import sys, json; print(json.load(sys.stdin)["result"]["tokenids"][0])'`
+        local data='{"jsonrpc": "2.0","method": "token.generate","params":["'${tokenid}'"],"id":1,"auth":"'${auth}'"}'
+        local res=`eval exec "curl -d '$data' -H 'Content-Type: application/json' -X POST -s $zabbix_api_url"`
+        token=`echo $res | python3 -c 'import sys, json; print(json.load(sys.stdin)["result"][0]["token"])'`     
+}
+
+
+function taosinstall() {
+        ### taos 数据安装
+        echo -e -n "\033[32mStep5: 安装 taos 数据库。。。  \033[0m"
+        wget https://www.taosdata.com/assets-download/TDengine-server-2.2.0.2-Linux-x64.deb
+        expect << EOF 1> /dev/null
+          spawn dpkg -i TDengine-server-2.2.0.2-Linux-x64.deb
+          expect {
+            "*one:" { send "\n";exp_continue}
+            "*skip:" { send "\n" }
+          }
+EOF
+        systemctl enable taosd
+        systemctl start taosd
+        echo -e "\033[32m  [ OK ] \033[0m"
+}
+
+
+function ZeusInstall() {
+        echo -e -n "\033[32mStep6: 安装 Zeus-IoT 服务。。。  \033[0m"
+        [ ! -d /opt/zeus ] && mkdir -p /opt/zeus
+        cd /opt/zeus || exit
+        ## 创建taos 数据库
+        taos -s "create database zeus_data" 1> /dev/null
+        wget -c https://packages.zmops.cn/zeus-iot/zeus-iot-bin.tar.gz -o /dev/null -O - | tar -xz
+        gettoken
+        ## 数据库导入
+        sudo -u postgres createdb -E Unicode -T template0 zeus-iot
+        cat ./zeus-iot-bin/bin/sql/zeus-iot.sql | sudo -u postgres psql zeus-iot &>/dev/null
+        logprint "文件未找到"
+        sed -i "s%\(zbxApiToken: \).*%\1$token%" ./zeus-iot-bin/webapp/webapp.yml
+        #sed -i '19i export ZEUS_DB_PASSWORD=zeusiot' ./zeus-iot-bin/bin/startup.sh
+        ./zeus-iot-bin/bin/startup.sh 1> /dev/null
+        echo -e "\033[32m  [ OK ] \033[0m"
+}
+
+
+
+
 InitSystem
 AddInstallRepo
 PGInstall
 ZbxInstall
+taosinstall
 ZeusInstall
+
