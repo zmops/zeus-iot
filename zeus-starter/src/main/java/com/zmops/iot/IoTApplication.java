@@ -22,6 +22,6 @@ public class IoTApplication {
     public static void main(String[] args) {
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Shanghai"));
         SpringApplication.run(IoTApplication.class, args);
-        logger.info(IoTApplication.class.getSimpleName() + " is success!");
+        logger.info(IoTApplication.class.getSimpleName() + " webapp started successfully!");
     }
 }
