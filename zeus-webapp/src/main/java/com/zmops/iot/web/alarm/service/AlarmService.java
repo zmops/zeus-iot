@@ -7,6 +7,7 @@ import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.ProductEvent;
 import com.zmops.iot.domain.product.query.QProductEvent;
 import com.zmops.iot.media.AlarmCallback;
+import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.LocalDateTimeUtils;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.alarm.dto.AlarmDto;
@@ -43,7 +44,7 @@ public class AlarmService {
 
     public void alarm(Map<String, String> alarmInfo) {
         String deviceId    = alarmInfo.get("hostname");
-        String eventRuleId = alarmInfo.get("triggername");
+        String eventRuleId = alarmInfo.get("triggerName");
 
         if (ToolUtil.isEmpty(deviceId) || ToolUtil.isEmpty(eventRuleId)) {
             return;
@@ -67,17 +68,19 @@ public class AlarmService {
     }
 
 
-    public List<AlarmDto> getAlarmByPage(AlarmParam alarmParam) {
+    public Pager<AlarmDto> getAlarmByPage(AlarmParam alarmParam) {
 
         List<ZbxProblemInfo> zbxProblemInfos = getZbxAlarm(alarmParam);
         if (ToolUtil.isEmpty(zbxProblemInfos)) {
-            return Collections.emptyList();
+            return new Pager<>();
         }
         //分页
         List<ZbxProblemInfo> problemList = zbxProblemInfos.stream()
                 .skip((alarmParam.getPage() - 1) * alarmParam.getMaxRow())
                 .limit(alarmParam.getMaxRow()).collect(Collectors.toList());
-
+        if (ToolUtil.isEmpty(problemList)) {
+            return new Pager<>(Collections.emptyList(),zbxProblemInfos.size());
+        }
         //根据triggerid查询出 所属设备
         List<String> triggerIds = problemList.parallelStream().map(ZbxProblemInfo::getObjectid).collect(Collectors.toList());
         List<DeviceDto> deviceList = DB.findDto(DeviceDto.class, "select name,r.zbx_id from device d INNER JOIN (select relation_id,zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.relation_id=d.device_id")
@@ -108,7 +111,7 @@ public class AlarmService {
             alarmDtoList.add(alarmDto);
         });
 
-        return alarmDtoList;
+        return new Pager<>(Collections.emptyList(),zbxProblemInfos.size());
     }
 
     public List<AlarmDto> getAlarmList(AlarmParam alarmParam) {

@@ -11,10 +11,10 @@
             },
         </#if>
         <#if itemId??>
-            "itemids": "${itemId}",
+            "itemids": ${itemId},
         </#if>
         <#if hostid??>
-            "hostids": "${hostid}",
+            "hostids": ${hostid},
         </#if>
         "output": [
             "itemid",

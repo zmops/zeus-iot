@@ -1,6 +1,8 @@
 package com.zmops.iot.web.alarm.controller;
 
+import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
+import com.zmops.iot.web.alarm.dto.AlarmDto;
 import com.zmops.iot.web.alarm.dto.param.AlarmParam;
 import com.zmops.iot.web.alarm.service.AlarmService;
 import com.zmops.iot.web.auth.Permission;
@@ -27,8 +29,8 @@ public class AlarmController {
 
     @Permission(code = "alarmList")
     @RequestMapping("/getAlarmByPage")
-    public ResponseData getAlarmByPage(@RequestBody AlarmParam alarmParam) {
-        return ResponseData.success(alarmService.getAlarmByPage(alarmParam));
+    public Pager<AlarmDto> getAlarmByPage(@RequestBody AlarmParam alarmParam) {
+        return alarmService.getAlarmByPage(alarmParam);
     }
 
     @Permission(code = "alarmList")
