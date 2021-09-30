@@ -63,12 +63,15 @@ public class DeviceEventRuleService {
 
         //step 3: 保存触发器 调用 本产品方法
         if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
-            eventRule.getDeviceServices().forEach(i -> {
-                DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id,execute_device_id, service_id) values (:eventRuleId, :deviceId,:executeDeviceId, :serviceId)")
-                        .setParameter("eventRuleId", eventRuleId)
-                        .setParameter("executeDeviceId", i.getExecuteDeviceId())
-                        .setParameter("serviceId", i.getServiceId())
-                        .execute();
+            List<String> deviceIds = eventRule.getExpList().parallelStream().map(DeviceEventRule.Expression::getDeviceId).collect(Collectors.toList());
+            deviceIds.forEach(deviceId -> {
+                eventRule.getDeviceServices().forEach(i -> {
+                    DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id,execute_device_id, service_id) values (:eventRuleId, :deviceId,:executeDeviceId, :serviceId)")
+                            .setParameter("eventRuleId", eventRuleId)
+                            .setParameter("executeDeviceId", i.getExecuteDeviceId())
+                            .setParameter("serviceId", i.getServiceId())
+                            .execute();
+                });
             });
         }
 
@@ -221,6 +224,10 @@ public class DeviceEventRuleService {
         productEventRuleDto.setStatus(productEventRelation.getStatus());
         productEventRuleDto.setRemark(productEventRelation.getRemark());
         productEventRuleDto.setInherit(productEventRelation.getInherit());
+        if (InheritStatus.YES.getCode().equals(productEventRelation.getInherit())) {
+            ProductEventRelation one = new QProductEventRelation().eventRuleId.eq(eventRuleId).inherit.eq(InheritStatus.NO.getCode()).findOne();
+            productEventRuleDto.setInheritProductId(one.getRelationId());
+        }
 
         if (null != productEventRelation) {
             JSONArray                     triggerInfo = JSONObject.parseArray(zbxTrigger.triggerAndTagsGet(productEventRelation.getZbxId()));

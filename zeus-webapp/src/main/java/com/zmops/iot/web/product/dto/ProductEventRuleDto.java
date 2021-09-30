@@ -44,6 +44,8 @@ public class ProductEventRuleDto {
 
     private String inherit;
 
+    private String inheritProductId;
+
     @Data
     public static class Tag {
 
