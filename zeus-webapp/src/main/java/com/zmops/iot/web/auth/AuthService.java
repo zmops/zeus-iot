@@ -2,6 +2,7 @@ package com.zmops.iot.web.auth;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.convert.Convert;
+import com.zmops.iot.constant.ConstantsContext;
 import com.zmops.iot.core.auth.cache.SessionManager;
 import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.core.auth.exception.AuthException;
@@ -13,6 +14,7 @@ import com.zmops.iot.core.util.HttpContext;
 import com.zmops.iot.core.util.SaltUtil;
 import com.zmops.iot.domain.sys.SysUser;
 import com.zmops.iot.domain.sys.query.QSysUser;
+import com.zmops.iot.enums.CommonStatus;
 import com.zmops.iot.message.handler.MessageEventHandler;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.web.constant.state.ManagerStatus;
@@ -96,8 +98,10 @@ public class AuthService {
         if (i == 0) {
             throw new ServiceException(BizExceptionEnum.ZBX_TOKEN_SAVE_ERROR);
         }
-
-        messageEventHandler.sendDisconnectMsg(user.getUserId() + "");
+        //单点登录
+        if (CommonStatus.ENABLE.getCode().equals(ConstantsContext.getConstntsMap().get("ZEUS_SIGN_IN"))) {
+            messageEventHandler.sendDisconnectMsg(user.getUserId() + "");
+        }
         return LoginUserDto.buildLoginUser(user, login(user));
     }
 
