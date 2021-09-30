@@ -18,6 +18,7 @@ import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductEventRuleDto;
 import com.zmops.zeus.driver.service.ZbxTrigger;
 import io.ebean.DB;
+import io.ebean.annotation.Transactional;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,7 @@ public class DeviceEventRuleService {
      * @param eventRuleId 触发器ID
      * @param eventRule   告警规则
      */
+    @Transactional(rollbackFor = Exception.class)
     public void createDeviceEventRule(Long eventRuleId, DeviceEventRule eventRule) {
         // step 1: 保存产品告警规则
         ProductEvent event = initEventRule(eventRule);
@@ -63,7 +65,7 @@ public class DeviceEventRuleService {
 
         //step 3: 保存触发器 调用 本产品方法
         if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
-            List<String> deviceIds = eventRule.getExpList().parallelStream().map(DeviceEventRule.Expression::getDeviceId).collect(Collectors.toList());
+            List<String> deviceIds = eventRule.getExpList().parallelStream().map(DeviceEventRule.Expression::getDeviceId).distinct().collect(Collectors.toList());
             deviceIds.forEach(deviceId -> {
                 eventRule.getDeviceServices().forEach(i -> {
                     DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id,execute_device_id, service_id) " +
@@ -94,6 +96,7 @@ public class DeviceEventRuleService {
         DB.saveAll(productEventRelationList);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void updateDeviceEventRule(Long eventRuleId, DeviceEventRule eventRule) {
 
         //step 1: 函数表达式
@@ -127,7 +130,7 @@ public class DeviceEventRuleService {
 
         //step 5: 保存触发器 调用 本产品方法
         if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
-            List<String> deviceIds = eventRule.getExpList().parallelStream().map(DeviceEventRule.Expression::getDeviceId).collect(Collectors.toList());
+            List<String> deviceIds = eventRule.getExpList().parallelStream().map(DeviceEventRule.Expression::getDeviceId).distinct().collect(Collectors.toList());
             deviceIds.forEach(deviceId -> {
                 eventRule.getDeviceServices().forEach(i -> {
                     DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id, service_id) values (:eventRuleId, :deviceId, :serviceId)")
