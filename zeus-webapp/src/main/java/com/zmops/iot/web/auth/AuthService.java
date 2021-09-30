@@ -13,6 +13,7 @@ import com.zmops.iot.core.util.HttpContext;
 import com.zmops.iot.core.util.SaltUtil;
 import com.zmops.iot.domain.sys.SysUser;
 import com.zmops.iot.domain.sys.query.QSysUser;
+import com.zmops.iot.message.handler.MessageEventHandler;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.web.constant.state.ManagerStatus;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
@@ -50,6 +51,8 @@ public class AuthService {
     @Autowired
     private ZbxUser zbxUser;
 
+    @Autowired
+    MessageEventHandler messageEventHandler;
 
     /**
      * 用户名 和  密码 登陆
@@ -94,6 +97,7 @@ public class AuthService {
             throw new ServiceException(BizExceptionEnum.ZBX_TOKEN_SAVE_ERROR);
         }
 
+        messageEventHandler.sendDisconnectMsg(user.getUserId() + "");
         return LoginUserDto.buildLoginUser(user, login(user));
     }
 
