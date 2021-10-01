@@ -17,6 +17,7 @@ import com.zmops.iot.web.product.dto.ProductAttr;
 import com.zmops.iot.web.product.dto.ProductAttrDto;
 import com.zmops.iot.web.product.dto.ProductTag;
 import com.zmops.iot.web.product.dto.param.ProductAttrParam;
+import com.zmops.zeus.driver.entity.ZbxItemInfo;
 import com.zmops.zeus.driver.entity.ZbxProcessingStep;
 import com.zmops.zeus.driver.service.ZbxItem;
 import io.ebean.DB;
@@ -61,6 +62,9 @@ public class DeviceModelService {
         List<ProductAttrDto> pagedList = qProductAttribute.setFirstRow((productAttr.getPage() - 1) * productAttr.getMaxRow())
                 .setMaxRows(productAttr.getMaxRow()).orderBy(" create_time desc").asDto(ProductAttrDto.class).findList();
 
+        if(ToolUtil.isEmpty(pagedList)){
+            return new Pager<>();
+        }
         //查询最新数据
         List<Long>           attrIds    = pagedList.parallelStream().map(ProductAttrDto::getAttrId).collect(Collectors.toList());
         List<LatestDto>      latestDtos = latestService.qeuryLatest(productAttr.getProdId(), attrIds);
@@ -68,13 +72,20 @@ public class DeviceModelService {
 
         //查询zbx item 信息
         List<String>           zbxIds    = pagedList.parallelStream().map(ProductAttrDto::getZbxId).collect(Collectors.toList());
-//  TODO  ERRO      zbxItem.getItemInfo(zbxIds.toString());
+
+        String itemInfo = zbxItem.getItemInfo(zbxIds.toString(),null);
+        List<ZbxItemInfo> itemInfos = JSONObject.parseArray(itemInfo, ZbxItemInfo.class);
+        Map<String, String> errorMap = itemInfos.parallelStream().collect(Collectors.toMap(ZbxItemInfo::getItemid, ZbxItemInfo::getError));
+
 
         pagedList.forEach(productAttrDto -> {
             if (null != map.get(productAttrDto.getAttrId())) {
                 productAttrDto.setClock(map.get(productAttrDto.getAttrId()).getClock());
                 productAttrDto.setValue(map.get(productAttrDto.getAttrId()).getValue());
                 productAttrDto.setDelayName(productAttrDto.getDelay() + CommonTimeUnit.getDescription(productAttrDto.getUnit()));
+            }
+            if(null != errorMap.get(productAttrDto.getZbxId())){
+                productAttrDto.setError(errorMap.get(productAttrDto.getZbxId()));
             }
         });
 

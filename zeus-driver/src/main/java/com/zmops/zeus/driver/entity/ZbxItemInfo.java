@@ -28,6 +28,8 @@ public class ZbxItemInfo {
 
     private String interfaceid;
 
+    private String error;
+
     private List<HostInfo> hosts;
 
     @Data
