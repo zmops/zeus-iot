@@ -25,7 +25,8 @@
             "value_type",
             "units",
             "valuemapid",
-            "interfaceid"
+            "interfaceid",
+            "error"
         ]
     },
     "auth": "${userAuth}",
