@@ -70,6 +70,7 @@ public class DeviceEventRuleService {
                 eventRule.getDeviceServices().forEach(i -> {
                     DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id,execute_device_id, service_id) values (:eventRuleId, :deviceId,:executeDeviceId, :serviceId)")
                             .setParameter("eventRuleId", eventRuleId)
+                            .setParameter("deviceId", deviceId)
                             .setParameter("executeDeviceId", i.getExecuteDeviceId())
                             .setParameter("serviceId", i.getServiceId())
                             .execute();

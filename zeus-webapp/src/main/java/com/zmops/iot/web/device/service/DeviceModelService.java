@@ -66,6 +66,10 @@ public class DeviceModelService {
         List<LatestDto>      latestDtos = latestService.qeuryLatest(productAttr.getProdId(), attrIds);
         Map<Long, LatestDto> map        = latestDtos.parallelStream().distinct().collect(Collectors.toMap(LatestDto::getAttrId, o -> o, (a, b) -> b));
 
+        //查询zbx item 信息
+        List<String>           zbxIds    = pagedList.parallelStream().map(ProductAttrDto::getZbxId).collect(Collectors.toList());
+//  TODO  ERRO      zbxItem.getItemInfo(zbxIds.toString());
+
         pagedList.forEach(productAttrDto -> {
             if (null != map.get(productAttrDto.getAttrId())) {
                 productAttrDto.setClock(map.get(productAttrDto.getAttrId()).getClock());
