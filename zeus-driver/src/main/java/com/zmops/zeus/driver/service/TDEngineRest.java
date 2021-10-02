@@ -4,6 +4,7 @@ import com.dtflys.forest.annotation.BaseRequest;
 import com.dtflys.forest.annotation.Body;
 import com.dtflys.forest.annotation.Post;
 import com.dtflys.forest.extensions.BasicAuth;
+import com.dtflys.forest.http.ForestResponse;
 
 /**
  * @author yefei
@@ -23,5 +24,5 @@ public interface TDEngineRest {
             contentType = "application/json;charset=utf-8"
     )
     @BasicAuth(username = "${taosUser}", password = "${taosPwd}")
-    String executeSql(@Body String sql);
+    ForestResponse<String> executeSql(@Body String sql);
 }

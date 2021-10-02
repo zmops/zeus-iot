@@ -1,6 +1,7 @@
 package com.zmops.iot.web.device.schedule;
 
 import com.alibaba.fastjson.JSON;
+import com.dtflys.forest.http.ForestResponse;
 import com.zmops.iot.domain.device.Tag;
 import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.device.query.QTag;
@@ -38,15 +39,21 @@ public class SyncTaosTagSchedule {
 //    @Scheduled(cron = "0 0/1 * * * ? ")
     public void sync() {
         List<String> deviceIds = new QDevice().select(QDevice.alias().deviceId).findSingleAttributeList();
-        List<Tag>    tagList   = new QTag().sid.in(deviceIds).findList();
+        List<Tag> tagList = new QTag().sid.in(deviceIds).findList();
         if (ToolUtil.isEmpty(tagList)) {
             return;
         }
-        Map<String, List<Tag>> tagMap   = tagList.parallelStream().collect(Collectors.groupingBy(Tag::getSid));
-        String                 describe = tdEngineRest.executeSql("DESCRIBE history;");
+        Map<String, List<Tag>> tagMap = tagList.parallelStream().collect(Collectors.groupingBy(Tag::getSid));
+
+        ForestResponse<String> res_history = tdEngineRest.executeSql("DESCRIBE history;");
+        if (res_history.isError()) {
+            return;
+        }
+
+        String describe = res_history.getContent();
 
         TaosResponseData taosResponseData = JSON.parseObject(describe, TaosResponseData.class);
-        String[][]       data             = taosResponseData.getData();
+        String[][] data = taosResponseData.getData();
 
         List<String> taosTagNames = new ArrayList<>();
         for (String[] datum : data) {
@@ -82,16 +89,14 @@ public class SyncTaosTagSchedule {
     }
 
     private void delTaosTag(List<String> list1, List<String> list2) {
-        List<String> tagNames     = list2;
-        List<String> taosTagNames = list1;
 
-        taosTagNames.removeAll(tagNames);
+        list1.removeAll(list2);
 
-        if (ToolUtil.isEmpty(taosTagNames)) {
+        if (ToolUtil.isEmpty(list1)) {
             return;
         }
 
-        taosTagNames.forEach(tagName -> {
+        list1.forEach(tagName -> {
             if ("deviceid".equals(tagName) || "itemid".equals(tagName)) {
                 return;
             }
@@ -101,15 +106,13 @@ public class SyncTaosTagSchedule {
     }
 
     private void addTaosTag(List<String> list1, List<String> list2) {
-        List<String> tagNames     = list1;
-        List<String> taosTagNames = list2;
 
-        tagNames.removeAll(taosTagNames);
-        if (ToolUtil.isEmpty(tagNames)) {
+        list1.removeAll(list2);
+        if (ToolUtil.isEmpty(list1)) {
             return;
         }
 
-        tagNames.forEach(tagName -> {
+        list1.forEach(tagName -> {
             tdEngineRest.executeSql("ALTER STABLE history_uint ADD TAG " + tagName + " NCHAR(16)");
             tdEngineRest.executeSql("ALTER STABLE history ADD TAG " + tagName + " NCHAR(16)");
         });
