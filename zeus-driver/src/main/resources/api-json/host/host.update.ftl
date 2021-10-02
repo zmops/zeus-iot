@@ -2,8 +2,7 @@
     "jsonrpc": "2.0",
     "method": "host.update",
     "params": {
-        "hostid":"${hostid}"
-        "host": "${hostName}",
+        "hostid":"${hostid}",
         "groups": [
             <#if groupids??>
                 <#list groupids as groupid>

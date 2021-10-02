@@ -2,7 +2,7 @@
     "jsonrpc": "2.0",
     "method": "host.get",
     "params": {
-        <#if groupids??>
+        <#if host??>
             "filter": {
                 "host":${host}
             },
