@@ -98,10 +98,7 @@ public class SysUserController {
     @RequestMapping("/reset")
     @BussinessLog(value = "重置密码")
     public ResponseData reset(@RequestParam("userId") Long userId) {
-        SysUser user = new QSysUser().userId.eq(userId).findOne();
-        user.setSalt(SaltUtil.getRandomSalt());
-        user.setPassword(SaltUtil.md5Encrypt(ConstantsContext.getDefaultPassword(), user.getSalt()));
-        DB.update(user);
+        sysUserService.reset(userId);
         return ResponseData.success();
     }
 }

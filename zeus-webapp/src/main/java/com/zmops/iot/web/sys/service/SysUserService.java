@@ -220,10 +220,11 @@ public class SysUserService implements CommandLineRunner {
             throw new ServiceException(AuthExceptionEnum.NOT_LOGIN_ERROR);
         }
         SysUser user = new QSysUser().userId.eq(loginUser.getId()).findOne();
-
+        String rawNewPasswd="";
         try {
             oldPassword = new String(Hex.decodeHex(oldPassword));
             newPassword = new String(Hex.decodeHex(newPassword));
+            rawNewPasswd = newPassword;
         } catch (Exception e) {
             throw new ServiceException(BizExceptionEnum.PWD_DECRYPT_ERR);
         }
@@ -234,6 +235,8 @@ public class SysUserService implements CommandLineRunner {
             newPassword = SaltUtil.md5Encrypt(newPassword, user.getSalt());
             user.setPassword(newPassword);
             DB.update(user);
+
+            zbxUser.updatePwd(user.getZbxId(),rawNewPasswd);
         } else {
             throw new ServiceException(BizExceptionEnum.OLD_PWD_NOT_RIGHT);
         }
@@ -246,5 +249,15 @@ public class SysUserService implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         updateUserCache();
+    }
+
+
+    public void reset(Long userId) {
+        SysUser user = new QSysUser().userId.eq(userId).findOne();
+        user.setSalt(SaltUtil.getRandomSalt());
+        user.setPassword(SaltUtil.md5Encrypt(ConstantsContext.getDefaultPassword(), user.getSalt()));
+        DB.update(user);
+
+        zbxUser.updatePwd(user.getZbxId(),ConstantsContext.getDefaultPassword());
     }
 }

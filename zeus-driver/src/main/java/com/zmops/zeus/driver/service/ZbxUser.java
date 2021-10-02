@@ -69,4 +69,15 @@ public interface ZbxUser {
     @Post
     @JsonPath("/user/userDelete")
     String userDelete(@ParamName("usrids") List<String> usrids);
+
+    /**
+     * 用户修改密码
+     *
+     * @param userId   用户id
+     * @param passwd 用户组ID
+     * @return 用户信息
+     */
+    @Post
+    @JsonPath("/user/userUpdatePwd")
+    String updatePwd(@ParamName("userId") String userId, @ParamName("passwd") String passwd);
 }
