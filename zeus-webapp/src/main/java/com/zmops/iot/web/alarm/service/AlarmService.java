@@ -164,7 +164,7 @@ public class AlarmService {
     public List<AlarmDto> getEventList(AlarmParam alarmParam) {
         String hostId = null;
         Assert.state(ToolUtil.isNotEmpty(alarmParam.getDeviceId()), "设备ID不能为空");
-        List<ZbxProblemInfo> problemList = getZbxAlarm(alarmParam);
+        List<ZbxProblemInfo> problemList = getEventProblem(alarmParam);
         if (ToolUtil.isEmpty(problemList)) {
             return Collections.emptyList();
         }
