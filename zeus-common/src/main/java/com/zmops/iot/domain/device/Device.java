@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 /**
  * @author yefei
@@ -38,6 +39,8 @@ public class Device extends BaseEntity {
     private String position;
 
     private Integer online;
+
+    private LocalDateTime latestOnline;
 
     @Aggregation("count(*)")
     Long totalCount;

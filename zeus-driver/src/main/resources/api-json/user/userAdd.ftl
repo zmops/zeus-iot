@@ -5,6 +5,7 @@
         "username": "${name}",
         "passwd": "${password}",
         "roleid": "${roleId}",
+        "autologout":"0s",
         "usrgrps": [
             {
             "usrgrpid": "${usrGrpId}"

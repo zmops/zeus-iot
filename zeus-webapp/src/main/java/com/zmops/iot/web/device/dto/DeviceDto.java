@@ -68,4 +68,6 @@ public class DeviceDto {
 
     private Integer online;
 
+    private LocalDateTime latestOnline;
+
 }

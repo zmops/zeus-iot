@@ -10,6 +10,7 @@ import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 /**
@@ -39,7 +40,7 @@ public class DeviceOnlineWorker implements IWorker<Map<String, String>, Boolean>
             status = 1;
         }
         DB.update(Device.class).where().eq("deviceId", device.getDeviceId()).asUpdate()
-                .set("online", status).update();
+                .set("online", status).set("latestOnline", LocalDateTime.now()).update();
 
         return true;
     }
