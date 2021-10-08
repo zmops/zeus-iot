@@ -18,6 +18,7 @@ import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.sys.dto.UserDto;
 import com.zmops.iot.web.sys.dto.param.UserParam;
 import com.zmops.iot.web.sys.factory.UserFactory;
+import com.zmops.zeus.driver.entity.ZbxUserInfo;
 import com.zmops.zeus.driver.service.ZbxUser;
 import io.ebean.DB;
 import io.ebean.DtoQuery;
@@ -177,8 +178,14 @@ public class SysUserService implements CommandLineRunner {
             throw new ServiceException(BizExceptionEnum.USER_NOT_EXIST);
         }
         List<String> zbxIds = list.parallelStream().map(SysUser::getZbxId).collect(Collectors.toList());
-        zbxUser.userDelete(zbxIds);
 
+        //删除 zbx 用户数据
+        if (ToolUtil.isNotEmpty(zbxIds)) {
+            List<ZbxUserInfo> zbxUserList = JSONObject.parseArray(zbxUser.getUser(zbxIds.toString()), ZbxUserInfo.class);
+            if (ToolUtil.isNotEmpty(zbxUserList)) {
+                zbxUser.userDelete(zbxUserList.parallelStream().map(ZbxUserInfo::getUserid).collect(Collectors.toList()));
+            }
+        }
         new QSysUser().userId.in(user.getUserIds()).delete();
         updateUserCache();
     }
@@ -219,8 +226,8 @@ public class SysUserService implements CommandLineRunner {
         if (null == loginUser) {
             throw new ServiceException(AuthExceptionEnum.NOT_LOGIN_ERROR);
         }
-        SysUser user = new QSysUser().userId.eq(loginUser.getId()).findOne();
-        String rawNewPasswd="";
+        SysUser user         = new QSysUser().userId.eq(loginUser.getId()).findOne();
+        String  rawNewPasswd = "";
         try {
             oldPassword = new String(Hex.decodeHex(oldPassword));
             newPassword = new String(Hex.decodeHex(newPassword));
@@ -236,7 +243,7 @@ public class SysUserService implements CommandLineRunner {
             user.setPassword(newPassword);
             DB.update(user);
 
-            zbxUser.updatePwd(user.getZbxId(),rawNewPasswd);
+            zbxUser.updatePwd(user.getZbxId(), rawNewPasswd);
         } else {
             throw new ServiceException(BizExceptionEnum.OLD_PWD_NOT_RIGHT);
         }
@@ -258,6 +265,6 @@ public class SysUserService implements CommandLineRunner {
         user.setPassword(SaltUtil.md5Encrypt(ConstantsContext.getDefaultPassword(), user.getSalt()));
         DB.update(user);
 
-        zbxUser.updatePwd(user.getZbxId(),ConstantsContext.getDefaultPassword());
+        zbxUser.updatePwd(user.getZbxId(), ConstantsContext.getDefaultPassword());
     }
 }

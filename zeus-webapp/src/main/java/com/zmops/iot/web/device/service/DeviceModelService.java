@@ -270,7 +270,12 @@ public class DeviceModelService {
 
         List<String> zbxIds = new QProductAttribute().select(QProductAttribute.alias().zbxId).attrId.in(productAttr.getAttrIds()).findSingleAttributeList();
         //删除zbx item
-        zbxItem.deleteTrapperItem(zbxIds);
+        if (ToolUtil.isNotEmpty(zbxIds)) {
+            List<ZbxItemInfo> itemInfos = JSONObject.parseArray(zbxItem.getItemInfo(zbxIds.toString(), null), ZbxItemInfo.class);
+            if (ToolUtil.isNotEmpty(itemInfos)) {
+                zbxItem.deleteTrapperItem(itemInfos.parallelStream().map(ZbxItemInfo::getItemid).collect(Collectors.toList()));
+            }
+        }
 
         //删除 属性
         new QProductAttribute().attrId.in(productAttr.getAttrIds()).delete();

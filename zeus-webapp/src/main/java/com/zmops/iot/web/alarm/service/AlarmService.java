@@ -192,13 +192,18 @@ public class AlarmService {
 
     public List<ZbxProblemInfo> getEventProblem(AlarmParam alarmParam) {
         String hostId = null;
-        if (null != alarmParam.getDeviceId()) {
-            Device one = new QDevice().deviceId.eq(alarmParam.getDeviceId()).findOne();
-            if (null == one) {
-                return Collections.EMPTY_LIST;
-            }
-            hostId = one.getZbxId();
+        List<String> deviceIds;
+        if (ToolUtil.isNotEmpty(alarmParam.getDeviceId())) {
+            deviceIds = Collections.singletonList(alarmParam.getDeviceId());
+        } else {
+            deviceIds = deviceService.getDeviceIds();
         }
+
+        List<String> zbxIds = new QDevice().select(QDevice.alias().zbxId).deviceId.in(deviceIds).findSingleAttributeList();
+        if (ToolUtil.isEmpty(zbxIds)) {
+            return Collections.EMPTY_LIST;
+        }
+        hostId = zbxIds.toString();
         //从zbx取告警记录
         String problem = zbxProblem.getEventProblem(hostId, alarmParam.getTimeFrom(), alarmParam.getTimeTill(), alarmParam.getRecent());
         return JSONObject.parseArray(problem, ZbxProblemInfo.class);

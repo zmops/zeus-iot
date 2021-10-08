@@ -14,6 +14,7 @@ import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.dto.DeviceGroupDto;
 import com.zmops.iot.web.device.dto.param.DeviceGroupParam;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
+import com.zmops.zeus.driver.entity.ZbxHostGrpInfo;
 import com.zmops.zeus.driver.service.ZbxHostGroup;
 import io.ebean.DB;
 import io.ebean.PagedList;
@@ -178,7 +179,12 @@ public class DeviceGroupService {
 
         //删除ZBX中主机组
         List<String> zbxHostGrpIds = list.parallelStream().map(DeviceGroup::getZbxId).collect(Collectors.toList());
-        zbxHostGroup.hostGroupDelete(zbxHostGrpIds);
+        if (ToolUtil.isNotEmpty(zbxHostGrpIds)) {
+            List<ZbxHostGrpInfo> zbxHostGrpInfos = JSONObject.parseArray(zbxHostGroup.getHostGroup(zbxHostGrpIds.toString()), ZbxHostGrpInfo.class);
+            if (ToolUtil.isNotEmpty(zbxHostGrpInfos)) {
+                zbxHostGroup.hostGroupDelete(zbxHostGrpInfos.parallelStream().map(ZbxHostGrpInfo::getGroupid).collect(Collectors.toList()));
+            }
+        }
 
 
         // 删除 与用户组关联

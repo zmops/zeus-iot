@@ -1,6 +1,7 @@
 package com.zmops.iot.web.device.controller;
 
 import cn.hutool.core.util.IdUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.domain.product.ProductEvent;
 import com.zmops.iot.domain.product.ProductEventRelation;
@@ -23,9 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -210,6 +209,14 @@ public class DeviceEventTriggerController {
         if (InheritStatus.YES.getCode().equals(productEventRelation.getInherit())) {
             throw new ServiceException(BizExceptionEnum.EVENT_PRODUCT_CANNOT_DELETE);
         }
+        //step 01:删除 zbx触发器
+        if(ToolUtil.isNotEmpty(productEventRelation.getZbxId())){
+            List<DeviceEventRuleService.Triggers> triggers = JSONObject.parseArray(zbxTrigger.triggerGet(productEventRelation.getZbxId()), DeviceEventRuleService.Triggers.class);
+            if(ToolUtil.isNotEmpty(triggers)) {
+                zbxTrigger.triggerDelete(productEventRelation.getZbxId());
+            }
+        }
+
 
         //step 1:删除 与设备的关联
         new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId()).delete();
@@ -223,8 +230,7 @@ public class DeviceEventTriggerController {
         //step 4:删除 触发器
         new QProductEvent().eventRuleId.eq(eventRule.getEventRuleId()).delete();
 
-        //step 5:删除 zbx触发器
-        zbxTrigger.triggerDelete(productEventRelation.getZbxId());
+
 
         return ResponseData.success();
     }

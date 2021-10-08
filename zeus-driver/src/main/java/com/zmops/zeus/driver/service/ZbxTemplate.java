@@ -59,6 +59,15 @@ public interface ZbxTemplate {
      * @param templateid 模板ID
      */
     @Post
-    @JsonPath("/template/template.get")
+    @JsonPath("/template/template.detail.get")
     String templateDetail(@ParamName("templateid") String templateid);
+
+    /**
+     * 查询模板信息
+     *
+     * @param templateid 模板ID
+     */
+    @Post
+    @JsonPath("/template/template.get")
+    String templateGet(@ParamName("templateid") String templateid);
 }

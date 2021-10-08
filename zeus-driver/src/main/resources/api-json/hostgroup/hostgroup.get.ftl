@@ -1,9 +1,9 @@
 {
     "jsonrpc": "2.0",
-    "method": "usergroup.get",
+    "method": "hostgroup.get",
     "params": {
         "output": "extend",
-        "usrgrpids": ${usrgrpids}
+        "groupids": ${groupids}
     },
     "auth": "${userAuth}",
     "id": 1

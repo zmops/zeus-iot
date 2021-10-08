@@ -245,7 +245,7 @@ public class DeviceService {
 
         WorkerWrapper<DeviceDto, String> saveZbxHostWork = WorkerWrapper.<DeviceDto, String>builder().id("saveZbxHostWork")
                 .worker(saveZbxHostWorker).param(deviceDto)
-                .nextOf(updateAttrZbxIdWork, updateDeviceZbxIdWork,saveOtherWork)
+                .nextOf(updateAttrZbxIdWork, updateDeviceZbxIdWork, saveOtherWork)
                 .build();
 
         WorkerWrapper<DeviceDto, Device> deviceWork = WorkerWrapper.<DeviceDto, Device>builder().id("saveDvice")
@@ -354,7 +354,12 @@ public class DeviceService {
 
         WorkerWrapper<String, Boolean> delZbxWork = WorkerWrapper.<String, Boolean>builder().id("delZbxWork")
                 .worker((zbxid, allWrappers) -> {
-                    zbxHost.hostDelete(Collections.singletonList(zbxid));
+                    if (ToolUtil.isNotEmpty(zbxid)) {
+                        JSONArray jsonArray = JSONObject.parseArray(zbxHost.hostDetail(zbxId));
+                        if (jsonArray.size() > 0) {
+                            zbxHost.hostDelete(Collections.singletonList(zbxid));
+                        }
+                    }
                     return true;
                 }).param(zbxId).build();
 

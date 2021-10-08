@@ -17,6 +17,7 @@ import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.sys.dto.UserGroupDto;
 import com.zmops.iot.web.sys.dto.param.UserGroupParam;
+import com.zmops.zeus.driver.entity.ZbxUserGrpInfo;
 import com.zmops.zeus.driver.service.ZbxUserGroup;
 import io.ebean.DB;
 import io.ebean.DtoQuery;
@@ -164,8 +165,14 @@ public class SysUserGroupService {
         }
 
         List<String> zbxUsrGrpIds = list.parallelStream().map(SysUserGroup::getZbxId).collect(Collectors.toList());
-        zbxUserGroup.userGrpDelete(zbxUsrGrpIds);
 
+        //删除 zbx 用户组数据
+        if (ToolUtil.isNotEmpty(zbxUsrGrpIds)) {
+            List<ZbxUserGrpInfo> zbxUserGrpList = JSONObject.parseArray(zbxUserGroup.getUserGrp(zbxUsrGrpIds.toString()), ZbxUserGrpInfo.class);
+            if (ToolUtil.isNotEmpty(zbxUserGrpList)) {
+                zbxUserGroup.userGrpDelete(zbxUserGrpList.parallelStream().map(ZbxUserGrpInfo::getUsrgrpid).collect(Collectors.toList()));
+            }
+        }
         // 删除 与设备组关联
         new QSysUserGrpDevGrp().userGroupId.in(userGroupParam.getUserGroupIds()).delete();
         new QSysUserGroup().userGroupId.in(userGroupParam.getUserGroupIds()).delete();
@@ -181,7 +188,7 @@ public class SysUserGroupService {
         }
         return usrGrp.getZbxId();
     }
- 
+
     /**
      * 用户组绑定设备组
      *

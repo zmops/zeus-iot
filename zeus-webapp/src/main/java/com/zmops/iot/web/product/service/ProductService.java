@@ -120,7 +120,12 @@ public class ProductService {
      * @return
      */
     public String zbxTemplateDelete(String templdateId) {
-        return zbxTemplate.templateDelete(templdateId);
+
+        JSONArray jsonArray = JSONObject.parseArray(zbxTemplate.templateGet(templdateId));
+        if (jsonArray.size() > 0) {
+            zbxTemplate.templateDelete(templdateId);
+        }
+        return templdateId;
     }
 
     /**

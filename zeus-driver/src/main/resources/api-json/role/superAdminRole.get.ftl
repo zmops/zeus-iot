@@ -1,9 +1,11 @@
 {
     "jsonrpc": "2.0",
-    "method": "usergroup.get",
+    "method": "role.get",
     "params": {
         "output": "extend",
-        "usrgrpids": ${usrgrpids}
+        "filter": {
+            "name":"Super admin role"
+        }
     },
     "auth": "${userAuth}",
     "id": 1

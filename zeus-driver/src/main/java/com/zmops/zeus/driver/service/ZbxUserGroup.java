@@ -53,4 +53,8 @@ public interface ZbxUserGroup {
     @JsonPath("/usergroup/userGroupBindHostGroup")
     String userGrpBindHostGroup(@ParamName("hostGroupIds") List<String> hostGroupIds,
                                 @ParamName("userGroupId") String userGroupId);
+
+    @Post
+    @JsonPath("/usergroup/userGroupGet")
+    String getUserGrp(@ParamName("usrgrpids")  String usrgrpids);
 }

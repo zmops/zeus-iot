@@ -23,6 +23,7 @@ import com.zmops.iot.web.product.service.work.AsyncAttrEventZbxIdWorker;
 import com.zmops.iot.web.product.service.work.SaveProdAttrEventTriggerWorker;
 import com.zmops.iot.web.product.service.work.SaveProdAttrEventWorker;
 import com.zmops.iot.web.product.service.work.UpdateAttributeEventWorker;
+import com.zmops.zeus.driver.entity.ZbxItemInfo;
 import com.zmops.zeus.driver.entity.ZbxProcessingStep;
 import com.zmops.zeus.driver.service.ZbxItem;
 import io.ebean.DB;
@@ -280,7 +281,12 @@ public class ProductAttributeEventService {
 
         List<String> zbxIds = new QProductAttributeEvent().select(QProductAttributeEvent.alias().zbxId).attrId.in(productAttr.getAttrIds()).findSingleAttributeList();
         //删除zbx item
-        zbxItem.deleteTrapperItem(zbxIds);
+        if (ToolUtil.isNotEmpty(zbxIds)) {
+            List<ZbxItemInfo> itemInfos = JSONObject.parseArray(zbxItem.getItemInfo(zbxIds.toString(), null), ZbxItemInfo.class);
+            if (ToolUtil.isNotEmpty(itemInfos)) {
+                zbxItem.deleteTrapperItem(itemInfos.parallelStream().map(ZbxItemInfo::getItemid).collect(Collectors.toList()));
+            }
+        }
 
         //删除 属性
         new QProductAttributeEvent().attrId.in(productAttr.getAttrIds()).delete();

@@ -168,11 +168,10 @@ public class HomeService {
     public Map<String, Object> getDeviceNum(Integer timeFrom, Integer timeTill) {
         Map<String, Object> deviceNumMap = new HashMap<>(4);
 
-        deviceNumMap.put("online", 0);
-
         List<Device> list = new QDevice().findList();
         deviceNumMap.put("total", list.size());
         deviceNumMap.put("disable", (int) list.parallelStream().filter(o -> "DISABLE".equals(o.getStatus())).count());
+        deviceNumMap.put("online", (int) list.parallelStream().filter(o -> "1".equals(o.getOnline())).count());
         deviceNumMap.put("product", new QProduct().findCount());
 
         List<DeviceOnlineReport> onLineList = new QDeviceOnlineReport()

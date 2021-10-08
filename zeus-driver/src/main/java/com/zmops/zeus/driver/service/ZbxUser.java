@@ -80,4 +80,13 @@ public interface ZbxUser {
     @Post
     @JsonPath("/user/userUpdatePwd")
     String updatePwd(@ParamName("userId") String userId, @ParamName("passwd") String passwd);
+
+    /**
+     * 用户查询
+     *
+     * @return
+     */
+    @Post
+    @JsonPath("/user/getUser")
+    String getUser(@ParamName("userIds") String userIds);
 }
