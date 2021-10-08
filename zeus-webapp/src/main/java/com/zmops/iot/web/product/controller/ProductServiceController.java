@@ -30,7 +30,7 @@ public class ProductServiceController {
      * 服务分页列表
      */
     @RequestMapping("/getServiceByPage")
-    public Pager<ProductServiceDto> getServiceByPage(@RequestBody ProductSvcParam productSvcParam) {
+    public Pager<ProductServiceDto> getServiceByPage(@Validated @RequestBody ProductSvcParam productSvcParam) {
         return productSvcService.getServiceByPage(productSvcParam);
     }
 
@@ -38,7 +38,7 @@ public class ProductServiceController {
      * 服务列表
      */
     @RequestMapping("/list")
-    public ResponseData list(@RequestBody ProductSvcParam productSvcParam) {
+    public ResponseData list(@Validated @RequestBody ProductSvcParam productSvcParam) {
         return ResponseData.success(productSvcService.list(productSvcParam));
     }
 
