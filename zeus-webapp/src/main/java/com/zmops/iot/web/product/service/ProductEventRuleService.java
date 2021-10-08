@@ -155,7 +155,6 @@ public class ProductEventRuleService {
 
     private ProductEventExpression initEventExpression(ProductEventRule.Expression exp) {
         ProductEventExpression eventExpression = new ProductEventExpression();
-        eventExpression.setEventExpId(exp.getEventExpId());
         eventExpression.setCondition(exp.getCondition());
         eventExpression.setFunction(exp.getFunction());
         eventExpression.setScope(exp.getScope());
