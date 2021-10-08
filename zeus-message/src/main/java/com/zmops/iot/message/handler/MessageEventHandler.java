@@ -82,14 +82,18 @@ public class MessageEventHandler {
     public void sendDisconnectMsg(String userId) {
         if (userClient.findByUserId(userId).isPresent()) {
             UUID uuid = userClient.findByUserId(userId).get();
-            server.getClient(uuid).sendEvent(Event.CHAT, "disconnect");
+            BroadcastMessageRequest message = new BroadcastMessageRequest();
+            message.setMessage("disconnect");
+            server.getClient(uuid).sendEvent(Event.CHAT, message);
         }
     }
 
     public void sendToUser(String userId,String msg) {
         if (userClient.findByUserId(userId).isPresent()) {
             UUID uuid = userClient.findByUserId(userId).get();
-            server.getClient(uuid).sendEvent(Event.CHAT, msg);
+            BroadcastMessageRequest message = new BroadcastMessageRequest();
+            message.setMessage(msg);
+            server.getClient(uuid).sendEvent(Event.CHAT, message);
         }
     }
 
