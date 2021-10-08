@@ -78,13 +78,13 @@ public class AlarmService {
                 .skip((alarmParam.getPage() - 1) * alarmParam.getMaxRow())
                 .limit(alarmParam.getMaxRow()).collect(Collectors.toList());
         if (ToolUtil.isEmpty(problemList)) {
-            return new Pager<>(Collections.emptyList(),zbxProblemInfos.size());
+            return new Pager<>(Collections.emptyList(), zbxProblemInfos.size());
         }
         //根据triggerid查询出 所属设备
         List<String> triggerIds = problemList.parallelStream().map(ZbxProblemInfo::getObjectid).collect(Collectors.toList());
-        List<DeviceDto> deviceList = DB.findDto(DeviceDto.class, "select name,r.zbx_id from device d INNER JOIN (select relation_id,zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.relation_id=d.device_id")
+        List<DeviceDto> deviceList = DB.findDto(DeviceDto.class, "select name,device_id,r.zbx_id from device d INNER JOIN (select relation_id,zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.relation_id=d.device_id")
                 .setParameter("zbxIds", triggerIds).findList();
-        Map<String, String> deviceMap = deviceList.parallelStream().collect(Collectors.toMap(DeviceDto::getZbxId, DeviceDto::getName));
+        Map<String, DeviceDto> deviceMap = deviceList.parallelStream().collect(Collectors.toMap(DeviceDto::getZbxId, o -> o));
 
         List<ProductEventRuleDto> ruleList = DB.findDto(ProductEventRuleDto.class, "select event_rule_name,r.zbx_id from product_event d INNER JOIN (select event_rule_id,zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.event_rule_id=d.event_rule_id")
                 .setParameter("zbxIds", triggerIds).findList();
@@ -102,7 +102,8 @@ public class AlarmService {
             alarmDto.setStatus("0".equals(zbxProblemInfo.getR_clock()) ? "未解决" : "已解决");
             alarmDto.setAcknowledged("0".equals(zbxProblemInfo.getAcknowledged()) ? "未确认" : "已确认");
             if (null != deviceMap.get(zbxProblemInfo.getObjectid())) {
-                alarmDto.setDeviceName(deviceMap.get(zbxProblemInfo.getObjectid()));
+                alarmDto.setDeviceName(deviceMap.get(zbxProblemInfo.getObjectid()).getName());
+                alarmDto.setDeviceId(deviceMap.get(zbxProblemInfo.getObjectid()).getDeviceId());
             }
             if (null != ruleMap.get(zbxProblemInfo.getObjectid())) {
                 alarmDto.setName(ruleMap.get(zbxProblemInfo.getObjectid()));
@@ -110,7 +111,7 @@ public class AlarmService {
             alarmDtoList.add(alarmDto);
         });
 
-        return new Pager<>(alarmDtoList,zbxProblemInfos.size());
+        return new Pager<>(alarmDtoList, zbxProblemInfos.size());
     }
 
     public List<AlarmDto> getAlarmList(AlarmParam alarmParam) {
@@ -190,7 +191,7 @@ public class AlarmService {
     }
 
     public List<ZbxProblemInfo> getEventProblem(AlarmParam alarmParam) {
-        String hostId = null;
+        String       hostId = null;
         List<String> deviceIds;
         if (ToolUtil.isNotEmpty(alarmParam.getDeviceId())) {
             deviceIds = Collections.singletonList(alarmParam.getDeviceId());

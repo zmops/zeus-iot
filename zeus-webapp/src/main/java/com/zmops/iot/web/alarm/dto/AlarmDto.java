@@ -28,4 +28,6 @@ public class AlarmDto {
     private String status;
 
     private String acknowledged;
+
+    private String deviceId;
 }
