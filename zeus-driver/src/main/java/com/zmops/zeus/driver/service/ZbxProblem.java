@@ -36,5 +36,5 @@ public interface ZbxProblem {
 
     @Post
     @JsonPath("/problem/problem.acknowledgement")
-    void acknowledgement(@ParamName("eventId") String  eventId,@ParamName("action") int  action);
+    String acknowledgement(@ParamName("eventId") String  eventId,@ParamName("action") int  action);
 }
