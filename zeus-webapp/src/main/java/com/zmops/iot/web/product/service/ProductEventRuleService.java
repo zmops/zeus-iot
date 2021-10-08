@@ -135,7 +135,7 @@ public class ProductEventRuleService {
 
         //step 6:保存备注
         if (null != eventRule.getRemark()) {
-            DB.update(QProductEventRelation.class).where().eq("eventRuleId", eventRule.getEventRuleId()).eq("relationId", eventRule.getProductId())
+            DB.update(ProductEventRelation.class).where().eq("eventRuleId", eventRule.getEventRuleId()).eq("relationId", eventRule.getProductId())
                     .asUpdate().set("remark", eventRule.getRemark()).update();
         }
 

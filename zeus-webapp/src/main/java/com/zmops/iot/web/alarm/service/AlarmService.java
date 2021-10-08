@@ -110,7 +110,7 @@ public class AlarmService {
             alarmDtoList.add(alarmDto);
         });
 
-        return new Pager<>(Collections.emptyList(),zbxProblemInfos.size());
+        return new Pager<>(alarmDtoList,zbxProblemInfos.size());
     }
 
     public List<AlarmDto> getAlarmList(AlarmParam alarmParam) {

@@ -159,11 +159,8 @@ public class ProductController {
 
 
         //第二步：删除Zabbix对应的模板
-        String response   = productService.zbxTemplateDelete(product.getZbxId() + "");
-        String templateId = JSON.parseObject(response, TemplateIds.class).getTemplateids()[0];
-        if (templateId.equals(product.getZbxId())) {
-            log.info("产品模板删除成功，ID：{}", templateId);
-        }
+        productService.zbxTemplateDelete(product.getZbxId() + "");
+
 
 
         //第三步：删除产品

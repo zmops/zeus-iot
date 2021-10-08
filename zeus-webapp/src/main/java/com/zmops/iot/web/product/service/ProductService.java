@@ -119,13 +119,12 @@ public class ProductService {
      * @param templdateId 模板ID
      * @return
      */
-    public String zbxTemplateDelete(String templdateId) {
+    public void zbxTemplateDelete(String templdateId) {
 
         JSONArray jsonArray = JSONObject.parseArray(zbxTemplate.templateGet(templdateId));
         if (jsonArray.size() > 0) {
             zbxTemplate.templateDelete(templdateId);
         }
-        return templdateId;
     }
 
     /**

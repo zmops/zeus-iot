@@ -87,6 +87,6 @@ public interface ZbxUser {
      * @return
      */
     @Post
-    @JsonPath("/user/getUser")
-    String getUser(@ParamName("userIds") String userIds);
+    @JsonPath("/user/userGet")
+    String getUser(@ParamName("userids") String userIds);
 }

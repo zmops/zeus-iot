@@ -12,6 +12,7 @@ import com.zmops.iot.domain.product.query.QProductEventExpression;
 import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.enums.CommonStatus;
+import com.zmops.iot.enums.InheritStatus;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
@@ -29,7 +30,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -165,7 +169,7 @@ public class ProductEventTriggerController {
             throw new ServiceException(BizExceptionEnum.EVENT_NOT_EXISTS);
         }
 
-        List<ProductEventRelation> list = new QProductEventRelation().eventRuleId.eq(event.getEventRuleId()).findList();
+        List<ProductEventRelation> list = new QProductEventRelation().eventRuleId.eq(event.getEventRuleId()).inherit.eq(InheritStatus.NO.getCode()).findList();
         if (list.isEmpty()) {
             throw new ServiceException(BizExceptionEnum.EVENT_EXPRESSION_NOT_EXISTS);
         }
@@ -230,9 +234,9 @@ public class ProductEventTriggerController {
             return ResponseData.success();
         }
         //step 01:删除 zbx触发器
-        String s = zbxTrigger.triggerGet(productEventRelation.getZbxId());
+        String                                 s        = zbxTrigger.triggerGet(productEventRelation.getZbxId());
         List<ProductEventRuleService.Triggers> triggers = JSONObject.parseArray(s, ProductEventRuleService.Triggers.class);
-        if(ToolUtil.isNotEmpty(triggers)){
+        if (ToolUtil.isNotEmpty(triggers)) {
             zbxTrigger.triggerDelete(productEventRelation.getZbxId());
         }
 
