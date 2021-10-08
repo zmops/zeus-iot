@@ -29,7 +29,7 @@ public class DeviceOnlineWorker implements IWorker<Map<String, String>, Boolean>
         if (ToolUtil.isEmpty(deviceId)) {
             return false;
         }
-        Device device = new QDevice().deviceId.eq(deviceId).findSingleAttribute();
+        Device device = new QDevice().deviceId.eq(deviceId).findOne();
         if (null == device) {
             return false;
         }
@@ -38,8 +38,8 @@ public class DeviceOnlineWorker implements IWorker<Map<String, String>, Boolean>
         if (ToolUtil.isNotEmpty(recovery) && "RESOLVED".equals(recovery)) {
             status = 1;
         }
-        device.setOnline(status);
-        DB.update(device);
+        DB.update(Device.class).where().eq("deviceId", device.getDeviceId()).asUpdate()
+                .set("online", status).update();
 
         return true;
     }

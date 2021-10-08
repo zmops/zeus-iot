@@ -58,13 +58,12 @@ public class AlarmService {
         if (null != device && null != productEvent) {
             String alarmmessage = "设备:" + device.getName() + "发生告警，告警内容：" + productEvent.getEventRuleName();
             alarmMessages.add(AlarmMessage.builder().alarmMessage(alarmmessage).build());
-        }
-
-        alarmCallbacks.forEach(alarmCallback -> {
+            alarmCallbacks.forEach(alarmCallback -> {
 //            if (alarmCallback.getType().equals("welink")) {
-            alarmCallback.doAlarm(alarmMessages);
+                alarmCallback.doAlarm(alarmMessages);
 //            }
-        });
+            });
+        }
     }
 
 
