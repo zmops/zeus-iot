@@ -36,17 +36,17 @@ public class ZabbixSenderService implements Service {
      *
      * @param message see
      *                https://www.zabbix.com/documentation/current/manual/appendix/items/trapper
-     *                <p>
-     *                {
-     *                "request":"sender data",
-     *                "data":[
-     *                {
-     *                "host":"device.info",
-     *                "key":"device.temp",
-     *                "value":"86"
-     *                }
-     *                ]
-     *                }
+     *
+     * {
+     * 	"request":"sender data",
+     * 	"data":[
+     *      {
+     *          "host":"device.info",
+     *          "key":"device.temp",
+     * 	        "value":"86"
+     *      }
+     * 	]
+     * }
      * @return String
      * @throws IOException ex
      */
@@ -81,6 +81,7 @@ public class ZabbixSenderService implements Service {
 
         int headLength = 13;
         int bRead = 0;
+
         while (true) {
             bRead = resStream.read(response);
             if (bRead <= 0) break;
@@ -106,19 +107,22 @@ public class ZabbixSenderService implements Service {
      * @return String
      */
     private String zabbixResponseToMap(String resp) {
-
         Map<String, String> result = gson.fromJson(resp, Map.class);
-        String[] infos = result.get("info").split(";");
+
+        String info = result.get("info");
+        if (info == null) {
+            return resp;
+        }
+
+        String[] infos = info.split(";");
 
         Map<String, String> resultMap = new HashMap<>();
-
         for (String i : infos) {
             String[] ii = i.split(":");
             resultMap.put(ii[0].trim(), ii[1]);
         }
 
         resultMap.put("response", result.get("response"));
-
         return gson.toJson(resultMap);
     }
 }
