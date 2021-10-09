@@ -68,21 +68,21 @@ public class WeLinkHookCallback implements AlarmCallback {
      */
     @Override
     public void doAlarm(List<AlarmMessage> alarmMessages) {
-        WeLinkSettings weLinkSettings = weLinkSettingService.get();
-        if (weLinkSettings == null || weLinkSettings.getWebhooks().isEmpty()) {
-            return;
-        }
-        weLinkSettings.getWebhooks().forEach(webHookUrl -> {
-            String accessToken = getAccessToken(webHookUrl);
-            alarmMessages.forEach(alarmMessage -> {
-                String content = String.format(
-                        Locale.US,
-                        weLinkSettings.getTextTemplate(),
-                        alarmMessage.getAlarmMessage()
-                );
-                sendAlarmMessage(webHookUrl, accessToken, content);
-            });
-        });
+//        WeLinkSettings weLinkSettings = weLinkSettingService.get();
+//        if (weLinkSettings == null || weLinkSettings.getWebhooks().isEmpty()) {
+//            return;
+//        }
+//        weLinkSettings.getWebhooks().forEach(webHookUrl -> {
+//            String accessToken = getAccessToken(webHookUrl);
+//            alarmMessages.forEach(alarmMessage -> {
+//                String content = String.format(
+//                        Locale.US,
+//                        weLinkSettings.getTextTemplate(),
+//                        alarmMessage.getAlarmMessage()
+//                );
+//                sendAlarmMessage(webHookUrl, accessToken, content);
+//            });
+//        });
     }
 
     /**

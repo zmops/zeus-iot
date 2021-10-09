@@ -73,6 +73,7 @@ public class ProductEventRuleService {
                         .setParameter("eventRuleId", eventRule.getEventRuleId())
                         .setParameter("executeDeviceId", i.getExecuteDeviceId())
                         .setParameter("serviceId", i.getServiceId())
+                        .setParameter("deviceId", eventRule.getProductId())
                         .execute();
             });
         }

@@ -64,27 +64,27 @@ public class WechatHookCallback implements AlarmCallback {
 
     @Override
     public void doAlarm(List<AlarmMessage> alarmMessages) {
-        WechatSettings wechatSettings = wechatSettingService.get();
-        if (wechatSettings == null || wechatSettings.getWebhooks().isEmpty()) {
-            return;
-        }
-        CloseableHttpClient httpClient = HttpClients.custom().build();
-        try {
-            wechatSettings.getWebhooks().forEach(url -> {
-                alarmMessages.forEach(alarmMessage -> {
-                    String requestBody = String.format(
-                            wechatSettings.getTextTemplate(), alarmMessage.getAlarmMessage()
-                    );
-                    sendAlarmMessage(httpClient, url, requestBody);
-                });
-            });
-        } finally {
-            try {
-                httpClient.close();
-            } catch (IOException e) {
-                log.error(e.getMessage(), e);
-            }
-        }
+//        WechatSettings wechatSettings = wechatSettingService.get();
+//        if (wechatSettings == null || wechatSettings.getWebhooks().isEmpty()) {
+//            return;
+//        }
+//        CloseableHttpClient httpClient = HttpClients.custom().build();
+//        try {
+//            wechatSettings.getWebhooks().forEach(url -> {
+//                alarmMessages.forEach(alarmMessage -> {
+//                    String requestBody = String.format(
+//                            wechatSettings.getTextTemplate(), alarmMessage.getAlarmMessage()
+//                    );
+//                    sendAlarmMessage(httpClient, url, requestBody);
+//                });
+//            });
+//        } finally {
+//            try {
+//                httpClient.close();
+//            } catch (IOException e) {
+//                log.error(e.getMessage(), e);
+//            }
+//        }
     }
 
     private void sendAlarmMessage(CloseableHttpClient httpClient, String url, String requestBody) {

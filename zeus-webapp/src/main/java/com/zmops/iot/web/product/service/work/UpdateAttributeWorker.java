@@ -5,11 +5,13 @@ import com.zmops.iot.async.callback.IWorker;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.ProductAttribute;
 import com.zmops.iot.domain.product.query.QProductAttribute;
+import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.product.dto.ProductAttr;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,15 +32,18 @@ public class UpdateAttributeWorker implements IWorker<ProductAttr, Boolean> {
         Long attrId = productAttr.getAttrId();
 
         List<ProductAttribute> list = new QProductAttribute().templateId.eq(attrId).findList();
-
+        List<ProductAttribute> newList = new ArrayList<>();
         for (ProductAttribute productAttribute : list) {
-            productAttribute.setName(productAttr.getAttrName());
-            productAttribute.setKey(productAttr.getKey());
-            productAttribute.setUnits(productAttr.getUnits());
-            productAttribute.setSource(productAttr.getSource());
-            productAttribute.setValueType(productAttr.getValueType());
+            ProductAttribute newProductAttribute = new ProductAttribute();
+            ToolUtil.copyProperties(productAttribute,newProductAttribute);
+            newProductAttribute.setName(productAttr.getAttrName());
+            newProductAttribute.setKey(productAttr.getKey());
+            newProductAttribute.setUnits(productAttr.getUnits());
+            newProductAttribute.setSource(productAttr.getSource());
+            newProductAttribute.setValueType(productAttr.getValueType());
+            newList.add(newProductAttribute);
         }
-        DB.updateAll(list);
+        DB.updateAll(newList);
 
         return true;
     }

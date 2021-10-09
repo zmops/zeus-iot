@@ -85,7 +85,7 @@ public class MessageEventHandler {
             if (null != server.getClient(uuid)) {
                 BroadcastMessageRequest message = new BroadcastMessageRequest();
                 message.setMessage("disconnect");
-                server.getClient(uuid).sendEvent(Event.CHAT, message);
+                server.getClient(uuid).sendEvent(Event.BROADCAST, message);
             }
         }
     }
@@ -96,7 +96,7 @@ public class MessageEventHandler {
             if (null != server.getClient(uuid)) {
                 BroadcastMessageRequest message = new BroadcastMessageRequest();
                 message.setMessage(msg);
-                server.getClient(uuid).sendEvent(Event.CHAT, message);
+                server.getClient(uuid).sendEvent(Event.BROADCAST, message);
             }
         }
     }
