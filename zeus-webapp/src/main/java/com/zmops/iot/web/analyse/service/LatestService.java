@@ -42,25 +42,30 @@ public class LatestService {
     }
 
     public List<LatestDto> qeuryLatest(String deviceId, List<Long> attrIds) {
+
         //查询出设备
         Device one = new QDevice().deviceId.eq(deviceId).findOne();
         if (null == one || ToolUtil.isEmpty(one.getZbxId())) {
             return Collections.emptyList();
         }
+
         //查询设备属性
         QProductAttribute query = new QProductAttribute().productId.eq(deviceId);
         if (ToolUtil.isNotEmpty(attrIds)) {
             query.attrId.in(attrIds);
         }
+
         List<ProductAttribute> list = query.findList();
         if (ToolUtil.isEmpty(list)) {
             return Collections.emptyList();
         }
+
         //取出属性对应的ItemID
-        List<String>                        zbxIds       = list.parallelStream().map(ProductAttribute::getZbxId).collect(Collectors.toList());
+        List<String> zbxIds = list.parallelStream().map(ProductAttribute::getZbxId).collect(Collectors.toList());
         Map<String, List<ProductAttribute>> valueTypeMap = list.parallelStream().collect(Collectors.groupingBy(ProductAttribute::getValueType));
-        Map<String, ProductAttribute>       itemIdMap    = list.parallelStream().collect(Collectors.toMap(ProductAttribute::getZbxId, o -> o));
-        List<LatestDto>                     latestDtos   = new ArrayList<>();
+        Map<String, ProductAttribute> itemIdMap = list.parallelStream().collect(Collectors.toMap(ProductAttribute::getZbxId, o -> o));
+        List<LatestDto> latestDtos = new ArrayList<>();
+
         //根据属性值类型 分组查询最新数据
         for (Map.Entry<String, List<ProductAttribute>> map : valueTypeMap.entrySet()) {
             String res = zbxHistoryGet.historyGet(one.getZbxId(), zbxIds, map.getValue().size(), Integer.parseInt(map.getKey()), null, null);
