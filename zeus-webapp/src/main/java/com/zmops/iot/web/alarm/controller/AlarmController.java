@@ -22,11 +22,6 @@ public class AlarmController {
     @Autowired
     AlarmService alarmService;
 
-    //    @RequestMapping("/test")
-//    public void test() {
-//        alarmService.test();
-//    }
-
     @Permission(code = "alarmList")
     @RequestMapping("/getAlarmByPage")
     public Pager<AlarmDto> getAlarmByPage(@RequestBody AlarmParam alarmParam) {
