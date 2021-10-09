@@ -77,7 +77,6 @@ public class ProductEventRule {
     // 告警表达式 构成
     public static class Expression {
 
-        @NotNull(groups = BaseEntity.Update.class)
         private Long eventExpId;
 
         @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
