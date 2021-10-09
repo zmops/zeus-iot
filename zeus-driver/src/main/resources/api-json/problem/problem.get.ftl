@@ -17,6 +17,9 @@
         <#if timeTill??>
             "time_till":${timeTill},
         </#if>
+        <#if severity??>
+            "severities":${severity},
+        </#if>
         "evaltype":2,
         "tags":[{"tag": "__alarm__"},{"tag": "__execute__"}],
         "filter":{

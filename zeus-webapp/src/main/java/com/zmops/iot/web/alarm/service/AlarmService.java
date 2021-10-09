@@ -73,6 +73,13 @@ public class AlarmService {
         if (ToolUtil.isEmpty(zbxProblemInfos)) {
             return new Pager<>();
         }
+        if (ToolUtil.isNotEmpty(alarmParam.getStatusName()) && "已解决".equals(alarmParam.getStatusName())) {
+            zbxProblemInfos = zbxProblemInfos.parallelStream().filter(o -> !"0".equals(o.getR_clock())).collect(Collectors.toList());
+        }
+
+        if (ToolUtil.isNotEmpty(alarmParam.getStatusName()) && "未解决".equals(alarmParam.getStatusName())) {
+            zbxProblemInfos = zbxProblemInfos.parallelStream().filter(o -> "0".equals(o.getR_clock())).collect(Collectors.toList());
+        }
         //分页
         List<ZbxProblemInfo> problemList = zbxProblemInfos.stream()
                 .skip((alarmParam.getPage() - 1) * alarmParam.getMaxRow())
@@ -157,7 +164,7 @@ public class AlarmService {
         }
         hostId = zbxIds.toString();
         //从zbx取告警记录
-        String problem = zbxProblem.getProblem(hostId, alarmParam.getTimeFrom(), alarmParam.getTimeTill(), alarmParam.getRecent());
+        String problem = zbxProblem.getProblem(hostId, alarmParam.getTimeFrom(), alarmParam.getTimeTill(), alarmParam.getRecent(), alarmParam.getSeverity());
         return JSONObject.parseArray(problem, ZbxProblemInfo.class);
     }
 

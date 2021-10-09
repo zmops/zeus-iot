@@ -25,7 +25,8 @@ public interface ZbxProblem {
     String getProblem(@ParamName("hostId") String hostId,
                       @ParamName("timeFrom") Long timeFrom,
                       @ParamName("timeTill") Long timeTill,
-                      @ParamName("recent") String recent);
+                      @ParamName("recent") String recent,
+                      @ParamName("severity") String severity);
 
     @Post
     @JsonPath("/problem/problem.event.get")
