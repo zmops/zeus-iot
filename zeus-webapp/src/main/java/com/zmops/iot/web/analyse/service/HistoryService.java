@@ -34,22 +34,27 @@ public class HistoryService {
     ZbxHistoryGet zbxHistoryGet;
 
     public Pager<LatestDto> queryHistory(HistoryParam historyParam) {
+
         List<LatestDto> latestDtos = queryHistory(historyParam.getDeviceId(), historyParam.getAttrIds(),
                 dateTransfer(historyParam.getTimeFrom()),
                 dateTransfer(historyParam.getTimeTill()));
+
         List<LatestDto> collect = latestDtos.stream().skip((historyParam.getPage() - 1) * historyParam.getMaxRow())
                 .limit(historyParam.getMaxRow()).collect(Collectors.toList());
+
         return new Pager<>(collect, latestDtos.size());
     }
 
     private long dateTransfer(String date) {
+
         LocalDateTime now = LocalDateTime.now();
         if (ToolUtil.isEmpty(date) || date.equals("now")) {
             return LocalDateTimeUtils.getSecondsByTime(now);
         }
+
         if (date.startsWith("now-")) {
             String value = date.substring(date.indexOf("-") + 1, date.length() - 1);
-            String unit  = date.substring(date.length() - 1);
+            String unit = date.substring(date.length() - 1);
             switch (unit) {
                 case "m":
                     return LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.minu(now, Integer.valueOf(value), ChronoUnit.MINUTES));
@@ -75,23 +80,27 @@ public class HistoryService {
         if (null == one || ToolUtil.isEmpty(one.getZbxId())) {
             return Collections.emptyList();
         }
+
         //查询设备属性
         QProductAttribute query = new QProductAttribute().productId.eq(deviceId);
         if (ToolUtil.isNotEmpty(attrIds)) {
             query.attrId.in(attrIds);
         }
+
         List<ProductAttribute> list = query.findList();
         if (ToolUtil.isEmpty(list)) {
             return Collections.emptyList();
         }
+
         //取出属性对应的ItemID
-        List<String>                        zbxIds       = list.parallelStream().map(ProductAttribute::getZbxId).collect(Collectors.toList());
+        List<String> zbxIds = list.parallelStream().map(ProductAttribute::getZbxId).collect(Collectors.toList());
         Map<String, List<ProductAttribute>> valueTypeMap = list.parallelStream().collect(Collectors.groupingBy(ProductAttribute::getValueType));
-        Map<String, ProductAttribute>       itemIdMap    = list.parallelStream().collect(Collectors.toMap(ProductAttribute::getZbxId, o -> o));
-        List<LatestDto>                     latestDtos   = new ArrayList<>();
+        Map<String, ProductAttribute> itemIdMap = list.parallelStream().collect(Collectors.toMap(ProductAttribute::getZbxId, o -> o));
+        List<LatestDto> latestDtos = new ArrayList<>();
         if (null == timeFrom) {
             timeFrom = LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.getDayStart(LocalDateTime.now()));
         }
+
         //根据属性值类型 分组查询历史数据
         for (Map.Entry<String, List<ProductAttribute>> map : valueTypeMap.entrySet()) {
             latestDtos.addAll(queryHitoryData(one.getZbxId(), zbxIds, 1000, Integer.parseInt(map.getKey()), timeFrom, timeTill));
