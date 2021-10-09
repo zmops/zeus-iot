@@ -171,7 +171,7 @@ public class HomeService {
         List<Device> list = new QDevice().findList();
         deviceNumMap.put("total", list.size());
         deviceNumMap.put("disable", (int) list.parallelStream().filter(o -> "DISABLE".equals(o.getStatus())).count());
-        deviceNumMap.put("online", (int) list.parallelStream().filter(o -> "1".equals(o.getOnline())).count());
+        deviceNumMap.put("online", (int) list.parallelStream().filter(o -> null != o.getOnline() && 1 == o.getOnline()).count());
         deviceNumMap.put("product", new QProduct().findCount());
 
         List<DeviceOnlineReport> onLineList = new QDeviceOnlineReport()
@@ -189,7 +189,9 @@ public class HomeService {
             map.put("val", value);
             trendsList.add(map);
         });
-        deviceNumMap.put("trends", trendsList);
+        List<Map<String, Object>> result = trendsList.parallelStream()
+                .sorted(Comparator.comparing(o -> o.get("date").toString())).collect(Collectors.toList());
+        deviceNumMap.put("trends", result);
 
         return deviceNumMap;
     }
