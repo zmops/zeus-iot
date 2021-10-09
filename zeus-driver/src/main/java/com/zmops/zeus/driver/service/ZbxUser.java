@@ -58,7 +58,8 @@ public interface ZbxUser {
     @Post
     @JsonPath("/user/userUpdate")
     String userUpdate(@ParamName("userId") String userId,
-                      @ParamName("usrGrpId") String usrGrpId);
+                      @ParamName("usrGrpId") String usrGrpId,
+                      @ParamName("roleId") String roleId);
 
     /**
      * 用户删除

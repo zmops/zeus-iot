@@ -157,10 +157,12 @@ public class SysUserService implements CommandLineRunner {
         checkByRole(user.getRoleId());
 
         SysUser sysUser = UserFactory.editUser(user, oldUser);
-        //取对应的ZBX用户组ID
-        String usrZbxId = sysUserGroupService.getZabUsrGrpId(user.getUserGroupId());
-        zbxUser.userUpdate(oldUser.getZbxId(), usrZbxId);
-
+        //取对应的ZBX用户组ID 修改自己的信息 不更新zbx
+        Long id = LoginContextHolder.getContext().getUser().getId();
+        if (!user.getUserId().equals(id)) {
+            String usrZbxId = sysUserGroupService.getZabUsrGrpId(user.getUserGroupId());
+            zbxUser.userUpdate(oldUser.getZbxId(), usrZbxId, ConstantsContext.getConstntsMap().get(GLOBAL_ADMIN_ROLE_CODE).toString());
+        }
         DB.save(sysUser);
         updateUserCache();
         return sysUser;
