@@ -64,6 +64,7 @@ public class LatestService {
         List<String> zbxIds = list.parallelStream().map(ProductAttribute::getZbxId).collect(Collectors.toList());
         Map<String, List<ProductAttribute>> valueTypeMap = list.parallelStream().collect(Collectors.groupingBy(ProductAttribute::getValueType));
         Map<String, ProductAttribute> itemIdMap = list.parallelStream().collect(Collectors.toMap(ProductAttribute::getZbxId, o -> o));
+
         List<LatestDto> latestDtos = new ArrayList<>();
 
         //根据属性值类型 分组查询最新数据
