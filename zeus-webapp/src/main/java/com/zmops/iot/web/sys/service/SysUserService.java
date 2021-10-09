@@ -55,7 +55,7 @@ public class SysUserService implements CommandLineRunner {
     public Map<String, Object> getUserIndexInfo() {
 
         //获取当前用户角色列表
-        LoginUser  user     = LoginContextHolder.getContext().getUser();
+        LoginUser user = LoginContextHolder.getContext().getUser();
         List<Long> roleList = user.getRoleList();
 
         //用户没有角色无法显示首页信息
@@ -113,7 +113,7 @@ public class SysUserService implements CommandLineRunner {
         checkByRole(user.getRoleId());
 
         // 完善账号信息
-        String password   = user.getPassword();
+        String password = user.getPassword();
         String decryptPwd = "";
         try {
             password = new String(Hex.decodeHex(password));
@@ -228,8 +228,8 @@ public class SysUserService implements CommandLineRunner {
         if (null == loginUser) {
             throw new ServiceException(AuthExceptionEnum.NOT_LOGIN_ERROR);
         }
-        SysUser user         = new QSysUser().userId.eq(loginUser.getId()).findOne();
-        String  rawNewPasswd = "";
+        SysUser user = new QSysUser().userId.eq(loginUser.getId()).findOne();
+        String rawNewPasswd = "";
         try {
             oldPassword = new String(Hex.decodeHex(oldPassword));
             newPassword = new String(Hex.decodeHex(newPassword));

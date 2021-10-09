@@ -50,7 +50,7 @@ public class SaveAttributeWorker implements IWorker<DeviceDto, Boolean> {
         }
 
         //属性
-        List<ProductAttribute> productAttributeList    = new QProductAttribute().productId.eq(deviceDto.getProductId() + "").findList();
+        List<ProductAttribute> productAttributeList = new QProductAttribute().productId.eq(deviceDto.getProductId() + "").findList();
         List<ProductAttribute> newProductAttributeList = new ArrayList<>();
 
         for (ProductAttribute productAttribute : productAttributeList) {
@@ -65,7 +65,7 @@ public class SaveAttributeWorker implements IWorker<DeviceDto, Boolean> {
         DB.saveAll(newProductAttributeList);
 
         //属性事件
-        List<ProductAttributeEvent> productAttributeEventList    = new QProductAttributeEvent().productId.eq(deviceDto.getProductId() + "").findList();
+        List<ProductAttributeEvent> productAttributeEventList = new QProductAttributeEvent().productId.eq(deviceDto.getProductId() + "").findList();
         List<ProductAttributeEvent> newProductAttributeEventList = new ArrayList<>();
 
         for (ProductAttributeEvent productAttributeEvent : productAttributeEventList) {

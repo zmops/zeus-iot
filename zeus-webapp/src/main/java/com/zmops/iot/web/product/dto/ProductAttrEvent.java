@@ -57,8 +57,8 @@ public class ProductAttrEvent {
 
     LocalDateTime createTime;
     LocalDateTime updateTime;
-    Long          createUser;
-    Long          updateUser;
+    Long createUser;
+    Long updateUser;
 
     /**
      * 预处理步骤

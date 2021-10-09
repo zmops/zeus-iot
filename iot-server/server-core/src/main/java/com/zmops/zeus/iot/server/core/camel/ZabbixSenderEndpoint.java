@@ -12,7 +12,7 @@ import org.apache.camel.impl.DefaultEndpoint;
  */
 public class ZabbixSenderEndpoint extends DefaultEndpoint {
 
-    private final ModuleManager         moduleManager;
+    private final ModuleManager moduleManager;
     private final ZabbixTrapperProducer producer;
 
     public ZabbixSenderEndpoint(String endpointUri, Component component, ModuleManager moduleManager) {

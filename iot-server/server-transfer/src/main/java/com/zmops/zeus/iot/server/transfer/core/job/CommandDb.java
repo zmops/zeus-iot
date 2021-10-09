@@ -13,7 +13,7 @@ public class CommandDb {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandDb.class);
 
     public static final int MANAGER_SUCCESS_CODE = 0;
-    public static final int MANAGER_FAIL_CODE    = 1;
+    public static final int MANAGER_FAIL_CODE = 1;
 
     private final Db db;
 

@@ -123,7 +123,7 @@ public class SysRoleService {
      */
     private void checkMenuId(List<Long> menuIds) {
         List<Long> paramMuenuIds = new ArrayList<>(menuIds);
-        LoginUser  user          = LoginContextHolder.getContext().getUser();
+        LoginUser user = LoginContextHolder.getContext().getUser();
         if (null == user) {
             throw new ServiceException(AuthExceptionEnum.NOT_LOGIN_ERROR);
         }

@@ -26,8 +26,8 @@ public class PathPattern {
 
     private final DateFormatRegex dateFormatRegex;
 
-    private final String      watchDir;
-    private final String      rootDir;
+    private final String watchDir;
+    private final String rootDir;
     private final Set<String> subDirs;
 
     public PathPattern(String watchDir) {

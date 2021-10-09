@@ -76,7 +76,7 @@ public enum DependenceAction {
          * 以下两个属性用于设置fastFail的属性
          */
         private ResultState resultState;
-        private Exception   fastFailException;
+        private Exception fastFailException;
 
         // getter setter
 

@@ -124,7 +124,7 @@ public class ProductModelService {
             return Collections.emptyList();
         }
         List<ProductAttr.ProcessingStep> processingSteps = new ArrayList<>();
-        JSONArray                        jsonArray       = JSONObject.parseArray(preprocessing);
+        JSONArray jsonArray = JSONObject.parseArray(preprocessing);
         for (Object object : jsonArray) {
             ProductAttr.ProcessingStep processingStep = new ProductAttr.ProcessingStep();
             processingStep.setType(((JSONObject) object).getString("type"));
@@ -223,7 +223,7 @@ public class ProductModelService {
         if (null == prod) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }
-        String                  hostId          = prod.getZbxId();
+        String hostId = prod.getZbxId();
         List<ZbxProcessingStep> processingSteps = new ArrayList<>();
         if (ToolUtil.isNotEmpty(productAttr.getProcessStepList())) {
             productAttr.getProcessStepList().forEach(i -> {

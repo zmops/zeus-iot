@@ -36,7 +36,7 @@ public class RecordStreamProcessor implements StreamProcessor<Record> {
     public void create(ModuleDefineHolder moduleDefineHolder, Stream stream, Class<? extends Record> recordClass) {
 
         StorageDAO storageDAO = moduleDefineHolder.find(StorageModule.NAME).provider().getService(StorageDAO.class);
-        IRecordDAO recordDAO  = storageDAO.newRecordDao();
+        IRecordDAO recordDAO = storageDAO.newRecordDao();
 
         Model model = new Model(stream.name());
 

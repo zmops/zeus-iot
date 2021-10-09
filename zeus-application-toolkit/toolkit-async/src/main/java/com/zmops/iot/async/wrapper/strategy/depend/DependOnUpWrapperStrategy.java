@@ -24,7 +24,7 @@ public interface DependOnUpWrapperStrategy {
      * 未运行时，休息。
      * 失败时，失败。
      */
-    DependOnUpWrapperStrategy SUCCESS_CONTINUE            = new DependOnUpWrapperStrategy() {
+    DependOnUpWrapperStrategy SUCCESS_CONTINUE = new DependOnUpWrapperStrategy() {
         @Override
         public DependenceAction.WithProperty judge(WorkerWrapper<?, ?> ww) {
             switch (ww.getWorkResult().getResultState()) {

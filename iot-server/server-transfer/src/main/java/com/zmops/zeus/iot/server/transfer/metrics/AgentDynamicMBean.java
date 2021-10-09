@@ -19,12 +19,12 @@ public class AgentDynamicMBean implements DynamicMBean {
 
     private final ConcurrentHashMap<String, MetricSnapshot<?>> snapshotAttrs = new ConcurrentHashMap<>();
 
-    private final MBeanInfo                mBeanInfo;
+    private final MBeanInfo mBeanInfo;
     private final List<MBeanAttributeInfo> attrs;
-    private final MetricsMeta              metricsMeta;
-    private final String                   module;
-    private final String                   aspect;
-    private final String                   desc;
+    private final MetricsMeta metricsMeta;
+    private final String module;
+    private final String aspect;
+    private final String desc;
 
     public AgentDynamicMBean(String module, String aspect, String desc, MetricsMeta metricsMeta, Object source) {
         this.module = module;
@@ -50,7 +50,7 @@ public class AgentDynamicMBean implements DynamicMBean {
 
     private MBeanInfo metricsMetaToInfo() {
         // overwrite name, desc from MetricsMeta if not null.
-        String name        = this.module == null ? metricsMeta.getName() : this.module;
+        String name = this.module == null ? metricsMeta.getName() : this.module;
         String description = this.desc == null ? metricsMeta.getDesc() : this.desc;
 
         for (MetricMeta fieldMetricMeta : metricsMeta.getMetricMetaList()) {

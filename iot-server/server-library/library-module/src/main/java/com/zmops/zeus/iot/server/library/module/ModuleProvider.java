@@ -30,9 +30,9 @@ import java.util.Map;
  */
 public abstract class ModuleProvider implements ModuleServiceHolder {
     @Setter
-    private       ModuleManager                          manager;
+    private ModuleManager manager;
     @Setter
-    private       ModuleDefine                           moduleDefine;
+    private ModuleDefine moduleDefine;
     private final Map<Class<? extends Service>, Service> services = new HashMap<>();
 
     public ModuleProvider() {

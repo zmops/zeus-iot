@@ -11,10 +11,10 @@ public class ProxyMessage implements Message {
 
     private static final String DEFAULT_TID = "__";
 
-    private final byte[]              body;
+    private final byte[] body;
     private final Map<String, String> header;
-    private final String              bid;
-    private final String              tid;
+    private final String bid;
+    private final String tid;
 
 
     public ProxyMessage(byte[] body, Map<String, String> header) {

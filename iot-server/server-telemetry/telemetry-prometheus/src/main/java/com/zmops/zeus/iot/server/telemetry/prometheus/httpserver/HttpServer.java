@@ -53,10 +53,10 @@ public final class HttpServer {
         }
 
         // Configure the server.
-        ThreadFactory   tf          = new ThreadFactoryBuilder().setDaemon(true).build();
-        EventLoopGroup  bossGroup   = new NioEventLoopGroup(1, tf);
-        EventLoopGroup  workerGroup = new NioEventLoopGroup(0, tf);
-        ServerBootstrap b           = new ServerBootstrap();
+        ThreadFactory tf = new ThreadFactoryBuilder().setDaemon(true).build();
+        EventLoopGroup bossGroup = new NioEventLoopGroup(1, tf);
+        EventLoopGroup workerGroup = new NioEventLoopGroup(0, tf);
+        ServerBootstrap b = new ServerBootstrap();
         b.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .handler(new LoggingHandler(LogLevel.INFO))

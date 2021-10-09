@@ -94,7 +94,7 @@ public class GlobalExceptionHandler {
     public ErrorResponseData handleError(MethodArgumentNotValidException e) {
         log.warn("Method Argument Not Valid", e);
         BindingResult result = e.getBindingResult();
-        FieldError    error  = result.getFieldError();
+        FieldError error = result.getFieldError();
 
         String message = String.format("%s:%s", error.getField(), error.getDefaultMessage());
         return new ErrorResponseData(400, message);
@@ -108,8 +108,8 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ErrorResponseData handleError(BindException e) {
         log.warn("Bind Exception", e);
-        FieldError error   = e.getFieldError();
-        String     message = String.format("%s:%s", error.getField(), error.getDefaultMessage());
+        FieldError error = e.getFieldError();
+        String message = String.format("%s:%s", error.getField(), error.getDefaultMessage());
         return new ErrorResponseData(400, message);
     }
 
@@ -122,9 +122,9 @@ public class GlobalExceptionHandler {
     public ErrorResponseData handleError(ConstraintViolationException e) {
         log.warn("Constraint Violation", e);
         Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
-        ConstraintViolation<?>      violation  = violations.iterator().next();
-        String                      path       = ((PathImpl) violation.getPropertyPath()).getLeafNode().getName();
-        String                      message    = String.format("%s:%s", path, violation.getMessage());
+        ConstraintViolation<?> violation = violations.iterator().next();
+        String path = ((PathImpl) violation.getPropertyPath()).getLeafNode().getName();
+        String message = String.format("%s:%s", path, violation.getMessage());
         return new ErrorResponseData(400, message);
     }
 

@@ -28,10 +28,10 @@ import java.util.concurrent.locks.ReentrantLock;
  * Pool of consumers <p> Created by wusheng on 2016/10/25.
  */
 public class ConsumeDriver<T> implements IDriver {
-    private boolean          running;
+    private boolean running;
     private ConsumerThread[] consumerThreads;
-    private Channels<T>      channels;
-    private ReentrantLock    lock;
+    private Channels<T> channels;
+    private ReentrantLock lock;
 
     public ConsumeDriver(String name, Channels<T> channels, Class<? extends IConsumer<T>> consumerClass, int num,
                          long consumeCycle) {

@@ -15,9 +15,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeviceLogDto {
-    private String        logType;
+    private String logType;
     private LocalDateTime triggerTime;
-    private String        content;
-    private String        param;
-    private String        status;
+    private String content;
+    private String param;
+    private String status;
 }

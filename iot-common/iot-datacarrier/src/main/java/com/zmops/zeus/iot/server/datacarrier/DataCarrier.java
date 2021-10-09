@@ -33,8 +33,8 @@ import com.zmops.zeus.iot.server.datacarrier.partition.SimpleRollingPartitioner;
  */
 public class DataCarrier<T> {
     private final Channels<T> channels;
-    private       IDriver     driver;
-    private final String      name;
+    private IDriver driver;
+    private final String name;
 
     public DataCarrier(int channelSize, int bufferSize) {
         this("DEFAULT", channelSize, bufferSize);

@@ -41,50 +41,50 @@ public abstract class WorkerWrapper<T, V> {
     /**
      * 该wrapper的唯一标识
      */
-    protected final String          id;
-    protected final IWorker<T, V>   worker;
+    protected final String id;
+    protected final IWorker<T, V> worker;
     protected final ICallback<T, V> callback;
     /**
      * 各种策略的封装类。
      */
-    private final   WrapperStrategy wrapperStrategy;
+    private final WrapperStrategy wrapperStrategy;
     /**
      * 是否允许被打断
      */
-    protected final boolean         allowInterrupt;
+    protected final boolean allowInterrupt;
     /**
      * 是否启动超时检查
      */
-    final           boolean         enableTimeout;
+    final boolean enableTimeout;
     /**
      * 超时时间长度
      */
-    final           long            timeoutLength;
+    final long timeoutLength;
     /**
      * 超时时间单位
      */
-    final           TimeUnit        timeoutUnit;
+    final TimeUnit timeoutUnit;
 
     // ========== 临时属性 ==========
 
     /**
      * worker将来要处理的param
      */
-    protected volatile T                              param;
+    protected volatile T param;
     /**
      * 原子设置wrapper的状态
      * <p>
      * {@link State}此枚举类枚举了state值所代表的状态枚举。
      */
-    protected final    AtomicInteger                  state           = new AtomicInteger(State.BUILDING.id);
+    protected final AtomicInteger state = new AtomicInteger(State.BUILDING.id);
     /**
      * 该值将在{@link IWorker#action(Object, Map)}进行时设为当前线程，在任务开始前或结束后都为null。
      */
-    protected final    AtomicReference<Thread>        doWorkingThread = new AtomicReference<>();
+    protected final AtomicReference<Thread> doWorkingThread = new AtomicReference<>();
     /**
      * 也是个钩子变量，用来存临时的结果
      */
-    protected final    AtomicReference<WorkResult<V>> workResult      = new AtomicReference<>(null);
+    protected final AtomicReference<WorkResult<V>> workResult = new AtomicReference<>(null);
 
     WorkerWrapper(String id,
                   IWorker<T, V> worker,
@@ -430,9 +430,9 @@ public abstract class WorkerWrapper<T, V> {
      */
     protected void beginNext(ExecutorService executorService, long now, long remainTime, WorkerWrapperGroup group) {
         //花费的时间
-        final long               costTime       = SystemClock.now() - now;
-        final long               nextRemainTIme = remainTime - costTime;
-        Set<WorkerWrapper<?, ?>> nextWrappers   = getNextWrappers();
+        final long costTime = SystemClock.now() - now;
+        final long nextRemainTIme = remainTime - costTime;
+        Set<WorkerWrapper<?, ?>> nextWrappers = getNextWrappers();
         if (nextWrappers == null) {
             PollingCenter.getInstance().checkGroup(group.new CheckFinishTask());
             return;
@@ -549,9 +549,9 @@ public abstract class WorkerWrapper<T, V> {
      */
     public static class StableWrapperStrategy extends WrapperStrategy.AbstractWrapperStrategy {
         private DependOnUpWrapperStrategyMapper dependOnUpWrapperStrategyMapper;
-        private DependMustStrategyMapper        dependMustStrategyMapper;
-        private DependenceStrategy              dependenceStrategy;
-        private SkipStrategy                    skipStrategy;
+        private DependMustStrategyMapper dependMustStrategyMapper;
+        private DependenceStrategy dependenceStrategy;
+        private SkipStrategy skipStrategy;
 
         @Override
         public DependOnUpWrapperStrategyMapper getDependWrapperStrategyMapper() {
@@ -671,7 +671,7 @@ public abstract class WorkerWrapper<T, V> {
                                 State[] exceptValues,
                                 State newValue,
                                 Consumer<State> withOperate) {
-            int     current;
+            int current;
             boolean inExcepts;
             while (true) {
                 // 判断当前值是否在exceptValues范围内
@@ -727,7 +727,7 @@ public abstract class WorkerWrapper<T, V> {
          */
         @SuppressWarnings("unused")
         static boolean inStates(AtomicInteger state, State... excepts) {
-            int     current;
+            int current;
             boolean inExcepts;
             while (true) {
                 current = state.get();

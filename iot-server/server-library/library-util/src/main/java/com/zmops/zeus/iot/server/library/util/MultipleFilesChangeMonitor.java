@@ -43,22 +43,22 @@ public class MultipleFilesChangeMonitor {
     /**
      * The backend scheduler to trigger all file monitoring.
      */
-    private static       ScheduledFuture<?>               FILE_MONITOR_TASK_SCHEDULER;
-    private static final ReentrantLock                    SCHEDULER_CHANGE_LOCK = new ReentrantLock();
+    private static ScheduledFuture<?> FILE_MONITOR_TASK_SCHEDULER;
+    private static final ReentrantLock SCHEDULER_CHANGE_LOCK = new ReentrantLock();
     /**
      * The list contains all monitors.
      */
-    private static final List<MultipleFilesChangeMonitor> MONITOR_INSTANCES     = new ArrayList<>();
+    private static final List<MultipleFilesChangeMonitor> MONITOR_INSTANCES = new ArrayList<>();
 
     /**
      * The timestamp when last time do status checked.
      */
-    private       long                 lastCheckTimestamp = 0;
+    private long lastCheckTimestamp = 0;
     /**
      * The period of watching thread checking the file status. Unit is the second.
      */
-    private final long                 watchingPeriodInSec;
-    private final List<WatchedFile>    watchedFiles;
+    private final long watchingPeriodInSec;
+    private final List<WatchedFile> watchedFiles;
     private final FilesChangedNotifier notifier;
 
     /**
@@ -195,11 +195,11 @@ public class MultipleFilesChangeMonitor {
         /**
          * The last modify time of the {@link #filePath}
          */
-        private       long   lastModifiedTimestamp = 0;
+        private long lastModifiedTimestamp = 0;
         /**
          * File content at the latest status.
          */
-        private       byte[] fileContent;
+        private byte[] fileContent;
 
         /**
          * Detect the file content change, if yes, reload the file content into the memory as cached data.
@@ -222,9 +222,9 @@ public class MultipleFilesChangeMonitor {
                 if (lastModified != lastModifiedTimestamp) {
                     // File modified timestamp changed. Need to read the file content.
                     try (FileInputStream fileInputStream = new FileInputStream(targetFile)) {
-                        byte[]                b  = new byte[1024];
+                        byte[] b = new byte[1024];
                         ByteArrayOutputStream os = new ByteArrayOutputStream();
-                        int                   c;
+                        int c;
                         while ((c = fileInputStream.read(b)) != -1) {
                             os.write(b, 0, c);
                         }

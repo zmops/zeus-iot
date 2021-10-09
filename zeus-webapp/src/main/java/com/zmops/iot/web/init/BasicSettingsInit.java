@@ -51,8 +51,8 @@ public class BasicSettingsInit {
      * @return String
      */
     public String getGlobalHostGroup() {
-        String                    response = zbxHostGroup.getGlobalHostGroup(zbxApiToken);
-        List<Map<String, String>> ids      = JSON.parseObject(response, List.class);
+        String response = zbxHostGroup.getGlobalHostGroup(zbxApiToken);
+        List<Map<String, String>> ids = JSON.parseObject(response, List.class);
         if (null != ids && ids.size() > 0) {
             return ids.get(0).get("groupid");
         }
@@ -75,8 +75,8 @@ public class BasicSettingsInit {
      * @return String
      */
     public String getCookieUserGroup() {
-        String                    response = zbxInitService.getCookieUserGroup(zbxApiToken);
-        List<Map<String, String>> ids      = JSON.parseObject(response, List.class);
+        String response = zbxInitService.getCookieUserGroup(zbxApiToken);
+        List<Map<String, String>> ids = JSON.parseObject(response, List.class);
         if (null != ids && ids.size() > 0) {
             return ids.get(0).get("usrgrpid");
         }
@@ -100,8 +100,8 @@ public class BasicSettingsInit {
      * @return String
      */
     public String getCookieUser() {
-        String                    response = zbxInitService.getCookieUser(zbxApiToken);
-        List<Map<String, String>> ids      = JSON.parseObject(response, List.class);
+        String response = zbxInitService.getCookieUser(zbxApiToken);
+        List<Map<String, String>> ids = JSON.parseObject(response, List.class);
         if (null != ids && ids.size() > 0) {
             return ids.get(0).get("userid");
         }
@@ -125,8 +125,8 @@ public class BasicSettingsInit {
      * @return String
      */
     public String getAdminRoleId() {
-        String                    response = zbxInitService.getAdminRole(zbxApiToken);
-        List<Map<String, String>> ids      = JSON.parseObject(response, List.class);
+        String response = zbxInitService.getAdminRole(zbxApiToken);
+        List<Map<String, String>> ids = JSON.parseObject(response, List.class);
         if (null != ids && ids.size() > 0) {
             return ids.get(0).get("roleid");
         }
@@ -139,8 +139,8 @@ public class BasicSettingsInit {
      * @return String
      */
     public String getGuestRoleId() {
-        String                    response = zbxInitService.getGuestRole(zbxApiToken);
-        List<Map<String, String>> ids      = JSON.parseObject(response, List.class);
+        String response = zbxInitService.getGuestRole(zbxApiToken);
+        List<Map<String, String>> ids = JSON.parseObject(response, List.class);
         if (null != ids && ids.size() > 0) {
             return ids.get(0).get("roleid");
         }
@@ -154,9 +154,9 @@ public class BasicSettingsInit {
     }
 
     public Map<String, String> getOfflineStatusScript() {
-        String                    response = zbxScript.getOfflineStatusScript(zbxApiToken);
-        List<Map<String, String>> ids      = JSON.parseObject(response, List.class);
-        Map<String, String>       map      = new HashMap<>(3);
+        String response = zbxScript.getOfflineStatusScript(zbxApiToken);
+        List<Map<String, String>> ids = JSON.parseObject(response, List.class);
+        Map<String, String> map = new HashMap<>(3);
         if (null != ids && ids.size() > 0) {
             ids.forEach(script -> {
                 map.put(script.get("name"), script.get("scriptid"));
@@ -173,8 +173,8 @@ public class BasicSettingsInit {
 
 
     public String getAction(String name) {
-        String                    response = zbxAction.getOfflineStatusAction(zbxApiToken, name);
-        List<Map<String, String>> ids      = JSON.parseObject(response, List.class);
+        String response = zbxAction.getOfflineStatusAction(zbxApiToken, name);
+        List<Map<String, String>> ids = JSON.parseObject(response, List.class);
         if (null != ids && ids.size() > 0) {
             return ids.get(0).get("actionid");
         }

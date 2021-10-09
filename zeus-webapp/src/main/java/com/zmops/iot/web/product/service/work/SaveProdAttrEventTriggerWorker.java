@@ -27,7 +27,7 @@ public class SaveProdAttrEventTriggerWorker implements IWorker<ProductAttrEvent,
     public Boolean action(ProductAttrEvent productAttr, Map<String, WorkerWrapper<?, ?>> map) {
         log.debug("处理产品 新增Attr事件 告警工作…………");
 
-        String        prodId     = productAttr.getProductId();
+        String prodId = productAttr.getProductId();
         StringBuilder expression = new StringBuilder();
         expression.append("count(/");
         expression.append(prodId);

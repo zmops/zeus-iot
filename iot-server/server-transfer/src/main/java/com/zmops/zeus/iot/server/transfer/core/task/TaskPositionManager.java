@@ -25,7 +25,7 @@ public class TaskPositionManager extends AbstractDaemon {
     public static final int DEFAULT_FLUSH_TIMEOUT = 3;
 
     private final TransferManager transferManager;
-    private final JobProfileDb    jobConfDb;
+    private final JobProfileDb jobConfDb;
 
     private final ConcurrentHashMap<String, ConcurrentHashMap<String, Long>> jobTaskPositionMap;
 

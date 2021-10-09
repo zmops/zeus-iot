@@ -74,7 +74,7 @@ public interface ZbxUser {
     /**
      * 用户修改密码
      *
-     * @param userId   用户id
+     * @param userId 用户id
      * @param passwd 用户组ID
      * @return 用户信息
      */

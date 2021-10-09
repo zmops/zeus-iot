@@ -7,12 +7,12 @@ public class WorkResult<V> {
     /**
      * 执行的结果
      */
-    private final V           result;
+    private final V result;
     /**
      * 结果状态
      */
     private final ResultState resultState;
-    private final Exception   ex;
+    private final Exception ex;
 
     public WorkResult(V result, ResultState resultState) {
         this(result, resultState, null);

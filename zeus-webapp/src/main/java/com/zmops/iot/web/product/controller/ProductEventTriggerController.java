@@ -54,10 +54,10 @@ public class ProductEventTriggerController {
     @Autowired
     private ZbxTrigger zbxTrigger;
 
-    private static final String ALARM_TAG_NAME   = "__alarm__";
+    private static final String ALARM_TAG_NAME = "__alarm__";
     private static final String EXECUTE_TAG_NAME = "__execute__";
-    private static final String EVENT_TAG_NAME   = "__event__";
-    private static final String EVENT_TYPE_NAME  = "事件";
+    private static final String EVENT_TAG_NAME = "__event__";
+    private static final String EVENT_TYPE_NAME = "事件";
 
     @Autowired
     SaveProductEventTriggerWorker saveProductEventTriggerWorker;
@@ -234,7 +234,7 @@ public class ProductEventTriggerController {
             return ResponseData.success();
         }
         //step 01:删除 zbx触发器
-        String                                 s        = zbxTrigger.triggerGet(productEventRelation.getZbxId());
+        String s = zbxTrigger.triggerGet(productEventRelation.getZbxId());
         List<ProductEventRuleService.Triggers> triggers = JSONObject.parseArray(s, ProductEventRuleService.Triggers.class);
         if (ToolUtil.isNotEmpty(triggers)) {
             zbxTrigger.triggerDelete(productEventRelation.getZbxId());

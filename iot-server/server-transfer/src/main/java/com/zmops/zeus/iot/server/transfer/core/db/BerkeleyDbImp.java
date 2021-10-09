@@ -27,9 +27,9 @@ public class BerkeleyDbImp implements Db {
     private final EntityStore jobStore;
     private final EntityStore commandStore;
 
-    private final PrimaryIndex<String, KeyValueEntity>                   primaryIndex;
+    private final PrimaryIndex<String, KeyValueEntity> primaryIndex;
     private final SecondaryIndex<StateSearchKey, String, KeyValueEntity> secondaryIndex;
-    private final PrimaryIndex<String, CommandEntity>                    commandPrimaryIndex;
+    private final PrimaryIndex<String, CommandEntity> commandPrimaryIndex;
 
     private final SecondaryIndex<String, String, KeyValueEntity> fileNameSecondaryIndex;
     private final SecondaryIndex<Boolean, String, CommandEntity> commandSecondaryIndex;
@@ -76,7 +76,7 @@ public class BerkeleyDbImp implements Db {
      * @return local path.
      */
     private File tryToInitAndGetPath() {
-        String storePath  = transferConfig.get(TransferConstants.AGENT_LOCAL_STORE_PATH, TransferConstants.DEFAULT_AGENT_LOCAL_STORE_PATH);
+        String storePath = transferConfig.get(TransferConstants.AGENT_LOCAL_STORE_PATH, TransferConstants.DEFAULT_AGENT_LOCAL_STORE_PATH);
         String parentPath = transferConfig.get(TransferConstants.AGENT_HOME, TransferConstants.DEFAULT_AGENT_HOME);
 
         File finalPath = new File(parentPath, storePath);

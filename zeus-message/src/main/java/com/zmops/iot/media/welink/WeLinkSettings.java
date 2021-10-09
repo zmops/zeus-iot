@@ -1,4 +1,3 @@
-
 package com.zmops.iot.media.welink;
 
 import lombok.*;
@@ -14,7 +13,7 @@ import java.util.Map;
 @ToString
 public class WeLinkSettings {
 
-    private String           textTemplate;
+    private String textTemplate;
     @Builder.Default
     private List<WebHookUrl> webhooks = new ArrayList<>();
 
@@ -36,12 +35,12 @@ public class WeLinkSettings {
         private final String groupIds;
 
         public static WebHookUrl generateFromMap(Map<String, String> params) {
-            String clientId       = params.get("clientId");
-            String clientSecret   = params.get("clientSecret");
+            String clientId = params.get("clientId");
+            String clientSecret = params.get("clientSecret");
             String accessTokenUrl = params.get("accessTokenUrl");
-            String messageUrl     = params.get("messageUrl");
-            String groupIds       = params.get("groupIds");
-            String robotName      = params.getOrDefault("robotName", "robot");
+            String messageUrl = params.get("messageUrl");
+            String groupIds = params.get("groupIds");
+            String robotName = params.getOrDefault("robotName", "robot");
             return new WebHookUrl(clientId, clientSecret, accessTokenUrl, messageUrl,
                     robotName, groupIds
             );

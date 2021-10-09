@@ -22,8 +22,8 @@ public class SysParamService {
     }
 
     public void update(SysParamDto sysParamDto) {
-        Map<Long, SysParamDto.SysParam> sysParamMap  = sysParamDto.getSysParamList().parallelStream().collect(Collectors.toMap(SysParamDto.SysParam::getId, o -> o));
-        List<SysConfig>                 sysParamList = list();
+        Map<Long, SysParamDto.SysParam> sysParamMap = sysParamDto.getSysParamList().parallelStream().collect(Collectors.toMap(SysParamDto.SysParam::getId, o -> o));
+        List<SysConfig> sysParamList = list();
         for (SysConfig sysConfig : sysParamList) {
             SysParamDto.SysParam sysParam = sysParamMap.get(sysConfig.getId());
             sysConfig.setName(sysParam.getName());

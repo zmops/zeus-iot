@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TDEngineStorageDAO implements StorageDAO {
 
-    private final ModuleManager      manager;
+    private final ModuleManager manager;
     private final JDBCHikariCPClient client;
 
 

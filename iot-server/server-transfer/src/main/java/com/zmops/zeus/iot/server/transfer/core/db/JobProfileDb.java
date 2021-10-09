@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class JobProfileDb {
     private static final Logger LOGGER = LoggerFactory.getLogger(JobProfileDb.class);
-    private final        Db     db;
+    private final Db db;
 
     public JobProfileDb(Db db) {
         this.db = db;
@@ -87,8 +87,8 @@ public class JobProfileDb {
      * @param jobProfile
      */
     public void updateJobProfile(JobProfile jobProfile) {
-        String         instanceId = jobProfile.getInstanceId();
-        KeyValueEntity entity     = db.get(instanceId);
+        String instanceId = jobProfile.getInstanceId();
+        KeyValueEntity entity = db.get(instanceId);
         if (entity == null) {
             LOGGER.warn("job profile {} doesn't exist, update job profile fail {}", instanceId, jobProfile.toJsonStr());
             return;
@@ -127,7 +127,7 @@ public class JobProfileDb {
     public void removeExpireJobs(long expireTime) {
         // remove finished tasks
         List<KeyValueEntity> successEntityList = db.search(StateSearchKey.SUCCESS);
-        List<KeyValueEntity> failedEntityList  = db.search(StateSearchKey.FAILED);
+        List<KeyValueEntity> failedEntityList = db.search(StateSearchKey.FAILED);
 
         List<KeyValueEntity> entityList = new ArrayList<>(successEntityList);
 
@@ -137,7 +137,7 @@ public class JobProfileDb {
             if (entity.getKey().startsWith(JobConstants.JOB_ID_PREFIX)) {
                 JobProfile profile = entity.getAsJobProfile();
 
-                long storeTime   = profile.getLong(JobConstants.JOB_STORE_TIME, 0);
+                long storeTime = profile.getLong(JobConstants.JOB_STORE_TIME, 0);
                 long currentTime = System.currentTimeMillis();
 
                 if (storeTime == 0 || currentTime - storeTime > expireTime) {
@@ -184,8 +184,8 @@ public class JobProfileDb {
      * @return - list of job profile.
      */
     public List<JobProfile> getJobs(StateSearchKey stateSearchKey) {
-        List<KeyValueEntity> entityList  = db.search(stateSearchKey);
-        List<JobProfile>     profileList = new ArrayList<>();
+        List<KeyValueEntity> entityList = db.search(stateSearchKey);
+        List<JobProfile> profileList = new ArrayList<>();
         for (KeyValueEntity entity : entityList) {
             if (entity.getKey().startsWith(JobConstants.JOB_ID_PREFIX)) {
                 profileList.add(entity.getAsJobProfile());

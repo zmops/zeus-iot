@@ -40,8 +40,8 @@ public class DataTransferHandler extends JettyJsonHandler {
      */
     @Override
     protected JsonElement doPost(HttpServletRequest req) throws ArgumentsParseException, IOException {
-        GZIPInputStream gzin   = new GZIPInputStream(req.getInputStream());
-        BufferedReader  reader = new BufferedReader(new InputStreamReader(gzin));
+        GZIPInputStream gzin = new GZIPInputStream(req.getInputStream());
+        BufferedReader reader = new BufferedReader(new InputStreamReader(gzin));
 
         String line;
         while ((line = reader.readLine()) != null) {

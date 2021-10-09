@@ -26,7 +26,7 @@ import com.zmops.zeus.iot.server.telemetry.api.*;
 public class PrometheusMetricsCreator implements MetricsCreator {
     @Override
     public CounterMetrics createCounter(String name, String tips, MetricsTag.Keys tagKeys,
-        MetricsTag.Values tagValues) {
+                                        MetricsTag.Values tagValues) {
         return new PrometheusCounterMetrics(name, tips, tagKeys, tagValues);
     }
 
@@ -37,7 +37,7 @@ public class PrometheusMetricsCreator implements MetricsCreator {
 
     @Override
     public HistogramMetrics createHistogramMetric(String name, String tips, MetricsTag.Keys tagKeys,
-        MetricsTag.Values tagValues, double... buckets) {
+                                                  MetricsTag.Values tagValues, double... buckets) {
         return new PrometheusHistogramMetrics(name, tips, tagKeys, tagValues, buckets);
     }
 }

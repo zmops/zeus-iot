@@ -30,20 +30,20 @@ import java.util.regex.Pattern;
 
 public class TransferUtils {
 
-    private static final Logger     LOGGER            = LoggerFactory.getLogger(TransferUtils.class);
-    private static final AtomicLong INDEX             = new AtomicLong(0);
-    private static final String     HEX_PREFIX        = "0x";
-    public static final  String     EQUAL             = "=";
-    public static final  String     M_VALUE           = "m";
-    public static final  String     ADDITION_SPLITTER = "&";
-    public static final  String     BEIJING_TIME_ZONE = "GMT+8:00";
-    public static final  String     HOUR_PATTERN      = "yyyyMMddHH";
-    public static final  String     DAY_PATTERN       = "yyyyMMdd";
-    public static final  String     DEFAULT_PATTERN   = "yyyyMMddHHmm";
-    public static final  String     DAY               = "D";
-    public static final  String     HOUR              = "H";
-    public static final  String     HOUR_LOW_CASE     = "h";
-    public static final  String     MINUTE            = "m";
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransferUtils.class);
+    private static final AtomicLong INDEX = new AtomicLong(0);
+    private static final String HEX_PREFIX = "0x";
+    public static final String EQUAL = "=";
+    public static final String M_VALUE = "m";
+    public static final String ADDITION_SPLITTER = "&";
+    public static final String BEIJING_TIME_ZONE = "GMT+8:00";
+    public static final String HOUR_PATTERN = "yyyyMMddHH";
+    public static final String DAY_PATTERN = "yyyyMMdd";
+    public static final String DEFAULT_PATTERN = "yyyyMMddHHmm";
+    public static final String DAY = "D";
+    public static final String HOUR = "H";
+    public static final String HOUR_LOW_CASE = "h";
+    public static final String MINUTE = "m";
 
 
     /**
@@ -245,9 +245,9 @@ public class TransferUtils {
      * @return
      */
     public static Pair<String, Map<String, String>> parseAddAttr(String additionStr) {
-        Map<String, String> attr   = new HashMap<>();
-        String[]            split  = additionStr.split(ADDITION_SPLITTER);
-        String              mValue = "";
+        Map<String, String> attr = new HashMap<>();
+        String[] split = additionStr.split(ADDITION_SPLITTER);
+        String mValue = "";
         for (String s : split) {
             if (!s.contains(EQUAL)) {
                 continue;

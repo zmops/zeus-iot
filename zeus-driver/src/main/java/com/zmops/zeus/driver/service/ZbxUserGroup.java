@@ -56,5 +56,5 @@ public interface ZbxUserGroup {
 
     @Post
     @JsonPath("/usergroup/userGroupGet")
-    String getUserGrp(@ParamName("usrgrpids")  String usrgrpids);
+    String getUserGrp(@ParamName("usrgrpids") String usrgrpids);
 }

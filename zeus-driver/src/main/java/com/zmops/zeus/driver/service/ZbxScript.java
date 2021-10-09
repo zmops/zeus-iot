@@ -19,7 +19,7 @@ public interface ZbxScript {
     /**
      * 创建 在线状态 回调地址
      *
-     * @param userApiToken   apiToekn
+     * @param userApiToken apiToekn
      * @return String
      */
     @Post(headers = "authTag: noAuth")

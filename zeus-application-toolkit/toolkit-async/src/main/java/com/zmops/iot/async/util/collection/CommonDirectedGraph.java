@@ -16,7 +16,7 @@ public class CommonDirectedGraph<N, R> extends AbstractDirectedGraph<N, R> {
     // ========== properties ==========
 
     private final StoreArk<N> nodes = new CachedStoreArk<>();
-    private final Array2D<R>  arr   = new SparseArray2D<>();
+    private final Array2D<R> arr = new SparseArray2D<>();
 
     // ========== methods ==========
 
@@ -36,7 +36,7 @@ public class CommonDirectedGraph<N, R> extends AbstractDirectedGraph<N, R> {
 
     @Override
     public Set<? extends Graph.Entry<N, R>> removeNode(N node) {
-        int                              id  = findNodeId(Objects.requireNonNull(node), true);
+        int id = findNodeId(Objects.requireNonNull(node), true);
         LinkedHashSet<Graph.Entry<N, R>> res = new LinkedHashSet<>();
         // 查找node为from的键
         arr.fullLine(id).forEach((toNodeId, relation) -> {
@@ -67,7 +67,7 @@ public class CommonDirectedGraph<N, R> extends AbstractDirectedGraph<N, R> {
 
     @Override
     public Set<? extends Graph.Entry<N, R>> getRelationFrom(N from) {
-        int                              id  = findNodeId(Objects.requireNonNull(from), true);
+        int id = findNodeId(Objects.requireNonNull(from), true);
         LinkedHashSet<Graph.Entry<N, R>> res = new LinkedHashSet<>();
         // 查找node为from的键
         arr.fullLine(id).forEach((toNodeId, relation) -> res.add(new OuterEntry<>(from, nodes.peek(toNodeId), relation)));
@@ -76,7 +76,7 @@ public class CommonDirectedGraph<N, R> extends AbstractDirectedGraph<N, R> {
 
     @Override
     public Set<? extends Graph.Entry<N, R>> getRelationTo(N to) {
-        int                              id  = findNodeId(Objects.requireNonNull(to), true);
+        int id = findNodeId(Objects.requireNonNull(to), true);
         LinkedHashSet<Graph.Entry<N, R>> res = new LinkedHashSet<>();
         // 查找node为to的键
         arr.fullColumn(id).forEach((fromNodeId, relation) ->

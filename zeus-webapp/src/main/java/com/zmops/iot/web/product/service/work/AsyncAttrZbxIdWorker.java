@@ -46,7 +46,7 @@ public class AsyncAttrZbxIdWorker implements IWorker<ProductAttr, Boolean> {
         //取出继承的属性 并塞入对应的 itemId
         List<ProductAttribute> productAttributeList = new QProductAttribute().templateId.eq(attrId).findList();
         for (ProductAttribute productAttribute : productAttributeList) {
-            productAttribute.setZbxId(itemMap.get(productAttribute.getProductId()+"").getItemid());
+            productAttribute.setZbxId(itemMap.get(productAttribute.getProductId() + "").getItemid());
         }
 
         DB.updateAll(productAttributeList);

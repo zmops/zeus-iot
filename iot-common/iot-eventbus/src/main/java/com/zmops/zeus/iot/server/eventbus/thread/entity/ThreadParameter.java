@@ -16,13 +16,13 @@ import java.io.Serializable;
 public class ThreadParameter implements Serializable {
     private static final long serialVersionUID = 6869706244434951605L;
 
-    private int     threadPoolCorePoolSize           = ThreadConstant.CPUS;
-    private int     threadPoolMaximumPoolSize        = ThreadConstant.CPUS * 2;
-    private long    threadPoolKeepAliveTime          = 900000;
+    private int threadPoolCorePoolSize = ThreadConstant.CPUS;
+    private int threadPoolMaximumPoolSize = ThreadConstant.CPUS * 2;
+    private long threadPoolKeepAliveTime = 900000;
     private boolean threadPoolAllowCoreThreadTimeout = false;
-    private String  threadPoolQueue                  = "LinkedBlockingQueue";
-    private int     threadPoolQueueCapacity          = ThreadConstant.CPUS * 128;
-    private String  threadPoolRejectedPolicy         = "BlockingPolicyWithReport";
+    private String threadPoolQueue = "LinkedBlockingQueue";
+    private int threadPoolQueueCapacity = ThreadConstant.CPUS * 128;
+    private String threadPoolRejectedPolicy = "BlockingPolicyWithReport";
 
 
     @Override

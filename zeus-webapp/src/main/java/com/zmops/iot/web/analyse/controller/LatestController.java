@@ -7,7 +7,6 @@ import com.zmops.iot.web.analyse.dto.param.LatestParam;
 import com.zmops.iot.web.analyse.service.LatestService;
 import com.zmops.iot.web.auth.Permission;
 import com.zmops.zeus.driver.service.TDEngineRest;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;

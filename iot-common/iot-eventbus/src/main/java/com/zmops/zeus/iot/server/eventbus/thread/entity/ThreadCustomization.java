@@ -16,10 +16,10 @@ import java.io.Serializable;
 public class ThreadCustomization implements Serializable {
     private static final long serialVersionUID = -927120657442228832L;
 
-    private boolean threadPoolMultiMode      = false;
-    private String  threadPoolSharedName     = ThreadConstant.DEFAULT_THREADPOOL_SHARED_NAME;
+    private boolean threadPoolMultiMode = false;
+    private String threadPoolSharedName = ThreadConstant.DEFAULT_THREADPOOL_SHARED_NAME;
     private boolean threadPoolNameCustomized = true;
-    private boolean threadPoolNameIPShown    = true;
+    private boolean threadPoolNameIPShown = true;
 
     public boolean isThreadPoolMultiMode() {
         return threadPoolMultiMode;

@@ -31,11 +31,11 @@ public interface ZbxProblem {
     @Post
     @JsonPath("/problem/problem.event.get")
     String getEventProblem(@ParamName("hostId") String hostId,
-                      @ParamName("timeFrom") Long timeFrom,
-                      @ParamName("timeTill") Long timeTill,
-                      @ParamName("recent") String recent);
+                           @ParamName("timeFrom") Long timeFrom,
+                           @ParamName("timeTill") Long timeTill,
+                           @ParamName("recent") String recent);
 
     @Post
     @JsonPath("/problem/problem.acknowledgement")
-    String acknowledgement(@ParamName("eventId") String  eventId,@ParamName("action") int  action);
+    String acknowledgement(@ParamName("eventId") String eventId, @ParamName("action") int action);
 }

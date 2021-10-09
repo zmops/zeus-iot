@@ -26,9 +26,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MetricsRegister {
     private static final Logger LOGGER = LoggerFactory.getLogger(MetricsRegister.class);
 
-    private static final String DOMAIN_PREFIX  = "Agent:";
-    private static final String MODULE_PREFIX  = "module=";
-    private static final String ASPECT_PREFIX  = "aspect=";
+    private static final String DOMAIN_PREFIX = "Agent:";
+    private static final String MODULE_PREFIX = "module=";
+    private static final String ASPECT_PREFIX = "aspect=";
     private static final String COMMA_SPLITTER = ",";
 
     // object name should be uniq
@@ -47,7 +47,7 @@ public class MetricsRegister {
         String nameStr = DOMAIN_PREFIX + MODULE_PREFIX + agentDynamicMBean.getModule()
                 + COMMA_SPLITTER + ASPECT_PREFIX + agentDynamicMBean.getAspect();
         try {
-            ObjectName tmpName    = new ObjectName(nameStr);
+            ObjectName tmpName = new ObjectName(nameStr);
             ObjectName objectName = CACHED_NAME.putIfAbsent(nameStr, tmpName);
             if (objectName == null) {
                 mbs.registerMBean(agentDynamicMBean, tmpName);
@@ -59,7 +59,7 @@ public class MetricsRegister {
 
     public static void register(String module, String aspect, String desc, Object source) {
         List<MetricMeta> metricMetaList = handleFieldAnnotation(source);
-        MetricsMeta      metricsMeta    = handleClassAnnotation(source, metricMetaList);
+        MetricsMeta metricsMeta = handleClassAnnotation(source, metricMetaList);
         if (metricsMeta != null) {
             innerRegister(new AgentDynamicMBean(module, aspect, desc, metricsMeta, source));
         } else {

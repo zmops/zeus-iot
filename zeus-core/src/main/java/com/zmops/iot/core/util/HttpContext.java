@@ -63,14 +63,14 @@ public class HttpContext {
      * @author fengshuonan
      */
     public static Map<String, String> getRequestParameters() {
-        HashMap<String, String> values  = new HashMap<>();
-        HttpServletRequest      request = HttpContext.getRequest();
+        HashMap<String, String> values = new HashMap<>();
+        HttpServletRequest request = HttpContext.getRequest();
         if (request == null) {
             return values;
         }
         Enumeration enums = request.getParameterNames();
         while (enums.hasMoreElements()) {
-            String paramName  = (String) enums.nextElement();
+            String paramName = (String) enums.nextElement();
             String paramValue = request.getParameter(paramName);
             values.put(paramName, paramValue);
         }

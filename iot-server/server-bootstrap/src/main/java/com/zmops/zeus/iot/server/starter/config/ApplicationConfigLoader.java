@@ -43,7 +43,7 @@ import java.util.Properties;
 @Slf4j
 public class ApplicationConfigLoader implements ConfigLoader<ApplicationConfiguration> {
     private static final String DISABLE_SELECTOR = "-";
-    private static final String SELECTOR         = "selector";
+    private static final String SELECTOR = "selector";
 
     private final Yaml yaml = new Yaml();
 

@@ -30,36 +30,36 @@ class StableWorkerWrapperBuilder<T, V, BUILDER_SUB_CLASS extends StableWorkerWra
      * 该wrapper的唯一标识。
      * 如果不设置则使用{@code UUID.randomUUID().toString()}
      */
-    private String                                              id;
+    private String id;
     /**
      * worker将来要处理的param
      */
-    private T                                                   param;
-    private IWorker<T, V>                                       worker;
-    private ICallback<T, V>                                     callback;
+    private T param;
+    private IWorker<T, V> worker;
+    private ICallback<T, V> callback;
     /**
      * 自己后面的所有
      */
-    private Set<WorkerWrapper<?, ?>>                            nextWrappers;
+    private Set<WorkerWrapper<?, ?>> nextWrappers;
     /**
      * 自己依赖的所有
      */
-    private Set<WorkerWrapper<?, ?>>                            dependWrappers;
+    private Set<WorkerWrapper<?, ?>> dependWrappers;
     /**
      * 旧版本的检查是否跳过的开关
      */
-    private Boolean                                             needCheckNextWrapperResult    = null;
+    private Boolean needCheckNextWrapperResult = null;
     /**
      * 新版本的检查是否跳过的策略。
      */
-    private SkipStrategy                                        skipStrategy;
+    private SkipStrategy skipStrategy;
     /**
      * 基本依赖策略。
      * <p/>
      * 如果在{@link #build()}调用时，{@code dependenceStrategy==null}，
      * 则会给WorkerWrapper设置默认策略{@link DependenceStrategy#ALL_DEPENDENCIES_ALL_SUCCESS}。
      */
-    private DependenceStrategy                                  dependenceStrategy;
+    private DependenceStrategy dependenceStrategy;
     /**
      * 存储自己需要特殊对待的dependWrapper集合
      */
@@ -73,34 +73,34 @@ class StableWorkerWrapperBuilder<T, V, BUILDER_SUB_CLASS extends StableWorkerWra
      * <p/>
      * 该Set将会加入到{@link WorkerWrapper.StableWrapperStrategy#getDependMustStrategyMapper().mustDependSet}之中
      */
-    private Set<WorkerWrapper<?, ?>>                            mustDependSet;
+    private Set<WorkerWrapper<?, ?>> mustDependSet;
     /**
      * 存储强依赖于自己的wrapper集合
      */
-    private Set<WorkerWrapper<?, ?>>                            selfIsMustSet;
+    private Set<WorkerWrapper<?, ?>> selfIsMustSet;
     /**
      * 是否使用了旧的编排模式（Must开关）
      * <p/>
      * 之所以需要以下两个属性，是为了隔离旧api与新api的策略不兼容的情况。<b>建议早日替换旧方法</b>
      * 例如旧代码里调用{@link WorkerWrapper.Builder#depend(WorkerWrapper, boolean)}，参数传入了false。
      */
-    private boolean                                             useV15DeprecatedMustDependApi = false;
+    private boolean useV15DeprecatedMustDependApi = false;
     /**
      * 是否使用了新的编排模式。
      * <p/>
      * {@link #useV15DeprecatedMustDependApi}
      */
-    private boolean                                             useV15NewDependApi            = false;
+    private boolean useV15NewDependApi = false;
     /**
      * 单个Wrapper超时相关属性
      */
-    private boolean                                             enableTimeOut                 = false;
-    private long                                                time                          = -1;
-    private TimeUnit                                            unit                          = null;
+    private boolean enableTimeOut = false;
+    private long time = -1;
+    private TimeUnit unit = null;
     /**
      * 是否允许被打断
      */
-    private boolean                                             allowInterrupt                = false;
+    private boolean allowInterrupt = false;
 
     /**
      * 标记自己正在building

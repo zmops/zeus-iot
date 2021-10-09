@@ -40,8 +40,8 @@ public class JettyServer implements Server {
     private static final Logger LOGGER = LoggerFactory.getLogger(JettyServer.class);
 
     private org.eclipse.jetty.server.Server server;
-    private ServletContextHandler           servletContextHandler;
-    private JettyServerConfig               jettyServerConfig;
+    private ServletContextHandler servletContextHandler;
+    private JettyServerConfig jettyServerConfig;
 
     public JettyServer(JettyServerConfig config) {
         this.jettyServerConfig = config;
@@ -88,7 +88,7 @@ public class JettyServer implements Server {
         server.setHandler(servletContextHandler);
 
         JettyDefaultHandler defaultHandler = new JettyDefaultHandler();
-        ServletHolder       defaultHolder  = new ServletHolder();
+        ServletHolder defaultHolder = new ServletHolder();
         defaultHolder.setServlet(defaultHandler);
 
         servletContextHandler.addServlet(defaultHolder, defaultHandler.pathSpec());

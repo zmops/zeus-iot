@@ -35,6 +35,7 @@ public class MessageService {
 
     @Autowired
     MessageEventHandler messageEventHandler;
+
     /**
      * 发送消息
      *
@@ -83,7 +84,7 @@ public class MessageService {
      * @return
      */
     public Pager<Messages> list(MessageParam messageParam) {
-        LoginUser user      = LoginContextHolder.getContext().getUser();
+        LoginUser user = LoginContextHolder.getContext().getUser();
         QMessages qMessages = new QMessages();
 
         qMessages.userId.eq(user.getId());
@@ -105,8 +106,8 @@ public class MessageService {
      * @return
      */
     public List<Integer> read(MessageParam messageParam) {
-        LoginUser user     = LoginContextHolder.getContext().getUser();
-        Messages  messages = new Messages();
+        LoginUser user = LoginContextHolder.getContext().getUser();
+        Messages messages = new Messages();
         messages.setReaded(1);
         QMessages qMessages = new QMessages();
         if (!CollectionUtils.isEmpty(messageParam.getIds())) {

@@ -42,5 +42,5 @@ public interface ZbxAction {
      */
     @Post(headers = "authTag: noAuth")
     @JsonPath("/action/action.offline.get")
-    String getOfflineStatusAction(@ParamName("userAuth") String userAuth,@ParamName("name") String name);
+    String getOfflineStatusAction(@ParamName("userAuth") String userAuth, @ParamName("name") String name);
 }

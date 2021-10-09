@@ -52,8 +52,8 @@ public class AnnotationScan {
      * Begin to scan classes.
      */
     public void scan() throws IOException, StorageException {
-        ClassPath                         classpath = ClassPath.from(this.getClass().getClassLoader());
-        ImmutableSet<ClassPath.ClassInfo> classes   = classpath.getTopLevelClassesRecursive("com.zmops.zeus.iot");
+        ClassPath classpath = ClassPath.from(this.getClass().getClassLoader());
+        ImmutableSet<ClassPath.ClassInfo> classes = classpath.getTopLevelClassesRecursive("com.zmops.zeus.iot");
         for (ClassPath.ClassInfo classInfo : classes) {
             Class<?> aClass = classInfo.load();
 
@@ -71,7 +71,7 @@ public class AnnotationScan {
 
     private class AnnotationListenerCache {
         private AnnotationListener listener;
-        private List<Class<?>>     matchedClass;
+        private List<Class<?>> matchedClass;
 
         private AnnotationListenerCache(AnnotationListener listener) {
             this.listener = listener;

@@ -43,14 +43,14 @@ public class AlarmService {
 
 
     public void alarm(Map<String, String> alarmInfo) {
-        String deviceId    = alarmInfo.get("hostname");
+        String deviceId = alarmInfo.get("hostname");
         String eventRuleId = alarmInfo.get("triggerName");
 
         if (ToolUtil.isEmpty(deviceId) || ToolUtil.isEmpty(eventRuleId)) {
             return;
         }
 
-        Device       device       = new QDevice().deviceId.eq(deviceId).findOne();
+        Device device = new QDevice().deviceId.eq(deviceId).findOne();
         ProductEvent productEvent = new QProductEvent().eventRuleId.eq(Long.parseLong(eventRuleId)).findOne();
 
         List<AlarmMessage> alarmMessages = new ArrayList<>();
@@ -130,7 +130,7 @@ public class AlarmService {
         }
         List<String> triggerIds = problemList.parallelStream().map(ZbxProblemInfo::getObjectid).map(Objects::toString).collect(Collectors.toList());
         List<ProductEventRuleDto> ruleList = DB.findDto(ProductEventRuleDto.class, "select d.event_rule_name,r.zbx_id from product_event d INNER JOIN (select event_rule_id," +
-                "zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.event_rule_id=d.event_rule_id")
+                        "zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.event_rule_id=d.event_rule_id")
                 .setParameter("zbxIds", triggerIds).findList();
         Map<String, String> ruleMap = ruleList.parallelStream().collect(Collectors.toMap(ProductEventRuleDto::getZbxId, ProductEventRuleDto::getEventRuleName));
 
@@ -150,7 +150,7 @@ public class AlarmService {
     }
 
     public List<ZbxProblemInfo> getZbxAlarm(AlarmParam alarmParam) {
-        String       hostId = null;
+        String hostId = null;
         List<String> deviceIds;
         if (ToolUtil.isNotEmpty(alarmParam.getDeviceId())) {
             deviceIds = Collections.singletonList(alarmParam.getDeviceId());
@@ -178,7 +178,7 @@ public class AlarmService {
         }
         List<String> triggerIds = problemList.parallelStream().map(ZbxProblemInfo::getObjectid).map(Objects::toString).collect(Collectors.toList());
         List<ProductEventRuleDto> ruleList = DB.findDto(ProductEventRuleDto.class, "select event_rule_name,r.zbx_id from product_event d INNER JOIN (select event_rule_id," +
-                "zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.event_rule_id=d.event_rule_id")
+                        "zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.event_rule_id=d.event_rule_id")
                 .setParameter("zbxIds", triggerIds).findList();
         Map<String, String> ruleMap = ruleList.parallelStream().collect(Collectors.toMap(ProductEventRuleDto::getZbxId, ProductEventRuleDto::getEventRuleName));
 
@@ -198,7 +198,7 @@ public class AlarmService {
     }
 
     public List<ZbxProblemInfo> getEventProblem(AlarmParam alarmParam) {
-        String       hostId = null;
+        String hostId = null;
         List<String> deviceIds;
         if (ToolUtil.isNotEmpty(alarmParam.getDeviceId())) {
             deviceIds = Collections.singletonList(alarmParam.getDeviceId());

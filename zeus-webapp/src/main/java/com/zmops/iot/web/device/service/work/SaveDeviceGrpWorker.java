@@ -17,7 +17,7 @@ import java.util.Map;
 
 /**
  * @author yefei
- *
+ * <p>
  * 处理设备与设备组关系处理步骤
  */
 @Slf4j
@@ -35,7 +35,7 @@ public class SaveDeviceGrpWorker implements IWorker<DeviceDto, Boolean> {
         }
 
         //保存设备与设备组关系
-        Device              device            = (Device) map.get("saveDvice").getWorkResult().getResult();
+        Device device = (Device) map.get("saveDvice").getWorkResult().getResult();
         List<DevicesGroups> devicesGroupsList = new ArrayList<>();
         for (Long deviceGroupId : deviceDto.getDeviceGroupIds()) {
             devicesGroupsList.add(DevicesGroups.builder().deviceId(device.getDeviceId()).deviceGroupId(deviceGroupId).build());

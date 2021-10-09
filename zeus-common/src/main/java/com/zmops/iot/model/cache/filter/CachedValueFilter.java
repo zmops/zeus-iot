@@ -38,9 +38,9 @@ public class CachedValueFilter extends JsonSerializer<Object> {
             if (value == null) {
                 continue;
             }
-            CachedValue[] cachedValues   = field.getAnnotationsByType(CachedValue.class);
-            JsonProperty  jsonProperties = field.getDeclaredAnnotation(JsonProperty.class);
-            String        fieldName      = field.getName();
+            CachedValue[] cachedValues = field.getAnnotationsByType(CachedValue.class);
+            JsonProperty jsonProperties = field.getDeclaredAnnotation(JsonProperty.class);
+            String fieldName = field.getName();
             if (null != jsonProperties) {
                 fieldName = jsonProperties.value();
             }

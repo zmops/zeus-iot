@@ -20,19 +20,19 @@ public class HashedWheelTimer extends AbstractWheelTimer {
 
     private static final long MILLISECOND_NANOS = TimeUnit.MILLISECONDS.toNanos(1);
 
-    private final Worker        worker      = new Worker();
-    private final Thread        workerThread;
+    private final Worker worker = new Worker();
+    private final Thread workerThread;
     @SuppressWarnings({"unused", "FieldMayBeFinal"})
     private final AtomicInteger workerState = new AtomicInteger(WORKER_STATE_INIT); // 0 - init, 1 - started, 2 - shut down
 
-    private final long                      tickDuration;
-    private final HashedWheelBucket[]       wheel;
-    private final int                       mask;
-    private final CountDownLatch            startTimeInitialized = new CountDownLatch(1);
-    private final Queue<HashedWheelTimeout> timeouts             = new ConcurrentLinkedDeque<>();
-    private final Queue<HashedWheelTimeout> cancelledTimeouts    = new ConcurrentLinkedDeque<>();
-    private final AtomicLong                pendingTimeouts      = new AtomicLong(0);
-    private final long                      maxPendingTimeouts;
+    private final long tickDuration;
+    private final HashedWheelBucket[] wheel;
+    private final int mask;
+    private final CountDownLatch startTimeInitialized = new CountDownLatch(1);
+    private final Queue<HashedWheelTimeout> timeouts = new ConcurrentLinkedDeque<>();
+    private final Queue<HashedWheelTimeout> cancelledTimeouts = new ConcurrentLinkedDeque<>();
+    private final AtomicLong pendingTimeouts = new AtomicLong(0);
+    private final long maxPendingTimeouts;
 
     private volatile long startTime;
 
@@ -360,8 +360,8 @@ public class HashedWheelTimer extends AbstractWheelTimer {
                 long calculated = timeout.deadline / tickDuration;
                 timeout.remainingRounds = (calculated - tick) / wheel.length;
 
-                final long ticks     = Math.max(calculated, tick); // Ensure we don't schedule for past.
-                int        stopIndex = (int) (ticks & mask);
+                final long ticks = Math.max(calculated, tick); // Ensure we don't schedule for past.
+                int stopIndex = (int) (ticks & mask);
 
                 HashedWheelBucket bucket = wheel[stopIndex];
                 bucket.addTimeout(timeout);
@@ -395,7 +395,7 @@ public class HashedWheelTimer extends AbstractWheelTimer {
 
             for (; ; ) {
                 final long currentTime = System.nanoTime() - startTime;
-                long       sleepTimeMs = (deadline - currentTime + 999999) / 1000000;
+                long sleepTimeMs = (deadline - currentTime + 999999) / 1000000;
 
                 if (sleepTimeMs <= 0) {
                     if (currentTime == Long.MIN_VALUE) {
@@ -423,15 +423,15 @@ public class HashedWheelTimer extends AbstractWheelTimer {
 
     private static final class HashedWheelTimeout implements Timeout {
 
-        private static final int                                           ST_INIT       = 0;
-        private static final int                                           ST_CANCELLED  = 1;
-        private static final int                                           ST_EXPIRED    = 2;
+        private static final int ST_INIT = 0;
+        private static final int ST_CANCELLED = 1;
+        private static final int ST_EXPIRED = 2;
         private static final AtomicIntegerFieldUpdater<HashedWheelTimeout> STATE_UPDATER =
                 AtomicIntegerFieldUpdater.newUpdater(HashedWheelTimeout.class, "state");
 
         private final HashedWheelTimer timer;
-        private final TimerTask        task;
-        private final long             deadline;
+        private final TimerTask task;
+        private final long deadline;
 
         @SuppressWarnings({"unused", "FieldMayBeFinal", "RedundantFieldInitialization"})
         private volatile int state = ST_INIT;
@@ -519,7 +519,7 @@ public class HashedWheelTimer extends AbstractWheelTimer {
         @Override
         public String toString() {
             final long currentTime = System.nanoTime();
-            long       remaining   = deadline - currentTime + timer.startTime;
+            long remaining = deadline - currentTime + timer.startTime;
 
             StringBuilder buf = new StringBuilder(192)
                     .append("HashedWheelTimer(deadline: ");

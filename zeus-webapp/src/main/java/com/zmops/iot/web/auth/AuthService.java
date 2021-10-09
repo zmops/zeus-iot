@@ -85,7 +85,7 @@ public class AuthService {
         }
 
         String requestMd5 = SaltUtil.md5Encrypt(password, user.getSalt());
-        String dbMd5      = user.getPassword();
+        String dbMd5 = user.getPassword();
         if (dbMd5 == null || !dbMd5.equalsIgnoreCase(requestMd5)) {
             throw new AuthException(AuthExceptionEnum.USERNAME_PWD_ERROR);
         }
@@ -253,7 +253,7 @@ public class AuthService {
             return false;
         }
         ArrayList<String> objects = CollectionUtil.newArrayList(roleNames);
-        String            join    = CollectionUtil.join(objects, ",");
+        String join = CollectionUtil.join(objects, ",");
         if (LoginContextHolder.getContext().hasAnyRoles(join)) {
             return true;
         }
@@ -263,11 +263,11 @@ public class AuthService {
 
     public boolean checkAll(String code) {
         HttpServletRequest request = HttpContext.getRequest();
-        LoginUser          user    = LoginContextHolder.getContext().getUser();
+        LoginUser user = LoginContextHolder.getContext().getUser();
         if (null == user) {
             return false;
         }
-        String       sql  = "select * from sys_menu where code = :code and menu_id in (SELECT menu_id from sys_role_menu where role_id = :roleId)";
+        String sql = "select * from sys_menu where code = :code and menu_id in (SELECT menu_id from sys_role_menu where role_id = :roleId)";
         List<SqlRow> list = DB.sqlQuery(sql).setParameter("code", code).setParameter("roleId", user.getRoleList().get(0)).findList();
         if (list.size() > 0) {
             return true;

@@ -55,6 +55,7 @@ public enum PropertyPlaceholderHelper {
      */
     PropertyPlaceholderHelper(String placeholderPrefix, String placeholderSuffix, String valueSeparator,
                               boolean ignoreUnresolvablePlaceholders) {
+
         if (StringUtil.isEmpty(placeholderPrefix) || StringUtil.isEmpty(placeholderSuffix)) {
             throw new UnsupportedOperationException("'placeholderPrefix or placeholderSuffix' must not be null");
         }
@@ -125,7 +126,7 @@ public enum PropertyPlaceholderHelper {
         while (startIndex != -1) {
             int endIndex = findPlaceholderEndIndex(result, startIndex);
             if (endIndex != -1) {
-                String placeholder         = result.substring(startIndex + this.placeholderPrefix.length(), endIndex);
+                String placeholder = result.substring(startIndex + this.placeholderPrefix.length(), endIndex);
                 String originalPlaceholder = placeholder;
                 if (!visitedPlaceholders.add(originalPlaceholder)) {
                     throw new IllegalArgumentException("Circular placeholder reference '" + originalPlaceholder + "' in property definitions");
@@ -139,7 +140,7 @@ public enum PropertyPlaceholderHelper {
                     int separatorIndex = placeholder.indexOf(this.valueSeparator);
                     if (separatorIndex != -1) {
                         String actualPlaceholder = placeholder.substring(0, separatorIndex);
-                        String defaultValue      = placeholder.substring(separatorIndex + this.valueSeparator.length());
+                        String defaultValue = placeholder.substring(separatorIndex + this.valueSeparator.length());
                         propVal = placeholderResolver.resolvePlaceholder(actualPlaceholder);
                         if (propVal == null) {
                             propVal = defaultValue;
@@ -169,7 +170,7 @@ public enum PropertyPlaceholderHelper {
     }
 
     private int findPlaceholderEndIndex(CharSequence buf, int startIndex) {
-        int index                   = startIndex + this.placeholderPrefix.length();
+        int index = startIndex + this.placeholderPrefix.length();
         int withinNestedPlaceholder = 0;
         while (index < buf.length()) {
             if (StringUtil.substringMatch(buf, index, this.placeholderSuffix)) {

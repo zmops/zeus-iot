@@ -52,7 +52,7 @@ public class UpdateAttrZbxIdWorker implements IWorker<DeviceDto, Boolean> {
         }
 
         //取出 ZBX hostid
-        Object    result = map.get("saveZbxHostWork").getWorkResult().getResult();
+        Object result = map.get("saveZbxHostWork").getWorkResult().getResult();
         JSONArray hostid = JSONObject.parseObject(result.toString()).getJSONArray("hostids");
 
         //根据hostid 取出监控项

@@ -22,36 +22,36 @@ public class WorkerWrapperGroup {
     /**
      * 任务开始时间
      */
-    private final    long                             groupStartTime;
+    private final long groupStartTime;
     /**
      * 任务限时
      */
-    private final    long                             timeoutLength;
+    private final long timeoutLength;
     /**
      * 该map存放所有wrapper的id和wrapper映射
      * <p/>
      * 需要线程安全。
      */
-    private final    Map<String, WorkerWrapper<?, ?>> forParamUseWrappers = new ConcurrentHashMap<>();
+    private final Map<String, WorkerWrapper<?, ?>> forParamUseWrappers = new ConcurrentHashMap<>();
     /**
      * 当全部wrapper都调用结束，它会countDown
      */
-    private final    CountDownLatch                   endCDL              = new CountDownLatch(1);
+    private final CountDownLatch endCDL = new CountDownLatch(1);
     /**
      * 检测到超时，此标记变量将为true。
      */
-    private final    AtomicBoolean                    anyTimeout          = new AtomicBoolean(false);
+    private final AtomicBoolean anyTimeout = new AtomicBoolean(false);
     /**
      * 结束时间
      */
-    private volatile long                             finishTime          = -1L;
+    private volatile long finishTime = -1L;
     /**
      * 取消任务状态
      * 0 - not cancel , 1 - waiting cancel , 2 - already cancel
      */
-    private final    AtomicInteger                    cancelState         = new AtomicInteger();
+    private final AtomicInteger cancelState = new AtomicInteger();
 
-    public static final int NOT_CANCEL     = 0;
+    public static final int NOT_CANCEL = 0;
     public static final int WAITING_CANCEL = 1;
     public static final int ALREADY_CANCEL = 2;
 
@@ -120,10 +120,10 @@ public class WorkerWrapperGroup {
             }
             AtomicBoolean hasTimeout = new AtomicBoolean(false);
             // 记录正在运行中的wrapper里，最近的限时时间。
-            final AtomicLong                      minDaley   = new AtomicLong(Long.MAX_VALUE);
-            final Collection<WorkerWrapper<?, ?>> values     = forParamUseWrappers.values();
-            final Stream<WorkerWrapper<?, ?>>     stream     = values.size() > 128 ? values.parallelStream() : values.stream();
-            final boolean                         needCancel = cancelState.get() == WAITING_CANCEL;
+            final AtomicLong minDaley = new AtomicLong(Long.MAX_VALUE);
+            final Collection<WorkerWrapper<?, ?>> values = forParamUseWrappers.values();
+            final Stream<WorkerWrapper<?, ?>> stream = values.size() > 128 ? values.parallelStream() : values.stream();
+            final boolean needCancel = cancelState.get() == WAITING_CANCEL;
             boolean allFinish_and_notNeedCancel = stream
                     // 需要取消的话就取消
                     .peek(wrapper -> {

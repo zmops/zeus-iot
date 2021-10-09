@@ -119,7 +119,7 @@ public interface DirectedGraph<N, R> extends Graph<N, R> {
 
     class SyncDirectedGraph<N, R> extends AbstractDirectedGraph<N, R> {
         private final DirectedGraph<N, R> source;
-        private final Object              mutex;
+        private final Object mutex;
 
         public SyncDirectedGraph(DirectedGraph<N, R> source, Object mutex) {
             this.source = source;

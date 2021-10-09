@@ -9,9 +9,9 @@ import java.util.List;
  */
 public class MetricsMeta {
 
-    private String           context;
-    private String           desc;
-    private String           name;
+    private String context;
+    private String desc;
+    private String name;
     private List<MetricMeta> metricMetaList;
 
     private MetricsMeta() {

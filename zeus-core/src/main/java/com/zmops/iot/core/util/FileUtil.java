@@ -25,8 +25,8 @@ public class FileUtil {
             log.error("文件未找到！" + filename);
             throw new ServiceException(CoreExceptionEnum.FILE_NOT_FOUND);
         }
-        FileChannel     channel = null;
-        FileInputStream fs      = null;
+        FileChannel channel = null;
+        FileInputStream fs = null;
         try {
             fs = new FileInputStream(f);
             channel = fs.getChannel();

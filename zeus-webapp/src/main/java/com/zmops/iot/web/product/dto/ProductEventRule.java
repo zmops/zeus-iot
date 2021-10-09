@@ -61,7 +61,7 @@ public class ProductEventRule {
     private String status;
 
     private String classify = "0";
-    
+
     @Data
     public static class Tag {
 
@@ -98,7 +98,7 @@ public class ProductEventRule {
 
         private String unit;
 
-        private Long   productAttrId;
+        private Long productAttrId;
 
         private String productAttrType;
 

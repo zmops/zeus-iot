@@ -19,7 +19,7 @@ public class MetricMeta {
     private String name;
     private String type;
     private String desc;
-    private Field  field;
+    private Field field;
 
     public static MetricMeta build(Metric annotation, Field field) {
         MetricMeta metricMeta = new MetricMeta();

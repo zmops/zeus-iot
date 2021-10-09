@@ -95,7 +95,7 @@ public class DeviceModelController {
         productAttr.setAttrId(attrId);
 
         String response = deviceModelService.createTrapperItem(productAttr);
-        String zbxId    = JSON.parseObject(response, TemplateIds.class).getItemids()[0];
+        String zbxId = JSON.parseObject(response, TemplateIds.class).getItemids()[0];
 
         deviceModelService.createProductAttr(productAttr, zbxId);
 

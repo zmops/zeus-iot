@@ -19,7 +19,6 @@
 package com.zmops.zeus.iot.server.telemetry.none;
 
 
-
 import com.zmops.zeus.iot.server.telemetry.api.MetricFamily;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsCollector;
 

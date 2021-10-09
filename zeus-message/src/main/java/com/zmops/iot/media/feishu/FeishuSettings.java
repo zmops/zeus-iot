@@ -31,7 +31,7 @@ import java.util.List;
 @ToString
 public class FeishuSettings {
 
-    private String           textTemplate;
+    private String textTemplate;
     @Builder.Default
     private List<WebHookUrl> webhooks = new ArrayList<>();
 

@@ -106,7 +106,7 @@ public abstract class AbstractConfiguration {
             }
         } else if (tmpElement instanceof JsonArray) {
             JsonArray tmpJsonArray = tmpElement.getAsJsonArray();
-            String    lastKey      = keyDeptPath.getOrDefault(dept - 1, "");
+            String lastKey = keyDeptPath.getOrDefault(dept - 1, "");
             for (int index = 0; index < tmpJsonArray.size(); index++) {
                 keyDeptPath.put(dept - 1, lastKey + "[" + index + "]");
                 updateConfig(keyDeptPath, dept, tmpJsonArray.get(index));

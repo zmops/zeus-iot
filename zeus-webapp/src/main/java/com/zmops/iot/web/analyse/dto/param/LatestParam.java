@@ -10,7 +10,7 @@ import java.util.List;
  * @author yefei
  **/
 @Data
-public class LatestParam  extends BaseQueryParam{
+public class LatestParam extends BaseQueryParam {
     @NotNull(message = "请选择一个设备再查询")
     private String deviceId;
 

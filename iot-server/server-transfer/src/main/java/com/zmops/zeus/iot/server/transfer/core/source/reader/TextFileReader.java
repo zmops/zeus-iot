@@ -36,17 +36,17 @@ public class TextFileReader implements Reader {
 
     public static final int NEVER_STOP_SIGN = -1;
 
-    private final File   file;
-    private final int    position;
+    private final File file;
+    private final int position;
     private final String md5;
 
     private Iterator<String> iterator;
-    private Stream<String>   stream;
+    private Stream<String> stream;
 
     private long timeout;
     private long lastTime = 0;
 
-    private final PluginMetric    textFileMetric;
+    private final PluginMetric textFileMetric;
     private final List<Validator> validators = new ArrayList<>();
 
     public TextFileReader(File file, int position) {

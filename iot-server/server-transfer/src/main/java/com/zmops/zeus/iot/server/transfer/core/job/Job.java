@@ -49,7 +49,7 @@ public class Job {
 
     public List<Task> createTasks() {
         List<Task> taskList = new ArrayList<>();
-        int        index    = 0;
+        int index = 0;
         try {
             LOGGER.info("job id: {}, job name {} ", getJobInstanceId(), getName());
 

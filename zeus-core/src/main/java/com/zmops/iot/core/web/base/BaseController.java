@@ -23,7 +23,7 @@ import java.util.Objects;
 public class BaseController {
 
     protected final String REDIRECT = "redirect:";
-    protected final String FORWARD  = "forward:";
+    protected final String FORWARD = "forward:";
 
     protected static SuccessResponseData SUCCESS_TIP = new SuccessResponseData();
 
@@ -109,8 +109,8 @@ public class BaseController {
      * @author 0x0001
      */
     protected ResponseEntity<InputStreamResource> renderFile(String fileName, InputStream inputStream) {
-        InputStreamResource resource  = new InputStreamResource(inputStream);
-        String              dfileName = null;
+        InputStreamResource resource = new InputStreamResource(inputStream);
+        String dfileName = null;
         try {
             dfileName = new String(fileName.getBytes("gb2312"), "iso8859-1");
         } catch (UnsupportedEncodingException e) {

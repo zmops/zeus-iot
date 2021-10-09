@@ -27,7 +27,7 @@ public class SenderManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(SenderManager.class);
 
     private final TaskPositionManager taskPositionManager;
-    private final String              sourceFilePath;
+    private final String sourceFilePath;
 
     private final PluginMetric metric = new PluginMetric();
 

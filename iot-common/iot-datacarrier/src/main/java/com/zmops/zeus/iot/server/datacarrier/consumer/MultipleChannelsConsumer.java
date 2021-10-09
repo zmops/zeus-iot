@@ -30,11 +30,11 @@ import java.util.List;
  * IConsumer}s
  */
 public class MultipleChannelsConsumer extends Thread {
-    private volatile boolean          running;
+    private volatile boolean running;
     private volatile ArrayList<Group> consumeTargets;
     @SuppressWarnings("NonAtomicVolatileUpdate")
-    private volatile long             size;
-    private final    long             consumeCycle;
+    private volatile long size;
+    private final long consumeCycle;
 
     public MultipleChannelsConsumer(String threadName, long consumeCycle) {
         super(threadName);
@@ -114,7 +114,7 @@ public class MultipleChannelsConsumer extends Thread {
     }
 
     private static class Group {
-        private Channels  channels;
+        private Channels channels;
         private IConsumer consumer;
 
         public Group(Channels channels, IConsumer consumer) {

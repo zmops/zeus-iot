@@ -21,7 +21,7 @@ import java.util.Properties;
 public class TDEngineStorageProvider extends ModuleProvider {
 
     private final TDEngineStorageConfig config;
-    private       JDBCHikariCPClient    client;
+    private JDBCHikariCPClient client;
 
     public TDEngineStorageProvider() {
         this.config = new TDEngineStorageConfig();
@@ -59,7 +59,7 @@ public class TDEngineStorageProvider extends ModuleProvider {
     @Override
     public void start() throws ServiceNotProvidedException, ModuleStartException {
 
-        MetricsCreator     metricCreator = getManager().find(TelemetryModule.NAME).provider().getService(MetricsCreator.class);
+        MetricsCreator metricCreator = getManager().find(TelemetryModule.NAME).provider().getService(MetricsCreator.class);
         HealthCheckMetrics healthChecker = metricCreator.createHealthCheckerGauge("storage_tdengine", MetricsTag.EMPTY_KEY, MetricsTag.EMPTY_VALUE);
 
         client.registerChecker(healthChecker);

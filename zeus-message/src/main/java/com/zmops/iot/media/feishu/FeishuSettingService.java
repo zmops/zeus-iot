@@ -31,8 +31,8 @@ public class FeishuSettingService {
 
     private FeishuSettings buildFeishuSetting(MediaTypeSetting setting) {
         JSONObject jsonObject = JSONObject.parseObject(setting.getWebhooks());
-        String     secret     = Optional.ofNullable(jsonObject.getString("secret")).orElse("");
-        String     url        = Optional.ofNullable(jsonObject.getString("url")).orElse("");
+        String secret = Optional.ofNullable(jsonObject.getString("secret")).orElse("");
+        String url = Optional.ofNullable(jsonObject.getString("url")).orElse("");
         return FeishuSettings.builder().textTemplate(setting.getTemplate())
                 .webhooks(Arrays.asList(new FeishuSettings.WebHookUrl(secret, url))).build();
     }

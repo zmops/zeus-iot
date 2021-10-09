@@ -30,7 +30,7 @@ public class SaveProdSvcWorker implements IWorker<ProductServiceDto, Boolean> {
 
         String prodId = productServiceDto.getRelationId();
 
-        List<String>                 deviceIds                  = new QDevice().select(QDevice.Alias.deviceId).productId.eq(Long.parseLong(prodId)).findSingleAttributeList();
+        List<String> deviceIds = new QDevice().select(QDevice.Alias.deviceId).productId.eq(Long.parseLong(prodId)).findSingleAttributeList();
         List<ProductServiceRelation> productServiceRelationList = new ArrayList<>();
         for (String deviceId : deviceIds) {
             ProductServiceRelation productServiceRelation = new ProductServiceRelation();

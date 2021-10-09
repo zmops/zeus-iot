@@ -7,16 +7,16 @@ package com.zmops.zeus.iot.server.transfer.conf;
 public class JobConstants extends CommonConstants {
 
     // job id
-    public static final String JOB_ID          = "job.id";
+    public static final String JOB_ID = "job.id";
     public static final String JOB_INSTANCE_ID = "job.instance.id";
-    public static final String JOB_IP          = "job.ip";
-    public static final String JOB_RETRY       = "job.retry";
+    public static final String JOB_IP = "job.ip";
+    public static final String JOB_RETRY = "job.retry";
 
-    public static final String JOB_TRIGGER             = "job.trigger";
-    public static final String JOB_NAME                = "job.name";
+    public static final String JOB_TRIGGER = "job.trigger";
+    public static final String JOB_NAME = "job.name";
     public static final String JOB_LINE_FILTER_PATTERN = "job.pattern";
-    public static final String DEFAULT_JOB_NAME        = "default";
-    public static final String JOB_DESCRIPTION         = "job.description";
+    public static final String DEFAULT_JOB_NAME = "default";
+    public static final String JOB_DESCRIPTION = "job.description";
     public static final String DEFAULT_JOB_DESCRIPTION = "default job description";
     public static final String DEFAULT_JOB_LINE_FILTER = "";
 
@@ -30,9 +30,9 @@ public class JobConstants extends CommonConstants {
 
     public static final String DEFAULT_JOB_FILE_TIME_OFFSET = "0d";
 
-    public static final String JOB_FILE_MAX_WAIT         = "job.file.max.wait";
+    public static final String JOB_FILE_MAX_WAIT = "job.file.max.wait";
     // time in min
-    public static final int    DEFAULT_JOB_FILE_MAX_WAIT = 1;
+    public static final int DEFAULT_JOB_FILE_MAX_WAIT = 1;
 
     public static final String JOB_DIR_FILTER_PATTERN = "job.dir.pattern";
 

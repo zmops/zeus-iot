@@ -32,7 +32,7 @@ public abstract class AbstractArray2D<E> implements Array2D<E> {
 
     @Override
     public String toString() {
-        StringBuilder      sb = new StringBuilder(64).append(this.getClass().getSimpleName()).append('{');
+        StringBuilder sb = new StringBuilder(64).append(this.getClass().getSimpleName()).append('{');
         Iterator<Point<E>> it = iterator();
         if (it.hasNext()) {
             while (true) {
@@ -49,7 +49,7 @@ public abstract class AbstractArray2D<E> implements Array2D<E> {
 
     public static class PointImpl<E> implements Point<E> {
         private final BiInt idx;
-        private final E     element;
+        private final E element;
 
         public PointImpl(BiInt idx, E element) {
             this.idx = idx;

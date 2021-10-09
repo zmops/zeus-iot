@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Metrics
 public class TaskMetrics {
 
-    private static final TaskMetrics   TASK_METRICS  = new TaskMetrics();
+    private static final TaskMetrics TASK_METRICS = new TaskMetrics();
     private static final AtomicBoolean REGISTER_ONCE = new AtomicBoolean(false);
 
     @Metric

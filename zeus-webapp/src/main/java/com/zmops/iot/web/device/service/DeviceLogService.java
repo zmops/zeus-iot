@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 @Service
 public class DeviceLogService {
 
-    private static final String LOG_TYPE_ALARM   = "告警日志";
-    private static final String LOG_TYPE_EVENT   = "事件日志";
+    private static final String LOG_TYPE_ALARM = "告警日志";
+    private static final String LOG_TYPE_EVENT = "事件日志";
     private static final String LOG_TYPE_SERVICE = "服务日志";
 
     @Autowired

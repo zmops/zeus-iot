@@ -24,9 +24,9 @@ public class JsonToItemValueProcess implements Processor {
 
     @Override
     public void process(Exchange exchange) throws Exception {
-        Message     message      = exchange.getIn();
-        InputStream bodyStream   = (InputStream) message.getBody();
-        String      inputContext = this.analysisMessage(bodyStream);
+        Message message = exchange.getIn();
+        InputStream bodyStream = (InputStream) message.getBody();
+        String inputContext = this.analysisMessage(bodyStream);
 
 
         IOTDeviceValue iotValue = gson.fromJson(inputContext, IOTDeviceValue.class);
@@ -46,9 +46,9 @@ public class JsonToItemValueProcess implements Processor {
 
 
     private String analysisMessage(InputStream bodyStream) throws IOException {
-        ByteArrayOutputStream outStream    = new ByteArrayOutputStream();
-        byte[]                contextBytes = new byte[4096];
-        int                   realLen;
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        byte[] contextBytes = new byte[4096];
+        int realLen;
         while ((realLen = bodyStream.read(contextBytes, 0, 4096)) != -1) {
             outStream.write(contextBytes, 0, realLen);
         }

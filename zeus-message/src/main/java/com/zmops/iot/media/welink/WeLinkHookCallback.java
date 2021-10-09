@@ -50,10 +50,10 @@ public class WeLinkHookCallback implements AlarmCallback {
     @Autowired
     WeLinkSettingService weLinkSettingService;
 
-    private static final int           HTTP_CONNECT_TIMEOUT            = 1000;
-    private static final int           HTTP_CONNECTION_REQUEST_TIMEOUT = 1000;
-    private static final int           HTTP_SOCKET_TIMEOUT             = 10000;
-    private final        RequestConfig requestConfig;
+    private static final int HTTP_CONNECT_TIMEOUT = 1000;
+    private static final int HTTP_CONNECTION_REQUEST_TIMEOUT = 1000;
+    private static final int HTTP_SOCKET_TIMEOUT = 10000;
+    private final RequestConfig requestConfig;
 
     public WeLinkHookCallback() {
         this.requestConfig = RequestConfig.custom()
@@ -114,8 +114,8 @@ public class WeLinkHookCallback implements AlarmCallback {
      */
     private String getAccessToken(WeLinkSettings.WebHookUrl webHookUrl) {
         String accessTokenUrl = webHookUrl.getAccessTokenUrl();
-        String clientId       = webHookUrl.getClientId();
-        String clientSecret   = webHookUrl.getClientSecret();
+        String clientId = webHookUrl.getClientId();
+        String clientSecret = webHookUrl.getClientSecret();
         String response = sendPostRequest(
                 accessTokenUrl, Collections.emptyMap(),
                 String.format(Locale.US, "{\"client_id\":%s,\"client_secret\":%s}", clientId, clientSecret)

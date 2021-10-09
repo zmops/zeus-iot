@@ -14,7 +14,7 @@ public abstract class AbstractDirectedGraph<N, R> implements DirectedGraph<N, R>
 
     @Override
     public String toString() {
-        Set<N>                           nv   = nodesView();
+        Set<N> nv = nodesView();
         Set<? extends Graph.Entry<N, R>> rSet = getRelations();
         StringBuilder sb = new StringBuilder(nv.size() * 10 + rSet.size() * 20)
                 .append(this.getClass().getSimpleName()).append("{nodes=[");

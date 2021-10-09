@@ -34,15 +34,15 @@ public class UpdateZbxTagWorker implements IWorker<DeviceDto, Boolean> {
     public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> map) {
         log.debug("同步 zbx tag 工作……");
         //取出 ZBX hostid
-        Object    result = map.get("saveZbxHostWork").getWorkResult().getResult();
+        Object result = map.get("saveZbxHostWork").getWorkResult().getResult();
         JSONArray hostid = JSONObject.parseObject(result.toString()).getJSONArray("hostids");
 
         //取 设备ID
-        Device device   = (Device) map.get("saveDvice").getWorkResult().getResult();
-        String   deviceId = device.getDeviceId();
+        Device device = (Device) map.get("saveDvice").getWorkResult().getResult();
+        String deviceId = device.getDeviceId();
 
         //查询出本地tag
-        List<Tag>           list   = new QTag().sid.eq(deviceId).findList();
+        List<Tag> list = new QTag().sid.eq(deviceId).findList();
         Map<String, String> tagMap = new HashMap<>(list.size());
         for (Tag tag : list) {
             tagMap.put(tag.getTag(), tag.getValue());

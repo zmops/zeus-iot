@@ -26,9 +26,9 @@ import java.util.List;
 
 @Slf4j
 public class WebhookCallback implements AlarmCallback {
-    private static final int HTTP_CONNECT_TIMEOUT            = 1000;
+    private static final int HTTP_CONNECT_TIMEOUT = 1000;
     private static final int HTTP_CONNECTION_REQUEST_TIMEOUT = 1000;
-    private static final int HTTP_SOCKET_TIMEOUT             = 10000;
+    private static final int HTTP_SOCKET_TIMEOUT = 10000;
 
     private RequestConfig requestConfig;
 

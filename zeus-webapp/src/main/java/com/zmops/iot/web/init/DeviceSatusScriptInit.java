@@ -19,22 +19,22 @@ import java.util.Map;
 public class DeviceSatusScriptInit implements CommandLineRunner {
 
 
-    public static final String GLOBAL_HOST_GROUP_CODE     = "ZEUS_HOST_GROUP_ID";
+    public static final String GLOBAL_HOST_GROUP_CODE = "ZEUS_HOST_GROUP_ID";
     public static final String GLOBAL_OFFLINE_ACTION_CODE = "ZEUS_OFFLINE_ACTION_ID";
-    public static final String GLOBAL_ALARM_ACTION_CODE   = "ZEUS_ALARM_ACTION_ID";
-    public static final String GLOBAL_EXEC_ACTION_CODE    = "ZEUS_EXEC_ACTION_ID";
-    public static final String GLOBAL_ADMIN_ROLE_CODE     = "ZEUS_ADMIN_ROLE_ID";
-    public static final String GLOBAL_EVENT_ACTION_CODE   = "ZEUS_EVENT_ACTION_ID";
+    public static final String GLOBAL_ALARM_ACTION_CODE = "ZEUS_ALARM_ACTION_ID";
+    public static final String GLOBAL_EXEC_ACTION_CODE = "ZEUS_EXEC_ACTION_ID";
+    public static final String GLOBAL_ADMIN_ROLE_CODE = "ZEUS_ADMIN_ROLE_ID";
+    public static final String GLOBAL_EVENT_ACTION_CODE = "ZEUS_EVENT_ACTION_ID";
 
     public static final String SCRIPT_OFFLINE = "__offline_status__";
-    public static final String SCRIPT_ALARM   = "__trigger_webhook__";
+    public static final String SCRIPT_ALARM = "__trigger_webhook__";
     public static final String SCRIPT_EXECUTE = "__trigger_execute__";
-    public static final String SCRIPT_EVENT   = "__attr_event__";
+    public static final String SCRIPT_EVENT = "__attr_event__";
 
     public static final String ACTION_TAG_OFFLINE = "__offline__";
-    public static final String ACTION_TAG_ALARM   = "__alarm__";
+    public static final String ACTION_TAG_ALARM = "__alarm__";
     public static final String ACTION_TAG_EXECUTE = "__execute__";
-    public static final String ACTION_TAG_EXENT   = "__event__";
+    public static final String ACTION_TAG_EXENT = "__event__";
 
 
     @Autowired

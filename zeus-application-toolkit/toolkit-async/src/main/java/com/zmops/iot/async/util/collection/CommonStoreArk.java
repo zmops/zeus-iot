@@ -81,7 +81,7 @@ public class CommonStoreArk<E> extends AbstractStoreArk<E> {
             {
                 //noinspection unchecked
                 items = new Map.Entry[size()];
-                int               itemsIdx      = 0;
+                int itemsIdx = 0;
                 Iterator<Integer> emptyPointItr = emptyPoints.iterator();
                 for (int i = 0; i < allocSize; i++) {
                     Object element = elements[i];
@@ -148,7 +148,7 @@ public class CommonStoreArk<E> extends AbstractStoreArk<E> {
         if (!emptyPoints.isEmpty()) {
             return emptyPoints.poll();
         }
-        int id     = allocSize++;
+        int id = allocSize++;
         int length = elements.length;
         if (id >= length) {
             // 扩容

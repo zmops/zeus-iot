@@ -97,8 +97,8 @@ public class SysUserGroupService {
         newUserGroup.setUserGroupId(usrGrpId);
         newUserGroup.setStatus(CommonStatus.ENABLE.getCode());
         //回填 ZBX用户组ID
-        JSONObject result     = JSONObject.parseObject(zbxUserGroup.userGrpAdd(String.valueOf(usrGrpId)));
-        JSONArray  userGrpids = result.getJSONArray("usrgrpids");
+        JSONObject result = JSONObject.parseObject(zbxUserGroup.userGrpAdd(String.valueOf(usrGrpId)));
+        JSONArray userGrpids = result.getJSONArray("usrgrpids");
         newUserGroup.setZbxId(userGrpids.get(0).toString());
         DB.save(newUserGroup);
 
@@ -196,9 +196,9 @@ public class SysUserGroupService {
      */
     public void bindHostGrp(UserGroupParam userGroup) {
         //修改ZBX 用户组绑定主机组
-        String            usrGrpZbxId   = getZabUsrGrpId(userGroup.getUserGroupId());
-        List<DeviceGroup> list          = new QDeviceGroup().deviceGroupId.in(userGroup.getDeviceGroupIds()).findList();
-        List<String>      hostGrpZbxIds = list.parallelStream().map(DeviceGroup::getZbxId).collect(Collectors.toList());
+        String usrGrpZbxId = getZabUsrGrpId(userGroup.getUserGroupId());
+        List<DeviceGroup> list = new QDeviceGroup().deviceGroupId.in(userGroup.getDeviceGroupIds()).findList();
+        List<String> hostGrpZbxIds = list.parallelStream().map(DeviceGroup::getZbxId).collect(Collectors.toList());
         zbxUserGroup.userGrpBindHostGroup(hostGrpZbxIds, usrGrpZbxId);
         List<SysUserGrpDevGrp> lists = new ArrayList<>();
         for (Long deviceGroupId : userGroup.getDeviceGroupIds()) {

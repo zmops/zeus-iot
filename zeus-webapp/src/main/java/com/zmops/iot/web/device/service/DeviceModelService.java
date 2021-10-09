@@ -66,16 +66,16 @@ public class DeviceModelService {
             return new Pager<>();
         }
         //查询最新数据
-        List<Long>           attrIds    = pagedList.parallelStream().map(ProductAttrDto::getAttrId).collect(Collectors.toList());
-        List<LatestDto>      latestDtos = latestService.qeuryLatest(productAttr.getProdId(), attrIds);
-        Map<Long, LatestDto> map        = latestDtos.parallelStream().distinct().collect(Collectors.toMap(LatestDto::getAttrId, o -> o, (a, b) -> b));
+        List<Long> attrIds = pagedList.parallelStream().map(ProductAttrDto::getAttrId).collect(Collectors.toList());
+        List<LatestDto> latestDtos = latestService.qeuryLatest(productAttr.getProdId(), attrIds);
+        Map<Long, LatestDto> map = latestDtos.parallelStream().distinct().collect(Collectors.toMap(LatestDto::getAttrId, o -> o, (a, b) -> b));
 
         //查询zbx item 信息
         List<String> zbxIds = pagedList.parallelStream().map(ProductAttrDto::getZbxId).collect(Collectors.toList());
 
-        String              itemInfo  = zbxItem.getItemInfo(zbxIds.toString(), null);
-        List<ZbxItemInfo>   itemInfos = JSONObject.parseArray(itemInfo, ZbxItemInfo.class);
-        Map<String, String> errorMap  = itemInfos.parallelStream().collect(Collectors.toMap(ZbxItemInfo::getItemid, o -> Optional.ofNullable(o.getError()).orElse("")));
+        String itemInfo = zbxItem.getItemInfo(zbxIds.toString(), null);
+        List<ZbxItemInfo> itemInfos = JSONObject.parseArray(itemInfo, ZbxItemInfo.class);
+        Map<String, String> errorMap = itemInfos.parallelStream().collect(Collectors.toMap(ZbxItemInfo::getItemid, o -> Optional.ofNullable(o.getError()).orElse("")));
 
         pagedList.forEach(productAttrDto -> {
             if (null != map.get(productAttrDto.getAttrId())) {
@@ -142,7 +142,7 @@ public class DeviceModelService {
             return Collections.emptyList();
         }
         List<ProductAttr.ProcessingStep> processingSteps = new ArrayList<>();
-        JSONArray                        jsonArray       = JSONObject.parseArray(preprocessing);
+        JSONArray jsonArray = JSONObject.parseArray(preprocessing);
         for (Object object : jsonArray) {
             ProductAttr.ProcessingStep processingStep = new ProductAttr.ProcessingStep();
             processingStep.setType(((JSONObject) object).getString("type"));

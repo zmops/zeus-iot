@@ -26,10 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConsumerThread<T> extends Thread {
-    private volatile boolean          running;
-    private          IConsumer<T>     consumer;
-    private          List<DataSource> dataSources;
-    private          long             consumeCycle;
+    private volatile boolean running;
+    private IConsumer<T> consumer;
+    private List<DataSource> dataSources;
+    private long consumeCycle;
 
     ConsumerThread(String threadName, IConsumer<T> consumer, long consumeCycle) {
         super(threadName);

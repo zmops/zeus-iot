@@ -14,7 +14,10 @@ import com.zmops.iot.web.sys.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
 import java.util.Map;
@@ -79,7 +82,7 @@ public class LoginController extends BaseController {
 
         if (ConstantsContext.getKaptchaOpen()) {
             String kaptcha = super.getPara("kaptcha").trim();
-            String code    = (String) super.getSession().getAttribute(Constants.KAPTCHA_SESSION_KEY);
+            String code = (String) super.getSession().getAttribute(Constants.KAPTCHA_SESSION_KEY);
             if (ToolUtil.isEmpty(kaptcha) || !kaptcha.equalsIgnoreCase(code)) {
                 throw new InvalidKaptchaException();
             }

@@ -29,8 +29,8 @@ public class ProductTypeService implements CommandLineRunner {
      * 产品分类树
      */
     public List<TreeNode> tree() {
-        String                            sql              = "select id,pid pId,name,pids from product_type";
-        List<TreeNode>                    list             = DB.findDto(TreeNode.class, sql).findList();
+        String sql = "select id,pid pId,name,pids from product_type";
+        List<TreeNode> list = DB.findDto(TreeNode.class, sql).findList();
         DefaultTreeBuildFactory<TreeNode> treeBuildFactory = new DefaultTreeBuildFactory<>();
         treeBuildFactory.setRootParentId("0");
         return treeBuildFactory.doTreeBuild(list);
@@ -109,7 +109,7 @@ public class ProductTypeService implements CommandLineRunner {
         if (productType.getPid().equals(0L)) {
             productType.setPids("[0],");
         } else {
-            Long        pid  = productType.getPid();
+            Long pid = productType.getPid();
             ProductType temp = new QProductType().id.eq(pid).findOne();
             if (null == temp) {
                 throw new ServiceException(BizExceptionEnum.PRODUCT_TYPE_PID_NOT_EXIST);

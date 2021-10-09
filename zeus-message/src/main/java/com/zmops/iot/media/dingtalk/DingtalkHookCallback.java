@@ -52,10 +52,10 @@ import java.util.List;
 @Service
 public class DingtalkHookCallback implements AlarmCallback {
 
-    private static final int           HTTP_CONNECT_TIMEOUT            = 1000;
-    private static final int           HTTP_CONNECTION_REQUEST_TIMEOUT = 1000;
-    private static final int           HTTP_SOCKET_TIMEOUT             = 10000;
-    private              RequestConfig requestConfig;
+    private static final int HTTP_CONNECT_TIMEOUT = 1000;
+    private static final int HTTP_CONNECTION_REQUEST_TIMEOUT = 1000;
+    private static final int HTTP_SOCKET_TIMEOUT = 10000;
+    private RequestConfig requestConfig;
 
     @Autowired
     DingtalkSettingService dingtalkSettingService;
@@ -120,7 +120,7 @@ public class DingtalkHookCallback implements AlarmCallback {
      */
     private String sign(final Long timestamp, String secret) throws NoSuchAlgorithmException, UnsupportedEncodingException, InvalidKeyException {
         String stringToSign = timestamp + "\n" + secret;
-        Mac    mac          = Mac.getInstance("HmacSHA256");
+        Mac mac = Mac.getInstance("HmacSHA256");
         mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
         byte[] signData = mac.doFinal(stringToSign.getBytes(StandardCharsets.UTF_8));
         return URLEncoder.encode(new String(Base64.getEncoder().encode(signData)), StandardCharsets.UTF_8.name());

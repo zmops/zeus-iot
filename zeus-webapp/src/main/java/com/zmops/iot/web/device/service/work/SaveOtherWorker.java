@@ -79,7 +79,7 @@ public class SaveOtherWorker implements IWorker<DeviceDto, Boolean> {
         Map<String, String> map = triggers.parallelStream().collect(Collectors.toMap(ProductEventRuleService.Triggers::getDescription, ProductEventRuleService.Triggers::getTriggerid));
 
         List<ProductEventRelation> productEventRelationList = new QProductEventRelation().status.eq(CommonStatus.ENABLE.getCode()).relationId.eq(deviceDto.getProductId() + "").findList();
-        List<ProductEventRelation> newRelationList          = new ArrayList<>();
+        List<ProductEventRelation> newRelationList = new ArrayList<>();
         for (ProductEventRelation productEventRelation : productEventRelationList) {
             ProductEventRelation newEventRelation = new ProductEventRelation();
             newEventRelation.setRelationId(deviceId);

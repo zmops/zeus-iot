@@ -123,9 +123,9 @@ public interface DependenceStrategy {
         public DependenceAction.WithProperty judgeAction(Set<WorkerWrapper<?, ?>> dependWrappers,
                                                          WorkerWrapper<?, ?> thisWrapper,
                                                          WorkerWrapper<?, ?> fromWrapper) {
-            boolean     hasFailed         = false;
-            Exception   fastFailException = null;
-            ResultState resultState       = null;
+            boolean hasFailed = false;
+            Exception fastFailException = null;
+            ResultState resultState = null;
             for (final WorkerWrapper<?, ?> dependWrapper : dependWrappers) {
                 WorkResult<?> workResult = dependWrapper.getWorkResult();
                 switch (workResult.getResultState()) {

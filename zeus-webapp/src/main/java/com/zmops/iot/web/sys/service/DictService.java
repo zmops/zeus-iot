@@ -129,8 +129,8 @@ public class DictService implements CommandLineRunner {
      * 分组查询字典列表，通过字典编码
      */
     public Map<String, List<SysDictDto>> groupDictByCode(String dictTypeCode) {
-        Long          dictTypeId = new QSysDictType().select(QSysDictType.alias().dictTypeId).code.eq(dictTypeCode).findSingleAttribute();
-        List<SysDictDto> sysDicts   = listDicts(dictTypeId);
+        Long dictTypeId = new QSysDictType().select(QSysDictType.alias().dictTypeId).code.eq(dictTypeCode).findSingleAttribute();
+        List<SysDictDto> sysDicts = listDicts(dictTypeId);
         if (ToolUtil.isEmpty(sysDicts)) {
             return new HashMap<>();
         }
@@ -138,10 +138,10 @@ public class DictService implements CommandLineRunner {
     }
 
     private void updateDictionaries() {
-        List<SysDictType>             dictTypes        = new QSysDictType().findList();
-        Map<Long, String>             map              = dictTypes.parallelStream().collect(Collectors.toMap(SysDictType::getDictTypeId, SysDictType::getCode));
-        List<Long>                    collect          = dictTypes.stream().map(SysDictType::getDictTypeId).collect(Collectors.toList());
-        List<SysDict>                 dictList         = new QSysDict().dictTypeId.in(collect).findList();
+        List<SysDictType> dictTypes = new QSysDictType().findList();
+        Map<Long, String> map = dictTypes.parallelStream().collect(Collectors.toMap(SysDictType::getDictTypeId, SysDictType::getCode));
+        List<Long> collect = dictTypes.stream().map(SysDictType::getDictTypeId).collect(Collectors.toList());
+        List<SysDict> dictList = new QSysDict().dictTypeId.in(collect).findList();
         Table<String, String, String> dictionaryValues = HashBasedTable.create();
         for (SysDict dict : dictList) {
             dictionaryValues.put(map.get(dict.getDictTypeId()), dict.getCode(), dict.getName());

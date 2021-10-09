@@ -54,7 +54,7 @@ public class ProductStatusTriggerController {
     @PostMapping("/create")
     public ResponseData createDeviceStatusTrigger(@RequestBody @Validated(BaseEntity.Create.class) ProductStatusJudgeRule rule) {
 
-        ProductAttribute prodAttr       = new QProductAttribute().attrId.eq(rule.getAttrId()).findOne();
+        ProductAttribute prodAttr = new QProductAttribute().attrId.eq(rule.getAttrId()).findOne();
         ProductAttribute prodAttrSecond = new QProductAttribute().attrId.eq(rule.getAttrIdRecovery()).findOne();
 
         if (null == prodAttr || null == prodAttrSecond) {
@@ -78,7 +78,7 @@ public class ProductStatusTriggerController {
     @PostMapping("/update")
     public ResponseData updateDeviceStatusTrigger(@RequestBody @Validated(BaseEntity.Update.class) ProductStatusJudgeRule rule) {
 
-        ProductAttribute prodAttr       = new QProductAttribute().attrId.eq(rule.getAttrId()).findOne();
+        ProductAttribute prodAttr = new QProductAttribute().attrId.eq(rule.getAttrId()).findOne();
         ProductAttribute prodAttrSecond = new QProductAttribute().attrId.eq(rule.getAttrIdRecovery()).findOne();
 
         if (null == prodAttr || null == prodAttrSecond) {

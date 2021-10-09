@@ -28,9 +28,9 @@ import java.util.concurrent.ArrayBlockingQueue;
  * for agent side, which is more sensitive about blocks.
  */
 public class ArrayBlockingQueueBuffer<T> implements QueueBuffer<T> {
-    private BufferStrategy        strategy;
+    private BufferStrategy strategy;
     private ArrayBlockingQueue<T> queue;
-    private int                   bufferSize;
+    private int bufferSize;
 
     ArrayBlockingQueueBuffer(int bufferSize, BufferStrategy strategy) {
         this.strategy = strategy;

@@ -24,9 +24,9 @@ public class JobWrapper extends AbstractStateWrapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(JobWrapper.class);
 
     private final TransferConfiguration transferConfig;
-    private final TaskManager           taskManager;
-    private final JobManager            jobManager;
-    private final Job                   job;
+    private final TaskManager taskManager;
+    private final JobManager jobManager;
+    private final Job job;
 
     private final List<Task> allTasks;
 

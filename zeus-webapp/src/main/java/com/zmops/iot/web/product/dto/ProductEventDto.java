@@ -30,7 +30,7 @@ public class ProductEventDto {
 
     private String remark;
     private String classify;
-    private String  expLogic;
+    private String expLogic;
     @CachedValue(type = DicType.SysUserName)
     private String createUser;
     private String createTime;

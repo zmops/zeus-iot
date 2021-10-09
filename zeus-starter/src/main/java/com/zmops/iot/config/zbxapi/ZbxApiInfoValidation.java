@@ -19,8 +19,8 @@ public class ZbxApiInfoValidation implements ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 
-        ZbxApiInfo apiInfo  = applicationContext.getBean(ZbxApiInfo.class);
-        String     response = apiInfo.getApiInfo();
+        ZbxApiInfo apiInfo = applicationContext.getBean(ZbxApiInfo.class);
+        String response = apiInfo.getApiInfo();
 
         int version = NumberUtil.parseInt(response.replaceAll("\\.", ""));
 

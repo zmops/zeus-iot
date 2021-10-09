@@ -34,7 +34,7 @@ public class DeviceOnlineWorker implements IWorker<Map<String, String>, Boolean>
         if (null == device) {
             return false;
         }
-        int    status   = 0;
+        int status = 0;
         String recovery = param.get("recovery");
         if (ToolUtil.isNotEmpty(recovery) && "RESOLVED".equals(recovery)) {
             status = 1;

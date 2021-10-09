@@ -59,7 +59,7 @@ public class LoginUser implements UserDetails, Serializable {
     /**
      * 用户组
      */
-    private Long       userGroupId;
+    private Long userGroupId;
 
     /**
      * 角色集

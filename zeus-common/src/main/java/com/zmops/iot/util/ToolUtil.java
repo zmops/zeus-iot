@@ -34,9 +34,9 @@ public class ToolUtil {
      * @author fengshuonan
      */
     public static String getRandomString(int length) {
-        String       base   = "abcdefghijklmnopqrstuvwxyz0123456789";
-        Random       random = new Random();
-        StringBuffer sb     = new StringBuffer();
+        String base = "abcdefghijklmnopqrstuvwxyz0123456789";
+        Random random = new Random();
+        StringBuffer sb = new StringBuffer();
         for (int i = 0; i < length; i++) {
             int number = random.nextInt(base.length());
             sb.append(base.charAt(number));
@@ -60,9 +60,9 @@ public class ToolUtil {
      */
     public static String md5Hex(String str) {
         try {
-            MessageDigest md5        = MessageDigest.getInstance("MD5");
-            byte[]        bs         = md5.digest(str.getBytes());
-            StringBuffer  md5StrBuff = new StringBuffer();
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            byte[] bs = md5.digest(str.getBytes());
+            StringBuffer md5StrBuff = new StringBuffer();
             for (int i = 0; i < bs.length; i++) {
                 if (Integer.toHexString(0xFF & bs[i]).length() == 1)
                     md5StrBuff.append("0").append(Integer.toHexString(0xFF & bs[i]));
@@ -94,9 +94,9 @@ public class ToolUtil {
      * @author stylefeng
      */
     public static String getCreateTimeBefore(int seconds) {
-        long             currentTimeInMillis = Calendar.getInstance().getTimeInMillis();
-        Date             date                = new Date(currentTimeInMillis - seconds * 1000);
-        SimpleDateFormat sdf                 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        long currentTimeInMillis = Calendar.getInstance().getTimeInMillis();
+        Date date = new Date(currentTimeInMillis - seconds * 1000);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(date);
     }
 
@@ -127,7 +127,7 @@ public class ToolUtil {
     public static String getApplicationName() {
         try {
             Environment environment = SpringContextHolder.getApplicationContext().getEnvironment();
-            String      property    = environment.getProperty("spring.application.name");
+            String property = environment.getProperty("spring.application.name");
             if (ToolUtil.isNotEmpty(property)) {
                 return property;
             } else {

@@ -16,11 +16,11 @@ public enum DicType {
     @Getter
     private boolean nullable;
 
-    DicType(){
+    DicType() {
         this.nullable = true;
     }
 
-    DicType(boolean nullable){
+    DicType(boolean nullable) {
         this.nullable = nullable;
     }
 }

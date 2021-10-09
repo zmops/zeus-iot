@@ -20,10 +20,10 @@ public class Messages {
     @Id
     private Integer id;
     private Integer classify;
-    private String  title;
-    private String  content;
-    private Long    clock;
-    private String  module;
+    private String title;
+    private String content;
+    private Long clock;
+    private String module;
     private Integer readed;
-    private Long    userId;
+    private Long userId;
 }

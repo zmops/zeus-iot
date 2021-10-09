@@ -12,7 +12,7 @@ import org.apache.camel.RoutesBuilder;
  */
 public class CamelContextHolderService implements Service {
 
-    private final CamelContext  camelContext;
+    private final CamelContext camelContext;
     private final ModuleManager moduleManager;
 
     public CamelContextHolderService(CamelContext camelContext, ModuleManager moduleManager) {

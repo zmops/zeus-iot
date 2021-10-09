@@ -45,7 +45,7 @@ public class JwtTokenUtil {
      * 生成token,根据userId和默认过期时间
      */
     public static String generateToken(JwtPayLoad jwtPayLoad) {
-        Long       expiredSeconds = getExpireSeconds();
+        Long expiredSeconds = getExpireSeconds();
         final Date expirationDate = new Date(System.currentTimeMillis() + expiredSeconds * 1000);
         return generateToken(String.valueOf(jwtPayLoad.getUserId()), expirationDate, jwtPayLoad.toMap());
     }
@@ -96,7 +96,7 @@ public class JwtTokenUtil {
     public static String generateToken(String userId, Date exppiredDate, Map<String, Object> claims) {
 
         final Date createdDate = new Date();
-        String     secret      = getJwtSecret();
+        String secret = getJwtSecret();
 
         if (claims == null) {
             return Jwts.builder()

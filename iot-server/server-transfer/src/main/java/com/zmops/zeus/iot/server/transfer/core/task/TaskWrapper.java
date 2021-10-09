@@ -26,7 +26,7 @@ public class TaskWrapper extends AbstractStateWrapper {
     public static final int WAIT_FINISH_TIME_OUT = 1;
 
     private final TaskManager taskManager;
-    private final Task        task;
+    private final Task task;
 
     private final AtomicInteger retryTime = new AtomicInteger(0);
 

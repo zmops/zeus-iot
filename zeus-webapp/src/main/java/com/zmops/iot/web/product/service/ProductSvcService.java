@@ -48,7 +48,7 @@ public class ProductSvcService {
      * @return
      */
     public Pager<ProductServiceDto> getServiceByPage(ProductSvcParam productSvcParam) {
-        StringBuilder   sql             = new StringBuilder("SELECT s.*,r.inherit from product_service s LEFT JOIN product_service_relation r on r.service_id=s.id where 1=1 ");
+        StringBuilder sql = new StringBuilder("SELECT s.*,r.inherit from product_service s LEFT JOIN product_service_relation r on r.service_id=s.id where 1=1 ");
         QProductService qProductService = new QProductService();
         if (ToolUtil.isNotEmpty(productSvcParam.getName())) {
             sql.append(" and s.name like :name");
@@ -84,9 +84,9 @@ public class ProductSvcService {
             return new Pager<>(productServiceDtoList, 0);
         }
         //查询关联的参数
-        List<Long>                           sids             = productServiceDtoList.parallelStream().map(ProductServiceDto::getId).collect(Collectors.toList());
-        List<ProductServiceParam>            serviceParamList = new QProductServiceParam().serviceId.in(sids).findList();
-        Map<Long, List<ProductServiceParam>> map              = serviceParamList.parallelStream().collect(Collectors.groupingBy(ProductServiceParam::getServiceId));
+        List<Long> sids = productServiceDtoList.parallelStream().map(ProductServiceDto::getId).collect(Collectors.toList());
+        List<ProductServiceParam> serviceParamList = new QProductServiceParam().serviceId.in(sids).findList();
+        Map<Long, List<ProductServiceParam>> map = serviceParamList.parallelStream().collect(Collectors.groupingBy(ProductServiceParam::getServiceId));
         productServiceDtoList.forEach(productServiceDto -> {
             if (null != map.get(productServiceDto.getId())) {
                 productServiceDto.setProductServiceParamList(map.get(productServiceDto.getId()));

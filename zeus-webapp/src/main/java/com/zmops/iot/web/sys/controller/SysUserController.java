@@ -1,18 +1,13 @@
 package com.zmops.iot.web.sys.controller;
 
-import com.zmops.iot.constant.ConstantsContext;
 import com.zmops.iot.core.log.BussinessLog;
-import com.zmops.iot.core.util.SaltUtil;
 import com.zmops.iot.domain.BaseEntity;
-import com.zmops.iot.domain.sys.SysUser;
-import com.zmops.iot.domain.sys.query.QSysUser;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.web.auth.Permission;
 import com.zmops.iot.web.sys.dto.UserDto;
 import com.zmops.iot.web.sys.dto.param.UserParam;
 import com.zmops.iot.web.sys.service.SysUserService;
-import io.ebean.DB;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

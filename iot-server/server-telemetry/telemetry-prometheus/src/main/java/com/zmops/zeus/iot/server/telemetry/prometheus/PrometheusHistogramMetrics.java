@@ -30,7 +30,7 @@ public class PrometheusHistogramMetrics extends HistogramMetrics {
     private final double[] buckets;
 
     public PrometheusHistogramMetrics(String name, String tips, MetricsTag.Keys labels, MetricsTag.Values values,
-        double... buckets) {
+                                      double... buckets) {
         inner = new InnerMetricObject(name, tips, labels, values);
         this.buckets = buckets;
     }

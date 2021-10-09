@@ -151,7 +151,7 @@ public interface OnceWork {
     // class
 
     class AsFuture implements Future<Map<String, WorkerWrapper<?, ?>>> {
-        private final OnceWork             onceWork;
+        private final OnceWork onceWork;
         private final Function<Long, Long> sleepCheckInterval;
 
         private AsFuture(OnceWork onceWork, Function<Long, Long> sleepCheckInterval) {
@@ -202,7 +202,7 @@ public interface OnceWork {
         public Map<String, WorkerWrapper<?, ?>> get(long timeout,
                                                     TimeUnit unit)
                 throws InterruptedException, ExecutionException, TimeoutException {
-            final long millis   = Objects.requireNonNull(unit).toMillis(timeout);
+            final long millis = Objects.requireNonNull(unit).toMillis(timeout);
             final long interval = Math.max(1, Math.min(millis, sleepCheckInterval.apply(millis)));
             for (int i = 0; interval * i < millis; i++) {
                 if (onceWork.isFinish()) {

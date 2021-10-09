@@ -7,6 +7,6 @@ import lombok.Data;
  **/
 @Data
 public class BaseQueryParam {
-    private int page   = 1;
+    private int page = 1;
     private int maxRow = 10;
 }

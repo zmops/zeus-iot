@@ -16,24 +16,24 @@ import java.util.List;
 public class DateFormatRegex implements Filter {
     private static final Logger LOGGER = LoggerFactory.getLogger(DateFormatRegex.class);
 
-    private static final String YEAR  = "YYYY";
+    private static final String YEAR = "YYYY";
     private static final String MONTH = "MM";
-    private static final String DAY   = "DD";
-    private static final String HOUR  = "HH";
+    private static final String DAY = "DD";
+    private static final String HOUR = "HH";
 
     private static final String NORMAL_FORMATTER = "yyyyMMddHHmm";
 
-    private static final String OFFSET_DAY  = "d";
-    private static final String OFFSET_MIN  = "m";
+    private static final String OFFSET_DAY = "d";
+    private static final String OFFSET_MIN = "m";
     private static final String OFFSET_HOUR = "h";
 
-    private int dayOffset    = 0;
-    private int hourOffset   = 0;
+    private int dayOffset = 0;
+    private int hourOffset = 0;
     private int minuteOffset = 0;
 
     private String formattedTime = "";
     private String formattedRegex;
-    private File   file;
+    private File file;
 
     /**
      * set regex with current time
@@ -55,7 +55,7 @@ public class DateFormatRegex implements Filter {
 
     public DateFormatRegex withOffset(String timeOffset) {
         String number = StringUtils.substring(timeOffset, 0, timeOffset.length() - 1);
-        String mark   = StringUtils.substring(timeOffset, timeOffset.length() - 1);
+        String mark = StringUtils.substring(timeOffset, timeOffset.length() - 1);
 
         switch (mark) {
             case OFFSET_DAY:

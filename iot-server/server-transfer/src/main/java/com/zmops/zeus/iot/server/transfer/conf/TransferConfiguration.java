@@ -21,7 +21,7 @@ public class TransferConfiguration extends AbstractConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(TransferConfiguration.class);
 
     private static final String DEFAULT_CONFIG_FILE = "tansfer.properties";
-    private static final String TMP_CONFIG_FILE     = ".tmp.agent.properties";
+    private static final String TMP_CONFIG_FILE = ".tmp.agent.properties";
 
     private static final ArrayList<String> LOCAL_RESOURCES = new ArrayList<>();
 
@@ -59,8 +59,8 @@ public class TransferConfiguration extends AbstractConfiguration {
     }
 
     private String getNextBackupFileName() {
-        SimpleDateFormat format  = new SimpleDateFormat("yyyyMMddHHmmss");
-        String           dateStr = format.format(new Date(System.currentTimeMillis()));
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+        String dateStr = format.format(new Date(System.currentTimeMillis()));
         return DEFAULT_CONFIG_FILE + "." + dateStr;
     }
 
@@ -75,7 +75,7 @@ public class TransferConfiguration extends AbstractConfiguration {
 
             File sourceFile = new File(agentConfParent, DEFAULT_CONFIG_FILE);
             File targetFile = new File(agentConfParent, getNextBackupFileName());
-            File tmpFile    = new File(agentConfParent, TMP_CONFIG_FILE);
+            File tmpFile = new File(agentConfParent, TMP_CONFIG_FILE);
 
             if (sourceFile.exists()) {
                 FileUtils.copyFile(sourceFile, targetFile);

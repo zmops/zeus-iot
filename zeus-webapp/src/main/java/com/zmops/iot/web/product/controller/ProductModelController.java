@@ -81,11 +81,11 @@ public class ProductModelController {
         }
 
         if (ATTR_SOURCE_DEPEND.equals(productAttr.getSource())) {
-            if(productAttr.getDepAttrId() == null){
+            if (productAttr.getDepAttrId() == null) {
                 throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_DEPTED_NULL);
             }
             ProductAttribute productAttribute = new QProductAttribute().attrId.eq(productAttr.getDepAttrId()).findOne();
-            if(null == productAttribute){
+            if (null == productAttribute) {
                 throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_DEPTED_NOT_EXIST);
             }
             productAttr.setMasterItemId(productAttribute.getZbxId());
@@ -94,10 +94,10 @@ public class ProductModelController {
         Long attrId = IdUtil.getSnowflake().nextId();
         productAttr.setAttrId(attrId);
 
-        String  response = productModelService.createTrapperItem(productAttr);
-        String zbxId    = JSON.parseObject(response, TemplateIds.class).getItemids()[0];
+        String response = productModelService.createTrapperItem(productAttr);
+        String zbxId = JSON.parseObject(response, TemplateIds.class).getItemids()[0];
 
-        productModelService.createProductAttr(productAttr,zbxId);
+        productModelService.createProductAttr(productAttr, zbxId);
 
         return ResponseData.success(productAttr);
     }
@@ -116,11 +116,11 @@ public class ProductModelController {
         }
 
         if (ATTR_SOURCE_DEPEND.equals(productAttr.getSource())) {
-            if(productAttr.getDepAttrId() == null){
+            if (productAttr.getDepAttrId() == null) {
                 throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_DEPTED_NULL);
             }
             ProductAttribute productAttribute = new QProductAttribute().attrId.eq(productAttr.getDepAttrId()).findOne();
-            if(null == productAttribute){
+            if (null == productAttribute) {
                 throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_DEPTED_NOT_EXIST);
             }
             productAttr.setMasterItemId(productAttribute.getZbxId());

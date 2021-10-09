@@ -32,11 +32,11 @@ import java.io.IOException;
  */
 public class CoreModuleProvider extends ModuleProvider {
 
-    private final CoreModuleConfig  moduleConfig;
-    private       ModelCamelContext camelContext;
+    private final CoreModuleConfig moduleConfig;
+    private ModelCamelContext camelContext;
 
-    private JettyServer            jettyServer;
-    private ThreadPoolFactory      threadPoolFactory;
+    private JettyServer jettyServer;
+    private ThreadPoolFactory threadPoolFactory;
     private EventControllerFactory eventControllerFactory;
 
     private final AnnotationScan annotationScan;

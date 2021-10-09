@@ -42,7 +42,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Se
             response.setContentType("application/json");
 
             ErrorResponseData errorResponseData = new ErrorResponseData(
-                    AuthExceptionEnum.NO_PAGE_ERROR.getCode(), AuthExceptionEnum.NO_PAGE_ERROR.getMessage());
+                    AuthExceptionEnum.NO_PAGE_ERROR.getCode(),
+                    AuthExceptionEnum.NO_PAGE_ERROR.getMessage());
 
             response.getWriter().write(JSON.toJSONString(errorResponseData));
         }

@@ -31,7 +31,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,10 +40,10 @@ import java.util.List;
 @Slf4j
 @Service
 public class WechatHookCallback implements AlarmCallback {
-    private static final int           HTTP_CONNECT_TIMEOUT            = 1000;
-    private static final int           HTTP_CONNECTION_REQUEST_TIMEOUT = 1000;
-    private static final int           HTTP_SOCKET_TIMEOUT             = 10000;
-    private              RequestConfig requestConfig;
+    private static final int HTTP_CONNECT_TIMEOUT = 1000;
+    private static final int HTTP_CONNECTION_REQUEST_TIMEOUT = 1000;
+    private static final int HTTP_SOCKET_TIMEOUT = 10000;
+    private RequestConfig requestConfig;
 
     @Autowired
     WechatSettingService wechatSettingService;

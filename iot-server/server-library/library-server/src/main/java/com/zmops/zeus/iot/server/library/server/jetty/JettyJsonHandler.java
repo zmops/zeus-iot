@@ -76,9 +76,9 @@ public abstract class JettyJsonHandler extends JettyHandler {
     }
 
     public String getJsonBody(HttpServletRequest req) throws IOException {
-        StringBuffer   stringBuffer = new StringBuffer();
-        String         line         = null;
-        BufferedReader reader       = req.getReader();
+        StringBuffer stringBuffer = new StringBuffer();
+        String line = null;
+        BufferedReader reader = req.getReader();
         while ((line = reader.readLine()) != null) {
             stringBuffer.append(line);
         }

@@ -32,8 +32,8 @@ public class ItemDataTransferWorker extends TransferWorker<ItemValue> {
 
 
     private final DataCarrier<ItemValue> dataCarrier;
-    private final CounterMetrics         iotDataTransferCounter;
-    private final Gson                   gson = new Gson();
+    private final CounterMetrics iotDataTransferCounter;
+    private final Gson gson = new Gson();
 
     public ItemDataTransferWorker(ModuleManager moduleManager) {
         super(moduleManager);
@@ -80,9 +80,9 @@ public class ItemDataTransferWorker extends TransferWorker<ItemValue> {
             return;
         }
 
-        int             maxBatchGetSize = 500;
-        final int       batchSize       = Math.min(maxBatchGetSize, lastCollection.size());
-        List<ItemValue> valueList       = new ArrayList<>();
+        int maxBatchGetSize = 500;
+        final int batchSize = Math.min(maxBatchGetSize, lastCollection.size());
+        List<ItemValue> valueList = new ArrayList<>();
 
         for (ItemValue data : lastCollection) {
             valueList.add(data);

@@ -11,10 +11,10 @@ import com.zmops.zeus.iot.server.transfer.conf.JobProfile;
  */
 public class Task {
 
-    private final String     taskId;
-    private final Reader     reader;
-    private final Sink       sink;
-    private final Channel    channel;
+    private final String taskId;
+    private final Reader reader;
+    private final Sink sink;
+    private final Channel channel;
     private final JobProfile jobConf;
 
     public Task(String taskId, Reader reader, Sink sink, Channel channel, JobProfile jobConf) {

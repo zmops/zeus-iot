@@ -105,8 +105,8 @@ public abstract class ModuleDefine implements ModuleProviderHolder {
         }
         Enumeration<?> propertyNames = src.propertyNames();
         while (propertyNames.hasMoreElements()) {
-            String                        propertyName = (String) propertyNames.nextElement();
-            Class<? extends ModuleConfig> destClass    = dest.getClass();
+            String propertyName = (String) propertyNames.nextElement();
+            Class<? extends ModuleConfig> destClass = dest.getClass();
             try {
                 Field field = getDeclaredField(destClass, propertyName);
                 field.setAccessible(true);

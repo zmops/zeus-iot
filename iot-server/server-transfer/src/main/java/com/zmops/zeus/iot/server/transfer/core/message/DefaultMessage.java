@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class DefaultMessage implements Message {
 
-    private final byte[]              body;
+    private final byte[] body;
     private final Map<String, String> header;
 
     public DefaultMessage(byte[] body, Map<String, String> header) {

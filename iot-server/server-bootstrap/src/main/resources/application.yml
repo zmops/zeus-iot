@@ -44,7 +44,7 @@ core:
 
 # ndjson file read realtime
 server-transfer:
-  selector: ${ZS_SERVER_TRANSFER:default}
+  selector: ${ZS_SERVER_TRANSFER:-}
   default:
     name: ${ZS_TRANSFER_NAME:zeus-transfer}
     pattern: ${ZS_TRANSFER_PATTERN:/home/data/history-history-syncer-[0-9]{1}.ndjson}

@@ -23,7 +23,7 @@ package com.zmops.zeus.iot.server.datacarrier;
  */
 public class EnvUtil {
     public static int getInt(String envName, int defaultValue) {
-        int    value    = defaultValue;
+        int value = defaultValue;
         String envValue = System.getenv(envName);
         if (envValue != null) {
             try {
@@ -36,7 +36,7 @@ public class EnvUtil {
     }
 
     public static long getLong(String envName, long defaultValue) {
-        long   value    = defaultValue;
+        long value = defaultValue;
         String envValue = System.getenv(envName);
         if (envValue != null) {
             try {

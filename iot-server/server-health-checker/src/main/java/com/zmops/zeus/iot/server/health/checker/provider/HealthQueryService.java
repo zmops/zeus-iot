@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @RequiredArgsConstructor
 public class HealthQueryService implements Service {
-    private final AtomicDouble            score;
+    private final AtomicDouble score;
     private final AtomicReference<String> details;
 
     public HealthStatus checkHealth() {
@@ -43,7 +43,7 @@ public class HealthQueryService implements Service {
     @Setter
     static class HealthStatus {
         // score == 0 means healthy, otherwise it's unhealthy.
-        private int    score;
+        private int score;
         private String details;
     }
 }

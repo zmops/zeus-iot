@@ -35,6 +35,4 @@ public class AlarmNoticeWorker implements IWorker<Map<String, String>, Boolean> 
     }
 
 
-
-
 }

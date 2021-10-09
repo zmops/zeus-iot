@@ -27,8 +27,8 @@ import java.util.*;
  * TODO 使用 google guice @Inject 实现
  */
 public class ModuleManager implements ModuleDefineHolder {
-    private       boolean                   isInPrepareStage = true;
-    private final Map<String, ModuleDefine> loadedModules    = new HashMap<>();
+    private boolean isInPrepareStage = true;
+    private final Map<String, ModuleDefine> loadedModules = new HashMap<>();
 
     /**
      * Init the given modules
@@ -36,8 +36,8 @@ public class ModuleManager implements ModuleDefineHolder {
     public void init(ApplicationConfiguration applicationConfiguration)
             throws ModuleNotFoundException, ProviderNotFoundException, ServiceNotProvidedException, CycleDependencyException, ModuleConfigException, ModuleStartException {
 
-        String[]                      moduleNames          = applicationConfiguration.moduleList();
-        ServiceLoader<ModuleDefine>   moduleServiceLoader  = ServiceLoader.load(ModuleDefine.class);
+        String[] moduleNames = applicationConfiguration.moduleList();
+        ServiceLoader<ModuleDefine> moduleServiceLoader = ServiceLoader.load(ModuleDefine.class);
         ServiceLoader<ModuleProvider> moduleProviderLoader = ServiceLoader.load(ModuleProvider.class);
 
         HashSet<String> moduleSet = new HashSet<>(Arrays.asList(moduleNames));

@@ -55,9 +55,9 @@ import java.util.stream.Collectors;
 @Service
 public class FeishuHookCallback implements AlarmCallback {
 
-    private static final int HTTP_CONNECT_TIMEOUT            = 1000;
+    private static final int HTTP_CONNECT_TIMEOUT = 1000;
     private static final int HTTP_CONNECTION_REQUEST_TIMEOUT = 1000;
-    private static final int HTTP_SOCKET_TIMEOUT             = 10000;
+    private static final int HTTP_SOCKET_TIMEOUT = 10000;
 
     @Autowired
     FeishuSettingService feishuSettingService;
@@ -111,8 +111,8 @@ public class FeishuHookCallback implements AlarmCallback {
      */
     private String getRequestBody(FeishuSettings.WebHookUrl webHookUrl, AlarmMessage alarmMessage, String requestBody) {
 
-        JSONObject          jsonObject = JSONObject.parseObject(requestBody);
-        Map<String, Object> content    = buildContent(jsonObject);
+        JSONObject jsonObject = JSONObject.parseObject(requestBody);
+        Map<String, Object> content = buildContent(jsonObject);
         if (ToolUtil.isNotEmpty(webHookUrl.getSecret())) {
             Long timestamp = System.currentTimeMillis() / 1000;
             content.put("timestamp", timestamp);
@@ -132,7 +132,7 @@ public class FeishuHookCallback implements AlarmCallback {
         Map<String, Object> content = new HashMap<>();
         content.put("msg_type", jsonObject.getString("msg_type"));
         if (jsonObject.get("ats") != null) {
-            String ats  = jsonObject.getString("ats");
+            String ats = jsonObject.getString("ats");
             String text = jsonObject.getJSONObject("content").getString("text");
             List<String> collect = Arrays.stream(ats.split(","))
                     .map(String::trim).collect(Collectors.toList());
@@ -150,7 +150,7 @@ public class FeishuHookCallback implements AlarmCallback {
      */
     private String sign(final Long timestamp, String secret) throws NoSuchAlgorithmException, InvalidKeyException {
         String stringToSign = timestamp + "\n" + secret;
-        Mac    mac          = Mac.getInstance("HmacSHA256");
+        Mac mac = Mac.getInstance("HmacSHA256");
         mac.init(new SecretKeySpec(stringToSign.getBytes(), "HmacSHA256"));
         byte[] signData = mac.doFinal();
         return Base64.encodeBase64String(signData);

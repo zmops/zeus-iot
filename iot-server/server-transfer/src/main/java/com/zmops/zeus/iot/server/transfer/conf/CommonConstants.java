@@ -2,7 +2,7 @@ package com.zmops.zeus.iot.server.transfer.conf;
 
 public class CommonConstants {
 
-    public static final String PROXY_BID       = "proxy.bid";
+    public static final String PROXY_BID = "proxy.bid";
     public static final String POSITION_SUFFIX = ".position";
 
     public static final String PROXY_TID = "proxy.tid";
@@ -25,12 +25,12 @@ public class CommonConstants {
 
     public static final int DEFAULT_PROXY_BATCH_FLUSH_INTERVAL = 100;
 
-    public static final String PROXY_KEY_BID      = "bid";
-    public static final String PROXY_KEY_TID      = "tid";
-    public static final String PROXY_KEY_ID       = "id";
+    public static final String PROXY_KEY_BID = "bid";
+    public static final String PROXY_KEY_TID = "tid";
+    public static final String PROXY_KEY_ID = "id";
     public static final String PROXY_KEY_AGENT_IP = "agentip";
-    public static final String PROXY_OCEANUS_F    = "f";
-    public static final String PROXY_OCEANUS_BL   = "bl";
+    public static final String PROXY_OCEANUS_F = "f";
+    public static final String PROXY_OCEANUS_BL = "bl";
 
 
     public static final String FILE_MAX_NUM = "file.max.num";

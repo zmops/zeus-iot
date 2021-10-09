@@ -32,7 +32,7 @@ public class TextFileSource implements Source {
     public List<Reader> split(JobProfile jobConf) {
 
         Collection<File> allFiles = FileSearchUtils.findSuitFiles(jobConf);
-        List<Reader>     result   = new ArrayList<>();
+        List<Reader> result = new ArrayList<>();
 
         String filterPattern = jobConf.get(JOB_LINE_FILTER_PATTERN, DEFAULT_JOB_LINE_FILTER);
 

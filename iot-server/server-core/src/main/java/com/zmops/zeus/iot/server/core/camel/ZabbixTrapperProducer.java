@@ -21,9 +21,9 @@ import java.util.concurrent.Executors;
  */
 public class ZabbixTrapperProducer extends DefaultProducer {
 
-    private final ModuleManager          moduleManager;
+    private final ModuleManager moduleManager;
     private final ItemDataTransferWorker itemDataTransferWorker;
-    private final ExecutorService        itemValueThread = Executors.newFixedThreadPool(20);
+    private final ExecutorService itemValueThread = Executors.newFixedThreadPool(20);
 
 
     public ZabbixTrapperProducer(Endpoint endpoint, ModuleManager moduleManager) {
@@ -39,8 +39,8 @@ public class ZabbixTrapperProducer extends DefaultProducer {
      */
     @Override
     public void process(Exchange exchange) {
-        Message         message = exchange.getIn();
-        List<ItemValue> values  = (List<ItemValue>) message.getBody();
+        Message message = exchange.getIn();
+        List<ItemValue> values = (List<ItemValue>) message.getBody();
 
         for (ItemValue itemValue : values) {
             if (StringUtil.isEmpty(itemValue.getHost())

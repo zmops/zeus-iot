@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Metrics
 public class JobMetrics {
-    private static final JobMetrics    JOB_METRICS   = new JobMetrics();
+    private static final JobMetrics JOB_METRICS = new JobMetrics();
     private static final AtomicBoolean REGISTER_ONCE = new AtomicBoolean(false);
 
     @Metric

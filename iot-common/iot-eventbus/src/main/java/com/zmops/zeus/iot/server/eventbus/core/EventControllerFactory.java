@@ -23,7 +23,7 @@ public final class EventControllerFactory {
         this.threadPoolFactory = threadPoolFactory;
     }
 
-    private final Map<String, EventController> syncControllerMap  = new ConcurrentHashMap<String, EventController>();
+    private final Map<String, EventController> syncControllerMap = new ConcurrentHashMap<String, EventController>();
     private final Map<String, EventController> asyncControllerMap = new ConcurrentHashMap<String, EventController>();
 
     public EventController getAsyncController() {

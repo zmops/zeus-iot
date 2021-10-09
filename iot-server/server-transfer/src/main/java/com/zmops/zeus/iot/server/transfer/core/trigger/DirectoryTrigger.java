@@ -28,14 +28,14 @@ import java.util.stream.Stream;
  */
 public class DirectoryTrigger extends AbstractDaemon implements Trigger {
 
-    private static final    Logger       LOGGER = LoggerFactory.getLogger(DirectoryTrigger.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DirectoryTrigger.class);
     private static volatile WatchService watchService;
 
     private final ConcurrentHashMap<PathPattern, List<WatchKey>> allWatchers = new ConcurrentHashMap<>();
-    private final LinkedBlockingQueue<JobProfile>                queue       = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<JobProfile> queue = new LinkedBlockingQueue<>();
 
     private TriggerProfile profile;
-    private int            interval;
+    private int interval;
 
     private static void initWatchService() {
         try {
@@ -163,7 +163,7 @@ public class DirectoryTrigger extends AbstractDaemon implements Trigger {
                 try {
                     TimeUnit.SECONDS.sleep(interval);
                     allWatchers.forEach((pathPattern, watchKeys) -> {
-                        List<WatchKey> tmpWatchers        = new ArrayList<>();
+                        List<WatchKey> tmpWatchers = new ArrayList<>();
                         List<WatchKey> tmpDeletedWatchers = new ArrayList<>();
 
                         pathPattern.cleanup();
@@ -208,7 +208,7 @@ public class DirectoryTrigger extends AbstractDaemon implements Trigger {
 
     private void innerRegister(String pathPattern, PathPattern entity) throws IOException {
         List<WatchKey> tmpKeyList = new ArrayList<>();
-        List<WatchKey> keyList    = allWatchers.putIfAbsent(entity, tmpKeyList);
+        List<WatchKey> keyList = allWatchers.putIfAbsent(entity, tmpKeyList);
 
         if (keyList == null) {
             Path rootPath = Paths.get(entity.getRootDir());
@@ -221,7 +221,7 @@ public class DirectoryTrigger extends AbstractDaemon implements Trigger {
     }
 
     public void unregister(String pathPattern) {
-        PathPattern          entity  = new PathPattern(pathPattern);
+        PathPattern entity = new PathPattern(pathPattern);
         Collection<WatchKey> allKeys = allWatchers.remove(entity);
         if (allKeys != null) {
             LOGGER.info("unregister pattern {}, total size of path {}", pathPattern, allKeys.size());
@@ -243,7 +243,7 @@ public class DirectoryTrigger extends AbstractDaemon implements Trigger {
 
         if (this.profile.hasKey(JobConstants.JOB_DIR_FILTER_PATTERN)) {
             String pathPattern = this.profile.get(JobConstants.JOB_DIR_FILTER_PATTERN);
-            String timeOffset  = this.profile.get(JobConstants.JOB_FILE_TIME_OFFSET, "");
+            String timeOffset = this.profile.get(JobConstants.JOB_FILE_TIME_OFFSET, "");
             if (timeOffset.isEmpty()) {
                 register(pathPattern);
             }

@@ -36,11 +36,11 @@ public class SaveZbxHostWorker implements IWorker<DeviceDto, String> {
         log.debug("处理Zbx host工作…………");
         //设备ID 作为zbx HOST name
         Device device = (Device) map.get("saveDvice").getWorkResult().getResult();
-        String host   = device.getDeviceId() + "";
+        String host = device.getDeviceId() + "";
 
         //取出 设备对应的 zbx主机组ID,模板ID
         List<String> hostGrpIds = new QDeviceGroup().select(QDeviceGroup.alias().zbxId).deviceGroupId.in(deviceDto.getDeviceGroupIds()).findSingleAttributeList();
-        String       templateId = new QProduct().select(QProduct.alias().zbxId).productId.eq(deviceDto.getProductId()).findSingleAttribute();
+        String templateId = new QProduct().select(QProduct.alias().zbxId).productId.eq(deviceDto.getProductId()).findSingleAttribute();
         hostGrpIds.add(ConstantsContext.getConstntsMap().get(GLOBAL_HOST_GROUP_CODE).toString());
 
         //保存 zbx主机

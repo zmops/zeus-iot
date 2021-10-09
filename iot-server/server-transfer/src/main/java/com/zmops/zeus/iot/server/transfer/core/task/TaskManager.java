@@ -23,15 +23,15 @@ public class TaskManager extends AbstractDaemon {
 
     // task thread pool;
     private final ThreadPoolExecutor runningPool;
-    private final TransferManager    transferManager;
-    private final TaskMetrics        taskMetrics;
+    private final TransferManager transferManager;
+    private final TaskMetrics taskMetrics;
 
     private final ConcurrentHashMap<String, TaskWrapper> tasks;
-    private final BlockingQueue<TaskWrapper>             retryTasks;
+    private final BlockingQueue<TaskWrapper> retryTasks;
 
-    private final int  monitorInterval;
-    private final int  taskMaxCapacity;
-    private final int  taskRetryMaxTime;
+    private final int monitorInterval;
+    private final int taskMaxCapacity;
+    private final int taskRetryMaxTime;
     private final long waitTime;
 
     /**

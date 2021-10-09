@@ -33,8 +33,8 @@ import java.util.concurrent.Callable;
  * In typical case, the number of {@link MultipleChannelsConsumer} should be less than the number of channels.
  */
 public class BulkConsumePool implements ConsumerPool {
-    private          List<MultipleChannelsConsumer> allConsumers;
-    private volatile boolean                        isStarted = false;
+    private List<MultipleChannelsConsumer> allConsumers;
+    private volatile boolean isStarted = false;
 
     public BulkConsumePool(String name, int size, long consumeCycle) {
         size = EnvUtil.getInt(name + "_THREAD", size);
@@ -99,8 +99,8 @@ public class BulkConsumePool implements ConsumerPool {
      */
     public static class Creator implements Callable<ConsumerPool> {
         private String name;
-        private int    size;
-        private long   consumeCycle;
+        private int size;
+        private long consumeCycle;
 
         public Creator(String name, int poolSize, long consumeCycle) {
             this.name = name;

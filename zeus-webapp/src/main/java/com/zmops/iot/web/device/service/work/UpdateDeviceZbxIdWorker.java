@@ -14,7 +14,7 @@ import java.util.Map;
 
 /**
  * @author yefei
- *
+ * <p>
  * 更新设备中zbxID
  */
 @Slf4j
@@ -26,9 +26,9 @@ public class UpdateDeviceZbxIdWorker implements IWorker<String, Boolean> {
     public Boolean action(String deviceDto, Map<String, WorkerWrapper<?, ?>> map) {
         log.debug("处理 zbxID 回填工作…………");
 
-        Object    result = map.get("saveZbxHostWork").getWorkResult().getResult();
+        Object result = map.get("saveZbxHostWork").getWorkResult().getResult();
         JSONArray hostid = JSONObject.parseObject(result.toString()).getJSONArray("hostids");
-        Device    device = (Device) map.get("saveDvice").getWorkResult().getResult();
+        Device device = (Device) map.get("saveDvice").getWorkResult().getResult();
         device.setZbxId(hostid.get(0).toString());
         DB.update(device);
 

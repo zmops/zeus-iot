@@ -80,10 +80,10 @@ public class ProductAttributeEventController {
         Long attrId = IdUtil.getSnowflake().nextId();
         productAttr.setAttrId(attrId);
 
-        String  response = productAttributeEventService.createTrapperItem(productAttr);
-        String zbxId    = JSON.parseObject(response, TemplateIds.class).getItemids()[0];
+        String response = productAttributeEventService.createTrapperItem(productAttr);
+        String zbxId = JSON.parseObject(response, TemplateIds.class).getItemids()[0];
 
-        productAttributeEventService.createProductAttr(productAttr,zbxId);
+        productAttributeEventService.createProductAttr(productAttr, zbxId);
 
         return ResponseData.success(productAttr);
     }

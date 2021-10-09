@@ -30,7 +30,7 @@ public class SaveProdStatusTriggerWorker implements IWorker<ProductServiceDto, B
 
         String prodId = productServiceDto.getRelationId();
 
-        List<String>                        deviceIds                  = new QDevice().select(QDevice.Alias.deviceId).productId.eq(Long.parseLong(prodId)).findSingleAttributeList();
+        List<String> deviceIds = new QDevice().select(QDevice.Alias.deviceId).productId.eq(Long.parseLong(prodId)).findSingleAttributeList();
         List<ProductStatusFunctionRelation> productStatusFunctionRelationList = new ArrayList<>();
         for (String deviceId : deviceIds) {
             ProductStatusFunctionRelation productStatusFunctionRelation = new ProductStatusFunctionRelation();

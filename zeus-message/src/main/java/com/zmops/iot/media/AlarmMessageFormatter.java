@@ -30,7 +30,7 @@ import java.util.List;
  * - Successful rate of endpoint {name} is lower than 75%
  */
 public class AlarmMessageFormatter {
-    private List<String>    formatSegments;
+    private List<String> formatSegments;
     private List<ValueFrom> valueFroms;
 
     public AlarmMessageFormatter(String format) {
@@ -40,7 +40,7 @@ public class AlarmMessageFormatter {
         formatSegments = new ArrayList<>();
         this.valueFroms = new ArrayList<>();
         boolean match = false;
-        int     idx   = 0;
+        int idx = 0;
         do {
             match = false;
             int start = format.indexOf("{", idx);

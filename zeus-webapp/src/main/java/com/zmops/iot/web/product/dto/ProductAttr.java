@@ -66,12 +66,12 @@ public class ProductAttr {
 
     private Integer delay;
     //取数间隔单位
-    private String  unit;
+    private String unit;
 
     LocalDateTime createTime;
     LocalDateTime updateTime;
-    Long          createUser;
-    Long          updateUser;
+    Long createUser;
+    Long updateUser;
 
     /**
      * 预处理步骤

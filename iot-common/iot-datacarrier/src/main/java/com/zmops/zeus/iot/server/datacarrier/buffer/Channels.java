@@ -26,10 +26,10 @@ import com.zmops.zeus.iot.server.datacarrier.partition.IDataPartitioner;
  * buffer is full. The Default is BLOCKING <p> Created by wusheng on 2016/10/25.
  */
 public class Channels<T> {
-    private final QueueBuffer<T>[]    bufferChannels;
-    private       IDataPartitioner<T> dataPartitioner;
-    private final BufferStrategy      strategy;
-    private final long                size;
+    private final QueueBuffer<T>[] bufferChannels;
+    private IDataPartitioner<T> dataPartitioner;
+    private final BufferStrategy strategy;
+    private final long size;
 
     public Channels(int channelSize, int bufferSize, IDataPartitioner<T> partitioner, BufferStrategy strategy) {
         this.dataPartitioner = partitioner;
@@ -47,7 +47,7 @@ public class Channels<T> {
     }
 
     public boolean save(T data) {
-        int index          = dataPartitioner.partition(bufferChannels.length, data);
+        int index = dataPartitioner.partition(bufferChannels.length, data);
         int retryCountDown = 1;
         if (BufferStrategy.IF_POSSIBLE.equals(strategy)) {
             int maxRetryCount = dataPartitioner.maxRetryCount();

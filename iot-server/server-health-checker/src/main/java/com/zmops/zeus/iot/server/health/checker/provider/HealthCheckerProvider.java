@@ -39,12 +39,12 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class HealthCheckerProvider extends ModuleProvider {
-    private final AtomicDouble             score   = new AtomicDouble();
-    private final AtomicReference<String>  details = new AtomicReference<>();
-    private final HealthCheckerConfig      config  = new HealthCheckerConfig();
-    private       MetricsCollector         collector;
-    private       MetricsCreator           metricsCreator;
-    private       ScheduledExecutorService ses;
+    private final AtomicDouble score = new AtomicDouble();
+    private final AtomicReference<String> details = new AtomicReference<>();
+    private final HealthCheckerConfig config = new HealthCheckerConfig();
+    private MetricsCollector collector;
+    private MetricsCreator metricsCreator;
+    private ScheduledExecutorService ses;
 
     @Override
     public String name() {

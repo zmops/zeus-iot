@@ -27,10 +27,10 @@ public class ThreadPoolFactory {
     private static final Logger LOG = LoggerFactory.getLogger(ThreadPoolFactory.class);
 
     private final Map<String, ThreadPoolExecutor> threadPoolExecutorMap = new ConcurrentHashMap<>();
-    private       ThreadPoolExecutor              threadPoolExecutor;
+    private ThreadPoolExecutor threadPoolExecutor;
 
     private final ThreadCustomization threadCustomization;
-    private final ThreadParameter     threadParameter;
+    private final ThreadParameter threadParameter;
 
     public ThreadPoolFactory(ThreadCustomization threadCustomization, ThreadParameter threadParameter) {
         this.threadCustomization = threadCustomization;
@@ -39,7 +39,7 @@ public class ThreadPoolFactory {
 
     public ThreadPoolExecutor getThreadPoolExecutor(String threadPoolName) {
         boolean threadPoolMultiMode = threadCustomization.isThreadPoolMultiMode();
-        String  poolName            = createThreadPoolName(threadPoolName);
+        String poolName = createThreadPoolName(threadPoolName);
 
         if (threadPoolMultiMode) {
             ThreadPoolExecutor threadPoolExecutor = threadPoolExecutorMap.get(poolName);
@@ -88,13 +88,13 @@ public class ThreadPoolFactory {
     }
 
     public static ThreadPoolExecutor createThreadPoolExecutor(String threadPoolName, ThreadParameter threadParameter) {
-        int     corePoolSize           = threadParameter.getThreadPoolCorePoolSize();
-        int     maximumPoolSize        = threadParameter.getThreadPoolMaximumPoolSize();
-        long    keepAliveTime          = threadParameter.getThreadPoolKeepAliveTime();
+        int corePoolSize = threadParameter.getThreadPoolCorePoolSize();
+        int maximumPoolSize = threadParameter.getThreadPoolMaximumPoolSize();
+        long keepAliveTime = threadParameter.getThreadPoolKeepAliveTime();
         boolean allowCoreThreadTimeout = threadParameter.isThreadPoolAllowCoreThreadTimeout();
-        String  queue                  = threadParameter.getThreadPoolQueue();
-        int     queueCapacity          = threadParameter.getThreadPoolQueueCapacity();
-        String  rejectedPolicy         = threadParameter.getThreadPoolRejectedPolicy();
+        String queue = threadParameter.getThreadPoolQueue();
+        int queueCapacity = threadParameter.getThreadPoolQueueCapacity();
+        String rejectedPolicy = threadParameter.getThreadPoolRejectedPolicy();
 
         LOG.info("Thread pool executor is created, threadPoolName={}, threadParameter={}", threadPoolName, threadParameter);
 
@@ -118,13 +118,13 @@ public class ThreadPoolFactory {
     }
 
     public static ThreadPoolExecutor createThreadPoolExecutor(ThreadParameter threadParameter) {
-        int     corePoolSize           = threadParameter.getThreadPoolCorePoolSize();
-        int     maximumPoolSize        = threadParameter.getThreadPoolMaximumPoolSize();
-        long    keepAliveTime          = threadParameter.getThreadPoolKeepAliveTime();
+        int corePoolSize = threadParameter.getThreadPoolCorePoolSize();
+        int maximumPoolSize = threadParameter.getThreadPoolMaximumPoolSize();
+        long keepAliveTime = threadParameter.getThreadPoolKeepAliveTime();
         boolean allowCoreThreadTimeout = threadParameter.isThreadPoolAllowCoreThreadTimeout();
-        String  queue                  = threadParameter.getThreadPoolQueue();
-        int     queueCapacity          = threadParameter.getThreadPoolQueueCapacity();
-        String  rejectedPolicy         = threadParameter.getThreadPoolRejectedPolicy();
+        String queue = threadParameter.getThreadPoolQueue();
+        int queueCapacity = threadParameter.getThreadPoolQueueCapacity();
+        String rejectedPolicy = threadParameter.getThreadPoolRejectedPolicy();
 
         LOG.info("Thread pool executor is created, threadParameter={}", threadParameter);
 

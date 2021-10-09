@@ -36,7 +36,7 @@ public class SQLExecutor implements InsertRequest {
     private static final Logger LOGGER = LoggerFactory.getLogger(SQLExecutor.class);
 
     @Getter
-    private final String       sql;
+    private final String sql;
     private final List<Object> param;
 
     public SQLExecutor(String sql, List<Object> param) {

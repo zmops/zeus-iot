@@ -58,7 +58,7 @@ public class JsonBodyBuildInterceptor implements Interceptor<String> {
 
         JsonPath jsonPath = method.getMethod().getAnnotation(JsonPath.class);
         if (null != jsonPath && StringUtils.isNotBlank(jsonPath.value())) {
-            String body     = Objects.requireNonNull(JsonParseUtil.parse(jsonPath.value() + ".ftl", paramMap));
+            String body = Objects.requireNonNull(JsonParseUtil.parse(jsonPath.value() + ".ftl", paramMap));
             String sendBody = StringEscapeUtils.unescapeJava(body);
             log.debug("\n" + sendBody + "\n");
             request.replaceBody(sendBody);

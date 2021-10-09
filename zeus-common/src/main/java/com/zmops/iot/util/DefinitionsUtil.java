@@ -56,7 +56,7 @@ public class DefinitionsUtil {
         return sysUserCache.getSysUser(sysUserId);
     }
 
-    public static void updateProductType(Map<Long,String> map) {
+    public static void updateProductType(Map<Long, String> map) {
         productTypeCache.updateProductType(map);
     }
 

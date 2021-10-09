@@ -104,7 +104,7 @@ public class ProductController {
         }
 
         // 第一步：创建模板
-        Long   prodId = IdUtil.getSnowflake().nextId();
+        Long prodId = IdUtil.getSnowflake().nextId();
         String result = productService.zbxTemplateCreate(prodId + "");
 
         // 第二步：创建产品
@@ -162,7 +162,6 @@ public class ProductController {
         productService.zbxTemplateDelete(product.getZbxId() + "");
 
 
-
         //第三步：删除产品
         boolean del = product.delete();
         return ResponseData.success(del);
@@ -178,8 +177,8 @@ public class ProductController {
     @PostMapping("/tag/update")
     public ResponseData prodTagCreate(@RequestBody @Valid ProductTag productTag) {
 
-        String  productId = productTag.getProductId();
-        Product product   = new QProduct().productId.eq(Long.parseLong(productId)).findOne();
+        String productId = productTag.getProductId();
+        Product product = new QProduct().productId.eq(Long.parseLong(productId)).findOne();
 
         if (null == product) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
@@ -198,7 +197,7 @@ public class ProductController {
 
         DB.saveAll(tags);
 
-        String response   = productService.updateTemplateTags(product.getZbxId(), productTag);
+        String response = productService.updateTemplateTags(product.getZbxId(), productTag);
         String templateId = JSON.parseObject(response, TemplateIds.class).getTemplateids()[0];
         if (templateId.equals(product.getZbxId())) {
             log.info("产品标签修改成功，ID：{}", templateId);
@@ -243,7 +242,7 @@ public class ProductController {
     @Permission(code = "product")
     @PostMapping("/valueMap/delete")
     public ResponseData prodValueMapDelete(@RequestBody @Validated(BaseEntity.Delete.class) ValueMap valueMap) {
-        String response   = productService.valueMapDelete(valueMap.getValuemapid());
+        String response = productService.valueMapDelete(valueMap.getValuemapid());
         String valuemapid = JSON.parseObject(response, TemplateIds.class).getValuemapids()[0];
         return ResponseData.success(valuemapid);
     }

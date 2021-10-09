@@ -27,8 +27,8 @@ import java.util.List;
  * Self implementation ring queue.
  */
 public class Buffer<T> implements QueueBuffer<T> {
-    private final Object[]           buffer;
-    private       BufferStrategy     strategy;
+    private final Object[] buffer;
+    private BufferStrategy strategy;
     private final AtomicRangeInteger index;
 
     Buffer(int bufferSize, BufferStrategy strategy) {

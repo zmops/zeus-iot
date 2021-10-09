@@ -29,14 +29,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class PrometheusMetricsCollector implements MetricsCollector {
-    @Override public Iterable<MetricFamily> collect() {
+    @Override
+    public Iterable<MetricFamily> collect() {
         Enumeration<Collector.MetricFamilySamples> mfs = CollectorRegistry.defaultRegistry.metricFamilySamples();
         List<MetricFamily> result = new LinkedList<>();
         while (mfs.hasMoreElements()) {
             Collector.MetricFamilySamples metricFamilySamples = mfs.nextElement();
             List<MetricFamily.Sample> samples = new ArrayList<>(metricFamilySamples.samples.size());
             MetricFamily m = new MetricFamily(metricFamilySamples.name, MetricFamily.Type.valueOf(metricFamilySamples.type
-                .name()), metricFamilySamples.help, samples);
+                    .name()), metricFamilySamples.help, samples);
             result.add(m);
             for (Collector.MetricFamilySamples.Sample sample : metricFamilySamples.samples) {
                 samples.add(new MetricFamily.Sample(sample.name, sample.labelNames, sample.labelValues, sample.value, sample.timestampMs));

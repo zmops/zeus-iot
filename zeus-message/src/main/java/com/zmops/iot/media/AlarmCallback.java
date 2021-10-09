@@ -1,4 +1,3 @@
-
 package com.zmops.iot.media;
 
 import com.zmops.iot.domain.alarm.AlarmMessage;

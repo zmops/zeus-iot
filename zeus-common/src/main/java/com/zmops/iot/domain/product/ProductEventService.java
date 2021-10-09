@@ -15,8 +15,8 @@ import javax.persistence.Table;
 @Table(name = "product_event_service")
 public class ProductEventService {
 
-    private Long   eventRuleId;
-    private Long   serviceId;
+    private Long eventRuleId;
+    private Long serviceId;
     private String deviceId;
     private String executeDeviceId;
 }

@@ -22,10 +22,10 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CustomThreadFactory implements ThreadFactory {
-    private final AtomicInteger poolNumber   = new AtomicInteger(1);
-    private final ThreadGroup   group;
+    private final AtomicInteger poolNumber = new AtomicInteger(1);
+    private final ThreadGroup group;
     private final AtomicInteger threadNumber = new AtomicInteger(1);
-    private final String        namePrefix;
+    private final String namePrefix;
 
     public CustomThreadFactory(String name) {
         SecurityManager s = System.getSecurityManager();

@@ -19,8 +19,8 @@ public class SparseArray2D<E> extends AbstractArray2D<E> {
     /**
      * 限制长宽，默认为Integer.MAX_VALUE。稀疏数组不在乎这些。
      */
-    private final int     maxLineLength;
-    private final int     maxColumnLength;
+    private final int maxLineLength;
+    private final int maxColumnLength;
     private final boolean allowNull;
 
     private final Map<BiInt, Object> items = new HashMap<>();
@@ -77,7 +77,7 @@ public class SparseArray2D<E> extends AbstractArray2D<E> {
 
     @Override
     public E remove(int line, int column) {
-        BiInt  idx = BiInt.of(checkLine(line), checkColumn(column));
+        BiInt idx = BiInt.of(checkLine(line), checkColumn(column));
         Object get = items.get(idx);
         if (get == null) {
             throw new IllegalArgumentException("There is no element in line " + line + " column " + column);

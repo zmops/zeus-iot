@@ -40,7 +40,7 @@ public class PrivateKeyUtil {
      * Load a RSA decryption key from a file (PEM or DER).
      */
     public static InputStream loadDecryptionKey(String keyFilePath) throws GeneralSecurityException, IOException {
-        byte[] keyDataBytes  = Files.readAllBytes(Paths.get(keyFilePath));
+        byte[] keyDataBytes = Files.readAllBytes(Paths.get(keyFilePath));
         String keyDataString = new String(keyDataBytes, StandardCharsets.UTF_8);
 
         if (keyDataString.contains(PKCS_1_PEM_HEADER)) {

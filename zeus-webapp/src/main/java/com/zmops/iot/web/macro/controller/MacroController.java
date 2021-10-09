@@ -87,7 +87,7 @@ public class MacroController {
     public ResponseData getUserMacro(@Validated(BaseEntity.Get.class) @RequestBody UserMacro userMacro) {
 
         // 获取 模板ID 或者 设备ID
-        String zbxId  = "";
+        String zbxId = "";
         Device device = new QDevice().deviceId.eq(userMacro.getDeviceId()).findOne();
         if (device != null) {
             zbxId = device.getZbxId();
@@ -148,7 +148,7 @@ public class MacroController {
     @Getter
     @Setter
     static class HostQueryTempObject {
-        private String                 hostid;
+        private String hostid;
         private List<TemplateIdObject> parentTemplates;
     }
 

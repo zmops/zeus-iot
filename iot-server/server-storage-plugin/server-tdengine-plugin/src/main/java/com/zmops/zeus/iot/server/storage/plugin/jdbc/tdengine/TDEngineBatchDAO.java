@@ -28,7 +28,7 @@ import java.util.concurrent.Executors;
 @Slf4j
 public class TDEngineBatchDAO implements IBatchDAO {
 
-    private final JDBCHikariCPClient          tdengineClient;
+    private final JDBCHikariCPClient tdengineClient;
     private final DataCarrier<PrepareRequest> dataCarrier;
 
     private final ExecutorService executor = Executors.newFixedThreadPool(10);
@@ -69,7 +69,7 @@ public class TDEngineBatchDAO implements IBatchDAO {
 
         executor.submit(() -> {
             PreparedStatement preparedStatement;
-            Connection        connection        = null;
+            Connection connection = null;
             try {
                 connection = tdengineClient.getConnection();
                 preparedStatement = connection.prepareStatement(execSql.toString());

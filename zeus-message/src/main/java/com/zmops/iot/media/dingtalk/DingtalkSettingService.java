@@ -31,8 +31,8 @@ public class DingtalkSettingService {
 
     private DingtalkSettings buildDingdingSetting(MediaTypeSetting setting) {
         JSONObject jsonObject = JSONObject.parseObject(setting.getWebhooks());
-        String     secret     = Optional.ofNullable(jsonObject.getString("secret")).orElse("");
-        String     url        = Optional.ofNullable(jsonObject.getString("url")).orElse("");
+        String secret = Optional.ofNullable(jsonObject.getString("secret")).orElse("");
+        String url = Optional.ofNullable(jsonObject.getString("url")).orElse("");
         return DingtalkSettings.builder().textTemplate(setting.getTemplate())
                 .webhooks(Arrays.asList(new DingtalkSettings.WebHookUrl(secret, url))).build();
     }

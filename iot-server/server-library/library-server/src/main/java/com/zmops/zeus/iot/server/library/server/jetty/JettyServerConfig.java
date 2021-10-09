@@ -28,19 +28,19 @@ import lombok.Setter;
 public class JettyServerConfig {
 
     private String host;
-    private int    port;
+    private int port;
     private String contextPath;
 
     @Builder.Default
-    private int  jettyMinThreads               = 1;
+    private int jettyMinThreads = 1;
     @Builder.Default
-    private int  jettyMaxThreads               = 200;
+    private int jettyMaxThreads = 200;
     @Builder.Default
-    private long jettyIdleTimeOut              = 30000;
+    private long jettyIdleTimeOut = 30000;
     @Builder.Default
-    private int  jettyAcceptorPriorityDelta    = 0;
+    private int jettyAcceptorPriorityDelta = 0;
     @Builder.Default
-    private int  jettyAcceptQueueSize          = 0;
+    private int jettyAcceptQueueSize = 0;
     @Builder.Default
-    private int  jettyHttpMaxRequestHeaderSize = 8192;
+    private int jettyHttpMaxRequestHeaderSize = 8192;
 }

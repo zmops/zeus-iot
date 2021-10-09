@@ -35,7 +35,7 @@ public class UpdateAttributeWorker implements IWorker<ProductAttr, Boolean> {
         List<ProductAttribute> newList = new ArrayList<>();
         for (ProductAttribute productAttribute : list) {
             ProductAttribute newProductAttribute = new ProductAttribute();
-            ToolUtil.copyProperties(productAttribute,newProductAttribute);
+            ToolUtil.copyProperties(productAttribute, newProductAttribute);
             newProductAttribute.setName(productAttr.getAttrName());
             newProductAttribute.setKey(productAttr.getKey());
             newProductAttribute.setUnits(productAttr.getUnits());

@@ -6,7 +6,6 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.annotation.OnConnect;
 import com.corundumstudio.socketio.annotation.OnDisconnect;
 import com.corundumstudio.socketio.annotation.OnEvent;
-
 import com.zmops.iot.message.config.Event;
 import com.zmops.iot.message.config.UserClientMap;
 import com.zmops.iot.message.payload.BroadcastMessageRequest;
@@ -39,7 +38,7 @@ public class MessageEventHandler {
     public void onConnect(SocketIOClient client) {
         if (client != null) {
 
-            String token  = client.getHandshakeData().getSingleUrlParam("token");
+            String token = client.getHandshakeData().getSingleUrlParam("token");
             String userId = client.getHandshakeData().getSingleUrlParam("userId");
 
             UUID sessionId = client.getSessionId();
@@ -90,7 +89,7 @@ public class MessageEventHandler {
         }
     }
 
-    public void sendToUser(String userId,String msg) {
+    public void sendToUser(String userId, String msg) {
         if (userClient.findByUserId(userId).isPresent()) {
             UUID uuid = userClient.findByUserId(userId).get();
             if (null != server.getClient(uuid)) {

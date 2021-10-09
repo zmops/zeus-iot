@@ -121,6 +121,7 @@ public class NetUtil {
 
     /**
      * Find first valid IP from local network card
+     *
      * @return first valid local IP
      */
     public static InetAddress getLocalAddress() {

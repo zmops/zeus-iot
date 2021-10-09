@@ -1,5 +1,3 @@
-
-
 package com.zmops.iot.media.dingtalk;
 
 import lombok.*;
@@ -14,7 +12,7 @@ import java.util.List;
 @Data
 public class DingtalkSettings {
 
-    private String           textTemplate;
+    private String textTemplate;
     @Builder.Default
     private List<WebHookUrl> webhooks = new ArrayList<>();
 

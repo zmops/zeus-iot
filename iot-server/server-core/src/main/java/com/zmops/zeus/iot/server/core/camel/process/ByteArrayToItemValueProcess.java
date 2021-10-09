@@ -23,22 +23,22 @@ public class ByteArrayToItemValueProcess implements Processor {
 
     @Override
     public void process(Exchange exchange) throws Exception {
-        Message message      = exchange.getIn();
-        byte[]  messageBytes = (byte[]) message.getBody();
+        Message message = exchange.getIn();
+        byte[] messageBytes = (byte[]) message.getBody();
 
         String inputContext = new String(messageBytes, StandardCharsets.UTF_8);
 
         Map<String, String> jsonMap = gson.fromJson(inputContext, Map.class);
-        String              key     = jsonMap.get("key");
-        String              value   = jsonMap.get("value");
+        String key = jsonMap.get("key");
+        String value = jsonMap.get("value");
         if (StringUtils.isBlank(key)) {
             return;
         }
-        String          deviceId      = key.substring(0, key.indexOf("."));
-        String          attributeKey  = key.substring(key.indexOf(".") + 1);
+        String deviceId = key.substring(0, key.indexOf("."));
+        String attributeKey = key.substring(key.indexOf(".") + 1);
         List<ItemValue> itemValueList = new ArrayList<>();
 
-        ItemValue item = new ItemValue(deviceId, System.currentTimeMillis()/1000);
+        ItemValue item = new ItemValue(deviceId, System.currentTimeMillis() / 1000);
         item.setKey(attributeKey);
         item.setValue(value);
 

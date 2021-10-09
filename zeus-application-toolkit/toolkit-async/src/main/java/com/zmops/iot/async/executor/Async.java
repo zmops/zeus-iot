@@ -81,8 +81,8 @@ public class Async {
         }
         //保存上次执行的线程池变量（为了兼容以前的旧功能）
         Async.lastExecutorService.set(Objects.requireNonNull(executorService, "ExecutorService is null ! "));
-        final WorkerWrapperGroup group    = new WorkerWrapperGroup(SystemClock.now(), timeout);
-        final OnceWork.Impl      onceWork = new OnceWork.Impl(group, workId);
+        final WorkerWrapperGroup group = new WorkerWrapperGroup(SystemClock.now(), timeout);
+        final OnceWork.Impl onceWork = new OnceWork.Impl(group, workId);
         group.addWrapper(workerWrappers);
         workerWrappers.forEach(wrapper -> {
             if (wrapper == null) {

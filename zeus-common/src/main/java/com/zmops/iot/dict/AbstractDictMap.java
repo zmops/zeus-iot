@@ -24,7 +24,7 @@ import java.util.HashMap;
  */
 public abstract class AbstractDictMap {
 
-    protected HashMap<String, String> dictory             = new HashMap<>();
+    protected HashMap<String, String> dictory = new HashMap<>();
     protected HashMap<String, String> fieldWarpperDictory = new HashMap<>();
 
     public AbstractDictMap() {

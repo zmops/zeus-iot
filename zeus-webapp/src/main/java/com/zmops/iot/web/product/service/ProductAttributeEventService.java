@@ -74,7 +74,7 @@ public class ProductAttributeEventService {
         }
 
         List<ProductAttrDto> pagedList = qProductAttribute.setFirstRow((productAttr.getPage() - 1) * productAttr.getMaxRow()).setMaxRows(productAttr.getMaxRow()).asDto(ProductAttrDto.class).findList();
-        int                  count     = qProductAttribute.findCount();
+        int count = qProductAttribute.findCount();
         return new Pager<>(pagedList, count);
     }
 
@@ -125,7 +125,7 @@ public class ProductAttributeEventService {
             return Collections.emptyList();
         }
         List<ProductAttr.ProcessingStep> processingSteps = new ArrayList<>();
-        JSONArray                        jsonArray       = JSONObject.parseArray(preprocessing);
+        JSONArray jsonArray = JSONObject.parseArray(preprocessing);
         for (Object object : jsonArray) {
             ProductAttr.ProcessingStep processingStep = new ProductAttr.ProcessingStep();
             processingStep.setType(((JSONObject) object).getString("type"));
@@ -185,8 +185,8 @@ public class ProductAttributeEventService {
     public String createTrapperItem(ProductAttrEvent productAttr) {
 
         String itemName = productAttr.getAttrId() + "";
-        String hostId   = "";
-        Device device   = new QDevice().deviceId.eq(productAttr.getProductId()).findOne();
+        String hostId = "";
+        Device device = new QDevice().deviceId.eq(productAttr.getProductId()).findOne();
         if (null == device) {
             Product prod = new QProduct().productId.eq(Long.parseLong(productAttr.getProductId())).findOne();
             if (null == prod) {

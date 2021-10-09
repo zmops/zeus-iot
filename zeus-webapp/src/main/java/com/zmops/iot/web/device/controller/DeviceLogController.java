@@ -21,9 +21,9 @@ public class DeviceLogController {
 
     @RequestMapping("list")
     public ResponseData list(@RequestParam(value = "deviceId") String deviceId,
-                                     @RequestParam(value = "logType", required = false) String logType,
-                                     @RequestParam(value = "timeFrom", required = false) Long timeFrom,
-                                     @RequestParam(value = "timeTill", required = false) Long timeTill) {
+                             @RequestParam(value = "logType", required = false) String logType,
+                             @RequestParam(value = "timeFrom", required = false) Long timeFrom,
+                             @RequestParam(value = "timeTill", required = false) Long timeTill) {
 
         return ResponseData.success(deviceLogService.list(deviceId, logType, timeFrom, timeTill));
     }
@@ -31,6 +31,6 @@ public class DeviceLogController {
     @RequestMapping("getLogByPage")
     public ResponseData getLogByPage(@RequestBody DeviceLogParam deviceLogParam) {
 
-        return ResponseData.success(deviceLogService.getLogByPage(deviceLogParam.getDeviceId(), deviceLogParam.getLogType(), deviceLogParam.getTimeFrom(), deviceLogParam.getTimeTill(),deviceLogParam.getPage(),deviceLogParam.getMaxRow()));
+        return ResponseData.success(deviceLogService.getLogByPage(deviceLogParam.getDeviceId(), deviceLogParam.getLogType(), deviceLogParam.getTimeFrom(), deviceLogParam.getTimeTill(), deviceLogParam.getPage(), deviceLogParam.getMaxRow()));
     }
 }

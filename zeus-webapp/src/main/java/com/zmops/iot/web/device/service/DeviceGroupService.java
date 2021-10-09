@@ -119,7 +119,7 @@ public class DeviceGroupService {
         newDeviceGroup.setDeviceGroupId(devGrpId);
         //回填 ZBX主机组ID
         JSONObject result = JSONObject.parseObject(zbxHostGroup.hostGroupCreate(String.valueOf(devGrpId)));
-        JSONArray  grpids = result.getJSONArray("groupids");
+        JSONArray grpids = result.getJSONArray("groupids");
         newDeviceGroup.setZbxId(grpids.get(0).toString());
         DB.save(newDeviceGroup);
         return newDeviceGroup;

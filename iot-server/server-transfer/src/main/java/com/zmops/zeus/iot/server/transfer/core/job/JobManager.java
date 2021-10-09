@@ -32,20 +32,20 @@ public class JobManager extends AbstractDaemon {
     private static final Logger LOGGER = LoggerFactory.getLogger(JobManager.class);
 
     // key is job instance id.
-    private       ConcurrentHashMap<String, JobWrapper> jobs;
+    private ConcurrentHashMap<String, JobWrapper> jobs;
     // jobs which are not accepted by running pool.
-    private final ConcurrentHashMap<String, Job>        pendingJobs;
+    private final ConcurrentHashMap<String, Job> pendingJobs;
     // job thread pool
-    private final ThreadPoolExecutor                    runningPool;
-    private final TransferManager                       transferManager;
-    private final int                                   monitorInterval;
-    private final long                                  jobDbCacheTime;
-    private final long                                  jobDbCacheCheckInterval;
+    private final ThreadPoolExecutor runningPool;
+    private final TransferManager transferManager;
+    private final int monitorInterval;
+    private final long jobDbCacheTime;
+    private final long jobDbCacheCheckInterval;
 
     // job profile db is only used to recover instance which is not finished running.
     private final JobProfileDb jobConfDB;
-    private final JobMetrics   jobMetrics;
-    private final AtomicLong   index = new AtomicLong(0);
+    private final JobMetrics jobMetrics;
+    private final AtomicLong index = new AtomicLong(0);
 
     /**
      * init job manager

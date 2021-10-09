@@ -33,7 +33,7 @@ public class TriggerManager extends AbstractDaemon {
 
     public static final int JOB_CHECK_INTERVAL = 1;
 
-    private final TransferManager  manager;
+    private final TransferManager manager;
     private final TriggerProfileDb triggerProfileDB;
 
     private final ConcurrentHashMap<String, Trigger> triggerMap;
@@ -62,8 +62,8 @@ public class TriggerManager extends AbstractDaemon {
      */
     public boolean addTrigger(TriggerProfile triggerProfile) {
         try {
-            Trigger trigger   = new DirectoryTrigger();
-            String  triggerId = triggerProfile.get(JOB_ID);
+            Trigger trigger = new DirectoryTrigger();
+            String triggerId = triggerProfile.get(JOB_ID);
 
             if (triggerMap.containsKey(triggerId)) {
                 deleteTrigger(triggerId);
@@ -174,7 +174,7 @@ public class TriggerManager extends AbstractDaemon {
      * @param profile
      */
     private void addToTriggerMap(String triggerId, JobProfile profile) {
-        ConcurrentHashMap<String, JobProfile> tmpList     = new ConcurrentHashMap<>();
+        ConcurrentHashMap<String, JobProfile> tmpList = new ConcurrentHashMap<>();
         ConcurrentHashMap<String, JobProfile> jobWrappers = triggerJobMap.putIfAbsent(triggerId, tmpList);
 
         if (jobWrappers == null) {
