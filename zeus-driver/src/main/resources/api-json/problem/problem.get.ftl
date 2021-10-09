@@ -17,7 +17,7 @@
         <#if timeTill??>
             "time_till":${timeTill},
         </#if>
-        <#if severity??>
+        <#if severity?? && severity != ''>
             "severities":${severity},
         </#if>
         "evaltype":2,
