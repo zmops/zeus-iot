@@ -43,10 +43,10 @@ public class DeviceEventTriggerController {
     @Autowired
     private ZbxTrigger zbxTrigger;
 
-    private static final String ALARM_TAG_NAME   = "__alarm__";
+    private static final String ALARM_TAG_NAME = "__alarm__";
     private static final String EXECUTE_TAG_NAME = "__execute__";
-    private static final String EVENT_TAG_NAME   = "__event__";
-    private static final String EVENT_TYPE_NAME  = "事件";
+    private static final String EVENT_TAG_NAME = "__event__";
+    private static final String EVENT_TYPE_NAME = "事件";
 
     /**
      * 触发器 详情
@@ -152,6 +152,7 @@ public class DeviceEventTriggerController {
         if (count > 1) {
             DB.update(ProductEventRelation.class).where().eq("eventRuleId", eventRule.getEventRuleId()).eq("relationId", eventRule.getDeviceId())
                     .asUpdate().set("remark", eventRule.getRemark()).update();
+
             return ResponseData.success(eventRule.getEventRuleId());
         }
 
@@ -203,16 +204,18 @@ public class DeviceEventTriggerController {
     @PostMapping("/delete")
     public ResponseData deleteProductEventRule(@RequestBody @Validated(value = BaseEntity.Delete.class)
                                                        DeviceEventRule eventRule) {
+
         ProductEventRelation productEventRelation = new QProductEventRelation().relationId.eq(eventRule.getDeviceId())
                 .eventRuleId.eq(eventRule.getEventRuleId()).findOne();
 
         if (InheritStatus.YES.getCode().equals(productEventRelation.getInherit())) {
             throw new ServiceException(BizExceptionEnum.EVENT_PRODUCT_CANNOT_DELETE);
         }
+
         //step 01:删除 zbx触发器
-        if(ToolUtil.isNotEmpty(productEventRelation.getZbxId())){
+        if (ToolUtil.isNotEmpty(productEventRelation.getZbxId())) {
             List<DeviceEventRuleService.Triggers> triggers = JSONObject.parseArray(zbxTrigger.triggerGet(productEventRelation.getZbxId()), DeviceEventRuleService.Triggers.class);
-            if(ToolUtil.isNotEmpty(triggers)) {
+            if (ToolUtil.isNotEmpty(triggers)) {
                 zbxTrigger.triggerDelete(productEventRelation.getZbxId());
             }
         }
@@ -229,8 +232,6 @@ public class DeviceEventTriggerController {
 
         //step 4:删除 触发器
         new QProductEvent().eventRuleId.eq(eventRule.getEventRuleId()).delete();
-
-
 
         return ResponseData.success();
     }
