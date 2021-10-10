@@ -112,7 +112,9 @@ public class MacroController {
         if (ToolUtil.isNotEmpty(tempId)) {
             // 模板宏
             List<UserMacro> tempMacroList = JSONObject.parseArray(zbxMacro.macroGet(tempId.getTemplateid()), UserMacro.class);
-
+            tempMacroList.forEach(macro -> {
+                macro.setInherit("1");
+            });
             // 主机宏
             List<UserMacro> hostMacroList = JSONObject.parseArray(zbxMacro.macroGet(zbxId + ""), UserMacro.class);
 
