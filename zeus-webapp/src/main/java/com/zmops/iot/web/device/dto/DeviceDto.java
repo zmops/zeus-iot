@@ -20,7 +20,7 @@ import java.util.List;
 @JsonSerialize(using = CachedValueFilter.class)
 public class DeviceDto {
 
-    @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Delete.class})
+    @NotBlank(groups = {BaseEntity.Update.class, BaseEntity.Delete.class,BaseEntity.Status.class})
     private String deviceId;
 
     private String edit;
@@ -37,6 +37,7 @@ public class DeviceDto {
     private List<Long> deviceGroupIds;
 
     @CachedValue(value = "STATUS")
+    @NotBlank(groups = {BaseEntity.Status.class})
     private String status;
 
     @CachedValue(value = "DEVICE_TYPE")

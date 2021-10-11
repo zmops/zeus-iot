@@ -41,7 +41,7 @@ public class SysRoleService {
         if (ToolUtil.isNotEmpty(name)) {
             qSysRole.name.contains(name);
         }
-        return qSysRole.orderBy("create_time desc").findList();
+        return qSysRole.roleId.ne(1L).orderBy("create_time desc").findList();
     }
 
     /**
@@ -84,8 +84,8 @@ public class SysRoleService {
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.ROLE_HAS_BIND_USER);
         }
-        new QSysRoleMenu().roleId.in(sysRoleParam.getRoleIds()).delete();
-        new QSysRole().roleId.in(sysRoleParam.getRoleIds()).delete();
+        new QSysRoleMenu().roleId.in(sysRoleParam.getRoleIds()).roleId.ne(1L).delete();
+        new QSysRole().roleId.in(sysRoleParam.getRoleIds()).roleId.ne(1L).delete();
     }
 
     /**

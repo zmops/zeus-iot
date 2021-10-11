@@ -514,4 +514,14 @@ public class DeviceService {
         return JSONObject.parseArray(zbxHost.hostDetail(zbxId));
     }
 
+    /**
+     * 修改设备状态
+     *
+     * @param status
+     * @param deviceId
+     * @return
+     */
+    public void status(String status, String deviceId) {
+        DB.update(Device.class).where().eq("device_id", deviceId).asUpdate().set("status", status).setNull("online").update();
+    }
 }

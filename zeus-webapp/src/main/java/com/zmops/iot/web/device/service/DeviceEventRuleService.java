@@ -69,7 +69,7 @@ public class DeviceEventRuleService {
             deviceIds.forEach(deviceId -> {
                 eventRule.getDeviceServices().forEach(i -> {
                     DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id,execute_device_id, service_id) " +
-                                    "values (:eventRuleId, :deviceId,:executeDeviceId, :serviceId)")
+                            "values (:eventRuleId, :deviceId,:executeDeviceId, :serviceId)")
                             .setParameter("eventRuleId", eventRuleId)
                             .setParameter("deviceId", deviceId)
                             .setParameter("executeDeviceId", i.getExecuteDeviceId())
@@ -134,8 +134,7 @@ public class DeviceEventRuleService {
             List<String> deviceIds = eventRule.getExpList().parallelStream().map(DeviceEventRule.Expression::getDeviceId).distinct().collect(Collectors.toList());
             deviceIds.forEach(deviceId -> {
                 eventRule.getDeviceServices().forEach(i -> {
-                    DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id, service_id) values (:eventRuleId, :deviceId, :serviceId)")
-                            .setParameter("eventRuleId", eventRuleId)
+                    DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id,execute_device_id, service_id) values (:eventRuleId, :deviceId,:executeDeviceId, :serviceId)").setParameter("eventRuleId", eventRuleId)
                             .setParameter("deviceId", deviceId)
                             .setParameter("executeDeviceId", i.getExecuteDeviceId())
                             .setParameter("serviceId", i.getServiceId())
@@ -285,8 +284,8 @@ public class DeviceEventRuleService {
 
     @Data
     public static class Triggers {
-        private String triggerid;
-        private String description;
+        private String      triggerid;
+        private String      description;
         private List<Hosts> hosts;
     }
 

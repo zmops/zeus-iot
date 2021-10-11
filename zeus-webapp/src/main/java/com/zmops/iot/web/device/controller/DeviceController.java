@@ -107,6 +107,20 @@ public class DeviceController {
     }
 
     /**
+     * 设备启用、禁用
+     */
+    @Permission(code = "dev_update")
+    @RequestMapping("/status")
+    public ResponseData status(@Validated(BaseEntity.Status.class) @RequestBody DeviceDto deviceDto) {
+        int count = new QDevice().deviceId.eq(deviceDto.getDeviceId()).findCount();
+        if (count <= 0) {
+            throw new ServiceException(BizExceptionEnum.DEVICE_NOT_EXISTS);
+        }
+        deviceService.status(deviceDto.getStatus(),deviceDto.getDeviceId());
+        return ResponseData.success();
+    }
+
+    /**
      * 设备详情
      */
     @Permission(code = "dev_detail")
