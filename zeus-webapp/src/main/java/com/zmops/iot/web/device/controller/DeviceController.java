@@ -110,7 +110,7 @@ public class DeviceController {
      * 设备启用、禁用
      */
     @Permission(code = "dev_update")
-    @RequestMapping("/status")
+    @RequestMapping("/status/update")
     public ResponseData status(@Validated(BaseEntity.Status.class) @RequestBody DeviceDto deviceDto) {
         int count = new QDevice().deviceId.eq(deviceDto.getDeviceId()).findCount();
         if (count <= 0) {
