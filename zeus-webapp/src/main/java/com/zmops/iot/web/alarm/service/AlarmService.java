@@ -1,6 +1,7 @@
 package com.zmops.iot.web.alarm.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Joiner;
 import com.zmops.iot.domain.alarm.AlarmMessage;
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.query.QDevice;
@@ -21,7 +22,6 @@ import io.ebean.DB;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -66,6 +66,29 @@ public class AlarmService {
         }
     }
 
+    public void action(Map<String, Object> alarmInfo) {
+        List<String> deviceIds = (List) alarmInfo.get("hostname");
+        String serviceName = (String) alarmInfo.get("serviceName");
+
+        if (ToolUtil.isEmpty(deviceIds) || ToolUtil.isEmpty(serviceName)) {
+            return;
+        }
+
+        List<Device> deviceList = new QDevice().deviceId.in(deviceIds).findList();
+        List<String> deviceName = deviceList.parallelStream().map(Device::getName).collect(Collectors.toList());
+
+        List<AlarmMessage> alarmMessages = new ArrayList<>();
+
+        if (ToolUtil.isNotEmpty(deviceList)) {
+            String alarmmessage = "设备:" + Joiner.on(",").join(deviceName) + "触发联动服务，服务名称：" + serviceName;
+            alarmMessages.add(AlarmMessage.builder().alarmMessage(alarmmessage).build());
+            alarmCallbacks.forEach(alarmCallback -> {
+//            if (alarmCallback.getType().equals("welink")) {
+                alarmCallback.doAlarm(alarmMessages);
+//            }
+            });
+        }
+    }
 
     public Pager<AlarmDto> getAlarmByPage(AlarmParam alarmParam) {
 
@@ -130,7 +153,7 @@ public class AlarmService {
         }
         List<String> triggerIds = problemList.parallelStream().map(ZbxProblemInfo::getObjectid).map(Objects::toString).collect(Collectors.toList());
         List<ProductEventRuleDto> ruleList = DB.findDto(ProductEventRuleDto.class, "select d.event_rule_name,r.zbx_id from product_event d INNER JOIN (select event_rule_id," +
-                        "zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.event_rule_id=d.event_rule_id")
+                "zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.event_rule_id=d.event_rule_id")
                 .setParameter("zbxIds", triggerIds).findList();
         Map<String, String> ruleMap = ruleList.parallelStream().collect(Collectors.toMap(ProductEventRuleDto::getZbxId, ProductEventRuleDto::getEventRuleName));
 
@@ -177,7 +200,7 @@ public class AlarmService {
         }
         List<String> triggerIds = problemList.parallelStream().map(ZbxProblemInfo::getObjectid).map(Objects::toString).collect(Collectors.toList());
         List<ProductEventRuleDto> ruleList = DB.findDto(ProductEventRuleDto.class, "select event_rule_name,r.zbx_id from product_event d INNER JOIN (select event_rule_id," +
-                        "zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.event_rule_id=d.event_rule_id")
+                "zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.event_rule_id=d.event_rule_id")
                 .setParameter("zbxIds", triggerIds).findList();
         Map<String, String> ruleMap = ruleList.parallelStream().collect(Collectors.toMap(ProductEventRuleDto::getZbxId, ProductEventRuleDto::getEventRuleName));
 
