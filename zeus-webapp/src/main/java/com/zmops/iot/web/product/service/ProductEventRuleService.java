@@ -270,7 +270,7 @@ public class ProductEventRuleService {
             }
         });
         productEventRuleDto.setExpList(expList);
-        productEventRuleDto.setDeviceServices(new QProductEventService().eventRuleId.eq(eventRuleId).deviceId.isNull().findList());
+        productEventRuleDto.setDeviceServices(new QProductEventService().eventRuleId.eq(eventRuleId).deviceId.eq(prodId).findList());
 
         ProductEventRelation productEventRelation = new QProductEventRelation().relationId.eq(prodId).eventRuleId.eq(eventRuleId).findOne();
         productEventRuleDto.setStatus(productEventRelation.getStatus());

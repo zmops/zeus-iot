@@ -23,6 +23,7 @@ import com.zmops.iot.web.product.dto.ProductEventRule;
 import com.zmops.iot.web.product.dto.param.EventParm;
 import com.zmops.iot.web.product.service.ProductEventRuleService;
 import com.zmops.iot.web.product.service.work.SaveProductEventTriggerWorker;
+import com.zmops.iot.web.product.service.work.UpdateProductEventTriggerWorker;
 import com.zmops.zeus.driver.service.ZbxTrigger;
 import io.ebean.DB;
 import io.ebean.annotation.Transactional;
@@ -54,13 +55,16 @@ public class ProductEventTriggerController {
     @Autowired
     private ZbxTrigger zbxTrigger;
 
-    private static final String ALARM_TAG_NAME = "__alarm__";
+    private static final String ALARM_TAG_NAME   = "__alarm__";
     private static final String EXECUTE_TAG_NAME = "__execute__";
-    private static final String EVENT_TAG_NAME = "__event__";
-    private static final String EVENT_TYPE_NAME = "事件";
+    private static final String EVENT_TAG_NAME   = "__event__";
+    private static final String EVENT_TYPE_NAME  = "事件";
 
     @Autowired
     SaveProductEventTriggerWorker saveProductEventTriggerWorker;
+
+    @Autowired
+    UpdateProductEventTriggerWorker updateProductEventTriggerWorker;
 
     /**
      * 触发器 分页列表
@@ -137,7 +141,7 @@ public class ProductEventTriggerController {
         WorkerWrapper<ProductEventRule, Boolean> saveProductEventTriggerWork = WorkerWrapper.<ProductEventRule, Boolean>builder().worker(saveProductEventTriggerWorker).param(eventRule).build();
 
         try {
-            Async.work(100, saveProductEventTriggerWork).awaitFinish();
+            Async.work(1000, saveProductEventTriggerWork).awaitFinish();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -196,6 +200,16 @@ public class ProductEventTriggerController {
         }
 
         zbxTrigger.triggerTagCreate(list.get(0).getZbxId(), tags);
+
+
+        //step 4: 同步到产品下的设备
+        WorkerWrapper<ProductEventRule, Boolean> updateProductEventTriggerWork = WorkerWrapper.<ProductEventRule, Boolean>builder().worker(updateProductEventTriggerWorker).param(eventRule).build();
+
+        try {
+            Async.work(1000, updateProductEventTriggerWork).awaitFinish();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         return ResponseData.success(eventRule.getEventRuleId());
     }
