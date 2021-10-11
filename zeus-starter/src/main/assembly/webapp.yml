@@ -39,6 +39,7 @@ spring:
   freemarker:
     suffix: .html
     template-loader-path: classpath:/public/
+    checkTemplateLocation: false
 
 forest:
   log-enabled: false
