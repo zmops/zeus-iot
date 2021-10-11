@@ -166,8 +166,13 @@ public class BasicSettingsInit {
     }
 
 
-    public String createAction(String name, String tagName, String scriptId, String groupId) {
+    public String createOffLineAction(String name, String tagName, String scriptId, String groupId) {
         String response = zbxAction.createOfflineStatusAction(zbxApiToken, name, tagName, scriptId, groupId);
+        return JSON.parseObject(response, ZbxResponseIds.class).getActionids()[0];
+    }
+
+    public String createAction(String name, String tagName, String scriptId, String groupId) {
+        String response = zbxAction.createAlarmAction(zbxApiToken, name, tagName, scriptId, groupId);
         return JSON.parseObject(response, ZbxResponseIds.class).getActionids()[0];
     }
 

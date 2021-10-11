@@ -74,7 +74,7 @@ public class DeviceSatusScriptInit implements CommandLineRunner {
 
         String offLineActionId = basicSettingsInit.getAction(SCRIPT_OFFLINE);
         if (offLineActionId == null) {
-            offLineActionId = basicSettingsInit.createAction(SCRIPT_OFFLINE, ACTION_TAG_OFFLINE, script.get(SCRIPT_OFFLINE), groupId);
+            offLineActionId = basicSettingsInit.createOffLineAction(SCRIPT_OFFLINE, ACTION_TAG_OFFLINE, script.get(SCRIPT_OFFLINE), groupId);
         }
         DB.update(SysConfig.class).where().eq("code", GLOBAL_OFFLINE_ACTION_CODE).asUpdate().set("value", offLineActionId).update();
 

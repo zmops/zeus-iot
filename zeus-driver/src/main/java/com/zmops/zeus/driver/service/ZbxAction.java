@@ -33,6 +33,21 @@ public interface ZbxAction {
                                      @ParamName("scriptId") String scriptId,
                                      @ParamName("groupId") String groupId);
 
+    /**
+     * 创建默认 告警通知 Action
+     *
+     * @param userAuth api token
+     * @param scriptId 脚本ID
+     * @param groupId  全局主机组ID
+     * @return String
+     */
+    @Post(headers = "authTag: noAuth")
+    @JsonPath("/action/action.create")
+    String createAlarmAction(@ParamName("userAuth") String userAuth,
+                                     @ParamName("name") String name,
+                                     @ParamName("tagName") String tagName,
+                                     @ParamName("scriptId") String scriptId,
+                                     @ParamName("groupId") String groupId);
 
     /**
      * 获取 在线状态 Action
