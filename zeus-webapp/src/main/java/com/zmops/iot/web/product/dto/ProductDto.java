@@ -7,6 +7,8 @@ import com.zmops.iot.model.cache.filter.CachedValueFilter;
 import com.zmops.iot.model.cache.filter.DicType;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 /**
  * @author yefei
  **/
@@ -38,12 +40,12 @@ public class ProductDto {
 
     private String zbxId;
 
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
     @CachedValue(type = DicType.SysUserName)
-    private String createUser;
-    private String createTime;
+    private Long          createUser;
     @CachedValue(type = DicType.SysUserName)
-    private String updateUser;
-    private String updateTime;
+    private Long          updateUser;
 
     private Long deviceNum;
 

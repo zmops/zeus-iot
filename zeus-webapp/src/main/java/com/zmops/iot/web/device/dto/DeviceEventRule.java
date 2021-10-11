@@ -1,6 +1,7 @@
 package com.zmops.iot.web.device.dto;
 
 import com.zmops.iot.domain.BaseEntity;
+import com.zmops.iot.util.ToolUtil;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -116,7 +117,7 @@ public class DeviceEventRule {
                 expression.append(", ");
                 expression.append(scope);
             }
-            expression.append(") ").append(condition).append(" ").append(value);
+            expression.append(") ").append(condition).append(" ").append(ToolUtil.addQuotes(value));
             return expression.toString();
         }
     }

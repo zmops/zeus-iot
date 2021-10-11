@@ -23,6 +23,8 @@ public class UserMacro {
 
     private String description;
 
+    private String inherit;
+
     @NotBlank(groups = {BaseEntity.Delete.class, BaseEntity.Update.class})
     private String hostmacroid;
 }

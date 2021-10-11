@@ -17,9 +17,9 @@ import javax.persistence.Table;
 public class ProductServiceParam {
 
     @Id
-    private Long id;
-    private Long serviceId;
+    private Long   id;
+    private Long   serviceId;
     private String name;
     private String key;
-
+    private String remark;
 }

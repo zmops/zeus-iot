@@ -24,6 +24,16 @@ import java.util.*;
 public class ToolUtil {
 
     /**
+     * 如果对象不是数字类型 就加上双引号返回
+     */
+    public static String addQuotes(String value){
+        if(isNum(value)){
+            return value;
+        }
+        return "\\\\\"" + value + "\\\\\"";
+    }
+
+    /**
      * 默认密码盐长度
      */
     public static final int SALT_LENGTH = 6;

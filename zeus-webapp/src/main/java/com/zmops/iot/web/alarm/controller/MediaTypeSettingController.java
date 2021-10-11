@@ -27,7 +27,8 @@ public class MediaTypeSettingController {
         if (ToolUtil.isNotEmpty(type)) {
             qMediaTypeSetting.type.eq(type);
         }
-        return new SuccessResponseData(qMediaTypeSetting.findList());
+
+        return new SuccessResponseData(qMediaTypeSetting.orderBy().id.asc().findList());
     }
 
     @PostMapping("update")
