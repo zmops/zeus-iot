@@ -42,7 +42,7 @@ public class DeviceLogService {
                 alarmList.forEach(alarm -> {
                     deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_ALARM).content(alarm.getName())
                             .triggerTime(LocalDateTimeUtils.convertDateToLocalDateTime(Integer.parseInt(alarm.getClock())))
-                            .status("0".equals(alarm.getRClock()) ? "已解决" : "未解决").build());
+                            .status("0".equals(alarm.getRClock()) ?  "未解决" : "已解决").build());
                 });
             }
         }
@@ -57,7 +57,7 @@ public class DeviceLogService {
                 alarmList.forEach(alarm -> {
                     deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_ALARM).content(alarm.getName())
                             .triggerTime(LocalDateTimeUtils.convertDateToLocalDateTime(Integer.parseInt(alarm.getClock())))
-                            .status("0".equals(alarm.getRClock()) ? "已解决" : "未解决").build());
+                            .status("0".equals(alarm.getRClock()) ?  "未解决" : "已解决").build());
                 });
             }
         }
@@ -97,7 +97,7 @@ public class DeviceLogService {
                 alarmList.forEach(alarm -> {
                     deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_ALARM).content(alarm.getName())
                             .triggerTime(LocalDateTimeUtils.convertDateToLocalDateTime(Integer.parseInt(alarm.getClock())))
-                            .status("0".equals(alarm.getRClock()) ? "已解决" : "未解决").build());
+                            .status("0".equals(alarm.getRClock()) ?  "未解决" : "已解决").build());
                 });
             }
         }
@@ -131,7 +131,7 @@ public class DeviceLogService {
                 alarmList.forEach(alarm -> {
                     deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_ALARM).content(alarm.getName())
                             .triggerTime(LocalDateTimeUtils.convertDateToLocalDateTime(Integer.parseInt(alarm.getClock())))
-                            .status("0".equals(alarm.getRClock()) ? "已解决" : "未解决").build());
+                            .status("0".equals(alarm.getRClock()) ?  "未解决" : "已解决").build());
                 });
             }
         }
