@@ -166,6 +166,7 @@ public class ProductEventRuleService {
         eventExpression.setProductAttrType(exp.getProductAttrType());
         eventExpression.setPeriod(exp.getPeriod());
         eventExpression.setUnit(exp.getUnit());
+        eventExpression.setAttrValueType(exp.getAttrValueType());
         return eventExpression;
     }
 

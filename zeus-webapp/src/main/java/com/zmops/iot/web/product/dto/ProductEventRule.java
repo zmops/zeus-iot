@@ -102,6 +102,8 @@ public class ProductEventRule {
 
         private String productAttrType;
 
+        private String attrValueType;
+
         private String period;
 
         @Override

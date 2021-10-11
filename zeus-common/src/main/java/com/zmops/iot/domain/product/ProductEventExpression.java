@@ -35,5 +35,5 @@ public class ProductEventExpression extends Model {
     private Long productAttrId;
     private String productAttrType;
     private String period;
-
+    private String attrValueType;
 }
