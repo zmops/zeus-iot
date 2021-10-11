@@ -22,4 +22,5 @@ public class ProductServiceParam {
     private String name;
     private String key;
     private String remark;
+    private String value;
 }
