@@ -521,7 +521,10 @@ public class DeviceService {
      * @param deviceId
      * @return
      */
-    public void status(String status, String deviceId) {
+    public void status(String status, String deviceId, String zbxId) {
+        if (ToolUtil.isNotEmpty(zbxId)) {
+            zbxHost.hostStatusUpdate(zbxId, "ENABLE".equals(status) ? "0" : "1");
+        }
         DB.update(Device.class).where().eq("device_id", deviceId).asUpdate().set("status", status).setNull("online").update();
     }
 }
