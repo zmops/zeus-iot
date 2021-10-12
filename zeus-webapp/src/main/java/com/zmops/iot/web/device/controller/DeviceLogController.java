@@ -1,6 +1,8 @@
 package com.zmops.iot.web.device.controller;
 
+import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
+import com.zmops.iot.web.device.dto.DeviceLogDto;
 import com.zmops.iot.web.device.dto.param.DeviceLogParam;
 import com.zmops.iot.web.device.service.DeviceLogService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +31,9 @@ public class DeviceLogController {
     }
 
     @RequestMapping("getLogByPage")
-    public ResponseData getLogByPage(@RequestBody DeviceLogParam deviceLogParam) {
+    public Pager<DeviceLogDto> getLogByPage(@RequestBody DeviceLogParam deviceLogParam) {
 
-        return ResponseData.success(deviceLogService.getLogByPage(deviceLogParam.getDeviceId(), deviceLogParam.getLogType(), deviceLogParam.getTimeFrom(), deviceLogParam.getTimeTill(), deviceLogParam.getPage(), deviceLogParam.getMaxRow()));
+        return deviceLogService.getLogByPage(deviceLogParam.getDeviceId(), deviceLogParam.getLogType(), deviceLogParam.getTimeFrom(),
+                deviceLogParam.getTimeTill(), deviceLogParam.getPage(), deviceLogParam.getMaxRow());
     }
 }
