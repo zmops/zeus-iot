@@ -325,21 +325,23 @@ public class HomeService {
                     .map(ZbxProblemInfo::getObjectid).map(Objects::toString).collect(Collectors.toList());
 
             List<DeviceDto> deviceList = DB.findDto(DeviceDto.class,
-                            "select name,r.zbx_id from device d INNER JOIN (select relation_id,zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.relation_id=d.device_id")
+                    "select name,r.zbx_id from device d INNER JOIN (select relation_id,zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.relation_id=d.device_id")
                     .setParameter("zbxIds", triggerIds).findList();
 
-            Map<String, String> deviceMap = deviceList.parallelStream().collect(Collectors.toMap(DeviceDto::getZbxId, DeviceDto::getName));
+            Map<String, List<DeviceDto>> deviceMap = deviceList.parallelStream().collect(Collectors.groupingBy(DeviceDto::getZbxId));
+
 
             List<AlarmDto> alarmDtoList = new ArrayList<>();
             alarmList.forEach(zbxProblemInfo -> {
-                AlarmDto alarmDto = new AlarmDto();
-                BeanUtils.copyProperties(zbxProblemInfo, alarmDto);
-                alarmDto.setRClock(zbxProblemInfo.getR_clock());
-                alarmDto.setDeviceName("未知设备");
-                if (null != deviceMap.get(zbxProblemInfo.getObjectid())) {
-                    alarmDto.setDeviceName(deviceMap.get(zbxProblemInfo.getObjectid()));
+                if (ToolUtil.isNotEmpty(deviceMap.get(zbxProblemInfo.getObjectid()))) {
+                    deviceMap.get(zbxProblemInfo.getObjectid()).forEach(deviceDto -> {
+                        AlarmDto alarmDto = new AlarmDto();
+                        BeanUtils.copyProperties(zbxProblemInfo, alarmDto);
+                        alarmDto.setRClock(zbxProblemInfo.getR_clock());
+                        alarmDto.setDeviceName(deviceDto.getName());
+                        alarmDtoList.add(alarmDto);
+                    });
                 }
-                alarmDtoList.add(alarmDto);
             });
 
             tmpMap = alarmDtoList.parallelStream().collect(Collectors.groupingBy(AlarmDto::getDeviceName, Collectors.counting()));
@@ -354,6 +356,7 @@ public class HomeService {
         });
 
         topList.sort(Comparator.comparing(o -> Integer.parseInt(o.get("value").toString())));
+        Collections.reverse(topList);
         topList.subList(0, Math.min(topList.size(), 5));
 
         return topList;
