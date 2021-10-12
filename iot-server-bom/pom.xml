@@ -74,11 +74,13 @@
                 <artifactId>gson</artifactId>
                 <version>${gson.version}</version>
             </dependency>
+            <!--
             <dependency>
                 <groupId>org.apache.camel</groupId>
                 <artifactId>camel-zabbix-agent</artifactId>
                 <version>${camel.version}</version>
             </dependency>
+            -->
             <dependency>
                 <groupId>org.apache.camel</groupId>
                 <artifactId>camel-netty4-http</artifactId>
