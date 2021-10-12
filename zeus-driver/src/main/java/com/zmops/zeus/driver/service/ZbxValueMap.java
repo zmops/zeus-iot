@@ -14,7 +14,7 @@ import java.util.Map;
  * 值映射设置
  */
 @BaseRequest(
-        baseURL = "${zbxApiUrl}",
+        baseURL = "http://${zbxServerIp}:${zbxServerPort}/zabbix/api_jsonrpc.php",
         interceptor = JsonBodyBuildInterceptor.class
 )
 public interface ZbxValueMap {

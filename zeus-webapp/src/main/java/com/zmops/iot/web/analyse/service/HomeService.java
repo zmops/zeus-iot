@@ -356,7 +356,6 @@ public class HomeService {
         });
 
         topList.sort(Comparator.comparing(o -> Integer.parseInt(o.get("value").toString())));
-        Collections.reverse(topList);
         topList.subList(0, Math.min(topList.size(), 5));
 
         return topList;

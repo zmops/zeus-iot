@@ -11,7 +11,7 @@ import com.zmops.zeus.driver.inteceptor.JsonBodyBuildInterceptor;
  */
 
 @BaseRequest(
-        baseURL = "${zbxApiUrl}",
+        baseURL = "http://${zbxServerIp}:${zbxServerPort}/zabbix/api_jsonrpc.php",
         interceptor = JsonBodyBuildInterceptor.class
 )
 public interface ZbxAction {

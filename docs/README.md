@@ -159,8 +159,7 @@ apt install openjdk-8-jdk -y
       log-enabled: false
       timeout: 5000
       variables:
-        ## Zabbix API IP And ServerIp and ServerPort
-        zbxApiUrl: http://${ZEUS_ZABBIX_HOST:127.0.0.1}:${ZEUS_ZABBIX_PORT:80}/zabbix/api_jsonrpc.php    
+        ## Zabbix API IP And ServerIp and ServerPort  
         zbxServerIp: ${ZEUS_ZABBIX_HOST:127.0.0.1}                                                       
         zbxServerPort: ${ZEUS_ZABBIX_PORT:80}
         zbxApiToken: 4d3ed2be23a3f325d6ccaaaeab76bbdc6a559f3c608e523f9906ea923f7d61c5

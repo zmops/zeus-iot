@@ -13,7 +13,7 @@ import java.util.Map;
  */
 
 @BaseRequest(
-        baseURL = "${zbxApiUrl}",
+        baseURL = "http://${zbxServerIp}:${zbxServerPort}/zabbix/api_jsonrpc.php",
         interceptor = JsonBodyBuildInterceptor.class
 )
 public interface ZbxTemplate {

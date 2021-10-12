@@ -10,7 +10,7 @@ import com.zmops.zeus.driver.inteceptor.JsonBodyBuildInterceptor;
  * @author nantian created at 2021/8/7 23:27
  */
 
-@BaseRequest(baseURL = "${zbxApiUrl}", interceptor = JsonBodyBuildInterceptor.class)
+@BaseRequest(baseURL = "http://${zbxServerIp}:${zbxServerPort}/zabbix/api_jsonrpc.php", interceptor = JsonBodyBuildInterceptor.class)
 public interface ZbxProblem {
 
 

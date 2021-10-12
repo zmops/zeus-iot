@@ -12,7 +12,7 @@ import com.zmops.zeus.driver.inteceptor.JsonBodyBuildInterceptor;
 public interface ZbxInitService {
 
     @Post(
-            url = "${zbxApiUrl}",
+            url = "http://${zbxServerIp}:${zbxServerPort}/zabbix/api_jsonrpc.php",
             headers = "authTag: noAuth",
             interceptor = JsonBodyBuildInterceptor.class
     )
@@ -20,7 +20,7 @@ public interface ZbxInitService {
     String createCookieUserGroup(@ParamName("hostGroupId") String hostGroupId, @ParamName("userAuth") String userAuth);
 
     @Post(
-            url = "${zbxApiUrl}",
+            url = "http://${zbxServerIp}:${zbxServerPort}/zabbix/api_jsonrpc.php",
             headers = "authTag: noAuth",
             interceptor = JsonBodyBuildInterceptor.class
     )
@@ -28,7 +28,7 @@ public interface ZbxInitService {
     String getCookieUserGroup(@ParamName("userAuth") String userAuth);
 
     @Post(
-            url = "${zbxApiUrl}",
+            url = "http://${zbxServerIp}:${zbxServerPort}/zabbix/api_jsonrpc.php",
             headers = "authTag: noAuth",
             interceptor = JsonBodyBuildInterceptor.class
     )
@@ -36,7 +36,7 @@ public interface ZbxInitService {
     String getCookieUser(@ParamName("userAuth") String userAuth);
 
     @Post(
-            url = "${zbxApiUrl}",
+            url = "http://${zbxServerIp}:${zbxServerPort}/zabbix/api_jsonrpc.php",
             headers = "authTag: noAuth",
             interceptor = JsonBodyBuildInterceptor.class
     )
@@ -46,7 +46,7 @@ public interface ZbxInitService {
                             @ParamName("roleId") String roleId);
 
     @Post(
-            url = "${zbxApiUrl}",
+            url = "http://${zbxServerIp}:${zbxServerPort}/zabbix/api_jsonrpc.php",
             headers = "authTag: noAuth",
             interceptor = JsonBodyBuildInterceptor.class
     )
@@ -54,7 +54,7 @@ public interface ZbxInitService {
     String getAdminRole(@ParamName("userAuth") String zbxApiToken);
 
     @Post(
-            url = "${zbxApiUrl}",
+            url = "http://${zbxServerIp}:${zbxServerPort}/zabbix/api_jsonrpc.php",
             headers = "authTag: noAuth",
             interceptor = JsonBodyBuildInterceptor.class
     )
