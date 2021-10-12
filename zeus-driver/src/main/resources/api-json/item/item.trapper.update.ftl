@@ -11,7 +11,7 @@
             "master_itemid":${masterItemid},
         </#if>
         "value_type": ${valueType},
-        <#if valuemapid??>
+        <#if valuemapid?? && valuemapid != ''>
             "valuemapid":${valuemapid},
         </#if>
         <#if valueType == '0' || valueType == '3'>

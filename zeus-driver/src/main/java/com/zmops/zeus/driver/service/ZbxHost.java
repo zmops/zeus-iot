@@ -48,6 +48,17 @@ public interface ZbxHost {
     String hostUpdate(@ParamName("hostid") String hostid,
                       @ParamName("groupids") List<String> groupids,
                       @ParamName("templateid") String templateid);
+    /**
+     * 修改主机状态
+     *
+     * @param hostid     主机ID
+     * @param status   主机状态
+     * @return
+     */
+    @Post
+    @JsonPath("/host/host.status.update")
+    String hostStatusUpdate(@ParamName("hostid") String hostid,
+                      @ParamName("status") String status);
 
     /**
      * 删除主机

@@ -12,7 +12,7 @@
  Target Server Version : 130004
  File Encoding         : 65001
 
- Date: 11/10/2021 09:58:57
+ Date: 12/10/2021 10:04:27
 */
 
 
@@ -411,7 +411,8 @@ CREATE TABLE "public"."product_attribute" (
   "dep_attr_id" int8,
   "template_id" int8,
   "delay" int2,
-  "unit" varchar(4) COLLATE "pg_catalog"."default"
+  "unit" varchar(4) COLLATE "pg_catalog"."default",
+  "valuemapid" varchar(8) COLLATE "pg_catalog"."default"
 )
 ;
 COMMENT ON COLUMN "public"."product_attribute"."attr_id" IS '属性ID';
@@ -431,6 +432,7 @@ COMMENT ON COLUMN "public"."product_attribute"."dep_attr_id" IS '依赖属性ID'
 COMMENT ON COLUMN "public"."product_attribute"."template_id" IS '继承的属性ID';
 COMMENT ON COLUMN "public"."product_attribute"."delay" IS '取数间隔';
 COMMENT ON COLUMN "public"."product_attribute"."unit" IS '取数间隔单位 s m h ';
+COMMENT ON COLUMN "public"."product_attribute"."valuemapid" IS '值映射ID';
 
 -- ----------------------------
 -- Records of product_attribute
@@ -523,7 +525,8 @@ CREATE TABLE "public"."product_event_expression" (
   "unit" varchar(16) COLLATE "pg_catalog"."default",
   "product_attr_id" int8,
   "product_attr_type" varchar(4) COLLATE "pg_catalog"."default",
-  "period" varchar(8) COLLATE "pg_catalog"."default"
+  "period" varchar(8) COLLATE "pg_catalog"."default",
+  "attr_value_type" varchar(8) COLLATE "pg_catalog"."default"
 )
 ;
 COMMENT ON COLUMN "public"."product_event_expression"."event_exp_id" IS '告警函数ID';
@@ -533,6 +536,7 @@ COMMENT ON COLUMN "public"."product_event_expression"."device_id" IS '设备ID';
 COMMENT ON COLUMN "public"."product_event_expression"."product_attr_id" IS '属性ID';
 COMMENT ON COLUMN "public"."product_event_expression"."product_attr_type" IS '属性类型 属性 事件';
 COMMENT ON COLUMN "public"."product_event_expression"."period" IS '取值周期 时间 周期';
+COMMENT ON COLUMN "public"."product_event_expression"."attr_value_type" IS '属性值类型';
 
 -- ----------------------------
 -- Records of product_event_expression
@@ -631,13 +635,15 @@ CREATE TABLE "public"."product_service_param" (
   "service_id" int8,
   "key" varchar(32) COLLATE "pg_catalog"."default",
   "name" varchar(32) COLLATE "pg_catalog"."default",
-  "remark" varchar(255) COLLATE "pg_catalog"."default"
+  "remark" varchar(255) COLLATE "pg_catalog"."default",
+  "value" varchar(255) COLLATE "pg_catalog"."default"
 )
 ;
 COMMENT ON COLUMN "public"."product_service_param"."service_id" IS '服务ID';
 COMMENT ON COLUMN "public"."product_service_param"."key" IS '参数标识';
 COMMENT ON COLUMN "public"."product_service_param"."name" IS '参数名称';
 COMMENT ON COLUMN "public"."product_service_param"."remark" IS '备注';
+COMMENT ON COLUMN "public"."product_service_param"."value" IS '参数值';
 
 -- ----------------------------
 -- Records of product_service_param
@@ -797,14 +803,14 @@ INSERT INTO "public"."sys_config" VALUES (1145915627211370499, '文件上传路�
 INSERT INTO "public"."sys_config" VALUES (1143324237579165697, '验证码开关', 'ZEUS_KAPTCHA_OPEN', 'Y', 1106120265689055233, 'DISABLE', '是否开启验证码', 1, 1, '2019-06-24 12:46:43', '2021-08-03 16:38:12.432', 'ENABLE');
 INSERT INTO "public"."sys_config" VALUES (1145915627211370498, 'Zeus发布的编号', 'ZEUS_SYSTEM_RELEASE_VERSION', 'N', NULL, '10', '用于防止浏览器缓存相关的js和css', 1, 1, '2019-07-02 12:42:30', '2021-08-03 16:38:12.432', 'ENABLE');
 INSERT INTO "public"."sys_config" VALUES (1143468867767607297, '默认系统密码', 'ZEUS_DEFAULT_PASSWORD', 'N', NULL, '111111', '默认系统密码', 1, 1, '2019-06-25 18:39:57', '2021-08-03 16:38:12.432', 'ENABLE');
-INSERT INTO "public"."sys_config" VALUES (1145915627211370503, '告警回调ActionId', 'ZEUS_ALARM_ACTION_ID', 'Y', NULL, '8', '回调动作ID', NULL, NULL, NULL, NULL, 'DISABLE');
-INSERT INTO "public"."sys_config" VALUES (1145915627211370504, '动作回调ActionId', 'ZEUS_EXEC_ACTION_ID', 'Y', NULL, '9', '回调动作ID', NULL, NULL, NULL, NULL, 'DISABLE');
-INSERT INTO "public"."sys_config" VALUES (1145915627211370505, '事件回调ActionId', 'ZEUS_EVENT_ACTION_ID', 'Y', NULL, '10', '回调动作ID', NULL, NULL, NULL, NULL, 'DISABLE');
-INSERT INTO "public"."sys_config" VALUES (1143468867767607208, '单点登录开关', 'ZEUS_SIGN_IN', 'N', NULL, 'DISABLE', '是否启用单点登录', 1, 1, '2019-06-25 18:39:57', '2021-08-03 16:38:12.432', 'ENABLE');
-INSERT INTO "public"."sys_config" VALUES (1143468867767607207, '默认租户角色ID', 'ZEUS_TENANT_ROLE_ID', 'N', NULL, '1', '默认租户角色ID', 1, 1, '2019-06-25 18:39:57', '2021-08-03 16:38:12.432', 'ENABLE');
 INSERT INTO "public"."sys_config" VALUES (1145915627211370496, '全局主机组Id', 'ZEUS_HOST_GROUP_ID', 'Y', NULL, '19', '全局主机和模板组ID', NULL, NULL, NULL, NULL, 'DISABLE');
 INSERT INTO "public"."sys_config" VALUES (1143468867767607298, '用户角色ID', 'ZEUS_ADMIN_ROLE_ID', 'N', NULL, '3', '用户角色ID', 1, 1, NULL, NULL, 'DISABLE');
 INSERT INTO "public"."sys_config" VALUES (1145915627211370497, '离线回调ActionId', 'ZEUS_OFFLINE_ACTION_ID', 'Y', NULL, '7', '回调动作ID', NULL, NULL, NULL, NULL, 'DISABLE');
+INSERT INTO "public"."sys_config" VALUES (1145915627211370503, '告警回调ActionId', 'ZEUS_ALARM_ACTION_ID', 'Y', NULL, '8', '回调动作ID', NULL, NULL, NULL, NULL, 'DISABLE');
+INSERT INTO "public"."sys_config" VALUES (1143468867767607208, '单点登录开关', 'ZEUS_SIGN_IN', 'N', NULL, 'DISABLE', '是否启用单点登录', 1, 1, '2019-06-25 18:39:57', '2021-08-03 16:38:12.432', 'ENABLE');
+INSERT INTO "public"."sys_config" VALUES (1145915627211370504, '动作回调ActionId', 'ZEUS_EXEC_ACTION_ID', 'Y', NULL, '9', '回调动作ID', NULL, NULL, NULL, NULL, 'DISABLE');
+INSERT INTO "public"."sys_config" VALUES (1145915627211370505, '事件回调ActionId', 'ZEUS_EVENT_ACTION_ID', 'Y', NULL, '10', '回调动作ID', NULL, NULL, NULL, NULL, 'DISABLE');
+INSERT INTO "public"."sys_config" VALUES (1143468867767607207, '默认租户角色ID', 'ZEUS_TENANT_ROLE_ID', 'N', NULL, '1', '默认租户角色ID', 1, 1, '2019-06-25 18:39:57', '2021-08-03 16:38:12.432', 'ENABLE');
 
 -- ----------------------------
 -- Table structure for sys_dict

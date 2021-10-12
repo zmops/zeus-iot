@@ -51,6 +51,16 @@ function InitSystem() {
         echo "主机名修改失败"
         exit
     fi
+
+    ## 关闭 IPV6 监听
+
+    echo " ">>/etc/sysctl.conf
+    echo "# made for disabled IPv6 in $(date +%F)">>/etc/sysctl.conf
+    echo 'net.ipv6.conf.all.disable_ipv6 = 1'>>/etc/sysctl.conf
+    echo 'net.ipv6.conf.default.disable_ipv6 = 1'>>/etc/sysctl.conf
+    echo 'net.ipv6.conf.lo.disable_ipv6 = 1'>>/etc/sysctl.conf
+    sysctl -p
+
     ## 修改时区
     if ! ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime; then
         echo "时区修改失败"
@@ -58,7 +68,7 @@ function InitSystem() {
     fi
     ## 更新下载源
     cp /etc/apt/sources.list /etc/apt/sources.listbak
-    sed -i 's%\(^deb https\:\/\/\).*\(/ubuntu.*\)%\1mirrors.tuna.tsinghua.edu.cn\2%g' /etc/apt/sources.list
+    sed -i 's%\(^deb http\{0,1\}\:\/\/\).*\(/ubuntu.*\)%\1mirrors.tuna.tsinghua.edu.cn\2%g' /etc/apt/sources.list
     echo -e "\033[32m  [ OK ] \033[0m"
 }
 
@@ -70,8 +80,8 @@ function AddInstallRepo() {
     #sudo sh -c "echo 'deb https://packagecloud.io/timescale/timescaledb/ubuntu/ $(lsb_release -c -s) main' > /etc/apt/sources.list.d/timescaledb.list"
     #wget --quiet -O - https://packagecloud.io/timescale/timescaledb/gpgkey | sudo apt-key add -
     ## 安装zabbix 5.4 源
-    wget -q https://repo.zabbix.com/zabbix/5.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_5.4-1+ubuntu20.04_all.deb
-    dpkg -i zabbix-release_5.4-1+ubuntu20.04_all.deb 1> /dev/null
+    wget -q https://repo.zabbix.com/zabbix/5.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_5.4-1+ubuntu$(lsb_release -r -s)_all.deb
+    dpkg -i zabbix-release_5.4-1+ubuntu$(lsb_release -r -s)_all.deb 1> /dev/null
     apt update 1> /dev/null && apt install -y openjdk-8-jdk expect 1> /dev/null
     echo -e "\033[32m  [ OK ] \033[0m"
 }
@@ -90,7 +100,10 @@ function PGInstall() {
 function ZbxInstall() {
     echo -e -n "\033[32mStep4: 编译安装 zabbix 。。。  \033[0m" 
     # zabbix 安装
-    apt install zabbix-server-pgsql zabbix-frontend-php php7.4-pgsql zabbix-nginx-conf zabbix-sql-scripts zabbix-agent -y 1> /dev/null
+    apt install zabbix-server-pgsql zabbix-frontend-php php-pgsql zabbix-nginx-conf zabbix-sql-scripts zabbix-agent -y 1> /dev/null
+
+    PHPCONF=/etc/php/$(ls /etc/php/)/fpm/php.ini
+
     # 初始化 zabbix 配置
     cd /tmp || exit
     sudo -u postgres createuser zabbix
@@ -105,11 +118,11 @@ function ZbxInstall() {
     sed -i "s/\($DB\['PASSWORD'\]\s*=\).*/\1 'zabbix';/g" /usr/share/zabbix/conf/zabbix.conf.php
     sed -i "s/\($DB\['TYPE'\]\s*=\).*/\1 \'POSTGRESQL\';/g" /usr/share/zabbix/conf/zabbix.conf.php
     # 修改 php 配置
-    sed -i 's/post_max_size = 8M/post_max_size = 16M/' /etc/php/7.4/fpm/php.ini
-    sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 20M/' /etc/php/7.4/fpm/php.ini
-    sed -i 's/max_execution_time = 30/max_execution_time = 300/' /etc/php/7.4/fpm/php.ini
-    sed -i 's/max_input_time = 60/max_input_time = 300/' /etc/php/7.4/fpm/php.ini
-    sed -i 's/; date.timezone =/date.timezone = "Asia\/Shanghai"/' /etc/php/7.4/fpm/php.ini    
+    sed -i 's/post_max_size = 8M/post_max_size = 16M/' $PHPCONF
+    sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 20M/' $PHPCONF
+    sed -i 's/max_execution_time = 30/max_execution_time = 300/' $PHPCONF
+    sed -i 's/max_input_time = 60/max_input_time = 300/' $PHPCONF
+    sed -i 's/; date.timezone =/date.timezone = "Asia\/Shanghai"/' $PHPCONF    
     # 修改 nginx 配置
     sed -i '/sites-enabled/d' /etc/nginx/nginx.conf
     sed -i '/listen/s/#//' /etc/nginx/conf.d/zabbix.conf
@@ -151,7 +164,7 @@ server {
 }
 EOL
 
-    systemctl restart zabbix-server zabbix-agent nginx php7.4-fpm  
+    systemctl restart zabbix-server zabbix-agent nginx php$(ls /etc/php/)-fpm  
     echo -e "\033[32m  [ OK ] \033[0m"  
 }
 
@@ -214,5 +227,5 @@ AddInstallRepo
 PGInstall
 ZbxInstall
 taosinstall
-ZeusInstall
-
+#ZeusInstall
+echo "zabbix 部分已安装成功，zeus iot 可以参照 www.zmops.com 官方文档自定义安装。"

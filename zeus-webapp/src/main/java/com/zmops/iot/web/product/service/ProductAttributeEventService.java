@@ -27,6 +27,7 @@ import com.zmops.zeus.driver.entity.ZbxItemInfo;
 import com.zmops.zeus.driver.entity.ZbxProcessingStep;
 import com.zmops.zeus.driver.service.ZbxItem;
 import io.ebean.DB;
+import io.ebean.DtoQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -85,17 +86,41 @@ public class ProductAttributeEventService {
      * @return
      */
     public List<ProductAttrDto> list(ProductAttrParam productAttr) {
-        QProductAttributeEvent qProductAttribute = new QProductAttributeEvent();
+//        QProductAttributeEvent qProductAttribute = new QProductAttributeEvent();
+//        if (null != productAttr.getProdId()) {
+//            qProductAttribute.productId.eq(productAttr.getProdId());
+//        }
+//        if (ToolUtil.isNotEmpty(productAttr.getAttrName())) {
+//            qProductAttribute.name.contains(productAttr.getAttrName());
+//        }
+//        if (ToolUtil.isNotEmpty(productAttr.getKey())) {
+//            qProductAttribute.key.contains(productAttr.getKey());
+//        }
+//        return qProductAttribute.orderBy(" create_time desc").asDto(ProductAttrDto.class).findList();
+        StringBuilder sql = new StringBuilder("select * from product_attribute_event where 1=1");
         if (null != productAttr.getProdId()) {
-            qProductAttribute.productId.eq(productAttr.getProdId());
+            sql.append(" and product_id = :productId");
         }
         if (ToolUtil.isNotEmpty(productAttr.getAttrName())) {
-            qProductAttribute.name.contains(productAttr.getAttrName());
+            sql.append(" and name like :attrName");
         }
         if (ToolUtil.isNotEmpty(productAttr.getKey())) {
-            qProductAttribute.key.contains(productAttr.getKey());
+            sql.append(" and key like :key");
         }
-        return qProductAttribute.orderBy(" create_time desc").asDto(ProductAttrDto.class).findList();
+        sql.append(" order by create_time desc");
+        DtoQuery<ProductAttrDto> dto = DB.findDto(ProductAttrDto.class, sql.toString());
+
+        if (null != productAttr.getProdId()) {
+            dto.setParameter("productId", productAttr.getProdId());
+        }
+        if (ToolUtil.isNotEmpty(productAttr.getAttrName())) {
+            dto.setParameter("attrName", "%" + productAttr.getAttrName() + "%");
+        }
+        if (ToolUtil.isNotEmpty(productAttr.getKey())) {
+            dto.setParameter("key", "%" + productAttr.getKey() + "%");
+        }
+
+        return dto.findList();
     }
 
     /**
@@ -105,7 +130,8 @@ public class ProductAttributeEventService {
      * @return
      */
     public ProductAttrDto detail(Long attrId) {
-        ProductAttrDto attr = new QProductAttributeEvent().attrId.eq(attrId).asDto(ProductAttrDto.class).findOne();
+//        ProductAttrDto attr = new QProductAttributeEvent().attrId.eq(attrId).asDto(ProductAttrDto.class).findOne();
+        ProductAttrDto attr = DB.findDto(ProductAttrDto.class, "select * from product_attribute_event where attr_id=:attrId").setParameter("attrId", attrId).findOne();
 
         if (attr == null || null == attr.getZbxId()) {
             return attr;

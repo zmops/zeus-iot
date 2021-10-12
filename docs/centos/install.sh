@@ -5,10 +5,12 @@ ROOT_UID=0
 release=Centos
 basename=$(pwd)
 zabbixsrc=$basename/zabbix-5.4.3
-ZABBIX_HOME=/opt/zeus/zabbix
+INSTALLDIR=/opt/zeus
+ZABBIX_HOME=$INSTALLDIR/zabbix
 PHP_CONF=/etc/opt/rh/rh-php73
 sqldir=$basename/zabbix-5.4.3/database/postgresql
-PGDATA=/opt/zeus/pgdata
+PGDATA=$INSTALLDIR/pgdata
+zeusurl=https://packages.zmops.cn/zeus-iot/zeus-iot-bin.tar.gz
 
 function logprint() {
         if [ $? != 0 ]; then
@@ -17,50 +19,54 @@ function logprint() {
         fi
 }
 
-# 安装前准备
-## 系统环境检测
-if [ "$(uname)" != Linux ]; then
-        echo "Error: 该脚本只适用 Linux 系统"
-        exit
-fi
-
-if [ "$UID" -ne "$ROOT_UID" ]; then
-        echo -e "Error: 请使用root账户执行安装"
-        exit
-fi
-### 操作系统
-if [ ! -f /etc/redhat-release ]; then
-        if [[ "$(cat /etc/issue)" =~ ^Ubuntu* ]]; then
-                release=Ubuntu
+function syscheck() {
+        # 安装前准备
+        ## 系统环境检测
+        #
+        
+        if [ "$(uname)" != Linux ]; then
+                echo -e "\033[31m Error: 该脚本只适用 Linux 系统 \033[0m"
+                exit
         fi
-fi
-### 网络
-if ! ping -c 3 mirrors.tuna.tsinghua.edu.cn &>/dev/null; then
-        echo "Error: 无法访问外网 。。。"
-        exit
-fi
 
-### cpu、mem、disk
-cores=$(grep </proc/cpuinfo -c "processor")
-memstotal=$(grep </proc/meminfo "MemTotal" | awk '{printf("%.f\n",$2/1024/1024)}')
-disks=$(df -T | awk '/(xfs|ext4|ext3)/{if($3/1024/1024 > 10)printf("%s\t%d\n",$7,$3/1024/1024)}' | grep -v -c "/boot")
+        if [ "$UID" -ne "$ROOT_UID" ]; then
+                echo -e "\033[31m Error: 请使用root账户执行安装 \033[0m"
+                exit
+        fi
+        ### 操作系统
+        if [ ! -f /etc/redhat-release ]; then
+                if [[ "$(cat /etc/issue)" =~ ^Ubuntu* ]]; then
+                        release=Ubuntu
+                fi
+        fi
+        ### 网络
+        if ! ping -c 3 mirrors.tuna.tsinghua.edu.cn &>/dev/null; then
+                echo -e "\033[31m Error: 无法访问外网 。。。 \033[0m"
+                exit
+        fi
 
-if [ "$cores" -lt 0 ] || [ "$memstotal" -lt 0 ] || [ "$disks" -eq 0 ]; then
-        echo "Error: 要求系统最低配置为 CPU 2核 内存 4GB 存储空间 100G"
-        exit 
-fi
+        ### cpu、mem、disk
+        cores=$(grep </proc/cpuinfo -c "processor")
+        memstotal=$(grep </proc/meminfo "MemTotal" | awk '{printf("%.f\n",$2/1024/1024)}')
+        disks=$(df -T | awk '/(xfs|ext4|ext3)/{if($3/1024/1024 > 10)printf("%s\t%d\n",$7,$3/1024/1024)}' | grep -v -c "/boot")
+
+        if [ "$cores" -lt 2 ] || [ "$memstotal" -lt 4 ] || [ "$disks" -eq 100 ]; then
+                echo -e "\033[31m Error: 要求系统最低配置为 CPU 2核 内存 4GB 存储空间 100G \033[0m"
+                exit 
+        fi
+}
 
 ## 系统环境初始化
 function InitSystem() {
         echo -e -n "\033[32mStep1: 初始化系统安装环境...  \033[0m"
         if ! hostnamectl set-hostname zeus-server; then
-                echo "Error: 主机名修改失败"
+                echo -e "\033[31m Error: 主机名修改失败\033[0m"
                 exit
         fi
 
         ### 修改时区
         if ! ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime; then
-                echo "Error: 时区修改失败"
+                echo -e "\033[31m Error: 时区修改失败\033[0m"
                 exit 0
         fi
 
@@ -78,11 +84,13 @@ function InitSystem() {
         echo "ulimit -SHn 65535" >>/etc/rc.local
 
         ### 添加用户
-        groupadd --system zeus || true
-        useradd --system -g zeus zeus || true
-
+        if ! id zeus; then
+                groupadd --system zeus || true
+                useradd --system -g zeus zeus || true
+        fi
+        
         ### 添加安装目录
-        [ ! -d /opt/zeus ] && mkdir -p /opt/zeus
+        [ ! -d $INSTALLDIR ] && mkdir -p $INSTALLDIR
         echo -e "\033[32m  [ OK ] \033[0m"
 }
 
@@ -149,12 +157,12 @@ function PGInstall() {
         startfile=/usr/lib/systemd/system/postgresql-13.service
         #sed -i 's/\(^User\=\).*/\1zeus/g' $startfile
         #sed -i 's/\(^Group\=\).*/\1zeus/g' $startfile
-        sed -i 's/\(^Environment\=PGDATA\=\).*/\1\/opt\/zeus\/pgdata/g' $startfile
+        sed -i "s#\(^Environment\=PGDATA\=\).*#\1$INSTALLDIR\/pgdata#g" $startfile
         ### 初始化数据库
         /usr/pgsql-13/bin/postgresql-13-setup initdb 1>/dev/null
         logprint "初始化PG错误"
 
-#        echo "shared_preload_libraries = 'timescaledb'" >>/opt/zeus/pgdata/postgresql.conf
+        #echo "shared_preload_libraries = 'timescaledb'" >>/opt/zeus/pgdata/postgresql.conf
         ### 启动数据库
         systemctl enable postgresql-13 &>/dev/null
         systemctl start postgresql-13
@@ -186,7 +194,7 @@ function ZbxInstall() {
 
         ### 创建 zabbix 用户
         groupadd --system zabbix || true
-        useradd --system -g zabbix -d /opt/zeus/zabbix -s /sbin/nologin -c "Zabbix Monitoring System" zabbix || true
+        useradd --system -g zabbix -d $INSTALLDIR/zabbix -s /sbin/nologin -c "Zabbix Monitoring System" zabbix || true
 
         wget -c https://cdn.zabbix.com/zabbix/sources/stable/5.4/zabbix-5.4.3.tar.gz -o /dev/null -O - | tar -xz
         logprint "下载zabbix源码失败，请检查网络。。。"
@@ -312,7 +320,7 @@ function WebInstall() {
         yum -y install nginx 1>/dev/null
 
 
-        cd /opt/zeus
+        cd $INSTALLDIR
         
         ## 编辑 nginx 配置文件
         tee /etc/nginx/conf.d/zabbix.conf <<EOL 1>/dev/null
@@ -390,7 +398,8 @@ function taosinstall() {
 EOF
         ## 启动taos
         systemctl enable taosd &> /dev/null
-        systemctl start taosd 
+        systemctl start taosd
+        logprint "taos安装失败" 
 
         echo -e "\033[32m  [ OK ] \033[0m"
 }
@@ -398,13 +407,16 @@ EOF
 
 function ZeusInstall() {
         echo -e -n "\033[32mStep11: 安装 Zeus-IoT 服务。。。  \033[0m"
-        cd /opt/zeus || exit
+        cd $INSTALLDIR || exit
         ## 创建taos 数据库
         taos -s "create database zeus_data" 1> /dev/null
-        wget -c https://packages.zmops.cn/zeus-iot/zeus-iot-bin.tar.gz -o /dev/null -O - | tar -xz
+        wget -c $zeusurl -o /dev/null -O - | tar -xz
+        logprint "zeusiot下载失败，检查网络"
         gettoken
+        logprint "zabbix-token获取失败"
         ## 数据库导入
         sudo -u postgres createdb -E Unicode -T template0 zeus-iot
+        logprint "数据库创建失败"
         cat ./zeus-iot-bin/bin/sql/zeus-iot.sql | sudo -u postgres psql zeus-iot &>/dev/null
         logprint "文件未找到"
         sed -i "s%\(zbxApiToken: \).*%\1$token%" ./zeus-iot-bin/webapp/webapp.yml
@@ -412,8 +424,30 @@ function ZeusInstall() {
         echo -e "\033[32m  [ OK ] \033[0m"
 }
 
+function clear() {
+        # 清理用户
+        if ! id zeus; then
+                userdell zeus
+        fi
+
+        # 清理应用
+        ## 清理 zeus
+        status=`ps -ef | grep zeus-iot-bin | grep java | grep -v grep | awk '{print $2}' | wc -l`
+
+        if [ $status -ne 0 ]
+        then
+                for i in `ps -ef | grep zeus-iot-bin | grep java | grep -v grep | awk '{print $2}'`
+                do
+                        kill -9 $i
+                done
+        fi
+
+
+}
+
 
 ##
+syscheck
 InitSystem
 AddInstallRepo
 PGInstall
@@ -421,5 +455,6 @@ ZbxInstall
 PHPInstall
 WebInstall
 taosinstall
-ZeusInstall
+echo "zabbix 部分已安装成功，zeus iot 可以参照 www.zmops.com 官方文档自定义安装。"
+# ZeusInstall
 # 安装结束

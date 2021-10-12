@@ -151,7 +151,10 @@ public class DeviceEventTriggerController {
         if (count == 0) {
             throw new ServiceException(BizExceptionEnum.EVENT_NOT_EXISTS);
         }
+
         //来自产品的告警规则 只能修改备注
+        count = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId()).inherit.eq(InheritStatus.YES.getCode())
+                .findCount();
         if (count > 1) {
             DB.update(ProductEventRelation.class).where().eq("eventRuleId", eventRule.getEventRuleId()).eq("relationId", eventRule.getDeviceId())
                     .asUpdate().set("remark", eventRule.getRemark()).update();

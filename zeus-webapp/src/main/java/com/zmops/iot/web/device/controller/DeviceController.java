@@ -112,11 +112,11 @@ public class DeviceController {
     @Permission(code = "dev_update")
     @RequestMapping("/status/update")
     public ResponseData status(@Validated(BaseEntity.Status.class) @RequestBody DeviceDto deviceDto) {
-        int count = new QDevice().deviceId.eq(deviceDto.getDeviceId()).findCount();
-        if (count <= 0) {
+       Device device = new QDevice().deviceId.eq(deviceDto.getDeviceId()).findOne();
+        if (null == device) {
             throw new ServiceException(BizExceptionEnum.DEVICE_NOT_EXISTS);
         }
-        deviceService.status(deviceDto.getStatus(),deviceDto.getDeviceId());
+        deviceService.status(deviceDto.getStatus(),deviceDto.getDeviceId(),device.getZbxId());
         return ResponseData.success();
     }
 
