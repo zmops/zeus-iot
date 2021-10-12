@@ -105,7 +105,8 @@ public class ProductAttributeEventService {
      * @return
      */
     public ProductAttrDto detail(Long attrId) {
-        ProductAttrDto attr = new QProductAttributeEvent().attrId.eq(attrId).asDto(ProductAttrDto.class).findOne();
+//        ProductAttrDto attr = new QProductAttributeEvent().attrId.eq(attrId).asDto(ProductAttrDto.class).findOne();
+        ProductAttrDto attr = DB.findDto(ProductAttrDto.class, "select * from product_attribute_event where attr_id=:attrId").setParameter("attrId", attrId).findOne();
 
         if (attr == null || null == attr.getZbxId()) {
             return attr;
