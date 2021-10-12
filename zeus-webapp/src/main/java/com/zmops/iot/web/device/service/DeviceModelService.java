@@ -173,8 +173,9 @@ public class DeviceModelService {
             prodAttribute.setUnits(productAttr.getUnits());
             prodAttribute.setDepAttrId(productAttr.getDepAttrId());
             prodAttribute.setValueType(productAttr.getValueType());
-            prodAttribute.setDelay(prodAttribute.getDelay());
-            prodAttribute.setUnit(prodAttribute.getUnit());
+            prodAttribute.setDelay(productAttr.getDelay());
+            prodAttribute.setUnit(productAttr.getUnit());
+            prodAttribute.setValuemapid(productAttr.getValuemapid());
         }
         prodAttribute.setProductId(productAttr.getProductId());
         prodAttribute.setRemark(productAttr.getRemark());

@@ -47,5 +47,5 @@ public class ProductAttribute extends BaseEntity {
 
     private String unit;
 
-    private String valuemapId;
+    private String valuemapid;
 }

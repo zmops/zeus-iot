@@ -68,8 +68,6 @@ public class ProductAttr {
     //取数间隔单位
     private String unit;
 
-    private String valuemapId;
-
     LocalDateTime createTime;
     LocalDateTime updateTime;
     Long createUser;

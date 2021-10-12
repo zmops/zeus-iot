@@ -76,6 +76,4 @@ public class ProductAttrDto {
     private String unit;
 
     private String error;
-
-    private String valuemapId;
 }

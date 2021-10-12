@@ -12,6 +12,7 @@ import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,7 @@ public class DeviceServiceLogWorker implements IWorker<Map<String, Object>, Bool
             serviceExecuteRecord.setDeviceId(productEventService.getDeviceId());
             //TODO 执行的参数
             serviceExecuteRecord.setServiceName(Optional.ofNullable(productServiceMap.get(productEventService.getServiceId())).map(ProductService::getName).orElse(""));
+            serviceExecuteRecord.setCreateTime(LocalDateTime.now());
             serviceExecuteRecordList.add(serviceExecuteRecord);
         });
         DB.saveAll(serviceExecuteRecordList);
