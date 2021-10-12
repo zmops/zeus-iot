@@ -5,6 +5,7 @@ import cn.hutool.core.util.IdUtil;
 import com.zmops.iot.async.callback.IWorker;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.ProductAttribute;
+import com.zmops.iot.domain.product.query.QProductAttribute;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.dto.DeviceDto;
 import com.zmops.iot.web.product.dto.ProductAttr;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * @author yefei
@@ -25,12 +28,11 @@ import java.util.Map;
 @Component
 public class SaveProdAttrWorker implements IWorker<ProductAttr, Boolean> {
 
+    private static final String ATTR_SOURCE_DEPEND = "18";
 
     @Override
     public Boolean action(ProductAttr productAttr, Map<String, WorkerWrapper<?, ?>> map) {
         log.debug("处理产品 新增Attr 同步到设备工作…………");
-
-        String prodId = productAttr.getProductId();
 
         String sql = "select device_id from device " +
                 " where product_id = :productId and device_id not in (" +
@@ -41,6 +43,18 @@ public class SaveProdAttrWorker implements IWorker<ProductAttr, Boolean> {
                 .setParameter("key", productAttr.getKey()).findList();
         List<ProductAttribute> productAttributeList = new ArrayList<>();
 
+        if (ToolUtil.isEmpty(deviceDtoList)) {
+            return true;
+        }
+
+        //处理依赖属性
+        Map<String, Long> attrIdMap = new ConcurrentHashMap<>(deviceDtoList.size());
+        if (ATTR_SOURCE_DEPEND.equals(productAttr.getSource())) {
+            List<String> deviceIds = deviceDtoList.parallelStream().map(DeviceDto::getDeviceId).collect(Collectors.toList());
+            List<ProductAttribute> list = new QProductAttribute().productId.in(deviceIds).templateId.eq(productAttr.getDepAttrId()).findList();
+            attrIdMap = list.parallelStream().collect(Collectors.toMap(ProductAttribute::getProductId, ProductAttribute::getAttrId));
+        }
+
         for (DeviceDto deviceDto : deviceDtoList) {
             ProductAttribute productAttrbute = new ProductAttribute();
             ToolUtil.copyProperties(productAttr, productAttrbute);
@@ -48,6 +62,9 @@ public class SaveProdAttrWorker implements IWorker<ProductAttr, Boolean> {
             productAttrbute.setName(productAttr.getAttrName());
             productAttrbute.setProductId(deviceDto.getDeviceId());
             productAttrbute.setTemplateId(productAttr.getAttrId());
+            if (ATTR_SOURCE_DEPEND.equals(productAttr.getSource()) && null != attrIdMap.get(deviceDto.getDeviceId())) {
+                productAttrbute.setDepAttrId(attrIdMap.get(deviceDto.getDeviceId()));
+            }
             productAttributeList.add(productAttrbute);
         }
         DB.saveAll(productAttributeList);

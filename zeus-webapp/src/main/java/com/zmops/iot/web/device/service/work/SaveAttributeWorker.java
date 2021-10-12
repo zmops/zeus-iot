@@ -52,7 +52,7 @@ public class SaveAttributeWorker implements IWorker<DeviceDto, Boolean> {
         }
 
         //属性
-        List<ProductAttribute> productAttributeList = new QProductAttribute().productId.eq(deviceDto.getProductId() + "").orderBy().source.asc().findList();
+        List<ProductAttribute> productAttributeList = new QProductAttribute().productId.eq(deviceDto.getProductId() + "").orderBy(" source::int ").findList();
 
         List<ProductAttribute> newProductAttributeList = new ArrayList<>();
 
@@ -70,8 +70,10 @@ public class SaveAttributeWorker implements IWorker<DeviceDto, Boolean> {
             //处理依赖属性
             if(ATTR_TYPE_RELY.equals(productAttribute.getSource())){
                 String key = attrKeyMap.get(productAttribute.getDepAttrId());
-                Long deptAttrId = attrIdMap.get(key);
-                newProductAttrbute.setDepAttrId(deptAttrId);
+                if(ToolUtil.isNotEmpty(key)) {
+                    Long deptAttrId = attrIdMap.get(key);
+                    newProductAttrbute.setDepAttrId(deptAttrId);
+                }
             }else {
                 attrKeyMap.put(productAttribute.getAttrId(), productAttribute.getKey());
                 attrIdMap.put(productAttribute.getKey(), attrId);
