@@ -46,4 +46,6 @@ public class ProductAttribute extends BaseEntity {
     private Integer delay;
 
     private String unit;
+
+    private String valuemapId;
 }
