@@ -50,8 +50,7 @@ public class SaveProdAttrWorker implements IWorker<ProductAttr, Boolean> {
         //处理依赖属性
         Map<String, Long> attrIdMap = new ConcurrentHashMap<>(deviceDtoList.size());
         if (ATTR_SOURCE_DEPEND.equals(productAttr.getSource())) {
-            List<String> deviceIds = deviceDtoList.parallelStream().map(DeviceDto::getDeviceId).collect(Collectors.toList());
-            List<ProductAttribute> list = new QProductAttribute().productId.in(deviceIds).templateId.eq(productAttr.getDepAttrId()).findList();
+            List<ProductAttribute> list = new QProductAttribute().templateId.eq(productAttr.getDepAttrId()).findList();
             attrIdMap = list.parallelStream().collect(Collectors.toMap(ProductAttribute::getProductId, ProductAttribute::getAttrId));
         }
 
