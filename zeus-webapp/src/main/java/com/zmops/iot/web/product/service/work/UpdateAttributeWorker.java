@@ -41,6 +41,7 @@ public class UpdateAttributeWorker implements IWorker<ProductAttr, Boolean> {
             newProductAttribute.setUnits(productAttr.getUnits());
             newProductAttribute.setSource(productAttr.getSource());
             newProductAttribute.setValueType(productAttr.getValueType());
+            newProductAttribute.setValuemapid(productAttr.getValuemapid());
             newList.add(newProductAttribute);
         }
         DB.updateAll(newList);
