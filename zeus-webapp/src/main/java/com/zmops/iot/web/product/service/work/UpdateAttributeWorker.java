@@ -44,22 +44,18 @@ public class UpdateAttributeWorker implements IWorker<ProductAttr, Boolean> {
             attrIdMap = productAttributeList.parallelStream().collect(Collectors.toMap(ProductAttribute::getProductId, ProductAttribute::getAttrId));
         }
 
-        List<ProductAttribute> newList = new ArrayList<>();
         for (ProductAttribute productAttribute : list) {
-            ProductAttribute newProductAttribute = new ProductAttribute();
-            ToolUtil.copyProperties(productAttribute, newProductAttribute);
-            newProductAttribute.setName(productAttr.getAttrName());
-            newProductAttribute.setKey(productAttr.getKey());
-            newProductAttribute.setUnits(productAttr.getUnits());
-            newProductAttribute.setSource(productAttr.getSource());
-            newProductAttribute.setValueType(productAttr.getValueType());
-            newProductAttribute.setValuemapid(productAttr.getValuemapid());
+            productAttribute.setName(productAttr.getAttrName());
+            productAttribute.setKey(productAttr.getKey());
+            productAttribute.setUnits(productAttr.getUnits());
+            productAttribute.setSource(productAttr.getSource());
+            productAttribute.setValueType(productAttr.getValueType());
+            productAttribute.setValuemapid(productAttr.getValuemapid());
             if (ATTR_SOURCE_DEPEND.equals(productAttr.getSource()) && null != attrIdMap.get(productAttribute.getProductId())) {
-                newProductAttribute.setDepAttrId(attrIdMap.get(productAttribute.getProductId()));
+                productAttribute.setDepAttrId(attrIdMap.get(productAttribute.getProductId()));
             }
-            newList.add(newProductAttribute);
         }
-        DB.updateAll(newList);
+        DB.updateAll(list);
 
         return true;
     }
