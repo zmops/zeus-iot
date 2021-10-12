@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author yefei
@@ -28,6 +29,7 @@ import java.util.Map;
 @Component
 public class SaveAttributeWorker implements IWorker<DeviceDto, Boolean> {
 
+    private static final String ATTR_TYPE_RELY = "18";
 
     @Override
     public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> map) {
@@ -50,16 +52,30 @@ public class SaveAttributeWorker implements IWorker<DeviceDto, Boolean> {
         }
 
         //属性
-        List<ProductAttribute> productAttributeList = new QProductAttribute().productId.eq(deviceDto.getProductId() + "").findList();
+        List<ProductAttribute> productAttributeList = new QProductAttribute().productId.eq(deviceDto.getProductId() + "").orderBy().source.asc().findList();
+
         List<ProductAttribute> newProductAttributeList = new ArrayList<>();
+
+        Map<Long, String> attrKeyMap = new ConcurrentHashMap<>(productAttributeList.size());
+        Map<String, Long> attrIdMap = new ConcurrentHashMap<>(productAttributeList.size());
 
         for (ProductAttribute productAttribute : productAttributeList) {
             ProductAttribute newProductAttrbute = new ProductAttribute();
             ToolUtil.copyProperties(productAttribute, newProductAttrbute);
             newProductAttrbute.setTemplateId(productAttribute.getAttrId());
             newProductAttrbute.setZbxId("");
-            newProductAttrbute.setAttrId(IdUtil.getSnowflake().nextId());
+            Long attrId = IdUtil.getSnowflake().nextId();
+            newProductAttrbute.setAttrId(attrId);
             newProductAttrbute.setProductId(deviceId);
+            //处理依赖属性
+            if(ATTR_TYPE_RELY.equals(productAttribute.getSource())){
+                String key = attrKeyMap.get(productAttribute.getDepAttrId());
+                Long deptAttrId = attrIdMap.get(key);
+                newProductAttrbute.setDepAttrId(deptAttrId);
+            }else {
+                attrKeyMap.put(productAttribute.getAttrId(), productAttribute.getKey());
+                attrIdMap.put(productAttribute.getKey(), attrId);
+            }
             newProductAttributeList.add(newProductAttrbute);
         }
         DB.saveAll(newProductAttributeList);
