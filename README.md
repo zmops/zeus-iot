@@ -79,13 +79,13 @@ The Zeus IoT production environment can only be installed on a Linux system, eit
 - Centos7/Redhat7
 
   ```shell
-  curl -L https://github.com/zmops/zeus-iot/raw/develop/docs/centos/install.sh | bash
+  curl -sL https://github.com/zmops/zeus-iot/raw/develop/docs/centos/install.sh | bash -s install
   ```
 
 - Ubuntu 18.04
 
   ```shell
-   curl -L https://github.com/zmops/zeus-iot/raw/develop/docs/ubuntu/install.sh | bash
+   curl -sL https://github.com/zmops/zeus-iot/raw/develop/docs/ubuntu/install.sh | bash -s install
   ```
 After Zeus IoT is successfully installed, you can use http://IP:9090 to access the ZeusIoT Console with the default account and password (Admin/zabbix).
 

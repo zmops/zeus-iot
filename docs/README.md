@@ -22,13 +22,13 @@
 - Centos7/Redhat7
 
   ```shell
-  curl -L https://github.com/zmops/zeus-iot/raw/develop/docs/centos/install.sh | bash
+  curl -sL https://github.com/zmops/zeus-iot/raw/develop/docs/centos/install.sh | bash -s install
   ```
 
 - Ubuntu 20.04
 
   ```shell
-   curl -L https://github.com/zmops/zeus-iot/raw/develop/docs/ubuntu/install.sh | bash
+   curl -sL https://github.com/zmops/zeus-iot/raw/develop/docs/ubuntu/install.sh | bash -s install
   ```
 
 ## 自定义安装
