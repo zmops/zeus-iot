@@ -87,7 +87,7 @@
 - 直接下载 release 包
 
   ```shell
-wget -c https://packages.zmops.cn/zeus-iot/zeus-iot-bin.tar.gz
+
   ```
 
 - 从源码编译

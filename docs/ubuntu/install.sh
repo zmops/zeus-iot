@@ -203,7 +203,7 @@ function ZeusInstall() {
         cd /opt/zeus || exit
         ## 创建taos 数据库
         taos -s "create database zeus_data" 1> /dev/null
-        wget -c https://packages.zmops.cn/zeus-iot/zeus-iot-bin.tar.gz -o /dev/null -O - | tar -xz
+        wget -c https:///zeus-iot/zeus-iot-bin.tar.gz -o /dev/null -O - | tar -xz
         gettoken
         ## 数据库导入
         sudo -u postgres createdb -E Unicode -T template0 zeus-iot

@@ -10,7 +10,7 @@ ZABBIX_HOME=$INSTALLDIR/zabbix
 PHP_CONF=/etc/opt/rh/rh-php73
 sqldir=$basename/zabbix-5.4.3/database/postgresql
 PGDATA=$INSTALLDIR/pgdata
-zeusurl=https://packages.zmops.cn/zeus-iot/zeus-iot-bin.tar.gz
+zeusurl=
 
 function logprint() {
         if [ $? != 0 ]; then
