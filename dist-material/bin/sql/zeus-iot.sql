@@ -12,7 +12,7 @@
  Target Server Version : 130004
  File Encoding         : 65001
 
- Date: 12/10/2021 10:04:27
+ Date: 13/10/2021 20:52:05
 */
 
 
@@ -636,7 +636,8 @@ CREATE TABLE "public"."product_service_param" (
   "key" varchar(32) COLLATE "pg_catalog"."default",
   "name" varchar(32) COLLATE "pg_catalog"."default",
   "remark" varchar(255) COLLATE "pg_catalog"."default",
-  "value" varchar(255) COLLATE "pg_catalog"."default"
+  "value" varchar(255) COLLATE "pg_catalog"."default",
+  "device_id" varchar(64) COLLATE "pg_catalog"."default"
 )
 ;
 COMMENT ON COLUMN "public"."product_service_param"."service_id" IS '服务ID';
@@ -644,6 +645,7 @@ COMMENT ON COLUMN "public"."product_service_param"."key" IS '参数标识';
 COMMENT ON COLUMN "public"."product_service_param"."name" IS '参数名称';
 COMMENT ON COLUMN "public"."product_service_param"."remark" IS '备注';
 COMMENT ON COLUMN "public"."product_service_param"."value" IS '参数值';
+COMMENT ON COLUMN "public"."product_service_param"."device_id" IS '关联设备ID';
 
 -- ----------------------------
 -- Records of product_service_param
@@ -803,14 +805,14 @@ INSERT INTO "public"."sys_config" VALUES (1145915627211370499, '文件上传路�
 INSERT INTO "public"."sys_config" VALUES (1143324237579165697, '验证码开关', 'ZEUS_KAPTCHA_OPEN', 'Y', 1106120265689055233, 'DISABLE', '是否开启验证码', 1, 1, '2019-06-24 12:46:43', '2021-08-03 16:38:12.432', 'ENABLE');
 INSERT INTO "public"."sys_config" VALUES (1145915627211370498, 'Zeus发布的编号', 'ZEUS_SYSTEM_RELEASE_VERSION', 'N', NULL, '10', '用于防止浏览器缓存相关的js和css', 1, 1, '2019-07-02 12:42:30', '2021-08-03 16:38:12.432', 'ENABLE');
 INSERT INTO "public"."sys_config" VALUES (1143468867767607297, '默认系统密码', 'ZEUS_DEFAULT_PASSWORD', 'N', NULL, '111111', '默认系统密码', 1, 1, '2019-06-25 18:39:57', '2021-08-03 16:38:12.432', 'ENABLE');
+INSERT INTO "public"."sys_config" VALUES (1143468867767607208, '单点登录开关', 'ZEUS_SIGN_IN', 'N', NULL, 'DISABLE', '是否启用单点登录', 1, 1, '2019-06-25 18:39:57', '2021-08-03 16:38:12.432', 'ENABLE');
+INSERT INTO "public"."sys_config" VALUES (1143468867767607207, '默认租户角色ID', 'ZEUS_TENANT_ROLE_ID', 'N', NULL, '1', '默认租户角色ID', 1, 1, '2019-06-25 18:39:57', '2021-08-03 16:38:12.432', 'ENABLE');
 INSERT INTO "public"."sys_config" VALUES (1145915627211370496, '全局主机组Id', 'ZEUS_HOST_GROUP_ID', 'Y', NULL, '19', '全局主机和模板组ID', NULL, NULL, NULL, NULL, 'DISABLE');
 INSERT INTO "public"."sys_config" VALUES (1143468867767607298, '用户角色ID', 'ZEUS_ADMIN_ROLE_ID', 'N', NULL, '3', '用户角色ID', 1, 1, NULL, NULL, 'DISABLE');
 INSERT INTO "public"."sys_config" VALUES (1145915627211370497, '离线回调ActionId', 'ZEUS_OFFLINE_ACTION_ID', 'Y', NULL, '7', '回调动作ID', NULL, NULL, NULL, NULL, 'DISABLE');
 INSERT INTO "public"."sys_config" VALUES (1145915627211370503, '告警回调ActionId', 'ZEUS_ALARM_ACTION_ID', 'Y', NULL, '8', '回调动作ID', NULL, NULL, NULL, NULL, 'DISABLE');
-INSERT INTO "public"."sys_config" VALUES (1143468867767607208, '单点登录开关', 'ZEUS_SIGN_IN', 'N', NULL, 'DISABLE', '是否启用单点登录', 1, 1, '2019-06-25 18:39:57', '2021-08-03 16:38:12.432', 'ENABLE');
 INSERT INTO "public"."sys_config" VALUES (1145915627211370504, '动作回调ActionId', 'ZEUS_EXEC_ACTION_ID', 'Y', NULL, '9', '回调动作ID', NULL, NULL, NULL, NULL, 'DISABLE');
 INSERT INTO "public"."sys_config" VALUES (1145915627211370505, '事件回调ActionId', 'ZEUS_EVENT_ACTION_ID', 'Y', NULL, '10', '回调动作ID', NULL, NULL, NULL, NULL, 'DISABLE');
-INSERT INTO "public"."sys_config" VALUES (1143468867767607207, '默认租户角色ID', 'ZEUS_TENANT_ROLE_ID', 'N', NULL, '1', '默认租户角色ID', 1, 1, '2019-06-25 18:39:57', '2021-08-03 16:38:12.432', 'ENABLE');
 
 -- ----------------------------
 -- Table structure for sys_dict
@@ -1346,7 +1348,7 @@ COMMENT ON COLUMN "public"."sys_user"."zbx_id" IS 'zabbix 用户ID';
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
-INSERT INTO "public"."sys_user" VALUES ('Admin', 'cbde417443393372dbac9c185a6ec159', 'gt3zs', '超级管理员', '', '', 1, 1437232484602372096, 'ENABLE', 1, 1, '2021-09-28 09:38:33.668', '2021-09-28 09:38:33.668', 122, '712e512d1dfe13319e15bf5050a81ace', '1');
+INSERT INTO "public"."sys_user" VALUES ('Admin', 'cbde417443393372dbac9c185a6ec159', 'gt3zs', '超级管理员', '', '', 1, 1437232484602372096, 'ENABLE', 1, 1, '2021-09-28 09:38:33.668', '2021-09-28 09:38:33.668', 122, 'f93a1bea2549f93fad75bdde71e6b4fe', '1');
 INSERT INTO "public"."sys_user" VALUES ('root', '17db03c22596b7609c7c9704f16663e0', 'abcdef', '超级管理员', '888888@qq.com', '13812345678', 1, 1437232484602372096, 'ENABLE', 1, 1, '2021-07-30 21:43:02.686', '2021-07-30 21:43:02.686', 1, '5859e004e8d2a23e6c330c3f9cd277e2', '4');
 
 -- ----------------------------
@@ -1426,7 +1428,7 @@ SELECT setval('"public"."device_online_report_id_seq"', 7, true);
 -- ----------------------------
 ALTER SEQUENCE "public"."devices_groups_id_seq"
 OWNED BY "public"."devices_groups"."id";
-SELECT setval('"public"."devices_groups_id_seq"', 182, true);
+SELECT setval('"public"."devices_groups_id_seq"', 183, true);
 
 -- ----------------------------
 -- Alter sequences owned by
