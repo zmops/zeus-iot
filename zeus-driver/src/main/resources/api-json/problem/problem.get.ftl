@@ -20,8 +20,7 @@
         <#if severity?? && severity != ''>
             "severities":${severity},
         </#if>
-        "evaltype":2,
-        "tags":[{"tag": "__alarm__"},{"tag": "__execute__"}],
+        "tags":[{"tag": "__alarm__"}],
         "filter":{
             "source":"0"
         },
