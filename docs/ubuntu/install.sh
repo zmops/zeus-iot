@@ -11,55 +11,49 @@ function logprint() {
 
 # 安装前准备
 ## 系统环境检测
-if [ "$(uname)" != Linux ]; then
-        echo "该脚本只使用 Linux 系统"
-        exit $E_BADOD
-fi
+function syscheck() {
 
-if [ "$UID" -ne 0 ]; then
-        echo "Must be root to install"
-        exit $E_NOTROOT
-fi
-### 操作系统
-if [ ! -f /etc/redhat-release ]; then
-        if [[ "$(cat /etc/issue)" =~ ^Ubuntu* ]]; then
-                release=Ubuntu
-        fi
-fi
-### 网络
-if ! ping -c 3 mirrors.aliyun.com &>/dev/null; then
-        echo "网络异常。。。"
-        exit
-fi
+    if [ "$(uname)" != Linux ]; then
+            echo "该脚本只使用 Linux 系统"
+            exit 1
+    fi
 
-### cpu、mem、disk
-cores=$(grep </proc/cpuinfo -c "processor")
-memstotal=$(grep </proc/meminfo "MemTotal" | awk '{printf("%.f\n",$2/1024/1024)}')
-disks=$(df -T | awk '/(xfs|ext4|ext3)/{if($3/1024/1024 > 10)printf("%s\t%d\n",$7,$3/1024/1024)}' | grep -v -c "/boot")
+    if [ "$UID" -ne 0 ]; then
+            echo "Must be root to install"
+            exit 1
+    fi
+    ### 操作系统
+    if [ ! -f /etc/redhat-release ]; then
+            if [[ "$(cat /etc/issue)" =~ ^Ubuntu* ]]; then
+                    release=Ubuntu
+            fi
+    fi
+    ### 网络
+    if ! ping -c 3 mirrors.tuna.tsinghua.edu.cn &>/dev/null; then
+            echo "网络异常。。。"
+            exit
+    fi
 
-if [ "$cores" -lt 0 ] || [ "$memstotal" -lt 0 ] || [ "$disks" -eq 0 ]; then
-        echo "要求最低配置为 CPU 2核 内存 4GB 存储空间 100G"
-        exit 70
-fi
+    ### cpu、mem、disk
+    cores=$(grep </proc/cpuinfo -c "processor")
+    memstotal=$(grep </proc/meminfo "MemTotal" | awk '{printf("%.f\n",$2/1024/1024)}')
+    disks=$(df -T | awk '/(xfs|ext4|ext3)/{if($3/1024/1024 > 10)printf("%s\t%d\n",$7,$3/1024/1024)}' | grep -v -c "/boot")
 
+    if [ "$cores" -lt 0 ] || [ "$memstotal" -lt 0 ] || [ "$disks" -eq 0 ]; then
+            echo "要求最低配置为 CPU 2核 内存 4GB 存储空间 100G"
+            exit 70
+    fi
+}
 
 
 function InitSystem() {
-    echo -e -n "\033[32mStep1: 初始化系统安装环境。。。  \033[0m"
+    echo -e -n "\033[32mStep1: 初始化系统安装环境 ....  \033[0m"
     ## 修改主机名
     if ! hostnamectl set-hostname zeus-server; then
         echo "主机名修改失败"
         exit
     fi
 
-    ## 关闭 IPV6 监听
-
-    echo " ">>/etc/sysctl.conf
-    echo "# made for disabled IPv6 in $(date +%F)">>/etc/sysctl.conf
-    echo 'net.ipv6.conf.all.disable_ipv6 = 1'>>/etc/sysctl.conf
-    echo 'net.ipv6.conf.default.disable_ipv6 = 1'>>/etc/sysctl.conf
-    echo 'net.ipv6.conf.lo.disable_ipv6 = 1'>>/etc/sysctl.conf
-    sysctl -p
 
     ## 修改时区
     if ! ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime; then
@@ -69,45 +63,47 @@ function InitSystem() {
     ## 更新下载源
     cp /etc/apt/sources.list /etc/apt/sources.listbak
     sed -i 's%\(^deb http\{0,1\}\:\/\/\).*\(/ubuntu.*\)%\1mirrors.tuna.tsinghua.edu.cn\2%g' /etc/apt/sources.list
+    apt-get update 1> /dev/null && apt-get install -y ca-certificates 1> /dev/null
+    #sed -i 's/http/https/g' /etc/apt/sources.list
     echo -e "\033[32m  [ OK ] \033[0m"
 }
 
 function AddInstallRepo() {
-    echo -e -n "\033[32mStep2: 配置安装 YUM 源 。。。  \033[0m"
+    echo -e -n "\033[32mStep2: 配置安装 YUM 源 ....  \033[0m"
     ## 安装PGsql源
     echo "deb https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/apt/ $(lsb_release -c -s)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list &> /dev/null
-    wget --quiet -O - https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/apt/ACCC4CF8.asc | sudo apt-key add -
+    wget --quiet -O - https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/apt/ACCC4CF8.asc | sudo apt-key add - 1> /dev/null
     #sudo sh -c "echo 'deb https://packagecloud.io/timescale/timescaledb/ubuntu/ $(lsb_release -c -s) main' > /etc/apt/sources.list.d/timescaledb.list"
     #wget --quiet -O - https://packagecloud.io/timescale/timescaledb/gpgkey | sudo apt-key add -
     ## 安装zabbix 5.4 源
-    wget -q https://repo.zabbix.com/zabbix/5.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_5.4-1+ubuntu$(lsb_release -r -s)_all.deb
+    wget --quiet -c https://repo.zabbix.com/zabbix/5.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_5.4-1+ubuntu$(lsb_release -r -s)_all.deb 1> /dev/null
     dpkg -i zabbix-release_5.4-1+ubuntu$(lsb_release -r -s)_all.deb 1> /dev/null
-    apt update 1> /dev/null && apt install -y openjdk-8-jdk expect 1> /dev/null
+    apt-get update 1> /dev/null && apt-get install -y openjdk-8-jdk expect 1> /dev/null
     echo -e "\033[32m  [ OK ] \033[0m"
 }
 
 function PGInstall() {
-    echo -e -n "\033[32mStep3: 安装 PostgreSQL....  \033[0m"
+    echo -e -n "\033[32mStep3: 安装 PostgreSQL ....  \033[0m"
     # PG 安装
-    apt install postgresql-13 -y 1> /dev/null
+    apt-get install postgresql-13 -y 1> /dev/null
     #echo "shared_preload_libraries = 'timescaledb'" >> /etc/postgresql/13/main/postgresql.conf
     cd /tmp || exit
-    sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';" 2> /tmp/pg.log
-    systemctl restart postgresql
+    sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';" 1> /dev/null
+    systemctl restart postgresql 1> /dev/null
     echo -e "\033[32m  [ OK ] \033[0m"
 }
 
 function ZbxInstall() {
-    echo -e -n "\033[32mStep4: 编译安装 zabbix 。。。  \033[0m" 
+    echo -e -n "\033[32mStep4: 编译安装 zabbix ....  \033[0m" 
     # zabbix 安装
-    apt install zabbix-server-pgsql zabbix-frontend-php php-pgsql zabbix-nginx-conf zabbix-sql-scripts zabbix-agent -y 1> /dev/null
+    apt-get install zabbix-server-pgsql zabbix-frontend-php php-pgsql zabbix-nginx-conf zabbix-sql-scripts zabbix-agent -y 1> /dev/null
 
     PHPCONF=/etc/php/$(ls /etc/php/)/fpm/php.ini
 
     # 初始化 zabbix 配置
     cd /tmp || exit
     sudo -u postgres createuser zabbix
-    sudo -u postgres psql -c "ALTER USER zabbix WITH PASSWORD 'zabbix';"
+    sudo -u postgres psql -c "ALTER USER zabbix WITH PASSWORD 'zabbix';" 1> /dev/null
     sudo -u postgres createdb -O zabbix zabbix
     zcat /usr/share/doc/zabbix-sql-scripts/postgresql/create.sql.gz | sudo -u zabbix psql zabbix 1> /dev/null
     #echo "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;" | sudo -u postgres psql zabbix
@@ -186,8 +182,8 @@ function gettoken(){
 
 function taosinstall() {
         ### taos 数据安装
-        echo -e -n "\033[32mStep5: 安装 taos 数据库。。。  \033[0m"
-        wget https://www.taosdata.com/assets-download/TDengine-server-2.2.0.2-Linux-x64.deb
+        echo -e -n "\033[32mStep5: 安装 taos 数据库 ....  \033[0m"
+        wget --quiet -c https://www.taosdata.com/assets-download/TDengine-server-2.2.0.2-Linux-x64.deb 1> /dev/null
         expect << EOF 1> /dev/null
           spawn dpkg -i TDengine-server-2.2.0.2-Linux-x64.deb
           expect {
@@ -195,14 +191,14 @@ function taosinstall() {
             "*skip:" { send "\n" }
           }
 EOF
-        systemctl enable taosd
-        systemctl start taosd
+        systemctl enable taosd 1> /dev/null
+        systemctl start taosd 1> /dev/null
         echo -e "\033[32m  [ OK ] \033[0m"
 }
 
 
 function ZeusInstall() {
-        echo -e -n "\033[32mStep6: 安装 Zeus-IoT 服务。。。  \033[0m"
+        echo -e -n "\033[32mStep6: 安装 Zeus-IoT 服务 ....  \033[0m"
         [ ! -d /opt/zeus ] && mkdir -p /opt/zeus
         cd /opt/zeus || exit
         ## 创建taos 数据库
@@ -220,12 +216,102 @@ function ZeusInstall() {
 }
 
 
+function sendmsg() {
+        echo "zabbix 部分已安装成功，zeus iot 可以参照 www.zmops.com 官方文档自定义安装。"
+        echo ""
+        echo "zabbix server 访问地址： http://<HostIP>/zabbix"
+        echo ""
+        echo "登录用户名：Admin"
+        echo "登录密  码：zabbix"
+}
 
 
-InitSystem
-AddInstallRepo
-PGInstall
-ZbxInstall
-taosinstall
-#ZeusInstall
-echo "zabbix 部分已安装成功，zeus iot 可以参照 www.zmops.com 官方文档自定义安装。"
+function clearsys() {
+
+
+        # 清理用户
+        if ! id zeus; then
+                userdell zeus
+        fi
+
+        function kill9() {
+                status=`ps -ef | grep $1 | grep -v grep | awk '{print $2}' | wc -l`
+
+                if [ $status -ne 0 ]
+                then
+                        for i in `ps -ef | grep $1 | grep -v grep | awk '{print $2}'`
+                        do
+                                kill -9 $i
+                        done
+                fi                                
+        }
+
+        # 清理应用
+        ## 清理 zeus
+        kill9 zeus-iot-bin 
+
+        [ -d /opt/zeus/zeus-iot-bin ] && rm -rf /opt/zeus/zeus-iot-bin
+
+        ## 清理 taos
+        systemctl stop taosd &> /dev/null
+
+        kill9 taosd 
+
+        apt-get remove tdengine-2.2.0.2-3.x86_64 &> /dev/null
+
+        [ -d /usr/local/taos ] && rm -rf /usr/local/taos
+
+        ## 清理 zabbix
+        systemctl stop zabbix-server zabbix-agent &> /dev/null
+
+        kill9 zabbix_server
+        kill9 zabbix_agent
+
+        [ -d /opt/zeus/zabbix ] && rm -rf /opt/zeus/zabbix
+        [ -f /usr/lib/systemd/system/zabbix-server.service ] && rm -rf /usr/lib/systemd/system/zabbix-server.service
+        [ -f /usr/lib/systemd/system/zabbix-agent.service ] && rm -rf /usr/lib/systemd/system/zabbix-agent.service
+
+        ## 清理 postgresql 数据库
+        systemctl stop postgresql &> /dev/null
+
+        kill9 postmaster
+
+        apt-get remove postgresql-13 -y &> /dev/null
+
+        [ -d /opt/zeus/pgdata ] && rm -rf /opt/zeus/pgdata
+        [ -f /usr/lib/systemd/system/postgresql.service ] && rm -rf /usr/lib/systemd/system/postgresql.service
+
+        ## 清理 nginx
+        systemctl stop nginx &> nginx
+
+        kill9 nginx
+        apt-get remove nginx -y &> /dev/null
+        [ -f /usr/lib/systemd/system/nginx ] && rm -rf /usr/lib/systemd/system/nginx
+}
+
+
+function main() {
+        case $1 in
+          install)
+                syscheck
+                InitSystem
+                AddInstallRepo
+                PGInstall
+                ZbxInstall
+                taosinstall
+                ZeusInstall
+                ;;
+          clear)
+                clearsys
+                ;;
+          *)
+                echo "请输入 install|clear"
+                exit 1
+                ;;
+        esac
+}
+
+if main $1 ;then
+        sendmsg
+fi
+

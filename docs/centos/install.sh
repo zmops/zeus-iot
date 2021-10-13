@@ -58,7 +58,7 @@ function syscheck() {
 
 ## 系统环境初始化
 function InitSystem() {
-        echo -e -n "\033[32mStep1: 初始化系统安装环境...  \033[0m"
+        echo -e -n "\033[32mStep1: 初始化系统安装环境 ....  \033[0m"
         if ! hostnamectl set-hostname zeus-server; then
                 echo -e "\033[31m Error: 主机名修改失败\033[0m"
                 exit
@@ -84,7 +84,7 @@ function InitSystem() {
         echo "ulimit -SHn 65535" >>/etc/rc.local
 
         ### 添加用户
-        if ! id zeus; then
+        if ! id zeus &> /dev/null; then
                 groupadd --system zeus || true
                 useradd --system -g zeus zeus || true
         fi
@@ -98,7 +98,7 @@ function InitSystem() {
 ## 配置 YUM 源
 function AddInstallRepo() {
 
-        echo -e -n "\033[32mStep2: 配置安装 YUM 源 。。。  \033[0m"
+        echo -e -n "\033[32mStep2: 配置安装 YUM 源 ....  \033[0m"
         ### 备份原有yum
         mv /etc/yum.repos.d/* /tmp/
         ### 基础 YUM 源
@@ -138,7 +138,7 @@ EOL
 
 ## 安装 PostgreSQL
 function PGInstall() {
-        echo -e -n "\033[32mStep3: 安装 PostgreSQL....  \033[0m"
+        echo -e -n "\033[32mStep3: 安装 PostgreSQL ....  \033[0m"
         yum -y install postgresql13.x86_64 \
                 postgresql13-devel.x86_64 \
                 postgresql13-plpython3.x86_64 1>/dev/null
@@ -174,7 +174,7 @@ function PGInstall() {
 
 ## 编译安装 zabbix 5.4
 function ZbxInstall() {
-        echo -e -n "\033[32mStep4: 编译安装 zabbix 。。。  \033[0m"
+        echo -e -n "\033[32mStep4: 编译安装 zabbix ....  \033[0m"
         ### 安装编译依赖
         cd "$basename" || exit
         yum -y install vim \
@@ -220,7 +220,7 @@ function ZbxInstall() {
         sed -i "s/\($DB\['TYPE'\]\s*=\).*/\1 \'POSTGRESQL\';/g" $ZABBIX_HOME/zabbix/conf/zabbix.conf.php
         echo -e "\033[32m  [ OK ] \033[0m"
         ### 数据初始化
-        echo -e -n "\033[32mStep5: 初始化 zabbix 数据库 。。。  \033[0m"
+        echo -e -n "\033[32mStep5: 初始化 zabbix 数据库 ....  \033[0m"
         cd /tmp/ || exit
         sudo -u postgres createuser zabbix
         sudo -u postgres /usr/pgsql-13/bin/psql -c "ALTER USER zabbix WITH PASSWORD 'zabbix';" 1> /dev/null
@@ -388,7 +388,7 @@ function gettoken(){
 
 function taosinstall() {
         ### taos 数据安装
-        echo -e -n "\033[32mStep9: 安装 taos 数据库。。。  \033[0m"
+        echo -e -n "\033[32mStep9: 安装 taos 数据库 ....  \033[0m"
         expect << EOF 1> /dev/null
           spawn rpm -ivh https://www.taosdata.com/assets-download/TDengine-server-2.2.0.2-Linux-x64.rpm
           expect {
@@ -406,7 +406,7 @@ EOF
 
 
 function ZeusInstall() {
-        echo -e -n "\033[32mStep11: 安装 Zeus-IoT 服务。。。  \033[0m"
+        echo -e -n "\033[32mStep11: 安装 Zeus-IoT 服务 ....  \033[0m"
         cd $INSTALLDIR || exit
         ## 创建taos 数据库
         taos -s "create database zeus_data" 1> /dev/null
@@ -424,37 +424,105 @@ function ZeusInstall() {
         echo -e "\033[32m  [ OK ] \033[0m"
 }
 
-function clear() {
+function clearsys() {
+
+
         # 清理用户
         if ! id zeus; then
                 userdell zeus
         fi
 
+        function kill9() {
+                status=`ps -ef | grep $1 | grep -v grep | awk '{print $2}' | wc -l`
+
+                if [ $status -ne 0 ]
+                then
+                        for i in `ps -ef | grep $1 | grep -v grep | awk '{print $2}'`
+                        do
+                                kill -9 $i
+                        done
+                fi                                
+        }
+
         # 清理应用
         ## 清理 zeus
-        status=`ps -ef | grep zeus-iot-bin | grep java | grep -v grep | awk '{print $2}' | wc -l`
+        kill9 zeus-iot-bin 
 
-        if [ $status -ne 0 ]
-        then
-                for i in `ps -ef | grep zeus-iot-bin | grep java | grep -v grep | awk '{print $2}'`
-                do
-                        kill -9 $i
-                done
-        fi
+        [ -d /opt/zeus/zeus-iot-bin ] && rm -rf /opt/zeus/zeus-iot-bin
 
+        ## 清理 taos
+        systemctl stop taosd &> /dev/null
 
+        kill9 taosd 
+
+        rpm -e tdengine-2.2.0.2-3.x86_64 &> /dev/null
+
+        [ -d /usr/local/taos ] && rm -rf /usr/local/taos
+
+        ## 清理 zabbix
+        systemctl stop zabbix-server zabbix-agent &> /dev/null
+
+        kill9 zabbix_server
+        kill9 zabbix_agent
+
+        [ -d /opt/zeus/zabbix ] && rm -rf /opt/zeus/zabbix
+        [ -f /usr/lib/systemd/system/zabbix-server.service ] && rm -rf /usr/lib/systemd/system/zabbix-server.service
+        [ -f /usr/lib/systemd/system/zabbix-agent.service ] && rm -rf /usr/lib/systemd/system/zabbix-agent.service
+
+        ## 清理 postgresql 数据库
+        systemctl stop postgresql-13 &> /dev/null
+
+        kill9 postmaster
+
+        yum remove postgresql13 -y &> /dev/null
+
+        [ -d /opt/zeus/pgdata ] && rm -rf /opt/zeus/pgdata
+        [ -f /usr/lib/systemd/system/postgresql-13.service ] && rm -rf /usr/lib/systemd/system/postgresql-13.service
+
+        ## 清理 nginx
+        systemctl stop nginx &> nginx
+
+        kill9 nginx
+        yum remove nginx -y &> /dev/null
+        [ -f /usr/lib/systemd/system/nginx ] && rm -rf /usr/lib/systemd/system/nginx
 }
 
 
+function sendmsg() {
+        echo "zabbix 部分已安装成功，zeus iot 可以参照 www.zmops.com 官方文档自定义安装。"
+        echo ""
+        echo "zabbix server 访问地址： http://<HostIP>/zabbix"
+        echo ""
+        echo "登录用户名：Admin"
+        echo "登录密  码：zabbix"
+}
+
 ##
-syscheck
-InitSystem
-AddInstallRepo
-PGInstall
-ZbxInstall
-PHPInstall
-WebInstall
-taosinstall
-echo "zabbix 部分已安装成功，zeus iot 可以参照 www.zmops.com 官方文档自定义安装。"
-# ZeusInstall
-# 安装结束
+
+function main() {
+        case $1 in
+          install)
+                syscheck
+                InitSystem
+                AddInstallRepo
+                PGInstall
+                ZbxInstall
+                PHPInstall
+                WebInstall
+                taosinstall
+                ;;
+          clear)
+                clearsys
+                ;;
+          *)
+                echo "请输入 install|clear"
+                exit 1
+                ;;
+        esac
+}
+
+if main $1 ;then
+        sendmsg
+fi
+
+
