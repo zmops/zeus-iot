@@ -149,6 +149,7 @@ public class ProductSvcService {
         if (ToolUtil.isNotEmpty(productServiceDto.getProductServiceParamList())) {
             for (ProductServiceParam productServiceParam : productServiceDto.getProductServiceParamList()) {
                 productServiceParam.setServiceId(serviceId);
+                productServiceParam.setDeviceId(productServiceDto.getRelationId());
             }
             DB.saveAll(productServiceDto.getProductServiceParamList());
         }
@@ -190,6 +191,15 @@ public class ProductSvcService {
                 productServiceParam.setServiceId(productServiceDto.getId());
             }
             DB.saveAll(productServiceDto.getProductServiceParamList());
+        }
+
+        //同步到设备
+        WorkerWrapper<ProductServiceDto, Boolean> updateProdSvcWork = WorkerWrapper.<ProductServiceDto, Boolean>builder().worker(updateProdSvcWorker).param(productServiceDto).build();
+
+        try {
+            Async.work(1000, updateProdSvcWork).awaitFinish();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         return productServiceDto;

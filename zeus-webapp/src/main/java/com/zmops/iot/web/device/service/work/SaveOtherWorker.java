@@ -68,6 +68,9 @@ public class SaveOtherWorker implements IWorker<DeviceDto, Boolean> {
         //服务关联
         DB.sqlUpdate("insert into product_service_relation (relation_id,service_id,inherit) SELECT :deviceId,service_id,1 from product_service_relation where relation_id=:relationId")
                 .setParameter("deviceId", deviceId).setParameter("relationId", deviceDto.getProductId() + "").execute();
+        //服务参数
+        DB.sqlUpdate("insert into product_service_param (device_id,service_id,key,name,value,remark) SELECT :deviceId,service_id,key,name,value,remark from product_service_param where device_id=:relationId")
+                .setParameter("deviceId", deviceId).setParameter("relationId", deviceDto.getProductId() + "").execute();
 
         //上下线规则关联
         DB.sqlUpdate("insert into product_status_function_relation (relation_id,rule_id,inherit) SELECT :deviceId,rule_id,1 from product_status_function_relation where relation_id=:relationId")

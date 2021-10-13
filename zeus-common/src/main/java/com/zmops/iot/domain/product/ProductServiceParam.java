@@ -23,4 +23,5 @@ public class ProductServiceParam {
     private String key;
     private String remark;
     private String value;
+    private String deviceId;
 }
