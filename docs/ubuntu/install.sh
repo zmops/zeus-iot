@@ -228,12 +228,6 @@ function sendmsg() {
 
 function clearsys() {
 
-
-        # 清理用户
-        if ! id zeus; then
-                userdell zeus
-        fi
-
         function kill9() {
                 status=`ps -ef | grep $1 | grep -v grep | awk '{print $2}' | wc -l`
 
@@ -291,27 +285,17 @@ function clearsys() {
 
 
 function main() {
-        case $1 in
-          install)
                 syscheck
                 InitSystem
                 AddInstallRepo
                 PGInstall
                 ZbxInstall
                 taosinstall
-                ZeusInstall
-                ;;
-          clear)
-                clearsys
-                ;;
-          *)
-                echo "请输入 install|clear"
-                exit 1
-                ;;
-        esac
+                #ZeusInstall
+
 }
 
-if main $1 ;then
+if main;then
         sendmsg
 fi
 

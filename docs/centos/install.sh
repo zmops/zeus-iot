@@ -500,8 +500,7 @@ function sendmsg() {
 ##
 
 function main() {
-        case $1 in
-          install)
+
                 syscheck
                 InitSystem
                 AddInstallRepo
@@ -510,18 +509,10 @@ function main() {
                 PHPInstall
                 WebInstall
                 taosinstall
-                ;;
-          clear)
-                clearsys
-                ;;
-          *)
-                echo "请输入 install|clear"
-                exit 1
-                ;;
-        esac
+
 }
 
-if main $1 ;then
+if main;then
         sendmsg
 fi
 
