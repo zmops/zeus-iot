@@ -1,4 +1,4 @@
-package com.zmops.iot.web.product.dto;
+package com.zmops.iot.web.device.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.zmops.iot.model.cache.filter.CachedValue;
@@ -11,7 +11,7 @@ import lombok.Data;
  **/
 @Data
 @JsonSerialize(using = CachedValueFilter.class)
-public class ProductEventDto {
+public class MultipleDeviceEventDto {
 
     private Long eventRuleId;
 
@@ -37,4 +37,8 @@ public class ProductEventDto {
     @CachedValue(type = DicType.SysUserName)
     private Long updateUser;
     private String updateTime;
+
+    private String triggerDevice;
+
+    private String executeDevice;
 }

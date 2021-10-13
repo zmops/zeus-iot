@@ -15,10 +15,12 @@ import com.zmops.iot.enums.InheritStatus;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
+import com.zmops.iot.web.device.dto.DeviceEventRelationDto;
+import com.zmops.iot.web.device.dto.MultipleDeviceEventDto;
 import com.zmops.iot.web.device.dto.MultipleDeviceEventRule;
+import com.zmops.iot.web.device.dto.MultipleDeviceServiceDto;
 import com.zmops.iot.web.device.dto.param.MultipleDeviceEventParm;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
-import com.zmops.iot.web.product.dto.ProductEventDto;
 import com.zmops.iot.web.product.dto.ProductEventRuleDto;
 import com.zmops.zeus.driver.service.ZbxTrigger;
 import io.ebean.DB;
@@ -28,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -48,7 +49,7 @@ public class MultipleDeviceEventRuleService {
      * @param eventParm
      * @return
      */
-    public Pager<ProductEventDto> getEventByPage(MultipleDeviceEventParm eventParm) {
+    public Pager<MultipleDeviceEventDto> getEventByPage(MultipleDeviceEventParm eventParm) {
         QProductEvent query = new QProductEvent();
 
         if (ToolUtil.isNotEmpty(eventParm.getEventRuleName())) {
@@ -58,23 +59,59 @@ public class MultipleDeviceEventRuleService {
             query.classify.eq(eventParm.getClassify());
         }
 
-        List<ProductEventDto> list = query.setFirstRow((eventParm.getPage() - 1) * eventParm.getMaxRow())
-                .setMaxRows(eventParm.getMaxRow()).orderBy(" create_time desc").asDto(ProductEventDto.class).findList();
+        List<MultipleDeviceEventDto> list = query.setFirstRow((eventParm.getPage() - 1) * eventParm.getMaxRow())
+                .setMaxRows(eventParm.getMaxRow()).orderBy(" create_time desc").asDto(MultipleDeviceEventDto.class).findList();
 
         if (ToolUtil.isEmpty(list)) {
             new Pager<>(list, 0);
         }
 
-        //查询状态 备注
-        List<Long> eventRuleIds = list.parallelStream().map(ProductEventDto::getEventRuleId).collect(Collectors.toList());
-        List<ProductEventRelation> productEventRelationList = new QProductEventRelation().eventRuleId.in(eventRuleIds)
-                .findList();
-        Map<Long, ProductEventRelation> productEventRelationMap = productEventRelationList.parallelStream().collect(Collectors.toMap(ProductEventRelation::getEventRuleId, o -> o, (v1, v2) -> v2));
+        //关联状态 备注 触发设备
+        List<Long> eventRuleIds = list.parallelStream().map(MultipleDeviceEventDto::getEventRuleId).collect(Collectors.toList());
+        String sql = "SELECT " +
+                " pr.event_rule_id, " +
+                " array_to_string( ARRAY_AGG ( d.NAME ), ',' ) triggerDevice,  " +
+                " pr.status," +
+                " pr.remark " +
+                "FROM " +
+                " product_event_relation pr " +
+                " LEFT JOIN device d ON pr.relation_id = d.device_id  " +
+                "WHERE " +
+                " pr.event_rule_id IN (:eventRuleIds) " +
+                "GROUP BY " +
+                " pr.event_rule_id,pr.status,pr.remark";
+        List<DeviceEventRelationDto> deviceEventRelationDtos = DB.findDto(DeviceEventRelationDto.class, sql).setParameter("eventRuleIds", eventRuleIds).findList();
+        Map<Long, DeviceEventRelationDto> productEventRelationMap = deviceEventRelationDtos.parallelStream()
+                .collect(Collectors.toConcurrentMap(DeviceEventRelationDto::getEventRuleId, o -> o));
+
+        //关联 执行设备
+        sql = "SELECT " +
+                " ps.event_rule_id, " +
+                " array_to_string( ARRAY_AGG ( d.NAME ), ',' ) executeDevice " +
+                "FROM " +
+                " product_event_service ps " +
+                " LEFT JOIN device d ON ps.execute_device_id = d.device_id  " +
+                "WHERE " +
+                " ps.event_rule_id IN (:eventRuleIds) " +
+                "GROUP BY " +
+                " ps.event_rule_id";
+        List<MultipleDeviceServiceDto> deviceServiceDtos = DB.findDto(MultipleDeviceServiceDto.class, sql).setParameter("eventRuleIds", eventRuleIds).findList();
+        Map<Long, MultipleDeviceServiceDto> deviceServiceMap = deviceServiceDtos.parallelStream()
+                .collect(Collectors.toConcurrentMap(MultipleDeviceServiceDto::getEventRuleId, o -> o));
 
         list.forEach(productEventDto -> {
-            if (null != productEventRelationMap.get(productEventDto.getEventRuleId())) {
-                productEventDto.setStatus(productEventRelationMap.get(productEventDto.getEventRuleId()).getStatus());
-                productEventDto.setRemark(productEventRelationMap.get(productEventDto.getEventRuleId()).getRemark());
+            DeviceEventRelationDto deviceEventRelationDto = productEventRelationMap.get(productEventDto.getEventRuleId());
+            if (null != deviceEventRelationDto) {
+                String status = deviceEventRelationDto.getStatus();
+                String remark = deviceEventRelationDto.getRemark();
+                String triggerDevice = deviceEventRelationDto.getTriggerDevice();
+                productEventDto.setStatus(status);
+                productEventDto.setRemark(remark);
+                productEventDto.setTriggerDevice(triggerDevice);
+            }
+            MultipleDeviceServiceDto deviceServiceDto = deviceServiceMap.get(productEventDto.getEventRuleId());
+            if (null != deviceServiceDto) {
+                productEventDto.setExecuteDevice(deviceServiceDto.getExecuteDevice());
             }
         });
 
@@ -230,19 +267,8 @@ public class MultipleDeviceEventRuleService {
      * @param zbxId     triggerId
      */
     public void updateProductEventRuleZbxId(Long triggerId, String[] zbxId) {
-
-        List<Triggers> triggers = JSONObject.parseArray(zbxTrigger.triggerGet(Arrays.toString(zbxId)), Triggers.class);
-
-        Map<String, String> map = triggers.parallelStream().collect(Collectors.toMap(o -> o.hosts.get(0).host, Triggers::getTriggerid));
-
-        List<ProductEventRelation> productEventRelationList = new QProductEventRelation().eventRuleId.eq(triggerId).findList();
-
-        productEventRelationList.forEach(productEventRelation -> {
-            if (null != map.get(productEventRelation.getRelationId())) {
-                DB.update(ProductEventRelation.class).where().eq("eventRuleId", triggerId).eq("relationId", productEventRelation.getRelationId())
-                        .asUpdate().set("zbxId", map.get(productEventRelation.getRelationId())).update();
-            }
-        });
+        DB.update(ProductEventRelation.class).where().eq("eventRuleId", triggerId)
+                .asUpdate().set("zbxId", zbxId[0]).update();
     }
 
     /**

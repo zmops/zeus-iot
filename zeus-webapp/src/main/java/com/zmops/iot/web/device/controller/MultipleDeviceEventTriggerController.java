@@ -15,11 +15,11 @@ import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.util.ToolUtil;
+import com.zmops.iot.web.device.dto.MultipleDeviceEventDto;
 import com.zmops.iot.web.device.dto.MultipleDeviceEventRule;
 import com.zmops.iot.web.device.dto.param.MultipleDeviceEventParm;
 import com.zmops.iot.web.device.service.MultipleDeviceEventRuleService;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
-import com.zmops.iot.web.product.dto.ProductEventDto;
 import com.zmops.zeus.driver.service.ZbxTrigger;
 import io.ebean.DB;
 import io.ebean.annotation.Transactional;
@@ -57,7 +57,7 @@ public class MultipleDeviceEventTriggerController {
      * @return
      */
     @PostMapping("/getEventByPage")
-    public Pager<ProductEventDto> getEventByPage(@RequestBody MultipleDeviceEventParm eventParm) {
+    public Pager<MultipleDeviceEventDto> getEventByPage(@RequestBody MultipleDeviceEventParm eventParm) {
         return multipleDeviceEventRuleService.getEventByPage(eventParm);
     }
 
@@ -100,7 +100,7 @@ public class MultipleDeviceEventTriggerController {
         String[] triggerIds = multipleDeviceEventRuleService.createZbxTrigger(eventRuleId + "", expression, eventRule.getEventLevel());
 
         //step 4: zbx 触发器创建 Tag
-        Map<String, String> tags = new ConcurrentHashMap<>(3);
+        Map<String, String> tags = new ConcurrentHashMap<>(1);
         if (ToolUtil.isNotEmpty(eventRule.getTags())) {
             tags = eventRule.getTags().stream()
                     .collect(Collectors.toMap(MultipleDeviceEventRule.Tag::getTag, MultipleDeviceEventRule.Tag::getValue, (k1, k2) -> k2));
@@ -150,20 +150,10 @@ public class MultipleDeviceEventTriggerController {
     @Transactional
     @PostMapping("/update")
     public ResponseData updateDeviceEventRule(@RequestBody @Validated(value = BaseEntity.Update.class) MultipleDeviceEventRule eventRule) {
-        int count = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId())
-                .findCount();
-        if (count == 0) {
+        ProductEventRelation productEventRelation = new QProductEventRelation().setMaxRows(1).eventRuleId.eq(eventRule.getEventRuleId())
+                .findOne();
+        if (null == productEventRelation) {
             throw new ServiceException(BizExceptionEnum.EVENT_NOT_EXISTS);
-        }
-
-        //来自产品的告警规则 只能修改备注
-        count = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId()).inherit.eq(InheritStatus.YES.getCode())
-                .findCount();
-        if (count > 1) {
-            DB.update(ProductEventRelation.class).where().eq("eventRuleId", eventRule.getEventRuleId()).eq("relationId", eventRule.getDeviceId())
-                    .asUpdate().set("remark", eventRule.getRemark()).update();
-
-            return ResponseData.success(eventRule.getEventRuleId());
         }
 
         //step 1: 删除原有的 关联关系
@@ -174,13 +164,13 @@ public class MultipleDeviceEventTriggerController {
                 .stream().map(Object::toString).collect(Collectors.joining(" " + eventRule.getExpLogic() + " "));
 
         //step 2: zbx 保存触发器
-        String[] triggerIds = multipleDeviceEventRuleService.updateZbxTrigger(eventRule.getZbxId(), expression, eventRule.getEventLevel());
+        String[] triggerIds = multipleDeviceEventRuleService.updateZbxTrigger(productEventRelation.getZbxId(), expression, eventRule.getEventLevel());
 
         //step 4: zbx 触发器创建 Tag
-        Map<String, String> tags = eventRule.getTags().stream()
-                .collect(Collectors.toMap(MultipleDeviceEventRule.Tag::getTag, MultipleDeviceEventRule.Tag::getValue, (k1, k2) -> k2));
-        if (ToolUtil.isEmpty(tags)) {
-            tags = new HashMap<>(2);
+        Map<String, String> tags = new ConcurrentHashMap<>(1);
+        if (ToolUtil.isNotEmpty(eventRule.getTags())) {
+            tags = eventRule.getTags().stream()
+                    .collect(Collectors.toMap(MultipleDeviceEventRule.Tag::getTag, MultipleDeviceEventRule.Tag::getValue, (k1, k2) -> k2));
         }
 
         if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
