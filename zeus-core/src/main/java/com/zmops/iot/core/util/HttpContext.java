@@ -5,6 +5,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.Map;
  */
 public class HttpContext {
 
+    private static final String LOCALHOST = "127.0.0.1";
 
     /**
      * 获取请求的ip地址
@@ -25,7 +27,31 @@ public class HttpContext {
         if (request == null) {
             return "127.0.0.1";
         } else {
-            return request.getRemoteHost();
+            String ipAddress;
+            try {
+                ipAddress = request.getHeader("x-forwarded-for");
+                if (ipAddress == null || ipAddress.length() == 0 ) {
+                    ipAddress = request.getHeader("Proxy-Client-IP");
+                }
+                if (ipAddress == null || ipAddress.length() == 0 ) {
+                    ipAddress = request.getHeader("WL-Proxy-Client-IP");
+                }
+                if (ipAddress == null || ipAddress.length() == 0 ) {
+                    ipAddress = request.getRemoteAddr();
+                    if (LOCALHOST.equals(ipAddress)) {
+                        InetAddress inet = null;
+                        try {
+                            inet = InetAddress.getLocalHost();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        ipAddress = inet.getHostAddress();
+                    }
+                }
+            } catch (Exception e) {
+                ipAddress = "";
+            }
+            return ipAddress;
         }
     }
 

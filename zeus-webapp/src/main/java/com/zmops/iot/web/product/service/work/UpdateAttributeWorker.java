@@ -5,14 +5,11 @@ import com.zmops.iot.async.callback.IWorker;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.ProductAttribute;
 import com.zmops.iot.domain.product.query.QProductAttribute;
-import com.zmops.iot.util.ToolUtil;
-import com.zmops.iot.web.device.dto.DeviceDto;
 import com.zmops.iot.web.product.dto.ProductAttr;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
