@@ -63,7 +63,7 @@ public class MultipleDeviceEventRuleService {
                 .setMaxRows(eventParm.getMaxRow()).orderBy(" create_time desc").asDto(MultipleDeviceEventDto.class).findList();
 
         if (ToolUtil.isEmpty(list)) {
-            new Pager<>(list, 0);
+            return new Pager<>(list, 0);
         }
 
         //关联状态 备注 触发设备
