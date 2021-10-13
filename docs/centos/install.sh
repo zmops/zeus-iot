@@ -109,6 +109,18 @@ name=CentOS-\$releasever - Base
 baseurl=http://mirrors.tuna.tsinghua.edu.cn/centos/\$releasever/os/\$basearch/
 gpgcheck=0
 
+[updates]
+name=CentOS-\$releasever - Updates
+baseurl=https://mirrors.tuna.tsinghua.edu.cn/centos/\$releasever/updates/\$basearch/
+gpgcheck=0
+enabled=1
+
+[extras]
+name=CentOS-\$releasever - Extras
+baseurl=https://mirrors.tuna.tsinghua.edu.cn/centos/\$releasever/extras/\$basearch/
+gpgcheck=0
+enabled=1
+
 [epel]
 name=Extra Packages for Enterprise Linux 7 - \$basearch
 baseurl=https://mirrors.tuna.tsinghua.edu.cn/epel/7/\$basearch
