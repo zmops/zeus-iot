@@ -50,7 +50,7 @@ function syscheck() {
         memstotal=$(grep </proc/meminfo "MemTotal" | awk '{printf("%.f\n",$2/1024/1024)}')
         disks=$(df -T | awk '/(xfs|ext4|ext3)/{if($3/1024/1024 > 10)printf("%s\t%d\n",$7,$3/1024/1024)}' | grep -v -c "/boot")
 
-        if [ "$cores" -lt 2 ] || [ "$memstotal" -lt 4 ] || [ "$disks" -eq 100 ]; then
+        if [ "$cores" -lt 2 ] || [ "$memstotal" -lt 4 ] || [ "$disks" -eq 0 ]; then
                 echo -e "\033[31m Error: 要求系统最低配置为 CPU 2核 内存 4GB 存储空间 100G \033[0m"
                 exit 
         fi
