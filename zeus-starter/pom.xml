@@ -73,8 +73,7 @@
                 <version>${frontend-maven-plugin.version}</version>
                 <configuration>
                     <workingDirectory>${ui.path}</workingDirectory>
-                    <nodeVersion>v14.17.6</nodeVersion>
-                    <npmVersion>6.14.15</npmVersion>
+                    <nodeVersion>v8.17.0</nodeVersion>
                 </configuration>
                 <executions>
                     <execution>
