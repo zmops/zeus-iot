@@ -92,5 +92,5 @@ After Zeus IoT is successfully installed, you can use http://IP:9090 to access t
 > For more detailed installation and deployment instructions, please visit our <a href="https://zmops.com/docs/">official website document center</a>
 ## Demo Environment
 
-Using the account `Admin / zeus123` to log in the [demo environment](https://zeusdemo.zmops.cn/). Please note the account is granted view access. 
+Using the account `Admin / zabbix` to log in the [demo environment](https://zeusdemo.zmops.cn/). Please note the account is granted view access. 
 
