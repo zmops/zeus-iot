@@ -86,6 +86,16 @@ public class DeviceService {
         if (ToolUtil.isNotEmpty(deviceParam.getName())) {
             qDevice.name.contains(deviceParam.getName());
         }
+        if (ToolUtil.isNotEmpty(deviceParam.getProductId())) {
+            qDevice.productId.eq(deviceParam.getProductId());
+        }
+        if (ToolUtil.isNotEmpty(deviceParam.getProdType())) {
+            qDevice.type.contains(deviceParam.getProdType());
+        }
+        if (ToolUtil.isNotEmpty(deviceParam.getDeviceGroupId())) {
+            List<String> deviceList = new QDevicesGroups().select(QDevicesGroups.Alias.deviceId).deviceGroupId.eq(deviceParam.getDeviceGroupId()).findSingleAttributeList();
+            qDevice.deviceId.in(deviceList);
+        }
         return qDevice.findList();
     }
 
