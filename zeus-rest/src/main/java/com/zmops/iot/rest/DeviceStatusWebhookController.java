@@ -4,11 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.zmops.iot.async.executor.Async;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.ProductEventRelation;
+import com.zmops.iot.domain.product.ProductServiceParam;
 import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.domain.product.query.QProductServiceParam;
 import com.zmops.iot.model.response.ResponseData;
-import com.zmops.iot.rest.dto.ParamDto;
+import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.alarm.service.AlarmNoticeWorker;
 import com.zmops.iot.web.alarm.service.AlarmService;
 import com.zmops.iot.web.device.service.work.DeviceOnlineWorker;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * @author nantian created at 2021/8/7 14:56
@@ -132,9 +134,12 @@ public class DeviceStatusWebhookController {
 
         List<Long> serviceIds = new QProductEventService().select(QProductEventService.alias().serviceId).eventRuleId.eq(productEventRelation.getEventRuleId()).findSingleAttributeList();
 
-        List<ParamDto> list = new QProductServiceParam().select(QProductServiceParam.alias().key, QProductServiceParam.alias().value).serviceId.in(serviceIds).asDto(ParamDto.class).findList();
-
-        return ResponseData.success(list);
+        List<ProductServiceParam> list = new QProductServiceParam().select(QProductServiceParam.alias().key, QProductServiceParam.alias().value).serviceId.in(serviceIds).findList();
+        Map<String, String> map = new ConcurrentHashMap<>(list.size());
+        if (ToolUtil.isNotEmpty(list)) {
+            map = list.parallelStream().collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue));
+        }
+        return ResponseData.success(map);
     }
 
     /**
