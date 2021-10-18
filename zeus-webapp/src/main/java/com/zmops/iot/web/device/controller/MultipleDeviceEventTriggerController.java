@@ -198,20 +198,16 @@ public class MultipleDeviceEventTriggerController {
     @PostMapping("/delete")
     public ResponseData deleteProductEventRule(@RequestBody @Validated(value = BaseEntity.Delete.class) MultipleDeviceEventRule eventRule) {
 
-        ProductEventRelation productEventRelation = new QProductEventRelation().relationId.eq(eventRule.getDeviceId())
-                .eventRuleId.eq(eventRule.getEventRuleId()).findOne();
-
-        if (productEventRelation != null && productEventRelation.getInherit().equals(InheritStatus.YES.getCode())) {
-            throw new ServiceException(BizExceptionEnum.EVENT_PRODUCT_CANNOT_DELETE);
-        }
+        List<ProductEventRelation> productEventRelationList = new QProductEventRelation()
+                .eventRuleId.eq(eventRule.getEventRuleId()).findList();
 
         //step 01:删除 zbx触发器
-        if (productEventRelation != null && ToolUtil.isNotEmpty(productEventRelation.getZbxId())) {
+        if (ToolUtil.isNotEmpty(productEventRelationList) && ToolUtil.isNotEmpty(productEventRelationList.get(0).getZbxId())) {
             List<MultipleDeviceEventRuleService.Triggers> triggers = JSONObject.parseArray(
-                    zbxTrigger.triggerGet(productEventRelation.getZbxId()), MultipleDeviceEventRuleService.Triggers.class);
+                    zbxTrigger.triggerGet(productEventRelationList.get(0).getZbxId()), MultipleDeviceEventRuleService.Triggers.class);
 
             if (ToolUtil.isNotEmpty(triggers)) {
-                zbxTrigger.triggerDelete(productEventRelation.getZbxId());
+                zbxTrigger.triggerDelete(productEventRelationList.get(0).getZbxId());
             }
         }
 
