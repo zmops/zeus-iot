@@ -115,17 +115,16 @@ public class DeviceStatusWebhookController {
     @RequestMapping("/service")
     public List<Map<String, Object>> deviceServiceWebhook(@RequestParam("triggerId") String triggerId) {
 
-
         log.debug("--------设备联动触发----------" + triggerId);
         Map<String, Object> alarmInfo = new ConcurrentHashMap<>(3);
 
-        ProductEventRelation productEventRelation = new QProductEventRelation().zbxId.eq(triggerId).findOne();
-        if (productEventRelation == null) {
+        List<ProductEventRelation> productEventRelationList = new QProductEventRelation().zbxId.eq(triggerId).findList();
+        if (ToolUtil.isEmpty(productEventRelationList)) {
             return Collections.emptyList();
         }
 
-        alarmInfo.put("eventRuleId", productEventRelation.getEventRuleId());
-        alarmInfo.put("relationId", productEventRelation.getRelationId());
+        alarmInfo.put("eventRuleId", productEventRelationList.get(0).getEventRuleId());
+        alarmInfo.put("relationId", productEventRelationList.get(0).getRelationId());
 
 //        alarmService.action(alarmInfo);
 
@@ -139,7 +138,8 @@ public class DeviceStatusWebhookController {
             e.printStackTrace();
         }
 
-        List<ProductEventService> productEventServiceList = new QProductEventService().eventRuleId.eq(productEventRelation.getEventRuleId()).or().deviceId.isNull().deviceId.eq(productEventRelation.getRelationId()).endOr().findList();
+        List<ProductEventService> productEventServiceList = new QProductEventService().eventRuleId.eq(productEventRelationList.get(0).getEventRuleId())
+                .or().deviceId.isNull().deviceId.eq(productEventRelationList.get(0).getRelationId()).endOr().findList();
         List<Map<String, Object>> list = new ArrayList<>();
         Map<String, List<ProductEventService>> collect = productEventServiceList.parallelStream().collect(Collectors.groupingBy(ProductEventService::getExecuteDeviceId));
         collect.forEach((key, value) -> {
