@@ -29,6 +29,19 @@ public interface ZbxTrigger {
                          @ParamName("expression") String expression,
                          @ParamName("ruleLevel") Byte ruleLevel);
 
+    /**
+     * 创建场景联动触发器
+     *
+     * @param triggerName 触发器名称
+     * @param expression  触发器 表达式
+     * @param ruleLevel   告警等级
+     * @return
+     */
+    @Post
+    @JsonPath("/trigger/trigger.execute.create")
+    String executeTriggerCreate(@ParamName("triggerName") String triggerName,
+                                @ParamName("expression") String expression,
+                                @ParamName("ruleLevel") Byte ruleLevel);
 
     /**
      * 更新告警触发器

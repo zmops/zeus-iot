@@ -276,23 +276,18 @@ public class MultipleDeviceEventRuleService {
      *
      * @param productEvent
      * @param eventRuleId
-     * @param deviceId
      * @return
      */
-    public ProductEventRuleDto detail(ProductEvent productEvent, long eventRuleId, String deviceId) {
+    public ProductEventRuleDto detail(ProductEvent productEvent, long eventRuleId) {
         ProductEventRuleDto productEventRuleDto = new ProductEventRuleDto();
         ToolUtil.copyProperties(productEvent, productEventRuleDto);
 
         List<ProductEventExpression> expList = new QProductEventExpression().eventRuleId.eq(eventRuleId).findList();
-        expList.forEach(productEventExpression -> {
-            if (ToolUtil.isEmpty(productEventExpression.getDeviceId())) {
-                productEventExpression.setDeviceId(deviceId);
-            }
-        });
-        productEventRuleDto.setExpList(expList);
-        productEventRuleDto.setDeviceServices(new QProductEventService().eventRuleId.eq(eventRuleId).deviceId.eq(deviceId).findList());
 
-        ProductEventRelation productEventRelation = new QProductEventRelation().relationId.eq(deviceId).eventRuleId.eq(eventRuleId).findOne();
+        productEventRuleDto.setExpList(expList);
+        productEventRuleDto.setDeviceServices(new QProductEventService().eventRuleId.eq(eventRuleId).findList());
+
+        ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRuleId).findOne();
         productEventRuleDto.setStatus(productEventRelation.getStatus());
         productEventRuleDto.setRemark(productEventRelation.getRemark());
         productEventRuleDto.setInherit(productEventRelation.getInherit());
@@ -320,7 +315,7 @@ public class MultipleDeviceEventRuleService {
      * @return 触发器ID
      */
     public String[] createZbxTrigger(String triggerName, String expression, Byte level) {
-        String res = zbxTrigger.triggerCreate(triggerName, expression, level);
+        String res = zbxTrigger.executeTriggerCreate(triggerName, expression, level);
         return JSON.parseObject(res, TriggerIds.class).getTriggerids();
     }
 

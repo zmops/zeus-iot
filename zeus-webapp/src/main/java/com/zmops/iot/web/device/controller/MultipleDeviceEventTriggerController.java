@@ -69,12 +69,12 @@ public class MultipleDeviceEventTriggerController {
      */
 
     @GetMapping("/detail")
-    public ResponseData detail(@RequestParam("eventRuleId") long eventRuleId, @RequestParam("deviceId") String deviceId) {
+    public ResponseData detail(@RequestParam("eventRuleId") long eventRuleId) {
         ProductEvent productEvent = new QProductEvent().eventRuleId.eq(eventRuleId).findOne();
         if (null == productEvent) {
             throw new ServiceException(BizExceptionEnum.EVENT_NOT_EXISTS);
         }
-        return ResponseData.success(multipleDeviceEventRuleService.detail(productEvent, eventRuleId, deviceId));
+        return ResponseData.success(multipleDeviceEventRuleService.detail(productEvent, eventRuleId));
     }
 
     /**
