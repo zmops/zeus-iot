@@ -4,14 +4,26 @@
 
 > Zeus IoT  基于 zabbix-5.4 安装。
 
-## 环境要求
+## Zeus IoT 系统安装配置要求
 
-> 目前 ZEUS 支持 Linux x86_64 系统平台。
+- **硬件依赖**
 
-| 配置规格 |    操作系统    | CPU  | 内存 | 存储  |
-| :------: | :------------: | :--: | :--: | :---: |
-| 最低配置 | Centos、Ubuntu | 2 核 | 4 GB | 100GB |
-| 推荐配置 | Centos、Ubuntu | 4 核 | 8 GB | 500GB |
+  目前 Zeus IoT 支持 Linux x86_64 系统平台，其它系统平台测试中。
+
+  | 配置规格 | 系统平台     | CPU  | 内存 | 存储   |
+  | -------- | ------------ | ---- | ---- | ------ |
+  | 最低配置 | Linux x86_64 | 2 核 | 4 GB | 100 GB |
+  | 推荐配置 | Linux x86_64 | 4 核 | 8 GB | 500 GB |
+
+- **软件依赖**
+
+  | 操作系统 | Centos 7.0+/Redhat 7.0+/Ubuntu 18.04+ |
+  | -------- | ------------------------------------- |
+  | JDK      | 1.8                                   |
+  | 数据库   | PostgreSQL 12+/InfluxDB/TDengine-2.2x |
+  | 数据采集 | Zabbix Server 5.4.x                   |
+  | 数据代理 | Zabbix Proxy 5.4.x                    |
+  | 可视化   | Grafana 7.x                           |
 
 ## 快速安装
 
@@ -97,6 +109,8 @@
   cd zeus-iot && git submodule update --init --recursive
   mvn clean package -U -Dmaven.test.skip=true
   ```
+  
+  💡 编译好的安装包在 dist 目录下。文件名为 `zeus-iot-bin.tar.gz` 。部署时只需解压即可。
 
 #### 初始化系统服务
 
@@ -109,6 +123,7 @@ sudo -u postgres createdb -E Unicode -T template0 zeus-iot
 2、 导入 SQL
 
 ```shell
+# 解压安装包，初始化 sql 在安装目录下。
 cat zeus-iot.sql | sudo -u postgres psql zeus-iot
 ```
 
@@ -133,7 +148,7 @@ apt install openjdk-8-jdk -y
 
 3、配置 zeus-iot 连接 zabbix token
 
-    vim /opt/zeus/zeus-iot-bin/webapp/webapp.yml
+    vim ./zeus-iot-bin/webapp/webapp.yml
     
     ...
     forest:
@@ -153,7 +168,7 @@ apt install openjdk-8-jdk -y
   以修改 zabbix 信息为例：
 
   ```
-    vim /opt/zeus/zeus-iot-bin/webapp/webapp.yml
+    vim ./zeus-iot-bin/webapp/webapp.yml
   
     forest:
       log-enabled: false
@@ -181,10 +196,10 @@ apt install openjdk-8-jdk -y
 
 ```shell
 # 启动 
-/opt/zeus/zeus-iot-bin/bin/startup.sh
+./zeus-iot-bin/bin/startup.sh
 
 # 停止
-/opt/zeus/zeus-iot-bin/bin/stop.sh
+./zeus-iot-bin/bin/stop.sh
 ```
 
 
@@ -237,7 +252,37 @@ systemctl start taosd
 启用 zabbix 导出功能
 ---------------------
 
-修改 zabbix-server.conf 配置文件，如下：
+修改 zabbix-server.conf 配置文件，找到如下配置项：
+
+```bash
+### Option: ExportDir
+#       Directory for real time export of events, history and trends in newline delimited JSON format.
+#       If set, enables real time export.
+#
+# Mandatory: no
+# Default:
+ExportDir=/data
+
+### Option: ExportFileSize
+#       Maximum size per export file in bytes.
+#       Only used for rotation if ExportDir is set.
+#
+# Mandatory: no
+# Range: 1M-1G
+# Default:
+ExportFileSize=1G
+
+### Option: ExportType
+#       List of comma delimited types of real time export - allows to control export entities by their
+#       type (events, history, trends) individually.
+#       Valid only if ExportDir is set.
+#
+# Mandatory: no
+# Default:
+ExportType=history
+```
+
+
 
 - ExportDir=/data/zabbix_history 配置导出目录
 - ExportFileSize=1G 配置导出文件的大小
@@ -257,10 +302,10 @@ systemctl restart zabbix-server
 
 ```
 # 停止 zeus-iot 服务
-/opt/zeus/zeus-iot-bin/bin/stop.sh
+./zeus-iot-bin/bin/stop.sh
 
 # 修改数据连接配置如下
-vim /opt/zeus/zeus-iot-bin/conf/application.yml
+vim ./zeus-iot-bin/conf/application.yml
   ...
   # tdengine storage realtime
   storage:
@@ -276,6 +321,6 @@ vim /opt/zeus/zeus-iot-bin/conf/application.yml
 ## 启动 zeus-iot 服务
 
 ```shell
- /opt/zeus/zeus-iot-bin/bin/startup.sh
+ ./zeus-iot-bin/bin/startup.sh
 ```
 
