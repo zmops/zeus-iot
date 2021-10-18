@@ -3,10 +3,15 @@ package com.zmops.iot.rest;
 import com.alibaba.fastjson.JSON;
 import com.zmops.iot.async.executor.Async;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
+import com.zmops.iot.domain.device.Device;
+import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.ProductEventRelation;
+import com.zmops.iot.domain.product.ProductEventService;
+import com.zmops.iot.domain.product.ProductService;
 import com.zmops.iot.domain.product.ProductServiceParam;
 import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEventService;
+import com.zmops.iot.domain.product.query.QProductService;
 import com.zmops.iot.domain.product.query.QProductServiceParam;
 import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.util.ToolUtil;
@@ -21,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -106,7 +113,7 @@ public class DeviceStatusWebhookController {
      * @return ResponseData
      */
     @RequestMapping("/service")
-    public ResponseData deviceServiceWebhook(@RequestParam("triggerId") String triggerId) {
+    public List<Map<String, Object>> deviceServiceWebhook(@RequestParam("triggerId") String triggerId) {
 
 
         log.debug("--------设备联动触发----------" + triggerId);
@@ -114,7 +121,7 @@ public class DeviceStatusWebhookController {
 
         ProductEventRelation productEventRelation = new QProductEventRelation().zbxId.eq(triggerId).findOne();
         if (productEventRelation == null) {
-            return ResponseData.success("OK");
+            return Collections.emptyList();
         }
 
         alarmInfo.put("eventRuleId", productEventRelation.getEventRuleId());
@@ -132,14 +139,36 @@ public class DeviceStatusWebhookController {
             e.printStackTrace();
         }
 
-        List<Long> serviceIds = new QProductEventService().select(QProductEventService.alias().serviceId).eventRuleId.eq(productEventRelation.getEventRuleId()).findSingleAttributeList();
+        List<ProductEventService> productEventServiceList = new QProductEventService().eventRuleId.eq(productEventRelation.getEventRuleId()).or().deviceId.isNull().deviceId.eq(productEventRelation.getRelationId()).endOr().findList();
+        List<Map<String, Object>> list = new ArrayList<>();
+        Map<String, List<ProductEventService>> collect = productEventServiceList.parallelStream().collect(Collectors.groupingBy(ProductEventService::getExecuteDeviceId));
+        collect.forEach((key, value) -> {
+            Map<String, Object> map = new ConcurrentHashMap<>();
+            Device device = new QDevice().deviceId.eq(key).findOne();
+            if (null == device) {
+                return;
+            }
+            map.put("device", device);
+            List<Map<String, Object>> serviceList = new ArrayList<>();
+            value.forEach(val -> {
+                Map<String, Object> serviceMap = new ConcurrentHashMap<>();
+                ProductService productService = new QProductService().id.eq(val.getServiceId()).findOne();
+                if (null == productService) {
+                    return;
+                }
+                serviceMap.put("name", productService.getName());
 
-        List<ProductServiceParam> list = new QProductServiceParam().select(QProductServiceParam.alias().key, QProductServiceParam.alias().value).serviceId.in(serviceIds).findList();
-        Map<String, String> map = new ConcurrentHashMap<>(list.size());
-        if (ToolUtil.isNotEmpty(list)) {
-            map = list.parallelStream().collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue));
-        }
-        return ResponseData.success(map);
+                List<ProductServiceParam> paramList = new QProductServiceParam().serviceId.eq(val.getServiceId()).findList();
+                if (ToolUtil.isNotEmpty(paramList)) {
+                    serviceMap.put("param", paramList.parallelStream().collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue)));
+                }
+                serviceList.add(serviceMap);
+            });
+            map.put("service", serviceList);
+            list.add(map);
+        });
+
+        return list;
     }
 
     /**
