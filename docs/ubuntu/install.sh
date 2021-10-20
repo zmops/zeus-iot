@@ -251,7 +251,7 @@ function clearsys() {
 
         kill9 taosd 
 
-        apt-get remove tdengine-2.2.0.2-3.x86_64 &> /dev/null
+        apt-get remove tdengine &> /dev/null
 
         [ -d /usr/local/taos ] && rm -rf /usr/local/taos
 
@@ -261,9 +261,8 @@ function clearsys() {
         kill9 zabbix_server
         kill9 zabbix_agent
 
-        [ -d /opt/zeus/zabbix ] && rm -rf /opt/zeus/zabbix
-        [ -f /usr/lib/systemd/system/zabbix-server.service ] && rm -rf /usr/lib/systemd/system/zabbix-server.service
-        [ -f /usr/lib/systemd/system/zabbix-agent.service ] && rm -rf /usr/lib/systemd/system/zabbix-agent.service
+        [ -f /lib/systemd/system/zabbix-server.service ] && rm -rf /lib/systemd/system/zabbix-server.service
+        [ -f /lib/systemd/system/zabbix-agent.service ] && rm -rf /lib/systemd/system/zabbix-agent.service
 
         ## 清理 postgresql 数据库
         systemctl stop postgresql &> /dev/null
@@ -273,14 +272,14 @@ function clearsys() {
         apt-get remove postgresql-13 -y &> /dev/null
 
         [ -d /opt/zeus/pgdata ] && rm -rf /opt/zeus/pgdata
-        [ -f /usr/lib/systemd/system/postgresql.service ] && rm -rf /usr/lib/systemd/system/postgresql.service
+        [ -f /lib/systemd/system/postgresql.service ] && rm -rf /lib/systemd/system/postgresql.service
 
         ## 清理 nginx
         systemctl stop nginx &> nginx
 
         kill9 nginx
         apt-get remove nginx -y &> /dev/null
-        [ -f /usr/lib/systemd/system/nginx ] && rm -rf /usr/lib/systemd/system/nginx
+        [ -f /lib/systemd/system/nginx ] && rm -rf /lib/systemd/system/nginx
 }
 
 
