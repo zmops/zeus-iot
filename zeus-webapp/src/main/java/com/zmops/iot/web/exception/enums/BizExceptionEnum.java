@@ -148,6 +148,7 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
      * 设备相关
      */
     DEVICE_EXISTS(1501, "设备名称已存在"),
+    DEVICE_ID_EXISTS(1503, "设备ID已存在"),
     DEVICE_NOT_EXISTS(1502, "设备不存在"),
 
     /**

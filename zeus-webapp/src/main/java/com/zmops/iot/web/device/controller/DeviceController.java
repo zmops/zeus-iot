@@ -62,16 +62,19 @@ public class DeviceController {
     @Permission(code = "dev_add")
     @RequestMapping("/create")
     public ResponseData create(@Validated(BaseEntity.Create.class) @RequestBody DeviceDto deviceDto) {
-        QDevice qDevice = new QDevice().or().name.eq(deviceDto.getName());
-        if (ToolUtil.isNotEmpty(deviceDto.getDeviceId())) {
-            qDevice.deviceId.eq(deviceDto.getDeviceId());
-        } else {
-            deviceDto.setDeviceId(IdUtil.getSnowflake().nextId() + "");
-        }
-        int count = qDevice.findCount();
+        int count = new QDevice().name.eq(deviceDto.getName()).findCount();
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.DEVICE_EXISTS);
         }
+        if (ToolUtil.isNotEmpty(deviceDto.getDeviceId())) {
+            count = new QDevice().deviceId.eq(deviceDto.getDeviceId()).findCount();
+            if (count > 0) {
+                throw new ServiceException(BizExceptionEnum.DEVICE_ID_EXISTS);
+            }
+        } else {
+            deviceDto.setDeviceId(IdUtil.getSnowflake().nextId() + "");
+        }
+
         deviceDto.setEdit("false");
         deviceService.checkProductExist(deviceDto);
         String deviceId = deviceService.create(deviceDto);
@@ -112,11 +115,11 @@ public class DeviceController {
     @Permission(code = "dev_update")
     @RequestMapping("/status/update")
     public ResponseData status(@Validated(BaseEntity.Status.class) @RequestBody DeviceDto deviceDto) {
-       Device device = new QDevice().deviceId.eq(deviceDto.getDeviceId()).findOne();
+        Device device = new QDevice().deviceId.eq(deviceDto.getDeviceId()).findOne();
         if (null == device) {
             throw new ServiceException(BizExceptionEnum.DEVICE_NOT_EXISTS);
         }
-        deviceService.status(deviceDto.getStatus(),deviceDto.getDeviceId(),device.getZbxId());
+        deviceService.status(deviceDto.getStatus(), deviceDto.getDeviceId(), device.getZbxId());
         return ResponseData.success();
     }
 
