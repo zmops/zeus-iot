@@ -382,6 +382,7 @@ public class HomeService {
                 valMap.put("val", value);
                 trendsList.add(valMap);
             });
+            trendsList.sort(Comparator.comparing(o -> o.get("date").toString()));
             executeMap.put("trends", trendsList);
         }
 
