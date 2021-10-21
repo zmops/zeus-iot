@@ -94,7 +94,7 @@ function PGInstall() {
 }
 
 function ZbxInstall() {
-    echo -e -n "\033[32mStep4: 编译安装 zabbix ....  \033[0m" 
+    echo -e -n "\033[32mStep4: 安装 zabbix ....  \033[0m" 
     # zabbix 安装
     apt-get install zabbix-server-pgsql zabbix-frontend-php php-pgsql zabbix-nginx-conf zabbix-sql-scripts zabbix-agent -y 1> /dev/null
 
