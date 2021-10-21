@@ -10,6 +10,7 @@ import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.device.query.QDeviceOnlineReport;
 import com.zmops.iot.domain.device.query.QServiceExecuteRecord;
 import com.zmops.iot.domain.product.query.QProduct;
+import com.zmops.iot.enums.SeverityEnum;
 import com.zmops.iot.enums.ValueType;
 import com.zmops.iot.util.LocalDateTimeUtils;
 import com.zmops.iot.util.ParseUtil;
@@ -31,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -210,6 +212,13 @@ public class HomeService {
         Map<String, Object> alarmMap = new ConcurrentHashMap<>(3);
 
         if (ToolUtil.isNotEmpty(alarmList)) {
+            Map<String, Map<String, Long>> initMap = new ConcurrentHashMap<>(5);
+            for (String s : severity) {
+                if (ToolUtil.isEmpty(s)) {
+                    continue;
+                }
+                initMap.put(s, initMap(timeFrom, timeTill));
+            }
 
             alarmMap.put("total", alarmList.size());
             Collections.reverse(alarmList);
@@ -223,18 +232,18 @@ public class HomeService {
                                     o -> LocalDateTimeUtils.convertTimeToString(Integer.parseInt(o.getClock()), "yyyy-MM-dd"), Collectors.counting())));
 
             List<Map<String, Object>> trendsList = new ArrayList<>();
-            tmpMap.forEach((key, value) -> {
+            initMap.forEach((key, value) -> {
                 Map<String, Object> trendsMap = new ConcurrentHashMap<>(2);
 
                 List list = new ArrayList<>();
                 value.forEach((date, val) -> {
                     Map<String, Object> valMap = new ConcurrentHashMap<>(2);
                     valMap.put("date", date);
-                    valMap.put("val", val);
+                    valMap.put("val", Optional.ofNullable(tmpMap.get(SeverityEnum.getVal(key))).map(o -> o.get(date)).orElse(val));
                     list.add(valMap);
                 });
 
-                trendsMap.put("name", severity[Integer.parseInt(key)]);
+                trendsMap.put("name", key);
                 trendsMap.put("data", list);
                 trendsList.add(trendsMap);
             });
@@ -266,29 +275,23 @@ public class HomeService {
             alarmMap.put("total", alarmList.size());
             Collections.reverse(alarmList);
             //过滤出指定时间段内的告警 并顺序排序
-            Map<String, Map<String, Long>> tmpMap = alarmList.parallelStream()
+            Map<String, Long> tmpMap = alarmList.parallelStream()
                     .filter(o -> !o.getSeverity().equals("0")
                             && Long.parseLong(o.getClock()) >= timeFrom
                             && Long.parseLong(o.getClock()) < timeTill
                     ).collect(
-                            Collectors.groupingBy(ZbxProblemInfo::getSeverity, Collectors.groupingBy(
-                                    o -> LocalDateTimeUtils.convertTimeToString(Integer.parseInt(o.getClock()), "yyyy-MM-dd"), Collectors.counting())));
+                            Collectors.groupingBy(
+                                    o -> LocalDateTimeUtils.convertTimeToString(Integer.parseInt(o.getClock()), "yyyy-MM-dd"), Collectors.counting()));
 
             List<Map<String, Object>> trendsList = new ArrayList<>();
+            Map<String, Long> initMap = initMap(timeFrom, timeTill);
 
-            tmpMap.forEach((key, value) -> {
-                Map<String, Object> trendsMap = new ConcurrentHashMap<>(2);
-                List list = new ArrayList<>();
-                value.forEach((date, val) -> {
-                    Map<String, Object> valMap = new ConcurrentHashMap<>(2);
-                    valMap.put("date", date);
-                    valMap.put("val", val);
-                    list.add(valMap);
-                });
+            initMap.forEach((date, val) -> {
+                Map<String, Object> valMap = new ConcurrentHashMap<>(2);
+                valMap.put("date", date);
 
-                trendsMap.put("name", severity[Integer.parseInt(key)]);
-                trendsMap.put("data", list);
-                trendsList.add(trendsMap);
+                valMap.put("val", Optional.ofNullable(tmpMap.get(date)).orElse(val));
+                trendsList.add(valMap);
             });
 
             alarmMap.put("trends", trendsList);
@@ -371,15 +374,15 @@ public class HomeService {
         Map<String, Object> executeMap = new ConcurrentHashMap<>(3);
         if (ToolUtil.isNotEmpty(list)) {
             executeMap.put("total", list.size());
-
+            Map<String, Long> initMap = initMap(timeFrom, timeTill);
             Map<String, Long> tmpMap = list.parallelStream().collect(
                     Collectors.groupingBy(o -> LocalDateTimeUtils.formatTime(o.getCreateTime(), "yyyy-MM-dd"), Collectors.counting()));
 
             List<Map<String, Object>> trendsList = new ArrayList<>();
-            tmpMap.forEach((key, value) -> {
+            initMap.forEach((key, value) -> {
                 Map<String, Object> valMap = new ConcurrentHashMap<>(2);
                 valMap.put("date", key);
-                valMap.put("val", value);
+                valMap.put("val", Optional.ofNullable(tmpMap.get(key)).orElse(value));
                 trendsList.add(valMap);
             });
             trendsList.sort(Comparator.comparing(o -> o.get("date").toString()));
@@ -449,5 +452,15 @@ public class HomeService {
             return Integer.parseInt(data_history[0][0]);
         }
         return 0;
+    }
+
+    private Map<String, Long> initMap(long start, long end) {
+        long l = LocalDateTimeUtils.betweenTwoTime(LocalDateTimeUtils.getLDTBySeconds((int) start), LocalDateTimeUtils.getLDTBySeconds((int) end), ChronoUnit.DAYS);
+        Map<String, Long> map = new HashMap<>((int) l);
+        map.put(LocalDateTimeUtils.formatTime(LocalDateTimeUtils.getLDTBySeconds((int) start), "yyyy-MM-dd"), 0L);
+        for (long i = 1; i <= l; i++) {
+            map.put(LocalDateTimeUtils.formatTime(LocalDateTimeUtils.plus(LocalDateTimeUtils.getLDTBySeconds((int) start), i, ChronoUnit.DAYS), "yyyy-MM-dd"), 0L);
+        }
+        return map;
     }
 }
