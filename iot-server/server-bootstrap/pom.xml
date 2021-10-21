@@ -71,6 +71,11 @@
             <artifactId>server-transfer</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>server-none-storage</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!--
         <dependency>
             <groupId>org.apache.camel</groupId>
