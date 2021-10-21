@@ -235,18 +235,19 @@ public class HomeService {
             initMap.forEach((key, value) -> {
                 Map<String, Object> trendsMap = new ConcurrentHashMap<>(2);
 
-                List list = new ArrayList<>();
+                List<Map<String, Object>> list = new ArrayList<>();
                 value.forEach((date, val) -> {
                     Map<String, Object> valMap = new ConcurrentHashMap<>(2);
                     valMap.put("date", date);
                     valMap.put("val", Optional.ofNullable(tmpMap.get(SeverityEnum.getVal(key))).map(o -> o.get(date)).orElse(val));
                     list.add(valMap);
                 });
-
+                list.sort(Comparator.comparing(o -> o.get("date").toString()));
                 trendsMap.put("name", key);
                 trendsMap.put("data", list);
                 trendsList.add(trendsMap);
             });
+
             alarmMap.put("trends", trendsList);
         }
 
@@ -293,7 +294,7 @@ public class HomeService {
                 valMap.put("val", Optional.ofNullable(tmpMap.get(date)).orElse(val));
                 trendsList.add(valMap);
             });
-
+            trendsList.sort(Comparator.comparing(o -> o.get("date").toString()));
             alarmMap.put("trends", trendsList);
         }
 
