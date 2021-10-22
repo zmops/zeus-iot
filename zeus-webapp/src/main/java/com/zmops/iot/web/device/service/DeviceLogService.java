@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 @Service
 public class DeviceLogService {
 
-    private static final String LOG_TYPE_ALARM = "告警日志";
-    private static final String LOG_TYPE_EVENT = "事件日志";
+    private static final String LOG_TYPE_ALARM   = "告警日志";
+    private static final String LOG_TYPE_EVENT   = "事件日志";
     private static final String LOG_TYPE_SERVICE = "服务日志";
 
     @Autowired
@@ -42,7 +42,7 @@ public class DeviceLogService {
                 alarmList.forEach(alarm -> {
                     deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_ALARM).content(alarm.getName())
                             .triggerTime(LocalDateTimeUtils.convertDateToLocalDateTime(Integer.parseInt(alarm.getClock())))
-                            .status("0".equals(alarm.getRClock()) ?  "未解决" : "已解决").build());
+                            .status("0".equals(alarm.getRClock()) ? "未解决" : "已解决").build());
                 });
             }
         }
@@ -57,7 +57,7 @@ public class DeviceLogService {
                 alarmList.forEach(alarm -> {
                     deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_ALARM).content(alarm.getName())
                             .triggerTime(LocalDateTimeUtils.convertDateToLocalDateTime(Integer.parseInt(alarm.getClock())))
-                            .status("0".equals(alarm.getRClock()) ?  "未解决" : "已解决").build());
+                            .status("0".equals(alarm.getRClock()) ? "未解决" : "已解决").build());
                 });
             }
         }
@@ -89,7 +89,9 @@ public class DeviceLogService {
         List<DeviceLogDto> deviceLogDtoList = new ArrayList<>();
         if (ToolUtil.isNotEmpty(logType) && LOG_TYPE_ALARM.equals(logType)) {
             AlarmParam alarmParam = new AlarmParam();
-            alarmParam.setDeviceId(deviceId);
+            if (ToolUtil.isNotEmpty(deviceId)) {
+                alarmParam.setDeviceId(deviceId);
+            }
             alarmParam.setTimeFrom(timeFrom);
             alarmParam.setTimeTill(timeTill);
             List<AlarmDto> alarmList = alarmService.getAlarmList(alarmParam);
@@ -97,13 +99,16 @@ public class DeviceLogService {
                 alarmList.forEach(alarm -> {
                     deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_ALARM).content(alarm.getName())
                             .triggerTime(LocalDateTimeUtils.convertDateToLocalDateTime(Integer.parseInt(alarm.getClock())))
-                            .status("0".equals(alarm.getRClock()) ?  "未解决" : "已解决").build());
+                            .status("0".equals(alarm.getRClock()) ? "未解决" : "已解决").build());
                 });
             }
         }
 
         if (ToolUtil.isNotEmpty(logType) && LOG_TYPE_SERVICE.equals(logType)) {
-            QServiceExecuteRecord query = new QServiceExecuteRecord().deviceId.eq(deviceId);
+            QServiceExecuteRecord query = new QServiceExecuteRecord();
+            if (ToolUtil.isNotEmpty(deviceId)) {
+                query.deviceId.eq(deviceId);
+            }
             if (null != timeFrom) {
                 query.createTime.ge(LocalDateTimeUtils.getLDTByMilliSeconds(timeFrom * 1000));
             }
@@ -123,7 +128,9 @@ public class DeviceLogService {
 
         if (ToolUtil.isEmpty(logType) || (ToolUtil.isNotEmpty(logType) && LOG_TYPE_EVENT.equals(logType))) {
             AlarmParam alarmParam = new AlarmParam();
-            alarmParam.setDeviceId(deviceId);
+            if (ToolUtil.isNotEmpty(deviceId)) {
+                alarmParam.setDeviceId(deviceId);
+            }
             alarmParam.setTimeFrom(timeFrom);
             alarmParam.setTimeTill(timeTill);
             List<AlarmDto> alarmList = alarmService.getEventList(alarmParam);
@@ -131,7 +138,7 @@ public class DeviceLogService {
                 alarmList.forEach(alarm -> {
                     deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_ALARM).content(alarm.getName())
                             .triggerTime(LocalDateTimeUtils.convertDateToLocalDateTime(Integer.parseInt(alarm.getClock())))
-                            .status("0".equals(alarm.getRClock()) ?  "未解决" : "已解决").build());
+                            .status("0".equals(alarm.getRClock()) ? "未解决" : "已解决").build());
                 });
             }
         }
