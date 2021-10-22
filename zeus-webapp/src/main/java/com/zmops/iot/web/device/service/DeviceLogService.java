@@ -14,8 +14,8 @@ import com.zmops.iot.web.device.dto.DeviceLogDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,7 +44,7 @@ public class DeviceLogService {
             if (ToolUtil.isNotEmpty(alarmList)) {
                 alarmList.forEach(alarm -> {
                     deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_ALARM).content(alarm.getName())
-                            .triggerTime(LocalDateTimeUtils.convertDateToLocalDateTime(Integer.parseInt(alarm.getClock())))
+                            .triggerTime(alarm.getClock())
                             .status("0".equals(alarm.getRClock()) ? "未解决" : "已解决").build());
                 });
             }
@@ -59,7 +59,7 @@ public class DeviceLogService {
             if (ToolUtil.isNotEmpty(alarmList)) {
                 alarmList.forEach(alarm -> {
                     deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_ALARM).content(alarm.getName())
-                            .triggerTime(LocalDateTimeUtils.convertDateToLocalDateTime(Integer.parseInt(alarm.getClock())))
+                            .triggerTime(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(alarm.getClock()), "yyyy-MM-dd HH:ss:mm"))
                             .status("0".equals(alarm.getRClock()) ? "未解决" : "已解决").build());
                 });
             }
@@ -77,13 +77,12 @@ public class DeviceLogService {
             if (ToolUtil.isNotEmpty(list)) {
                 list.forEach(service -> {
                     deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_SERVICE).content(service.getServiceName())
-                            .triggerTime(service.getCreateTime())
+                            .triggerTime(LocalDateTimeUtils.formatTime(service.getCreateTime()))
                             .param(service.getParam()).build());
                 });
             }
         }
-        deviceLogDtoList.parallelStream()
-                .sorted((o1, o2) -> (int) LocalDateTimeUtils.betweenTwoTime(o1.getTriggerTime(), o2.getTriggerTime(), ChronoUnit.SECONDS)).collect(Collectors.toList());
+        deviceLogDtoList.sort(Comparator.comparing(DeviceLogDto::getTriggerTime));
         return deviceLogDtoList;
     }
 
@@ -134,7 +133,7 @@ public class DeviceLogService {
         if (ToolUtil.isNotEmpty(alarmList)) {
             alarmList.forEach(alarm -> {
                 deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_ALARM).content(alarm.getName())
-                        .triggerTime(LocalDateTimeUtils.convertDateToLocalDateTime(Integer.parseInt(alarm.getClock())))
+                        .triggerTime(alarm.getClock())
                         .status("0".equals(alarm.getRClock()) ? "未解决" : "已解决").severity(alarm.getSeverity())
                         .deviceId(alarm.getDeviceId()).deviceName(alarm.getDeviceName()).build());
             });
@@ -163,7 +162,7 @@ public class DeviceLogService {
         if (ToolUtil.isNotEmpty(alarmList)) {
             alarmList.forEach(alarm -> {
                 deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_ALARM).content(alarm.getName())
-                        .triggerTime(LocalDateTimeUtils.convertDateToLocalDateTime(Integer.parseInt(alarm.getClock())))
+                        .triggerTime(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(alarm.getClock()), "yyyy-MM-dd HH:ss:mm"))
                         .status("0".equals(alarm.getRClock()) ? "未解决" : "已解决").build());
             });
         }
@@ -199,7 +198,7 @@ public class DeviceLogService {
         if (ToolUtil.isNotEmpty(list)) {
             list.forEach(service -> {
                 deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_SERVICE).content(service.getServiceName())
-                        .triggerTime(service.getCreateTime())
+                        .triggerTime(LocalDateTimeUtils.formatTime(service.getCreateTime()))
                         .param(service.getParam()).build());
             });
         }
@@ -232,7 +231,7 @@ public class DeviceLogService {
         if (ToolUtil.isNotEmpty(list)) {
             list.forEach(service -> {
                 deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_SCENES).content(service.getRuleName())
-                        .triggerTime(service.getCreateTime())
+                        .triggerTime(LocalDateTimeUtils.formatTime(service.getCreateTime()))
                         .build());
             });
         }

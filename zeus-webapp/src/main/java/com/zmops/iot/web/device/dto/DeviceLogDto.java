@@ -8,8 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 /**
  * @author yefei
  **/
@@ -20,7 +18,7 @@ import java.time.LocalDateTime;
 @JsonSerialize(using = CachedValueFilter.class)
 public class DeviceLogDto {
     private String logType;
-    private LocalDateTime triggerTime;
+    private String triggerTime;
     private String content;
     private String deviceId;
     private String deviceName;
