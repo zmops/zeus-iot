@@ -33,9 +33,8 @@ public class DeviceServiceLogWorker implements IWorker<Map<String, Object>, Bool
         log.debug("插入 服务 日志…………");
 
         long eventRuleId = (long) param.get("eventRuleId");
-        String relationId = (String) param.get("relationId");
 
-        List<ProductEventService> productEventServiceList = new QProductEventService().eventRuleId.eq(eventRuleId).deviceId.eq(relationId).findList();
+        List<ProductEventService> productEventServiceList = new QProductEventService().eventRuleId.eq(eventRuleId).findList();
         List<Long> serviceIds = productEventServiceList.parallelStream().map(ProductEventService::getServiceId).collect(Collectors.toList());
 
         List<ProductService> productServiceList = new QProductService().id.in(serviceIds).findList();
@@ -44,7 +43,7 @@ public class DeviceServiceLogWorker implements IWorker<Map<String, Object>, Bool
         List<ServiceExecuteRecord> serviceExecuteRecordList = new ArrayList<>();
         productEventServiceList.forEach(productEventService -> {
             ServiceExecuteRecord serviceExecuteRecord = new ServiceExecuteRecord();
-            serviceExecuteRecord.setDeviceId(productEventService.getDeviceId());
+            serviceExecuteRecord.setDeviceId(productEventService.getExecuteDeviceId());
             //TODO 执行的参数
             serviceExecuteRecord.setServiceName(Optional.ofNullable(productServiceMap.get(productEventService.getServiceId())).map(ProductService::getName).orElse(""));
             serviceExecuteRecord.setCreateTime(LocalDateTime.now());

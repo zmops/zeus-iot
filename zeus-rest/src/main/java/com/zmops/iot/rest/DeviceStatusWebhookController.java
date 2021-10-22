@@ -19,6 +19,7 @@ import com.zmops.iot.web.alarm.service.AlarmNoticeWorker;
 import com.zmops.iot.web.alarm.service.AlarmService;
 import com.zmops.iot.web.device.service.work.DeviceOnlineWorker;
 import com.zmops.iot.web.device.service.work.DeviceServiceLogWorker;
+import com.zmops.iot.web.device.service.work.ScenesLogWorker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,6 +57,8 @@ public class DeviceStatusWebhookController {
     @Autowired
     DeviceServiceLogWorker deviceServiceLogWorker;
 
+    @Autowired
+    ScenesLogWorker scenesLogWorker;
     /**
      * 在线状态 回调
      *
@@ -131,9 +134,12 @@ public class DeviceStatusWebhookController {
         WorkerWrapper<Map<String, Object>, Boolean> deviceServiceLogWork = WorkerWrapper.<Map<String, Object>, Boolean>builder().id("deviceServiceLogWorker")
                 .worker(deviceServiceLogWorker).param(alarmInfo)
                 .build();
+        WorkerWrapper<Map<String, Object>, Boolean> scenesLogWork = WorkerWrapper.<Map<String, Object>, Boolean>builder().id("scenesLogWorker")
+                .worker(scenesLogWorker).param(alarmInfo)
+                .build();
 
         try {
-            Async.work(1000, deviceServiceLogWork).awaitFinish();
+            Async.work(1000, deviceServiceLogWork,scenesLogWork).awaitFinish();
         } catch (Exception e) {
             e.printStackTrace();
         }
