@@ -7,7 +7,9 @@ import com.zmops.iot.async.callback.IWorker;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.product.ProductAttribute;
+import com.zmops.iot.domain.product.ProductAttributeEvent;
 import com.zmops.iot.domain.product.query.QProductAttribute;
+import com.zmops.iot.domain.product.query.QProductAttributeEvent;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.dto.DeviceDto;
 import com.zmops.zeus.driver.entity.ZbxItemInfo;
@@ -69,6 +71,16 @@ public class UpdateAttrZbxIdWorker implements IWorker<DeviceDto, Boolean> {
         }
 
         DB.updateAll(productAttributeList);
+
+
+        //取出继承的属性事件 并塞入对应的 itemId
+        List<ProductAttributeEvent> productAttributeEventList = new QProductAttributeEvent().productId.eq(deviceId).findList();
+        for (ProductAttributeEvent productAttributeEvent : productAttributeEventList) {
+            productAttributeEvent.setZbxId(itemMap.get(productAttributeEvent.getTemplateId() + "").getItemid());
+        }
+
+        DB.updateAll(productAttributeEventList);
+
         return true;
     }
 
