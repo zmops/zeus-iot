@@ -213,42 +213,40 @@ public class HomeService {
         List<ZbxProblemInfo> alarmList = alarmService.getZbxAlarm(alarmParam);
         Map<String, Object> alarmMap = new ConcurrentHashMap<>(3);
 
-        if (ToolUtil.isNotEmpty(alarmList)) {
-            Map<String, Map<String, Long>> initMap = new ConcurrentHashMap<>(5);
-            for (String s : severity) {
-                if (ToolUtil.isEmpty(s)) {
-                    continue;
-                }
-                initMap.put(s, initMap(timeFrom, timeTill));
+        Map<String, Map<String, Long>> initMap = new ConcurrentHashMap<>(5);
+        for (String s : severity) {
+            if (ToolUtil.isEmpty(s)) {
+                continue;
             }
-
-            alarmMap.put("total", alarmList.size());
-            Collections.reverse(alarmList);
-            //过滤出指定时间段内的告警 并顺序排序
-            Map<String, Map<String, Long>> tmpMap = alarmList.parallelStream()
-                    .filter(o -> !o.getSeverity().equals("0")).collect(
-                            Collectors.groupingBy(ZbxProblemInfo::getSeverity, Collectors.groupingBy(
-                                    o -> LocalDateTimeUtils.convertTimeToString(Integer.parseInt(o.getClock()), "yyyy-MM-dd"), Collectors.counting())));
-
-            List<Map<String, Object>> trendsList = new ArrayList<>();
-            initMap.forEach((key, value) -> {
-                Map<String, Object> trendsMap = new ConcurrentHashMap<>(2);
-
-                List<Map<String, Object>> list = new ArrayList<>();
-                value.forEach((date, val) -> {
-                    Map<String, Object> valMap = new ConcurrentHashMap<>(2);
-                    valMap.put("date", date);
-                    valMap.put("val", Optional.ofNullable(tmpMap.get(SeverityEnum.getVal(key))).map(o -> o.get(date)).orElse(val));
-                    list.add(valMap);
-                });
-                list.sort(Comparator.comparing(o -> o.get("date").toString()));
-                trendsMap.put("name", key);
-                trendsMap.put("data", list);
-                trendsList.add(trendsMap);
-            });
-
-            alarmMap.put("trends", trendsList);
+            initMap.put(s, initMap(timeFrom, timeTill));
         }
+
+        alarmMap.put("total", alarmList.size());
+        Collections.reverse(alarmList);
+        //过滤出指定时间段内的告警 并顺序排序
+        Map<String, Map<String, Long>> tmpMap = alarmList.parallelStream()
+                .filter(o -> !o.getSeverity().equals("0")).collect(
+                        Collectors.groupingBy(ZbxProblemInfo::getSeverity, Collectors.groupingBy(
+                                o -> LocalDateTimeUtils.convertTimeToString(Integer.parseInt(o.getClock()), "yyyy-MM-dd"), Collectors.counting())));
+
+        List<Map<String, Object>> trendsList = new ArrayList<>();
+        initMap.forEach((key, value) -> {
+            Map<String, Object> trendsMap = new ConcurrentHashMap<>(2);
+
+            List<Map<String, Object>> list = new ArrayList<>();
+            value.forEach((date, val) -> {
+                Map<String, Object> valMap = new ConcurrentHashMap<>(2);
+                valMap.put("date", date);
+                valMap.put("val", Optional.ofNullable(tmpMap.get(SeverityEnum.getVal(key))).map(o -> o.get(date)).orElse(val));
+                list.add(valMap);
+            });
+            list.sort(Comparator.comparing(o -> o.get("date").toString()));
+            trendsMap.put("name", key);
+            trendsMap.put("data", list);
+            trendsList.add(trendsMap);
+        });
+
+        alarmMap.put("trends", trendsList);
 
 
         //今日开始时间
@@ -273,29 +271,26 @@ public class HomeService {
         List<ZbxProblemInfo> alarmList = alarmService.getEventProblem(alarmParam);
         Map<String, Object> alarmMap = new ConcurrentHashMap<>(3);
 
-        if (ToolUtil.isNotEmpty(alarmList)) {
+        alarmMap.put("total", alarmList.size());
+        Collections.reverse(alarmList);
+        //过滤出指定时间段内的告警 并顺序排序
+        Map<String, Long> tmpMap = alarmList.parallelStream()
+                .filter(o -> !o.getSeverity().equals("0")).collect(
+                        Collectors.groupingBy(
+                                o -> LocalDateTimeUtils.convertTimeToString(Integer.parseInt(o.getClock()), "yyyy-MM-dd"), Collectors.counting()));
 
-            alarmMap.put("total", alarmList.size());
-            Collections.reverse(alarmList);
-            //过滤出指定时间段内的告警 并顺序排序
-            Map<String, Long> tmpMap = alarmList.parallelStream()
-                    .filter(o -> !o.getSeverity().equals("0")).collect(
-                            Collectors.groupingBy(
-                                    o -> LocalDateTimeUtils.convertTimeToString(Integer.parseInt(o.getClock()), "yyyy-MM-dd"), Collectors.counting()));
+        List<Map<String, Object>> trendsList = new ArrayList<>();
+        Map<String, Long> initMap = initMap(timeFrom, timeTill);
 
-            List<Map<String, Object>> trendsList = new ArrayList<>();
-            Map<String, Long> initMap = initMap(timeFrom, timeTill);
+        initMap.forEach((date, val) -> {
+            Map<String, Object> valMap = new ConcurrentHashMap<>(2);
+            valMap.put("date", date);
 
-            initMap.forEach((date, val) -> {
-                Map<String, Object> valMap = new ConcurrentHashMap<>(2);
-                valMap.put("date", date);
-
-                valMap.put("val", Optional.ofNullable(tmpMap.get(date)).orElse(val));
-                trendsList.add(valMap);
-            });
-            trendsList.sort(Comparator.comparing(o -> o.get("date").toString()));
-            alarmMap.put("trends", trendsList);
-        }
+            valMap.put("val", Optional.ofNullable(tmpMap.get(date)).orElse(val));
+            trendsList.add(valMap);
+        });
+        trendsList.sort(Comparator.comparing(o -> o.get("date").toString()));
+        alarmMap.put("trends", trendsList);
 
 
         //今日开始时间
