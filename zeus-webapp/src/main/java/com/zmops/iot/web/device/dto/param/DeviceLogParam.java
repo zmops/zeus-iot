@@ -10,6 +10,7 @@ import lombok.Data;
 public class DeviceLogParam extends BaseQueryParam {
     private String logType;
     private String deviceId;
+    private String content;
     private Long timeFrom;
     private Long timeTill;
 
