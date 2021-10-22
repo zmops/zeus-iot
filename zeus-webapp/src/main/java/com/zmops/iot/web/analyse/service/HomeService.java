@@ -207,6 +207,8 @@ public class HomeService {
 
     public Map<String, Object> getAlarmNum(long timeFrom, long timeTill) {
         AlarmParam alarmParam = new AlarmParam();
+        alarmParam.setTimeTill(timeTill);
+        alarmParam.setTimeFrom(timeFrom);
         alarmParam.setRecent("false");
         List<ZbxProblemInfo> alarmList = alarmService.getZbxAlarm(alarmParam);
         Map<String, Object> alarmMap = new ConcurrentHashMap<>(3);
@@ -224,10 +226,7 @@ public class HomeService {
             Collections.reverse(alarmList);
             //过滤出指定时间段内的告警 并顺序排序
             Map<String, Map<String, Long>> tmpMap = alarmList.parallelStream()
-                    .filter(o -> !o.getSeverity().equals("0")
-                            && Long.parseLong(o.getClock()) >= timeFrom
-                            && Long.parseLong(o.getClock()) < timeTill
-                    ).collect(
+                    .filter(o -> !o.getSeverity().equals("0")).collect(
                             Collectors.groupingBy(ZbxProblemInfo::getSeverity, Collectors.groupingBy(
                                     o -> LocalDateTimeUtils.convertTimeToString(Integer.parseInt(o.getClock()), "yyyy-MM-dd"), Collectors.counting())));
 
@@ -268,6 +267,9 @@ public class HomeService {
      */
     public Map<String, Object> getEventNum(long timeFrom, long timeTill) {
         AlarmParam alarmParam = new AlarmParam();
+        alarmParam.setTimeTill(timeTill);
+        alarmParam.setTimeFrom(timeFrom);
+
         List<ZbxProblemInfo> alarmList = alarmService.getEventProblem(alarmParam);
         Map<String, Object> alarmMap = new ConcurrentHashMap<>(3);
 
@@ -277,10 +279,7 @@ public class HomeService {
             Collections.reverse(alarmList);
             //过滤出指定时间段内的告警 并顺序排序
             Map<String, Long> tmpMap = alarmList.parallelStream()
-                    .filter(o -> !o.getSeverity().equals("0")
-                            && Long.parseLong(o.getClock()) >= timeFrom
-                            && Long.parseLong(o.getClock()) < timeTill
-                    ).collect(
+                    .filter(o -> !o.getSeverity().equals("0")).collect(
                             Collectors.groupingBy(
                                     o -> LocalDateTimeUtils.convertTimeToString(Integer.parseInt(o.getClock()), "yyyy-MM-dd"), Collectors.counting()));
 
