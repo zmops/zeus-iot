@@ -11,7 +11,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,19 +31,15 @@ public class DeviceOnlineReprotSchedule {
         //统计出 当前 设备在线情况
         List<Device> deviceList = new QDevice().findList();
 
-        Map<String, Map<Integer, Long>> onLinemap = deviceList.parallelStream()
-                .collect(Collectors.groupingBy(Device::getType, Collectors.groupingBy(o -> Optional.ofNullable(o.getOnline()).orElse(0), Collectors.counting())));
+        Map<Integer, Long> onLinemap = deviceList.parallelStream()
+                .collect(Collectors.groupingBy(o -> Optional.ofNullable(o.getOnline()).orElse(0), Collectors.counting()));
 
-        List<DeviceOnlineReport> list = new ArrayList<>();
-
-        onLinemap.forEach((key, value) -> {
-            list.add(DeviceOnlineReport.builder().type(Integer.parseInt(key))
-                    .createTime(LocalDateTimeUtils.formatTimeDate(LocalDateTime.now()))
-                    .online(Optional.ofNullable(value.get(1)).orElse(0L))
-                    .offline(Optional.ofNullable(value.get(0)).orElse(0L)).build());
-        });
+        DeviceOnlineReport deviceOnlineReport = DeviceOnlineReport.builder()
+                .createTime(LocalDateTimeUtils.formatTimeDate(LocalDateTime.now()))
+                .online(Optional.ofNullable(onLinemap.get(1)).orElse(0L))
+                .offline(Optional.ofNullable(onLinemap.get(0)).orElse(0L)).build();
         //插入 在线情况表
-        DB.saveAll(list);
+        DB.save(deviceOnlineReport);
     }
 
 }
