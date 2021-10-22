@@ -56,9 +56,6 @@ public class ProductEventTriggerController {
     private ZbxTrigger zbxTrigger;
 
     private static final String ALARM_TAG_NAME   = "__alarm__";
-    private static final String EXECUTE_TAG_NAME = "__execute__";
-    private static final String EVENT_TAG_NAME   = "__event__";
-    private static final String EVENT_TYPE_NAME  = "事件";
 
     @Autowired
     SaveProductEventTriggerWorker saveProductEventTriggerWorker;
@@ -123,13 +120,13 @@ public class ProductEventTriggerController {
         if (!tags.containsKey(ALARM_TAG_NAME)) {
             tags.put(ALARM_TAG_NAME, eventRuleId + "");
         }
-        if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
-            tags.put(EXECUTE_TAG_NAME, eventRuleId + "");
-        }
-        Optional<ProductEventRule.Expression> any = eventRule.getExpList().parallelStream().filter(o -> EVENT_TYPE_NAME.equals(o.getProductAttrType())).findAny();
-        if (any.isPresent()) {
-            tags.put(EVENT_TAG_NAME, eventRuleId + "");
-        }
+//        if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
+//            tags.put(EXECUTE_TAG_NAME, eventRuleId + "");
+//        }
+//        Optional<ProductEventRule.Expression> any = eventRule.getExpList().parallelStream().filter(o -> EVENT_TYPE_NAME.equals(o.getProductAttrType())).findAny();
+//        if (any.isPresent()) {
+//            tags.put(EVENT_TAG_NAME, eventRuleId + "");
+//        }
         for (String triggerId : triggerIds) {
             zbxTrigger.triggerTagCreate(triggerId, tags);
         }
@@ -191,13 +188,13 @@ public class ProductEventTriggerController {
         if (!tags.containsKey(ALARM_TAG_NAME)) {
             tags.put(ALARM_TAG_NAME, eventRule.getEventRuleId() + "");
         }
-        if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
-            tags.put(EXECUTE_TAG_NAME, eventRule.getEventRuleId() + "");
-        }
-        Optional<ProductEventRule.Expression> any = eventRule.getExpList().parallelStream().filter(o -> EVENT_TYPE_NAME.equals(o.getProductAttrType())).findAny();
-        if (any.isPresent()) {
-            tags.put(EVENT_TAG_NAME, eventRule.getEventRuleId() + "");
-        }
+//        if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
+//            tags.put(EXECUTE_TAG_NAME, eventRule.getEventRuleId() + "");
+//        }
+//        Optional<ProductEventRule.Expression> any = eventRule.getExpList().parallelStream().filter(o -> EVENT_TYPE_NAME.equals(o.getProductAttrType())).findAny();
+//        if (any.isPresent()) {
+//            tags.put(EVENT_TAG_NAME, eventRule.getEventRuleId() + "");
+//        }
 
         zbxTrigger.triggerTagCreate(list.get(0).getZbxId(), tags);
 

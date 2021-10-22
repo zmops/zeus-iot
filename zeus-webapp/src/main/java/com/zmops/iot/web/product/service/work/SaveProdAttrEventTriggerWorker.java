@@ -1,15 +1,18 @@
 package com.zmops.iot.web.product.service.work;
 
 
+import com.alibaba.fastjson.JSON;
 import com.zmops.iot.async.callback.IWorker;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.web.product.dto.ProductAttrEvent;
 import com.zmops.zeus.driver.service.ZbxTrigger;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author yefei
@@ -22,6 +25,7 @@ public class SaveProdAttrEventTriggerWorker implements IWorker<ProductAttrEvent,
 
     @Autowired
     private ZbxTrigger zbxTrigger;
+    private static final String EVENT_TAG_NAME   = "__event__";
 
     @Override
     public Boolean action(ProductAttrEvent productAttr, Map<String, WorkerWrapper<?, ?>> map) {
@@ -35,7 +39,12 @@ public class SaveProdAttrEventTriggerWorker implements IWorker<ProductAttrEvent,
         expression.append(productAttr.getKey());
         expression.append(",#1");
         expression.append(") >0 ");
-        zbxTrigger.triggerCreate(productAttr.getProductId(), expression.toString(), productAttr.getEventLevel());
+        String res = zbxTrigger.triggerCreate(productAttr.getProductId(), expression.toString(), productAttr.getEventLevel());
+
+        String[] triggerids = JSON.parseObject(res, TriggerIds.class).getTriggerids();
+        Map<String, String> tags = new ConcurrentHashMap<>(1);
+        tags.put(EVENT_TAG_NAME, prodId + "");
+        zbxTrigger.triggerTagCreate(triggerids[0], tags);
 
         return true;
     }
@@ -46,4 +55,8 @@ public class SaveProdAttrEventTriggerWorker implements IWorker<ProductAttrEvent,
         return true;
     }
 
+    @Data
+    static class TriggerIds {
+        private String[] triggerids;
+    }
 }

@@ -174,8 +174,8 @@ public class ProductAttributeEventService {
         productAttributeEvent.save();
 
 
-//        WorkerWrapper<ProductAttrEvent, Boolean> saveProdAttrEventTriggerWork = WorkerWrapper.<ProductAttrEvent, Boolean>builder()
-//                .worker(saveProdAttrEventTriggerWorker).param(productAttr).build();
+        WorkerWrapper<ProductAttrEvent, Boolean> saveProdAttrEventTriggerWork = WorkerWrapper.<ProductAttrEvent, Boolean>builder()
+                .worker(saveProdAttrEventTriggerWorker).param(productAttr).build();
 
         WorkerWrapper<ProductAttrEvent, Boolean> asyncAttrEventZbxIdWork = WorkerWrapper.<ProductAttrEvent, Boolean>builder()
                 .worker(asyncAttrEventZbxIdWorker).param(productAttr).build();
@@ -183,7 +183,7 @@ public class ProductAttributeEventService {
                 .worker(saveProdAttrEventWorker).param(productAttr).nextOf(asyncAttrEventZbxIdWork).build();
 
         try {
-            Async.work(10000, saveProdAttrEventWork).awaitFinish();
+            Async.work(10000, saveProdAttrEventWork,saveProdAttrEventTriggerWork).awaitFinish();
         } catch (Exception e) {
             e.printStackTrace();
         }
