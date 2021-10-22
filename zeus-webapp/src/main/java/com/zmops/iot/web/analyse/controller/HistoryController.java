@@ -24,7 +24,7 @@ public class HistoryController {
     HistoryService historyService;
 
     @RequestMapping("/query")
-    @Permission(code = "latest")
+//    @Permission(code = "latest")
     public Pager<LatestDto> qeuryHistory(@Validated @RequestBody HistoryParam historyParam) {
         return historyService.queryHistory(historyParam);
     }

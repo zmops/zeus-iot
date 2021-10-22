@@ -30,13 +30,13 @@ public class LatestController {
     private TDEngineRest tdEngineRest;
 
     @RequestMapping("/query")
-    @Permission(code = "latest")
+//    @Permission(code = "latest")
     public Pager<LatestDto> qeuryLatest(@Validated @RequestBody LatestParam latestParam) {
         return latestService.qeuryLatest(latestParam);
     }
 
     @RequestMapping("/queryMap")
-    @Permission(code = "latest")
+//    @Permission(code = "latest")
     public ResponseData queryMap(@RequestParam("deviceId") String deviceId) {
         return ResponseData.success(latestService.queryMap(deviceId));
     }
