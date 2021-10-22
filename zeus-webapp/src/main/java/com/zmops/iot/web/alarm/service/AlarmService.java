@@ -158,14 +158,13 @@ public class AlarmService {
     }
 
     public List<AlarmDto> getAlarmList(AlarmParam alarmParam) {
-        String hostId = null;
-//        Assert.state(ToolUtil.isNotEmpty(alarmParam.getDeviceId()), "设备ID不能为空");
         List<ZbxProblemInfo> problemList = getZbxAlarm(alarmParam);
         if (ToolUtil.isEmpty(problemList)) {
             return Collections.emptyList();
         }
         List<String> triggerIds = problemList.parallelStream().map(ZbxProblemInfo::getObjectid).map(Objects::toString).collect(Collectors.toList());
 
+        //根据triggerid查询出 规则名称
         String sql = "select d.event_rule_name,r.zbx_id from product_event d INNER JOIN (select event_rule_id," +
                 "zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.event_rule_id=d.event_rule_id";
         if (ToolUtil.isNotEmpty(alarmParam.getName())) {
@@ -178,23 +177,42 @@ public class AlarmService {
         List<ProductEventRuleDto> ruleList = dtoQuery.findList();
         Map<String, String> ruleMap = ruleList.parallelStream().collect(Collectors.toMap(ProductEventRuleDto::getZbxId, ProductEventRuleDto::getEventRuleName));
 
+        //根据triggerid查询出 所属设备
+        sql = "select distinct name,device_id,r.zbx_id from device d INNER JOIN (select relation_id,zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.relation_id=d.device_id";
+        if (ToolUtil.isNotEmpty(alarmParam.getDeviceId())) {
+            sql += " where d.device_id = :deviceId";
+        }
+        DtoQuery<DeviceDto> deviceQuery = DB.findDto(DeviceDto.class, sql).setParameter("zbxIds", triggerIds);
+        if (ToolUtil.isNotEmpty(alarmParam.getDeviceId())) {
+            deviceQuery.setParameter("deviceId", alarmParam.getDeviceId());
+        }
+        List<DeviceDto> deviceList = deviceQuery.findList();
+        Map<String, List<DeviceDto>> deviceMap = deviceList.parallelStream().collect(Collectors.groupingBy(DeviceDto::getZbxId));
+
         List<AlarmDto> alarmDtoList = new ArrayList<>();
         problemList.forEach(zbxProblemInfo -> {
             if (null == ruleMap.get(zbxProblemInfo.getObjectid())) {
                 return;
             }
-            AlarmDto alarmDto = new AlarmDto();
-            BeanUtils.copyProperties(zbxProblemInfo, alarmDto);
-            alarmDto.setRClock(zbxProblemInfo.getR_clock());
-            alarmDto.setName(ruleMap.get(zbxProblemInfo.getObjectid()));
-            alarmDtoList.add(alarmDto);
+            if (ToolUtil.isNotEmpty(deviceMap.get(zbxProblemInfo.getObjectid()))) {
+                deviceMap.get(zbxProblemInfo.getObjectid()).forEach(deviceDto -> {
+                    AlarmDto alarmDto = new AlarmDto();
+                    BeanUtils.copyProperties(zbxProblemInfo, alarmDto);
+                    alarmDto.setRClock(zbxProblemInfo.getR_clock());
+                    alarmDto.setName(ruleMap.get(zbxProblemInfo.getObjectid()));
+                    alarmDto.setDeviceId(deviceDto.getDeviceId());
+                    alarmDto.setDeviceName(deviceDto.getName());
+                    alarmDto.setSeverity(zbxProblemInfo.getSeverity());
+                    alarmDtoList.add(alarmDto);
+                });
+            }
         });
 
         return alarmDtoList;
     }
 
     public List<ZbxProblemInfo> getZbxAlarm(AlarmParam alarmParam) {
-        String hostId = null;
+        String hostId;
         List<String> deviceIds;
         if (ToolUtil.isNotEmpty(alarmParam.getDeviceId())) {
             deviceIds = Collections.singletonList(alarmParam.getDeviceId());

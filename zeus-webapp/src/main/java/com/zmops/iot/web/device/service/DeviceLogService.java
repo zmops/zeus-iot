@@ -135,7 +135,7 @@ public class DeviceLogService {
             alarmList.forEach(alarm -> {
                 deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_ALARM).content(alarm.getName())
                         .triggerTime(LocalDateTimeUtils.convertDateToLocalDateTime(Integer.parseInt(alarm.getClock())))
-                        .status("0".equals(alarm.getRClock()) ? "未解决" : "已解决")
+                        .status("0".equals(alarm.getRClock()) ? "未解决" : "已解决").severity(alarm.getSeverity())
                         .deviceId(alarm.getDeviceId()).deviceName(alarm.getDeviceName()).build());
             });
         }
