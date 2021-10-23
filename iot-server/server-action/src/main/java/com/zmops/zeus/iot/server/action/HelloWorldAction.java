@@ -16,7 +16,7 @@ public class HelloWorldAction {
 
     @Subscribe
     public void subscribe(ActionParam event) {
-        log.info("子线程接收异步事件, 设备ID - {} ", event.getTriggerDevice());
+        log.info("Device ID - {} ", event.getTriggerDevice());
     }
 
 }

@@ -20,6 +20,8 @@ import java.util.zip.GZIPInputStream;
 
 /**
  * @author nantian created at 2021/9/2 12:58
+ * <p>
+ * 适用于 Logkit
  */
 public class DataTransferHandler extends JettyJsonHandler {
 

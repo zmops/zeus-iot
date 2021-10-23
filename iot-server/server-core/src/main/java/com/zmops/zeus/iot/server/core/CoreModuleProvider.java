@@ -4,8 +4,6 @@ import com.zmops.zeus.iot.server.action.ActionRouteIdentifier;
 import com.zmops.zeus.iot.server.action.HelloWorldAction;
 import com.zmops.zeus.iot.server.core.analysis.StreamAnnotationListener;
 import com.zmops.zeus.iot.server.core.annotation.AnnotationScan;
-import com.zmops.zeus.iot.server.core.camel.CamelContextHolderService;
-import com.zmops.zeus.iot.server.core.camel.ZabbixSenderComponent;
 import com.zmops.zeus.iot.server.core.eventbus.EventBusService;
 import com.zmops.zeus.iot.server.core.server.JettyHandlerRegister;
 import com.zmops.zeus.iot.server.core.server.JettyHandlerRegisterImpl;
@@ -22,8 +20,6 @@ import com.zmops.zeus.iot.server.library.server.jetty.JettyServer;
 import com.zmops.zeus.iot.server.library.server.jetty.JettyServerConfig;
 import com.zmops.zeus.iot.server.sender.module.ZabbixSenderModule;
 import com.zmops.zeus.iot.server.telemetry.TelemetryModule;
-import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.model.ModelCamelContext;
 
 import java.io.IOException;
 
@@ -33,10 +29,9 @@ import java.io.IOException;
 public class CoreModuleProvider extends ModuleProvider {
 
     private final CoreModuleConfig moduleConfig;
-    private ModelCamelContext camelContext;
 
-    private JettyServer jettyServer;
-    private ThreadPoolFactory threadPoolFactory;
+    private JettyServer            jettyServer;
+    private ThreadPoolFactory      threadPoolFactory;
     private EventControllerFactory eventControllerFactory;
 
     private final AnnotationScan annotationScan;
@@ -88,11 +83,7 @@ public class CoreModuleProvider extends ModuleProvider {
         jettyServer = new JettyServer(jettyServerConfig);
         jettyServer.initialize();
 
-        camelContext = new DefaultCamelContext();
-        camelContext.addComponent(Const.CAMEL_ZABBIX_COMPONENT_NAME, new ZabbixSenderComponent(getManager()));
-
         this.registerServiceImplementation(JettyHandlerRegister.class, new JettyHandlerRegisterImpl(jettyServer));
-        this.registerServiceImplementation(CamelContextHolderService.class, new CamelContextHolderService(camelContext, getManager()));
         this.registerServiceImplementation(EventBusService.class, new EventBusService(eventControllerFactory));
     }
 
@@ -114,7 +105,6 @@ public class CoreModuleProvider extends ModuleProvider {
 
         try {
             jettyServer.start();
-            camelContext.start();
         } catch (Exception e) {
             throw new ModuleStartException(e.getMessage(), e);
         }

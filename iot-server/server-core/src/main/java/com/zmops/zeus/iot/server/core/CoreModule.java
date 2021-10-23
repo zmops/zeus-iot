@@ -1,6 +1,5 @@
 package com.zmops.zeus.iot.server.core;
 
-import com.zmops.zeus.iot.server.core.camel.CamelContextHolderService;
 import com.zmops.zeus.iot.server.core.eventbus.EventBusService;
 import com.zmops.zeus.iot.server.core.server.JettyHandlerRegister;
 import com.zmops.zeus.iot.server.library.module.ModuleDefine;
@@ -22,11 +21,8 @@ public class CoreModule extends ModuleDefine {
     @Override
     public Class<?>[] services() {
         List<Class<?>> classes = new ArrayList<>();
-
         classes.add(JettyHandlerRegister.class);
-        classes.add(CamelContextHolderService.class);
         classes.add(EventBusService.class);
-
         return classes.toArray(new Class[]{});
     }
 }

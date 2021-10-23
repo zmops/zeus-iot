@@ -46,7 +46,7 @@ public class DeviceTriggerActionHandler extends JettyJsonHandler {
     protected JsonElement doPost(HttpServletRequest req) throws ArgumentsParseException, IOException {
 
         String request = getJsonBody(req);
-        log.debug(request);
+        log.info("action command ： {}", request);
 
         EventBusService eventBusService = moduleManager.find(CoreModule.NAME).provider().getService(EventBusService.class);
 

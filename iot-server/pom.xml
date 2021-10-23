@@ -26,11 +26,12 @@
         <module>server-bootstrap</module>
         <module>server-health-checker</module>
         <module>server-telemetry</module>
-        <module>server-receiver-plugin</module>
         <module>server-sender</module>
         <module>server-action</module>
         <module>server-storage-plugin</module>
         <module>server-transfer</module>
+        <module>server-localdb</module>
+        <module>server-camel-receiver</module>
     </modules>
 
     <dependencyManagement>
