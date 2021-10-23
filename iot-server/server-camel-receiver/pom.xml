@@ -33,6 +33,11 @@
             <artifactId>iot-datacarrier</artifactId>
             <version>1.0-beta</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-netty4-http</artifactId>
+        </dependency>
     </dependencies>
 
     <properties>

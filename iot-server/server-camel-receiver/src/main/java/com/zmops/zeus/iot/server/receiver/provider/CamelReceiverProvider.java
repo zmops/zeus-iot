@@ -39,19 +39,20 @@ public class CamelReceiverProvider extends ModuleProvider {
 
     @Override
     public void prepare() throws ServiceNotProvidedException, ModuleStartException {
-        camelContext = new DefaultCamelContext();
-        camelContext.addComponent(Const.CAMEL_ZABBIX_COMPONENT_NAME, new ZabbixSenderComponent(getManager()));
+        camelContext = new DefaultCamelContext(); // master 只有一个 CamelContext
+        this.registerServiceImplementation(CamelContextHolderService.class, new CamelContextHolderService(camelContext, getManager()));
     }
 
     @Override
     public void start() throws ServiceNotProvidedException, ModuleStartException {
+
+        camelContext.addComponent(Const.CAMEL_ZABBIX_COMPONENT_NAME, new ZabbixSenderComponent(getManager()));
+
         try {
             camelContext.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        this.registerServiceImplementation(CamelContextHolderService.class, new CamelContextHolderService(camelContext, getManager()));
     }
 
     @Override
