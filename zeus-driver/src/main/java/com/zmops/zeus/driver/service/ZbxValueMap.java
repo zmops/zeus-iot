@@ -59,4 +59,14 @@ public interface ZbxValueMap {
                           @ParamName("valueMapName") String valueMapName,
                           @ParamName("valMaps") Map<String, String> valMaps,
                           @ParamName("valueMapId") String valueMapId);
+
+    /**
+     * 删除值映射
+     *
+     * @param valuemapids 值映射ID
+     * @return String
+     */
+    @Post
+    @JsonPath("/valuemap/valuemap.get")
+    String valueMapGet(@ParamName("valuemapids") String valuemapids);
 }

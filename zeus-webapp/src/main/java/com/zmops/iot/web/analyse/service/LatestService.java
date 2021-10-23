@@ -9,12 +9,17 @@ import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.LocalDateTimeUtils;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.analyse.dto.LatestDto;
+import com.zmops.iot.web.analyse.dto.Mapping;
+import com.zmops.iot.web.analyse.dto.ValueMap;
 import com.zmops.iot.web.analyse.dto.param.LatestParam;
 import com.zmops.zeus.driver.service.ZbxHistoryGet;
+import com.zmops.zeus.driver.service.ZbxValueMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -27,6 +32,9 @@ public class LatestService {
 
     @Autowired
     ZbxHistoryGet zbxHistoryGet;
+
+    @Autowired
+    ZbxValueMap zbxValueMap;
 
     /**
      * 查询最新数据
@@ -80,13 +88,35 @@ public class LatestService {
                         ArrayList::new)
         );
 
+        //处理值映射
+        List<String> valuemapids = list.parallelStream().filter(o -> null != o.getValuemapid()).map(ProductAttribute::getValuemapid).collect(Collectors.toList());
+        Map<String, List<Mapping>> mappings = new ConcurrentHashMap<>(valuemapids.size());
+        if (!CollectionUtils.isEmpty(valuemapids)) {
+            String res = zbxValueMap.valueMapGet(valuemapids.toString());
+            List<ValueMap> mappingList = JSONObject.parseArray(res, ValueMap.class);
+            if (!CollectionUtils.isEmpty(mappingList)) {
+                mappings = mappingList.stream().collect(Collectors.toMap(ValueMap::getValuemapid, ValueMap::getMappings));
+            }
+        }
+
+        Map<String, List<Mapping>> finalMappings = mappings;
         latestDtos.forEach(latestDto -> {
             latestDto.setClock(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(latestDto.getClock()), "yyyy-MM-dd HH:mm:ss"));
+            latestDto.setOriginalValue(latestDto.getValue());
             if (null != itemIdMap.get(latestDto.getItemid())) {
                 latestDto.setName(itemIdMap.get(latestDto.getItemid()).getName());
                 latestDto.setAttrId(itemIdMap.get(latestDto.getItemid()).getAttrId());
                 latestDto.setUnits(itemIdMap.get(latestDto.getItemid()).getUnits());
                 latestDto.setKey(itemIdMap.get(latestDto.getItemid()).getKey());
+
+                String valueMapid = itemIdMap.get(latestDto.getItemid()).getValuemapid();
+                if (null != valueMapid) {
+                    List<Mapping> mappingList = finalMappings.get(valueMapid);
+                    if (!CollectionUtils.isEmpty(mappingList)) {
+                        Map<String, String> mappingMap = mappingList.parallelStream().collect(Collectors.toMap(Mapping::getValue, Mapping::getNewvalue));
+                        latestDto.setValue(mappingMap.get(latestDto.getValue()));
+                    }
+                }
             }
         });
 

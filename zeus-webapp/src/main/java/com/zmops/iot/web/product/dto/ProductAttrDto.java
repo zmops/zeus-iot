@@ -69,6 +69,7 @@ public class ProductAttrDto {
     private String clock;
 
     private String value;
+    private String originalValue;
 
     private Integer delay;
     private String delayName;

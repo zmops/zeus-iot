@@ -82,6 +82,7 @@ public class DeviceModelService {
             if (null != map.get(productAttrDto.getAttrId())) {
                 productAttrDto.setClock(map.get(productAttrDto.getAttrId()).getClock());
                 productAttrDto.setValue(map.get(productAttrDto.getAttrId()).getValue());
+                productAttrDto.setOriginalValue(map.get(productAttrDto.getAttrId()).getOriginalValue());
                 productAttrDto.setDelayName(productAttrDto.getDelay() + CommonTimeUnit.getDescription(productAttrDto.getUnit()));
             }
             if (null != errorMap.get(productAttrDto.getZbxId())) {

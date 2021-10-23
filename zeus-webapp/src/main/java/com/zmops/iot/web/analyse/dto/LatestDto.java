@@ -24,6 +24,8 @@ public class LatestDto {
 
     private String value;
 
+    private String originalValue;
+
     private String change;
 
     private String tags;
