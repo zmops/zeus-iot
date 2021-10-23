@@ -7,6 +7,7 @@ import com.zmops.zeus.iot.server.core.annotation.AnnotationScan;
 import com.zmops.zeus.iot.server.core.eventbus.EventBusService;
 import com.zmops.zeus.iot.server.core.server.JettyHandlerRegister;
 import com.zmops.zeus.iot.server.core.server.JettyHandlerRegisterImpl;
+import com.zmops.zeus.iot.server.core.servlet.CamelReceiverRouteHandler;
 import com.zmops.zeus.iot.server.core.servlet.DataTransferHandler;
 import com.zmops.zeus.iot.server.core.servlet.DeviceTriggerActionHandler;
 import com.zmops.zeus.iot.server.core.servlet.HttpItemTrapperHandler;
@@ -18,7 +19,7 @@ import com.zmops.zeus.iot.server.eventbus.thread.entity.ThreadParameter;
 import com.zmops.zeus.iot.server.library.module.*;
 import com.zmops.zeus.iot.server.library.server.jetty.JettyServer;
 import com.zmops.zeus.iot.server.library.server.jetty.JettyServerConfig;
-import com.zmops.zeus.iot.server.sender.module.ZabbixSenderModule;
+import com.zmops.zeus.iot.server.receiver.module.CamelReceiverModule;
 import com.zmops.zeus.iot.server.telemetry.TelemetryModule;
 
 import java.io.IOException;
@@ -113,6 +114,7 @@ public class CoreModuleProvider extends ModuleProvider {
         service.addHandler(new HttpItemTrapperHandler());
         service.addHandler(new DeviceTriggerActionHandler(getManager()));
         service.addHandler(new DataTransferHandler());
+        service.addHandler(new CamelReceiverRouteHandler(getManager()));
 
 
         // ### 可以自定义添加 Action 的动作异步处理，指定 ID
@@ -124,7 +126,7 @@ public class CoreModuleProvider extends ModuleProvider {
     public String[] requiredModules() {
         return new String[]{
                 TelemetryModule.NAME,
-                ZabbixSenderModule.NAME
+                CamelReceiverModule.NAME
         };
     }
 }

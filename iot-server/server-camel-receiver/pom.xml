@@ -20,7 +20,17 @@
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>
-            <artifactId>server-core</artifactId>
+            <artifactId>telemetry-api</artifactId>
+            <version>1.0-beta</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>server-sender</artifactId>
+            <version>1.0-beta</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>iot-datacarrier</artifactId>
             <version>1.0-beta</version>
         </dependency>
     </dependencies>

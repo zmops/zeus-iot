@@ -51,6 +51,11 @@
             <artifactId>server-action</artifactId>
             <version>1.0-beta</version>
         </dependency>
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>server-camel-receiver</artifactId>
+            <version>1.0-beta</version>
+        </dependency>
     </dependencies>
 
     <properties>

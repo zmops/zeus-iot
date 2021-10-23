@@ -1,11 +1,11 @@
 package com.zmops.zeus.iot.server.receiver.provider;
 
-import com.zmops.zeus.iot.server.core.CoreModule;
 import com.zmops.zeus.iot.server.library.module.*;
 import com.zmops.zeus.iot.server.receiver.Const;
 import com.zmops.zeus.iot.server.receiver.module.CamelReceiverModule;
 import com.zmops.zeus.iot.server.receiver.service.CamelContextHolderService;
 import com.zmops.zeus.iot.server.receiver.tozabbix.ZabbixSenderComponent;
+import com.zmops.zeus.iot.server.sender.module.ZabbixSenderModule;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.model.ModelCamelContext;
 
@@ -62,7 +62,7 @@ public class CamelReceiverProvider extends ModuleProvider {
     @Override
     public String[] requiredModules() {
         return new String[]{
-                CoreModule.NAME
+                ZabbixSenderModule.NAME
         };
     }
 }

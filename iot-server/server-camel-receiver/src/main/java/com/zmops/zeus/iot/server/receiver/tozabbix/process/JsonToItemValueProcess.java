@@ -1,8 +1,8 @@
 package com.zmops.zeus.iot.server.receiver.tozabbix.process;
 
 import com.google.gson.Gson;
-import com.zmops.zeus.iot.server.core.worker.data.ItemValue;
 import com.zmops.zeus.iot.server.receiver.tozabbix.IOTDeviceValue;
+import com.zmops.zeus.iot.server.receiver.tozabbix.ItemValue;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;

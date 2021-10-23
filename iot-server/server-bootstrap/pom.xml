@@ -48,21 +48,6 @@
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>
-            <artifactId>http-receiver-plugin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.zmops</groupId>
-            <artifactId>tcp-receiver-plugin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.zmops</groupId>
-            <artifactId>mqtt-receiver-plugin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.zmops</groupId>
             <artifactId>server-tdengine-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
