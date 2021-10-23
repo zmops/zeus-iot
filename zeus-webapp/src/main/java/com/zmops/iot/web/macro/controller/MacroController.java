@@ -6,11 +6,13 @@ import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.query.QProduct;
+import com.zmops.iot.enums.InheritStatus;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.macro.dto.UserMacro;
+import com.zmops.iot.web.macro.service.MacroService;
 import com.zmops.zeus.driver.service.ZbxHost;
 import com.zmops.zeus.driver.service.ZbxMacro;
 import lombok.Getter;
@@ -23,7 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author nantian created at 2021/9/18 10:53
@@ -38,6 +41,9 @@ public class MacroController {
 
     @Autowired
     ZbxHost zbxHost;
+
+    @Autowired
+    MacroService macroService;
 
     /**
      * 创建 变量
@@ -56,13 +62,8 @@ public class MacroController {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }
 
-        // 创建宏
-        String res = zbxMacro.macroCreate(zbxId, userMacro.getMacro().toUpperCase(Locale.ROOT), userMacro.getValue(), userMacro.getDescription());
-
-        Macroids macroids = JSON.parseObject(res, Macroids.class);
-        return ResponseData.success(macroids.getHostmacroids()[0]);
+        return ResponseData.success(macroService.createMacro(userMacro, zbxId));
     }
-
 
     /**
      * 变量更新
@@ -72,10 +73,17 @@ public class MacroController {
      */
     @RequestMapping("/update")
     public ResponseData updateUserMacro(@Validated(BaseEntity.Update.class) @RequestBody UserMacro userMacro) {
-        zbxMacro.macroUpdate(userMacro.getHostmacroid(), userMacro.getMacro(), userMacro.getValue(), userMacro.getDescription());
+        if (InheritStatus.YES.getCode().equals(userMacro.getInherit())) {
+            String zbxId = new QDevice().select(QDevice.alias().zbxId).deviceId.eq(userMacro.getDeviceId()).findSingleAttribute();
+            if (ToolUtil.isEmpty(zbxId)) {
+                throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
+            }
+            macroService.createMacro(userMacro, zbxId);
+        } else {
+            zbxMacro.macroUpdate(userMacro.getHostmacroid(), userMacro.getMacro(), userMacro.getValue(), userMacro.getDescription());
+        }
         return ResponseData.success();
     }
-
 
     /**
      * 变量列表
@@ -114,11 +122,17 @@ public class MacroController {
             List<UserMacro> tempMacroList = JSONObject.parseArray(zbxMacro.macroGet(tempId.getTemplateid()), UserMacro.class);
             tempMacroList.forEach(macro -> {
                 macro.setInherit("1");
+                macro.setInheritName("否");
             });
             // 主机宏
             List<UserMacro> hostMacroList = JSONObject.parseArray(zbxMacro.macroGet(zbxId + ""), UserMacro.class);
+            Map<String, UserMacro> hostMacroMap = hostMacroList.parallelStream().collect(Collectors.toMap(UserMacro::getMacro, o -> o));
+            tempMacroList.forEach(productMacro -> {
+                if (null != hostMacroMap.get(productMacro.getMacro())) {
+                    tempMacroList.remove(productMacro);
+                }
+            });
 
-            //TODO merge
             tempMacroList.addAll(hostMacroList);
 
             return ResponseData.success(tempMacroList);
@@ -143,14 +157,8 @@ public class MacroController {
 
     @Getter
     @Setter
-    static class Macroids {
-        private Long[] hostmacroids;
-    }
-
-    @Getter
-    @Setter
     static class HostQueryTempObject {
-        private String hostid;
+        private String                 hostid;
         private List<TemplateIdObject> parentTemplates;
     }
 

@@ -14,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 @Setter
 public class UserMacro {
 
-    @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Get.class})
+    @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Update.class, BaseEntity.Get.class})
     private String deviceId; // 产品ID 或者 设备ID
 
     private String macro;
@@ -23,7 +23,9 @@ public class UserMacro {
 
     private String description;
 
+    @NotBlank(groups = BaseEntity.Update.class)
     private String inherit;
+    private String inheritName="否";
 
     @NotBlank(groups = {BaseEntity.Delete.class, BaseEntity.Update.class})
     private String hostmacroid;
