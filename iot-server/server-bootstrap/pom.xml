@@ -61,6 +61,11 @@
             <artifactId>server-none-storage</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>server-camel-receiver</artifactId>
+            <version>1.0-beta</version>
+        </dependency>
         <!--
         <dependency>
             <groupId>org.apache.camel</groupId>
