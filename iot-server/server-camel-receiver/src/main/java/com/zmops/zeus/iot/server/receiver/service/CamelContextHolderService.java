@@ -3,6 +3,7 @@ package com.zmops.zeus.iot.server.receiver.service;
 import com.zmops.zeus.iot.server.library.module.ModuleManager;
 import com.zmops.zeus.iot.server.library.module.Service;
 import org.apache.camel.CamelContext;
+import org.apache.camel.Route;
 import org.apache.camel.RoutesBuilder;
 
 /**
@@ -29,6 +30,38 @@ public class CamelContextHolderService implements Service {
     public void addRoutes(RoutesBuilder builder) {
         try {
             camelContext.addRoutes(builder);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * 关闭路由
+     *
+     * @param routeId 路由ID
+     */
+    public void routeShutDown(String routeId) {
+        Route route = camelContext.getRoute(routeId);
+        try {
+            route.getEndpoint().stop();
+            route.getConsumer().stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * 启动路由
+     *
+     * @param routeId 路由ID
+     */
+    public void routeStartUp(String routeId) {
+        Route route = camelContext.getRoute(routeId);
+        try {
+            route.getEndpoint().start();
+            route.getConsumer().start();
         } catch (Exception e) {
             e.printStackTrace();
         }
