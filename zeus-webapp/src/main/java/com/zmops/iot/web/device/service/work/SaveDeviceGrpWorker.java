@@ -27,7 +27,7 @@ public class SaveDeviceGrpWorker implements IWorker<DeviceDto, Boolean> {
 
     @Override
     public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> map) {
-        log.debug("处理设备与设备组关系工作…………");
+        log.debug("step 4:处理设备与设备组关系工作----DEVICEID:"+deviceDto.getDeviceId()+"…………");
 
         //修改模式 先清空关联关系
         if (null != deviceDto.getDeviceId()) {
@@ -41,7 +41,7 @@ public class SaveDeviceGrpWorker implements IWorker<DeviceDto, Boolean> {
             devicesGroupsList.add(DevicesGroups.builder().deviceId(device.getDeviceId()).deviceGroupId(deviceGroupId).build());
         }
         DB.saveAll(devicesGroupsList);
-
+        log.debug("step 4:处理设备与设备组关系工作----DEVICEID:"+deviceDto.getDeviceId()+"完成");
         return true;
     }
 

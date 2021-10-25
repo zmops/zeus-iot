@@ -24,7 +24,7 @@ public class SaveDeviceWorker implements IWorker<DeviceDto, Device> {
 
     @Override
     public Device action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> allWrappers) {
-        log.debug("处理device工作…………");
+        log.debug("step 1:处理device工作----DEVICEID:"+deviceDto.getDeviceId()+"…………");
 
         Device device = new Device();
         ToolUtil.copyProperties(deviceDto, device);
@@ -35,7 +35,7 @@ public class SaveDeviceWorker implements IWorker<DeviceDto, Device> {
             device.setStatus(CommonStatus.ENABLE.getCode());
             DB.save(device);
         }
-
+        log.debug("step 1:处理device工作----DEVICEID:"+deviceDto.getDeviceId()+"完成");
         return device;
     }
 

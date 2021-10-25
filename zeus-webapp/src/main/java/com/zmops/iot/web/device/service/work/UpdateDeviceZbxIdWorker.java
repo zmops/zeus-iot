@@ -24,14 +24,14 @@ public class UpdateDeviceZbxIdWorker implements IWorker<String, Boolean> {
 
     @Override
     public Boolean action(String deviceDto, Map<String, WorkerWrapper<?, ?>> map) {
-        log.debug("处理 zbxID 回填工作…………");
 
         Object result = map.get("saveZbxHostWork").getWorkResult().getResult();
         JSONArray hostid = JSONObject.parseObject(result.toString()).getJSONArray("hostids");
         Device device = (Device) map.get("saveDvice").getWorkResult().getResult();
+        log.debug("step 7:处理 zbxID 回填工作----DEVICEID:"+device.getDeviceId()+"HOSTID:"+hostid.get(0).toString()+"…………");
         device.setZbxId(hostid.get(0).toString());
         DB.update(device);
-
+        log.debug("step 7:处理 zbxID 回填工作----DEVICEID:"+device.getDeviceId()+"HOSTID:"+hostid.get(0).toString()+"完成");
         return true;
     }
 

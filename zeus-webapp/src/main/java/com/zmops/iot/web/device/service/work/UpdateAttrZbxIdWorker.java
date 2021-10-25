@@ -37,7 +37,7 @@ public class UpdateAttrZbxIdWorker implements IWorker<DeviceDto, Boolean> {
 
     @Override
     public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> map) {
-        log.debug("处理Attr zbx回填工作……");
+        log.debug("step 6:处理Attr zbx回填工作----DEVICEID:"+deviceDto.getDeviceId()+"…………");
         String deviceId = deviceDto.getDeviceId();
 
         if (ToolUtil.isNotEmpty(deviceDto.getEdit()) && "true".equals(deviceDto.getEdit())) {
@@ -80,7 +80,7 @@ public class UpdateAttrZbxIdWorker implements IWorker<DeviceDto, Boolean> {
         }
 
         DB.updateAll(productAttributeEventList);
-
+        log.debug("step 6:处理Attr zbx回填工作----DEVICEID:"+deviceDto.getDeviceId()+"完成");
         return true;
     }
 
