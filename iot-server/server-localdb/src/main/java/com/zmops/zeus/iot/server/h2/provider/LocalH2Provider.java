@@ -1,5 +1,6 @@
 package com.zmops.zeus.iot.server.h2.provider;
 
+import com.zmops.zeus.iot.server.h2.dao.InsertDAO;
 import com.zmops.zeus.iot.server.h2.module.LocalH2Module;
 import com.zmops.zeus.iot.server.library.client.jdbc.JDBCClientException;
 import com.zmops.zeus.iot.server.library.client.jdbc.hikaricp.JDBCHikariCPClient;
@@ -49,18 +50,25 @@ public class LocalH2Provider extends ModuleProvider {
 
         h2Client.connect();
 
-        try (Connection connection = h2Client.getConnection();
-             ResultSet rs = h2Client.executeQuery(
-                     connection, "CREATE TABLE IF NOT EXISTS `sys_user` (`user_id` bigint NOT NULL COMMENT '主键id',PRIMARY KEY (`user_id`) USING BTREE );")) {
+        this.registerServiceImplementation(InsertDAO.class, new LocalH2InsertDAO(h2Client));
 
-            h2Client.execute(connection, "insert into `sys_user` VALUES (1);");
+        try {
+            Connection connection = h2Client.getConnection();
+            int rs = h2Client.executeUpdate(
+                    connection, "DROP TABLE IF EXISTS ZEUS_CONFIG;\n" +
+                            "CREATE TABLE ZEUS_CONFIG(ID INT PRIMARY KEY,\n" +
+                            "   NAME VARCHAR(64),CONFIG VARCHAR(255));");
 
-            ResultSet rs2 = h2Client.executeQuery(connection, "select * from sys_user;");
+            h2Client.execute(connection, "INSERT INTO ZEUS_CONFIG VALUES(3, 'Hello h2','配置信息');");
 
-            System.out.println(123);
+            ResultSet rs2 = h2Client.executeQuery(connection, "select * from ZEUS_CONFIG;");
 
-        } catch (SQLException | JDBCClientException e) {
+            System.out.println(rs2);
+
+
+        } catch (JDBCClientException e) {
             // throw new IOException(e.getMessage(), e);
+            e.printStackTrace();
         }
 
 

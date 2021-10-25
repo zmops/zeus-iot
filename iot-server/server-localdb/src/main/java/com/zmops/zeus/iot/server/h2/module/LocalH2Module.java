@@ -1,5 +1,6 @@
 package com.zmops.zeus.iot.server.h2.module;
 
+import com.zmops.zeus.iot.server.h2.dao.InsertDAO;
 import com.zmops.zeus.iot.server.library.module.ModuleDefine;
 
 /**
@@ -15,6 +16,8 @@ public class LocalH2Module extends ModuleDefine {
 
     @Override
     public Class[] services() {
-        return new Class[0];
+        return new Class[]{
+                InsertDAO.class
+        };
     }
 }

@@ -47,7 +47,7 @@ public class JDBCHikariCPClient implements Client, HealthCheckable {
         hikariConfig.setJdbcUrl(properties.getProperty("dataSource.url"));
         hikariConfig.setUsername(properties.getProperty("dataSource.user"));
         hikariConfig.setPassword(properties.getProperty("dataSource.password"));
-        hikariConfig.setConnectionTestQuery("select server_status()");
+//        hikariConfig.setConnectionTestQuery("select server_status()");
 
         this.healthChecker = new DelegatedHealthChecker();
     }

@@ -56,6 +56,12 @@
             <artifactId>server-camel-receiver</artifactId>
             <version>1.0-beta</version>
         </dependency>
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>server-localdb</artifactId>
+            <version>1.0-beta</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <properties>
