@@ -1,4 +1,4 @@
-<Configuration status="DEBUG">
+<Configuration status="INFO">
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout charset="UTF-8" pattern="%d - %c - %L [%t] %-5p %x - %m%n"/>
@@ -11,7 +11,7 @@
         <logger name="io.netty" level="INFO"/>
         <logger name="org.apache.http" level="INFO"/>
         <logger name="org.apache.camel" level="INFO"/>
-        <logger name="com.zmops.zeus.iot" level="INFO"/>
+        <logger name="com.zmops.zeus.iot" level="DEBUG"/>
         <Root level="INFO">
             <AppenderRef ref="Console"/>
         </Root>
