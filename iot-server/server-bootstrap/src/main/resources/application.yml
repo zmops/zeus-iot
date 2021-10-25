@@ -2,7 +2,7 @@
 camel-receiver:
   selector: default
   default:
-    version: 1.0.0
+    version: v1.0.0
 
 # Zabbix Trapper Sender
 zabbix-sender:
@@ -25,6 +25,12 @@ core:
     restAcceptorPriorityDelta: ${ZS_CORE_REST_JETTY_DELTA:0}
     restAcceptQueueSize: ${ZS_CORE_REST_JETTY_QUEUE_SIZE:0}
     httpMaxRequestHeaderSize: ${ZS_CORE_HTTP_MAX_REQUEST_HEADER_SIZE:8192}
+
+# local db h2, must be default
+local-h2:
+  selector: default
+  default:
+    version: v1.0.0
 
 # ndjson file read realtime
 server-transfer:
