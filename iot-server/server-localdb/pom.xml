@@ -11,7 +11,19 @@
 
     <artifactId>server-localdb</artifactId>
 
-    <description>IoT Server 本地持久化存储，持久化服务状态，启动时可恢复</description>
+    <description>IoT Server 服务组件状态实时本地持久化存储，启动恢复</description>
+    <dependencies>
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>library-module</artifactId>
+            <version>1.0-beta</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>library-client</artifactId>
+            <version>1.0-beta</version>
+        </dependency>
+    </dependencies>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
