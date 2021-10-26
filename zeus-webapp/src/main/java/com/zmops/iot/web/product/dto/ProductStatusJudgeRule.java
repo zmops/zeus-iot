@@ -24,8 +24,6 @@ public class ProductStatusJudgeRule {
 
     private String ruleName;
 
-    private String triggerId; // zbxId
-
     //#####################  下线规则
 
     @NotNull(groups = {BaseEntity.Create.class})

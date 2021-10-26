@@ -21,8 +21,6 @@ public class ProductStatusFunction extends BaseEntity {
     @Id
     private Long ruleId;
 
-    private String zbxId;
-
     private String ruleFunction;
 
     private Long attrId;
@@ -40,4 +38,5 @@ public class ProductStatusFunction extends BaseEntity {
     private String unit;
 
     private String unitRecovery;
+
 }

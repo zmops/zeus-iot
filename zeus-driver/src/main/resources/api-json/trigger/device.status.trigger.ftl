@@ -9,15 +9,27 @@
             <#else>
                 "expression": "last(/${deviceId}/${itemKey}) ${ruleFunction} ${ruleCondition}",
             </#if>
-            "recovery_mode": 1,
-            <#if ruleFunctionRecovery == "nodata">
-                "recovery_expression": "nodata(/${deviceId}/${itemKeyRecovery},${ruleConditionRecovery}) = 0", <#-- 上线规则 nodata = 0 -->
-            <#else>
-                "recovery_expression": "last(/${deviceId}/${itemKeyRecovery}) ${ruleFunctionRecovery} ${ruleConditionRecovery}",
-            </#if>
+            "recovery_mode": 2,
+            "type": 1,
             "tags": [
                 {
                     "tag": "__offline__",
+                    "value": "{HOST.HOST}" <#--device id-->
+                }
+            ]
+        },
+        {
+            "description": "${ruleId}", <#--trigger name-->
+            "recovery_mode": 2,
+            "type": 1,
+            <#if ruleFunctionRecovery == "nodata">
+                "expression": "nodata(/${deviceId}/${itemKeyRecovery},${ruleConditionRecovery}) = 0", <#-- 上线规则 nodata = 0 -->
+            <#else>
+                "expression": "last(/${deviceId}/${itemKeyRecovery}) ${ruleFunctionRecovery} ${ruleConditionRecovery}",
+            </#if>
+            "tags": [
+                {
+                    "tag": "__online__",
                     "value": "{HOST.HOST}" <#--device id-->
                 }
             ]

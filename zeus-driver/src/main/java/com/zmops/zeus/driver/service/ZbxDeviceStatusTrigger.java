@@ -50,5 +50,6 @@ public interface ZbxDeviceStatusTrigger {
                                      @ParamName("ruleFunction") String ruleFunction,
                                      @ParamName("itemKeyRecovery") String itemKeyRecovery,
                                      @ParamName("ruleConditionRecovery") String ruleConditionRecovery,
-                                     @ParamName("ruleFunctionRecovery") String ruleFunctionRecovery);
+                                     @ParamName("ruleFunctionRecovery") String ruleFunctionRecovery,
+                                     @ParamName("recoveryTriggerId") String recoveryTriggerId);
 }

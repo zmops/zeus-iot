@@ -3,6 +3,7 @@
     "method": "trigger.get",
     "params": {
         "selectHosts":["host"],
+        "selectTags":["tag"],
         <#if triggerIds??>
             "triggerids":${triggerIds},
         </#if>

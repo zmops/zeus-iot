@@ -6,6 +6,7 @@ import com.zmops.iot.async.callback.IWorker;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.product.ProductEventRelation;
+import com.zmops.iot.domain.product.ProductStatusFunctionRelation;
 import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.domain.product.query.QProductServiceRelation;
@@ -13,6 +14,7 @@ import com.zmops.iot.domain.product.query.QProductStatusFunctionRelation;
 import com.zmops.iot.enums.CommonStatus;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.dto.DeviceDto;
+import com.zmops.iot.web.product.dto.ZbxTriggerInfo;
 import com.zmops.iot.web.product.service.ProductEventRuleService;
 import com.zmops.zeus.driver.service.ZbxTrigger;
 import io.ebean.DB;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +42,7 @@ public class SaveOtherWorker implements IWorker<DeviceDto, Boolean> {
 
     @Override
     public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> allWrappers) {
-        log.debug("step 8:处理 其它 工作----DEVICEID:"+deviceDto.getDeviceId()+"…………");
+        log.debug("step 8:处理 其它 工作----DEVICEID:" + deviceDto.getDeviceId() + "…………");
 
         String deviceId = deviceDto.getDeviceId();
 
@@ -73,8 +76,22 @@ public class SaveOtherWorker implements IWorker<DeviceDto, Boolean> {
                 .setParameter("deviceId", deviceId).setParameter("relationId", deviceDto.getProductId() + "").execute();
 
         //上下线规则关联
-        DB.sqlUpdate("insert into product_status_function_relation (relation_id,rule_id,inherit) SELECT :deviceId,rule_id,1 from product_status_function_relation where relation_id=:relationId")
-                .setParameter("deviceId", deviceId).setParameter("relationId", deviceDto.getProductId() + "").execute();
+        ProductStatusFunctionRelation relation = new QProductStatusFunctionRelation().relationId.eq(deviceDto.getProductId() + "").findOne();
+        if (null != relation) {
+            String triggerRes = zbxTrigger.triggerGetByName(relation.getRuleId() + "");
+
+            List<ZbxTriggerInfo> zbxTriggerInfoList = JSONObject.parseArray(triggerRes, ZbxTriggerInfo.class);
+            Map<String, String> hostTriggerMap = zbxTriggerInfoList.parallelStream().filter(o -> o.getTags().parallelStream().anyMatch(t -> "__offline__".equals(t.getTag())))
+                    .collect(Collectors.toMap(o -> o.getHosts().get(0).getHost(), ZbxTriggerInfo::getTriggerid));
+            Map<String, String> hostRecoveryTriggerMap = zbxTriggerInfoList.parallelStream().filter(o -> o.getTags().parallelStream().anyMatch(t -> "__online__".equals(t.getTag())))
+                    .collect(Collectors.toMap(o -> o.getHosts().get(0).getHost(), ZbxTriggerInfo::getTriggerid));
+
+            DB.sqlUpdate("insert into product_status_function_relation (relation_id,rule_id,inherit,zbx_id,zbx_id_recovery) SELECT :deviceId,rule_id,1,:zbxId,:zbxIdRecovery from product_status_function_relation where relation_id=:relationId")
+                    .setParameter("deviceId", deviceId).setParameter("relationId", deviceDto.getProductId() + "")
+                    .setParameter("zbxId", Optional.ofNullable(hostTriggerMap.get(deviceDto.getDeviceId())))
+                    .setParameter("zbxIdRecovery", Optional.ofNullable(hostRecoveryTriggerMap.get(deviceDto.getDeviceId()))).execute();
+
+        }
 
         //告警规则关联 并 回填zbx triggerId
         List<ProductEventRuleService.Triggers> triggers = JSONObject.parseArray(zbxTrigger.triggerGetByHost(deviceId), ProductEventRuleService.Triggers.class);
@@ -100,7 +117,7 @@ public class SaveOtherWorker implements IWorker<DeviceDto, Boolean> {
         DB.sqlUpdate("insert into product_event_service (service_id,device_id,execute_device_id,event_rule_id,inherit) SELECT service_id,:deviceId,:executeDeviceId,event_rule_id,1 from product_event_service where relation_id=:relationId")
                 .setParameter("deviceId", deviceId).setParameter("executeDeviceId", deviceId).setParameter("relationId", deviceDto.getProductId() + "").execute();
 
-        log.debug("step 8:处理 其它 工作----DEVICEID:"+deviceDto.getDeviceId()+"完成");
+        log.debug("step 8:处理 其它 工作----DEVICEID:" + deviceDto.getDeviceId() + "完成");
         return true;
     }
 

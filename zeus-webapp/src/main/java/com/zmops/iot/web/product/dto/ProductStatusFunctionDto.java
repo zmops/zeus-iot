@@ -53,14 +53,12 @@ public class ProductStatusFunctionDto {
 
     private String attrName;
 
-    private String zbxId;
-
     private String attrNameRecovery;
 
     @CachedValue(type = DicType.SysUserName)
-    private String createUser;
+    private Long createUser;
     private String createTime;
     @CachedValue(type = DicType.SysUserName)
-    private String updateUser;
+    private Long updateUser;
     private String updateTime;
 }

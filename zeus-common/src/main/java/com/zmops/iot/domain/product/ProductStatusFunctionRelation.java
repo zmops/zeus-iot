@@ -26,4 +26,8 @@ public class ProductStatusFunctionRelation {
 
     private String inherit;
 
+    private String zbxId;
+
+    private String zbxIdRecovery;
+
 }

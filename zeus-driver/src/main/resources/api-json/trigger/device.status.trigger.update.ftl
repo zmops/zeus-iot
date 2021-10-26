@@ -10,11 +10,13 @@
             <#else>
                 "expression": "last(/${deviceId}/${itemKey}) ${ruleFunction} ${ruleCondition}",
             </#if>
-            "recovery_mode": 1,
+        },{
+            "triggerid": "${recoveryTriggerId}",
+            "description": "${ruleId}", <#--trigger name-->
             <#if ruleFunctionRecovery == "nodata">
-                "recovery_expression": "nodata(/${deviceId}/${itemKeyRecovery},${ruleConditionRecovery}) = 0" <#-- 上线规则 nodata = 0 -->
+                "expression": "nodata(/${deviceId}/${itemKeyRecovery},${ruleConditionRecovery}) = 0" <#-- 上线规则 nodata = 0 -->
             <#else>
-                "recovery_expression": "last(/${deviceId}/${itemKeyRecovery}) ${ruleFunctionRecovery} ${ruleConditionRecovery}"
+                "expression": "last(/${deviceId}/${itemKeyRecovery}) ${ruleFunctionRecovery} ${ruleConditionRecovery}"
             </#if>
         }
         <#-- nodata(/Zabbix server/system.cpu.util[,nice],20s)=0 -->

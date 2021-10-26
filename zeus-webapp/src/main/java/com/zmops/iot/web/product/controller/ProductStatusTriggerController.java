@@ -90,7 +90,6 @@ public class ProductStatusTriggerController {
         if (null == productStatusFunction) {
             throw new ServiceException(BizExceptionEnum.RULE_NOT_EXISTS);
         }
-        rule.setTriggerId(productStatusFunction.getZbxId());
 
         return ResponseData.success(productTriggerService.updateDeviceStatusJudgeTrigger(rule));
     }
