@@ -2,8 +2,6 @@ package com.zmops.iot.web.device.service;
 
 import com.alibaba.fastjson.JSON;
 import com.dtflys.forest.Forest;
-import com.zmops.iot.domain.device.Device;
-import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.ProductService;
 import com.zmops.iot.domain.product.ProductServiceParam;
 import com.zmops.iot.domain.product.query.QProductService;
@@ -30,11 +28,11 @@ public class DeviceSvrService {
         List<Map<String, Object>> list = new ArrayList<>();
 
         Map<String, Object> map = new ConcurrentHashMap<>(2);
-        Device device = new QDevice().deviceId.eq(deviceId).findOne();
-        if (null == device) {
-            throw new ServiceException(BizExceptionEnum.DEVICE_NOT_EXISTS);
-        }
-        map.put("device", device);
+//        Device device = new QDevice().deviceId.eq(deviceId).findOne();
+//        if (null == device) {
+//            throw new ServiceException(BizExceptionEnum.DEVICE_NOT_EXISTS);
+//        }
+        map.put("device", deviceId);
 
         List<Map<String, Object>> serviceList = new ArrayList<>();
         Map<String, Object> serviceMap = new ConcurrentHashMap<>();

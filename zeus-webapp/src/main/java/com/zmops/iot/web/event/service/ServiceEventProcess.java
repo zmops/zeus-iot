@@ -4,8 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.dtflys.forest.Forest;
 import com.zmops.iot.async.executor.Async;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
-import com.zmops.iot.domain.device.Device;
-import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.ProductEventRelation;
 import com.zmops.iot.domain.product.ProductEventService;
 import com.zmops.iot.domain.product.ProductService;
@@ -42,8 +40,8 @@ public class ServiceEventProcess implements EventProcess {
     ScenesLogWorker scenesLogWorker;
 
     @Override
-    public void process(String triggerId,String triggerName) {
-        log.debug("--------service event----------{}" , triggerId);
+    public void process(String triggerId, String triggerName) {
+        log.debug("--------service event----------{}", triggerId);
         Map<String, Object> alarmInfo = new ConcurrentHashMap<>(3);
 
         List<ProductEventRelation> productEventRelationList = new QProductEventRelation().zbxId.eq(triggerId).findList();
@@ -73,11 +71,11 @@ public class ServiceEventProcess implements EventProcess {
         Map<String, List<ProductEventService>> collect = productEventServiceList.parallelStream().collect(Collectors.groupingBy(ProductEventService::getExecuteDeviceId));
         collect.forEach((key, value) -> {
             Map<String, Object> map = new ConcurrentHashMap<>();
-            Device device = new QDevice().deviceId.eq(key).findOne();
-            if (null == device) {
-                return;
-            }
-            map.put("device", device);
+//            Device device = new QDevice().deviceId.eq(key).findOne();
+//            if (null == device) {
+//                return;
+//            }
+            map.put("device", key);
             List<Map<String, Object>> serviceList = new ArrayList<>();
             value.forEach(val -> {
                 Map<String, Object> serviceMap = new ConcurrentHashMap<>();

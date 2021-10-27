@@ -23,7 +23,7 @@ public class OfflineEventProcess implements EventProcess{
     public void process(String triggerId,String triggerName) {
         log.debug("update device offline status…………");
 
-        ProductStatusFunctionRelation relation = new QProductStatusFunctionRelation().zbxIdRecovery.eq(triggerId).findOne();
+        ProductStatusFunctionRelation relation = new QProductStatusFunctionRelation().zbxId.eq(triggerId).findOne();
         if (null == relation) {
             return;
         }
