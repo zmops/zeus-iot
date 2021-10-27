@@ -26,8 +26,10 @@ public class ProductStatusFunctionRelation {
 
     private String inherit;
 
+    // 离线触发器ID
     private String zbxId;
 
+    // 上线触发器ID
     private String zbxIdRecovery;
 
 }
