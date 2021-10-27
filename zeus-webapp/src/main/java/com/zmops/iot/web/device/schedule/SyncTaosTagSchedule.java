@@ -75,7 +75,7 @@ public class SyncTaosTagSchedule {
         //更新子表 标签值
         tagMap.forEach((deviceId, tags) -> {
             //根据deviceId 找到 设备下所有itemId
-            List<String> itemIds = new QProductAttribute().select(QProductAttribute.alias().zbxId).productId.eq(deviceId).findSingleAttributeList();
+            List<String> itemIds = new QProductAttribute().select(QProductAttribute.alias().zbxId).productId.eq(deviceId).zbxId.isNotNull().findSingleAttributeList();
             if (ToolUtil.isEmpty(itemIds)) {
                 return;
             }

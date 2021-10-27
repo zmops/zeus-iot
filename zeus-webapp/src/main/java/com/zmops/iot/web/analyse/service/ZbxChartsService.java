@@ -156,7 +156,7 @@ public class ZbxChartsService {
 
 
     private List<String> getItemIds(List<Long> attrIds) {
-        return new QProductAttribute().select(QProductAttribute.alias().zbxId).attrId.in(attrIds).findSingleAttributeList();
+        return new QProductAttribute().select(QProductAttribute.alias().zbxId).attrId.in(attrIds).zbxId.isNotNull().findSingleAttributeList();
     }
 
     /**

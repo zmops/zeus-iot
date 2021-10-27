@@ -189,7 +189,7 @@ public class AlarmService {
             deviceIds = deviceService.getDeviceIds();
         }
 
-        List<String> zbxIds = new QDevice().select(QDevice.alias().zbxId).deviceId.in(deviceIds).findSingleAttributeList();
+        List<String> zbxIds = new QDevice().select(QDevice.alias().zbxId).deviceId.in(deviceIds).zbxId.isNotNull().findSingleAttributeList();
         if (ToolUtil.isEmpty(zbxIds)) {
             return Collections.EMPTY_LIST;
         }
@@ -244,7 +244,7 @@ public class AlarmService {
             deviceIds = deviceService.getDeviceIds();
         }
 
-        List<String> zbxIds = new QDevice().select(QDevice.alias().zbxId).deviceId.in(deviceIds).findSingleAttributeList();
+        List<String> zbxIds = new QDevice().select(QDevice.alias().zbxId).deviceId.in(deviceIds).zbxId.isNotNull().findSingleAttributeList();
         if (ToolUtil.isEmpty(zbxIds)) {
             return Collections.EMPTY_LIST;
         }

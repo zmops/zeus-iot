@@ -295,7 +295,7 @@ public class DeviceModelService {
      */
     public void deleteTrapperItem(ProductAttr productAttr) {
 
-        List<String> zbxIds = new QProductAttribute().select(QProductAttribute.alias().zbxId).attrId.in(productAttr.getAttrIds()).findSingleAttributeList();
+        List<String> zbxIds = new QProductAttribute().select(QProductAttribute.alias().zbxId).attrId.in(productAttr.getAttrIds()).zbxId.isNotNull().findSingleAttributeList();
         //删除zbx item
         if (ToolUtil.isNotEmpty(zbxIds)) {
             List<ZbxItemInfo> itemInfos = JSONObject.parseArray(zbxItem.getItemInfo(zbxIds.toString(), null), ZbxItemInfo.class);
