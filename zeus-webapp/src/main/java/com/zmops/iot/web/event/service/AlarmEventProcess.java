@@ -33,7 +33,7 @@ public class AlarmEventProcess implements EventProcess {
 
     @Override
     public void process(String triggerId,String triggerName) {
-        log.debug("--------设备告警触发----------" + triggerId);
+        log.debug("--------alarm event----------{}" , triggerId);
 
         List<ProductEventRelation> list = new QProductEventRelation().zbxId.eq(triggerId).findList();
         Map<String, Object> params = new ConcurrentHashMap<>(2);

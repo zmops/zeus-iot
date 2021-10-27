@@ -28,7 +28,7 @@ public class UpdateProdSvcWorker implements IWorker<ProductServiceDto, Boolean> 
 
     @Override
     public Boolean action(ProductServiceDto productServiceDto, Map<String, WorkerWrapper<?, ?>> map) {
-        log.debug("处理产品服务修改 同步到设备工作…………");
+        log.debug("UpdateProdSvcWorker…………");
 
         String prodId = productServiceDto.getRelationId();
 

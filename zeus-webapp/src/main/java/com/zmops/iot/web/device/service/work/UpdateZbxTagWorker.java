@@ -32,7 +32,7 @@ public class UpdateZbxTagWorker implements IWorker<DeviceDto, Boolean> {
 
     @Override
     public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> map) {
-        log.debug("同步 zbx tag 工作……");
+        log.debug("UpdateZbxTagWorker……");
         //取出 ZBX hostid
         Object result = map.get("saveZbxHostWork").getWorkResult().getResult();
         JSONArray hostid = JSONObject.parseObject(result.toString()).getJSONArray("hostids");

@@ -29,7 +29,7 @@ public class SaveProdAttrEventTriggerWorker implements IWorker<ProductAttrEvent,
 
     @Override
     public Boolean action(ProductAttrEvent productAttr, Map<String, WorkerWrapper<?, ?>> map) {
-        log.debug("处理产品 新增Attr事件 告警工作…………");
+        log.debug("SaveProdAttrEventTriggerWorker…………");
 
         String prodId = productAttr.getProductId();
         StringBuilder expression = new StringBuilder();

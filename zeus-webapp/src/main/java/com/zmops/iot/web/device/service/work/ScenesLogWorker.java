@@ -24,7 +24,7 @@ public class ScenesLogWorker implements IWorker<Map<String, Object>, Boolean> {
 
     @Override
     public Boolean action(Map<String, Object> param, Map<String, WorkerWrapper<?, ?>> allWrappers) {
-        log.debug("插入 场景 日志…………");
+        log.debug("insert into ScenesLogWorker…………");
 
         long eventRuleId = (long) param.get("eventRuleId");
         ProductEvent productEvent = new QProductEvent().eventRuleId.eq(eventRuleId).findOne();

@@ -25,7 +25,7 @@ public class UpdateAttributeEventWorker implements IWorker<ProductAttrEvent, Boo
 
     @Override
     public Boolean action(ProductAttrEvent productAttr, Map<String, WorkerWrapper<?, ?>> map) {
-        log.debug("处理产品属性事件修改 同步到设备工作…………");
+        log.debug("UpdateAttributeEventWorker…………");
 
         Long attrId = productAttr.getAttrId();
 

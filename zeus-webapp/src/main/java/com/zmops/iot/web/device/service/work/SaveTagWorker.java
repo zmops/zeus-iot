@@ -24,7 +24,7 @@ public class SaveTagWorker implements IWorker<DeviceDto, Boolean> {
 
     @Override
     public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> allWrappers) {
-        log.debug("step 2:处理tag工作----DEVICEID:"+deviceDto.getDeviceId()+"…………");
+        log.debug("step 2:SaveTagWorker----DEVICEID:{}…………",deviceDto.getDeviceId());
 
         String deviceId = deviceDto.getDeviceId();
 
@@ -44,7 +44,7 @@ public class SaveTagWorker implements IWorker<DeviceDto, Boolean> {
 
         DB.sqlUpdate("insert into tag (sid,tag,value,template_id) SELECT :deviceId,tag,value,id template_id from tag where sid=:sid")
                 .setParameter("deviceId", deviceId).setParameter("sid", deviceDto.getProductId() + "").execute();
-        log.debug("step 2:处理tag工作----DEVICEID:"+deviceDto.getDeviceId()+"完成");
+        log.debug("step 2:SaveTagWorker----DEVICEID:{} complete",deviceDto.getDeviceId());
         return true;
     }
 

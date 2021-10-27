@@ -33,7 +33,7 @@ public class SaveZbxHostWorker implements IWorker<DeviceDto, String> {
 
     @Override
     public String action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> map) {
-        log.debug("step 5:处理Zbx host工作----DEVICEID:"+deviceDto.getDeviceId()+"…………");
+        log.debug("step 5:SaveZbxHostWorker----DEVICEID:{}…………",deviceDto.getDeviceId());
         //设备ID 作为zbx HOST name
         Device device = (Device) map.get("saveDvice").getWorkResult().getResult();
         String host = device.getDeviceId() + "";
@@ -50,7 +50,7 @@ public class SaveZbxHostWorker implements IWorker<DeviceDto, String> {
         } else {
             s = zbxHost.hostCreate(host, hostGrpIds, templateId);
         }
-        log.debug("step 5:处理Zbx host工作----DEVICEID:"+deviceDto.getDeviceId()+"完成");
+        log.debug("step 5:SaveZbxHostWorker----DEVICEID:{} complete",deviceDto.getDeviceId());
         return s;
     }
 

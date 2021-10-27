@@ -33,7 +33,7 @@ public class SaveAttributeWorker implements IWorker<DeviceDto, Boolean> {
 
     @Override
     public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> map) {
-        log.debug("step 3:处理Attr 及Attr事件 工作----DEVICEID:"+deviceDto.getDeviceId()+"…………");
+        log.debug("step 3:saveAttributeWorker----DEVICEID:{}…………",deviceDto.getDeviceId());
 
         String deviceId = deviceDto.getDeviceId();
 
@@ -97,7 +97,7 @@ public class SaveAttributeWorker implements IWorker<DeviceDto, Boolean> {
         }
         DB.saveAll(newProductAttributeEventList);
 
-        log.debug("step 3:处理Attr 及Attr事件 工作----DEVICEID:"+deviceDto.getDeviceId()+"完成");
+        log.debug("step 3:saveAttributeWorker----DEVICEID:{}…………",deviceDto.getDeviceId());
         return true;
     }
 

@@ -33,7 +33,7 @@ public class AsyncAttrZbxIdWorker implements IWorker<ProductAttr, Boolean> {
 
     @Override
     public Boolean action(ProductAttr productAttr, Map<String, WorkerWrapper<?, ?>> map) {
-        log.debug("处理Attr zbx回填工作……");
+        log.debug("AsyncAttrZbxIdWorker……");
         Long attrId = productAttr.getAttrId();
 
         //根据name 取出监控项

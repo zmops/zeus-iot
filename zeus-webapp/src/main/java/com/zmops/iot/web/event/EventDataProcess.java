@@ -23,12 +23,11 @@ public class EventDataProcess implements Processor {
     @Override
     public void process(Exchange exchange) throws Exception {
         String inputContext = exchange.getIn().getBody().toString();
-        String[] split = inputContext.split("分隔线");
+        String[] split = inputContext.split("\\$\\$");
         if (split.length != 2) {
             return;
         }
 
-        System.out.println("-------------------" + split[1]);
         EventDataDto eventData = JSONObject.parseObject(split[1], EventDataDto.class);
 
         String objectid = eventData.getObjectid();

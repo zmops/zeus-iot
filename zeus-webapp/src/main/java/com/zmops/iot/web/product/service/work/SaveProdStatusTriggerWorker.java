@@ -26,7 +26,6 @@ public class SaveProdStatusTriggerWorker implements IWorker<ProductServiceDto, B
 
     @Override
     public Boolean action(ProductServiceDto productServiceDto, Map<String, WorkerWrapper<?, ?>> map) {
-        log.debug("处理产品 新增上下线规则 同步到设备工作…………");
 
         String prodId = productServiceDto.getRelationId();
 

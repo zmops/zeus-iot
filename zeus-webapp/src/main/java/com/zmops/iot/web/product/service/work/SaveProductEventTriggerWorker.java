@@ -37,7 +37,7 @@ public class SaveProductEventTriggerWorker implements IWorker<ProductEventRule, 
 
     @Override
     public Boolean action(ProductEventRule productEventRule, Map<String, WorkerWrapper<?, ?>> map) {
-        log.debug("处理产品 新增告警规则 同步到设备工作…………");
+        log.debug("SaveProductEventTriggerWorker…………");
 
         String prodId = productEventRule.getProductId();
 

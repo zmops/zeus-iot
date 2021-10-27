@@ -21,7 +21,7 @@ public class OnlineEventProcess implements EventProcess {
 
     @Override
     public void process(String triggerId,String triggerName) {
-        log.debug("更新设备 在线状态…………");
+        log.debug("update device online status…………");
 
         ProductStatusFunctionRelation relation = new QProductStatusFunctionRelation().zbxIdRecovery.eq(triggerId).findOne();
         if (null == relation) {

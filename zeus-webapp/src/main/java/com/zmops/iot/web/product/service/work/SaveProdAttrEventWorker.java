@@ -28,7 +28,8 @@ public class SaveProdAttrEventWorker implements IWorker<ProductAttrEvent, Boolea
 
     @Override
     public Boolean action(ProductAttrEvent productAttr, Map<String, WorkerWrapper<?, ?>> map) {
-        log.debug("处理产品 新增Attr 同步到设备工作…………");
+        log.debug("SaveProdAttrEventTriggerWorker…………");
+
         String prodId = productAttr.getProductId();
 
         int count = new QDevice().deviceId.eq(prodId).findCount();

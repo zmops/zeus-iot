@@ -42,7 +42,7 @@ public class SaveOtherWorker implements IWorker<DeviceDto, Boolean> {
 
     @Override
     public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> allWrappers) {
-        log.debug("step 8:处理 其它 工作----DEVICEID:" + deviceDto.getDeviceId() + "…………");
+        log.debug("step 8:SaveOtherWorker----DEVICEID:{}…………", deviceDto.getDeviceId());
 
         String deviceId = deviceDto.getDeviceId();
 
@@ -120,7 +120,7 @@ public class SaveOtherWorker implements IWorker<DeviceDto, Boolean> {
         DB.sqlUpdate("insert into product_event_service (service_id,device_id,execute_device_id,event_rule_id,inherit) SELECT service_id,:deviceId,:executeDeviceId,event_rule_id,1 from product_event_service where relation_id=:relationId")
                 .setParameter("deviceId", deviceId).setParameter("executeDeviceId", deviceId).setParameter("relationId", deviceDto.getProductId() + "").execute();
 
-        log.debug("step 8:处理 其它 工作----DEVICEID:" + deviceDto.getDeviceId() + "完成");
+        log.debug("step 8:SaveOtherWorker----DEVICEID:{}…………", deviceDto.getDeviceId());
         return true;
     }
 

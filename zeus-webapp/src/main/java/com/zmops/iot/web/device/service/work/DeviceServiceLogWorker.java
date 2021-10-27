@@ -30,7 +30,7 @@ public class DeviceServiceLogWorker implements IWorker<Map<String, Object>, Bool
 
     @Override
     public Boolean action(Map<String, Object> param, Map<String, WorkerWrapper<?, ?>> allWrappers) {
-        log.debug("插入 服务 日志…………");
+        log.debug("insert into service log…………");
 
         long eventRuleId = (long) param.get("eventRuleId");
 

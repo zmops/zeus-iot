@@ -43,7 +43,7 @@ public class ServiceEventProcess implements EventProcess {
 
     @Override
     public void process(String triggerId,String triggerName) {
-        log.debug("--------设备联动触发----------" + triggerId);
+        log.debug("--------service event----------{}" , triggerId);
         Map<String, Object> alarmInfo = new ConcurrentHashMap<>(3);
 
         List<ProductEventRelation> productEventRelationList = new QProductEventRelation().zbxId.eq(triggerId).findList();

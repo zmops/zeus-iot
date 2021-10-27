@@ -22,7 +22,7 @@ public class DeviceEventLogWorker implements IWorker<Map<String, String>, Boolea
 
     @Override
     public Boolean action(Map<String, String> param, Map<String, WorkerWrapper<?, ?>> allWrappers) {
-        log.debug("插入 事件 日志…………");
+        log.debug("insert into event log…………");
 
         String deviceId = param.get("hostname");
         if (ToolUtil.isEmpty(deviceId)) {

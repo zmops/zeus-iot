@@ -32,7 +32,7 @@ public class SaveProdAttrWorker implements IWorker<ProductAttr, Boolean> {
 
     @Override
     public Boolean action(ProductAttr productAttr, Map<String, WorkerWrapper<?, ?>> map) {
-        log.debug("处理产品 新增Attr 同步到设备工作…………");
+        log.debug("SaveProdAttrWorker…………");
 
         String sql = "select device_id from device " +
                 " where product_id = :productId and device_id not in (" +
