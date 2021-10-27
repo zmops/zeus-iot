@@ -86,10 +86,13 @@ public class SaveOtherWorker implements IWorker<DeviceDto, Boolean> {
             Map<String, String> hostRecoveryTriggerMap = zbxTriggerInfoList.parallelStream().filter(o -> o.getTags().parallelStream().anyMatch(t -> "__online__".equals(t.getTag())))
                     .collect(Collectors.toMap(o -> o.getHosts().get(0).getHost(), ZbxTriggerInfo::getTriggerid));
 
+            String zbxId = Optional.ofNullable(hostTriggerMap.get(deviceDto.getDeviceId())).orElse("");
+            String zbxIdRecovery = Optional.ofNullable(hostRecoveryTriggerMap.get(deviceDto.getDeviceId())).orElse("");
+
             DB.sqlUpdate("insert into product_status_function_relation (relation_id,rule_id,inherit,zbx_id,zbx_id_recovery) SELECT :deviceId,rule_id,1,:zbxId,:zbxIdRecovery from product_status_function_relation where relation_id=:relationId")
                     .setParameter("deviceId", deviceId).setParameter("relationId", deviceDto.getProductId() + "")
-                    .setParameter("zbxId", Optional.ofNullable(hostTriggerMap.get(deviceDto.getDeviceId())))
-                    .setParameter("zbxIdRecovery", Optional.ofNullable(hostRecoveryTriggerMap.get(deviceDto.getDeviceId()))).execute();
+                    .setParameter("zbxId", zbxId)
+                    .setParameter("zbxIdRecovery", zbxIdRecovery).execute();
 
         }
 

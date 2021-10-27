@@ -101,18 +101,21 @@ public class ProductTriggerService {
                 return productStatusFunction.getRuleId();
             }
             List<ZbxTriggerInfo> zbxTriggerInfoList = JSONObject.parseArray(triggerRes, ZbxTriggerInfo.class);
-            Map<String, String> hostTriggerMap = zbxTriggerInfoList.parallelStream().filter(o->o.getTags().parallelStream().anyMatch(t->"__offline__".equals(t.getTag())))
+            Map<String, String> hostTriggerMap = zbxTriggerInfoList.parallelStream().filter(o -> o.getTags().parallelStream().anyMatch(t -> "__offline__".equals(t.getTag())))
                     .collect(Collectors.toMap(o -> o.getHosts().get(0).getHost(), ZbxTriggerInfo::getTriggerid));
-            Map<String, String> hostRecoveryTriggerMap = zbxTriggerInfoList.parallelStream().filter(o->o.getTags().parallelStream().anyMatch(t->"__online__".equals(t.getTag())))
+            Map<String, String> hostRecoveryTriggerMap = zbxTriggerInfoList.parallelStream().filter(o -> o.getTags().parallelStream().anyMatch(t -> "__online__".equals(t.getTag())))
                     .collect(Collectors.toMap(o -> o.getHosts().get(0).getHost(), ZbxTriggerInfo::getTriggerid));
 
             String sql = "select device_id from device where product_id = :productId and device_id not in (select relation_id from product_status_function_relation where inherit='0')";
             List<DeviceDto> deviceDtoList = DB.findDto(DeviceDto.class, sql).setParameter("productId", Long.parseLong(relationId)).findList();
             deviceDtoList.forEach(deviceDto -> {
+                String zbxId = Optional.ofNullable(hostTriggerMap.get(deviceDto.getDeviceId())).orElse("");
+                String zbxIdRecovery = Optional.ofNullable(hostRecoveryTriggerMap.get(deviceDto.getDeviceId())).orElse("");
+
                 DB.sqlUpdate("insert into product_status_function_relation (relation_id,rule_id,inherit,zbx_id,zbx_id_recovery) SELECT :deviceId,rule_id,1,:zbxId,:zbxIdRecovery from product_status_function_relation where relation_id=:relationId")
                         .setParameter("deviceId", deviceDto.getDeviceId()).setParameter("relationId", judgeRule.getRelationId() + "")
-                        .setParameter("zbxId", Optional.ofNullable(hostTriggerMap.get(deviceDto.getDeviceId())))
-                        .setParameter("zbxIdRecovery",Optional.ofNullable(hostRecoveryTriggerMap.get(deviceDto.getDeviceId())))
+                        .setParameter("zbxId", zbxId)
+                        .setParameter("zbxIdRecovery", zbxIdRecovery)
                         .execute();
             });
         }

@@ -43,26 +43,25 @@ public class AlarmService {
     DeviceService deviceService;
 
 
-    public void alarm(Map<String, String> alarmInfo) {
-        String deviceId = alarmInfo.get("hostname");
-        String eventRuleId = alarmInfo.get("triggerName");
+    public void alarm(Map<String, Object> alarmInfo) {
+        List<String> deviceIds = (List) alarmInfo.get("hostname");
+        String eventRuleId = (String) alarmInfo.get("triggerName");
 
-        if (ToolUtil.isEmpty(deviceId) || ToolUtil.isEmpty(eventRuleId)) {
+        if (ToolUtil.isEmpty(deviceIds) || ToolUtil.isEmpty(eventRuleId)) {
             return;
         }
 
-        Device device = new QDevice().deviceId.eq(deviceId).findOne();
+        List<Device> deviceList = new QDevice().deviceId.in(deviceIds).findList();
         ProductEvent productEvent = new QProductEvent().eventRuleId.eq(Long.parseLong(eventRuleId)).findOne();
 
         List<AlarmMessage> alarmMessages = new ArrayList<>();
 
-        if (null != device && null != productEvent) {
-            String alarmmessage = "设备:" + device.getName() + "发生告警，告警内容：" + productEvent.getEventRuleName();
+        if (ToolUtil.isNotEmpty(deviceList) && null != productEvent) {
+            String deviceName = deviceList.parallelStream().map(Device::getName).collect(Collectors.joining(","));
+            String alarmmessage = "设备:" + deviceName + "发生告警，告警内容：" + productEvent.getEventRuleName();
             alarmMessages.add(AlarmMessage.builder().alarmMessage(alarmmessage).build());
             alarmCallbacks.forEach(alarmCallback -> {
-//            if (alarmCallback.getType().equals("welink")) {
                 alarmCallback.doAlarm(alarmMessages);
-//            }
             });
         }
     }
