@@ -1,14 +1,13 @@
 package com.zmops.zeus.iot.server.h2.provider;
 
-import com.zmops.zeus.iot.server.h2.dao.InsertDAO;
 import com.zmops.zeus.iot.server.h2.module.LocalH2Module;
+import com.zmops.zeus.iot.server.h2.service.InsertDAO;
 import com.zmops.zeus.iot.server.library.client.jdbc.JDBCClientException;
 import com.zmops.zeus.iot.server.library.client.jdbc.hikaricp.JDBCHikariCPClient;
 import com.zmops.zeus.iot.server.library.module.*;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Properties;
 
 /**
