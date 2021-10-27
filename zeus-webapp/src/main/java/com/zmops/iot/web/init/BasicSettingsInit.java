@@ -2,16 +2,13 @@ package com.zmops.iot.web.init;
 
 import com.alibaba.fastjson.JSON;
 import com.dtflys.forest.config.ForestConfiguration;
-import com.zmops.zeus.driver.service.ZbxAction;
 import com.zmops.zeus.driver.service.ZbxHostGroup;
 import com.zmops.zeus.driver.service.ZbxInitService;
-import com.zmops.zeus.driver.service.ZbxScript;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,16 +26,9 @@ public class BasicSettingsInit {
     private ZbxHostGroup zbxHostGroup;
 
     @Autowired
-    private ZbxScript zbxScript;
-
-    @Autowired
-    private ZbxAction zbxAction;
-
-    @Autowired
     private ZbxInitService zbxInitService;
 
     private String zbxApiToken;
-
 
     @PostConstruct
     public void init() {
@@ -147,51 +137,10 @@ public class BasicSettingsInit {
         return null;
     }
 
-    public Map<String, String> createOfflineStatusScript() {
-        zbxScript.createOfflineStatusScript(zbxApiToken);
-
-        return getOfflineStatusScript();
-    }
-
-    public Map<String, String> getOfflineStatusScript() {
-        String response = zbxScript.getOfflineStatusScript(zbxApiToken);
-        List<Map<String, String>> ids = JSON.parseObject(response, List.class);
-        Map<String, String> map = new HashMap<>(3);
-        if (null != ids && ids.size() > 0) {
-            ids.forEach(script -> {
-                map.put(script.get("name"), script.get("scriptid"));
-            });
-        }
-        return map;
-    }
-
-
-    public String createOffLineAction(String name, String tagName, String scriptId, String groupId) {
-        String response = zbxAction.createOfflineStatusAction(zbxApiToken, name, tagName, scriptId, groupId);
-        return JSON.parseObject(response, ZbxResponseIds.class).getActionids()[0];
-    }
-
-    public String createAction(String name, String tagName, String scriptId, String groupId) {
-        String response = zbxAction.createAlarmAction(zbxApiToken, name, tagName, scriptId, groupId);
-        return JSON.parseObject(response, ZbxResponseIds.class).getActionids()[0];
-    }
-
-
-    public String getAction(String name) {
-        String response = zbxAction.getOfflineStatusAction(zbxApiToken, name);
-        List<Map<String, String>> ids = JSON.parseObject(response, List.class);
-        if (null != ids && ids.size() > 0) {
-            return ids.get(0).get("actionid");
-        }
-        return null;
-    }
-
 
     @Data
     static class ZbxResponseIds {
         String[] groupids;
-        String[] scriptids;
-        String[] actionids;
         String[] userids;
         String[] usrgrpids;
     }
