@@ -4,7 +4,7 @@ package com.zmops.iot.web.product.service.work;
 import com.alibaba.fastjson.JSON;
 import com.zmops.iot.async.callback.IWorker;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
-import com.zmops.iot.web.product.dto.ProductAttrEvent;
+import com.zmops.iot.web.product.dto.ProductAttr;
 import com.zmops.zeus.driver.service.ZbxTrigger;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -21,14 +21,14 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 @Component
-public class SaveProdAttrEventTriggerWorker implements IWorker<ProductAttrEvent, Boolean> {
+public class SaveProdAttrEventTriggerWorker implements IWorker<ProductAttr, Boolean> {
 
     @Autowired
     private ZbxTrigger zbxTrigger;
     private static final String EVENT_TAG_NAME   = "__event__";
 
     @Override
-    public Boolean action(ProductAttrEvent productAttr, Map<String, WorkerWrapper<?, ?>> map) {
+    public Boolean action(ProductAttr productAttr, Map<String, WorkerWrapper<?, ?>> map) {
         log.debug("SaveProdAttrEventTriggerWorker…………");
 
         String prodId = productAttr.getProductId();

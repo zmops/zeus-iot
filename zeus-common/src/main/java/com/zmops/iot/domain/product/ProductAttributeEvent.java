@@ -41,4 +41,12 @@ public class ProductAttributeEvent extends BaseEntity {
 
     private Long templateId;//继承的ID
 
+    private String source; // 来源
+
+    private Integer delay;
+
+    private String unit;
+
+    private String valuemapid;
+
 }

@@ -16,7 +16,6 @@ import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductAttr;
 import com.zmops.iot.web.product.dto.ProductAttrDto;
-import com.zmops.iot.web.product.dto.ProductAttrEvent;
 import com.zmops.iot.web.product.dto.ProductTag;
 import com.zmops.iot.web.product.dto.param.ProductAttrParam;
 import com.zmops.iot.web.product.service.work.AsyncAttrEventZbxIdWorker;
@@ -167,19 +166,19 @@ public class ProductAttributeEventService {
      *
      * @param productAttr 产品属性DTO
      */
-    public void createProductAttr(ProductAttrEvent productAttr, String zbxId) {
+    public void createProductAttr(ProductAttr productAttr, String zbxId) {
         ProductAttributeEvent productAttributeEvent = new ProductAttributeEvent();
         buildProdAttribute(productAttributeEvent, productAttr);
         productAttributeEvent.setZbxId(zbxId);
         productAttributeEvent.save();
 
 
-        WorkerWrapper<ProductAttrEvent, Boolean> saveProdAttrEventTriggerWork = WorkerWrapper.<ProductAttrEvent, Boolean>builder()
+        WorkerWrapper<ProductAttr, Boolean> saveProdAttrEventTriggerWork = WorkerWrapper.<ProductAttr, Boolean>builder()
                 .worker(saveProdAttrEventTriggerWorker).param(productAttr).build();
 
-        WorkerWrapper<ProductAttrEvent, Boolean> asyncAttrEventZbxIdWork = WorkerWrapper.<ProductAttrEvent, Boolean>builder()
+        WorkerWrapper<ProductAttr, Boolean> asyncAttrEventZbxIdWork = WorkerWrapper.<ProductAttr, Boolean>builder()
                 .worker(asyncAttrEventZbxIdWorker).param(productAttr).build();
-        WorkerWrapper<ProductAttrEvent, Boolean> saveProdAttrEventWork = WorkerWrapper.<ProductAttrEvent, Boolean>builder()
+        WorkerWrapper<ProductAttr, Boolean> saveProdAttrEventWork = WorkerWrapper.<ProductAttr, Boolean>builder()
                 .worker(saveProdAttrEventWorker).param(productAttr).nextOf(asyncAttrEventZbxIdWork).build();
 
         try {
@@ -190,7 +189,7 @@ public class ProductAttributeEventService {
 
     }
 
-    private ProductAttributeEvent buildProdAttribute(ProductAttributeEvent prodAttribute, ProductAttrEvent productAttr) {
+    private ProductAttributeEvent buildProdAttribute(ProductAttributeEvent prodAttribute, ProductAttr productAttr) {
         prodAttribute.setProductId(productAttr.getProductId());
         prodAttribute.setName(productAttr.getAttrName());
         prodAttribute.setKey(productAttr.getKey());
@@ -208,7 +207,7 @@ public class ProductAttributeEventService {
      * @param productAttr 属性
      * @return String
      */
-    public String createTrapperItem(ProductAttrEvent productAttr) {
+    public String createTrapperItem(ProductAttr productAttr) {
 
         String itemName = productAttr.getAttrId() + "";
         String hostId = "";
@@ -239,7 +238,7 @@ public class ProductAttributeEventService {
         }
 
         return zbxItem.createTrapperItem(itemName, productAttr.getKey(),
-                hostId, "2", null, productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap);
+                hostId, productAttr.getSource(), productAttr.getDepAttrId()+"", productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap);
     }
 
     /**
@@ -248,7 +247,7 @@ public class ProductAttributeEventService {
      * @param productAttr 属性
      * @return String
      */
-    public ProductAttrEvent updateTrapperItem(ProductAttrEvent productAttr) {
+    public ProductAttr updateTrapperItem(ProductAttr productAttr) {
         ProductAttributeEvent productAttributeEvent = new QProductAttributeEvent().attrId.eq(productAttr.getAttrId()).findOne();
         buildProdAttribute(productAttributeEvent, productAttr);
         String hostId = "";
@@ -282,11 +281,11 @@ public class ProductAttributeEventService {
 
 
         zbxItem.updateTrapperItem(productAttributeEvent.getZbxId(), productAttr.getAttrId() + "", productAttr.getKey(),
-                hostId, "2", null, productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap);
+                hostId, productAttr.getSource(), productAttr.getDepAttrId()+"", productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap);
 
         DB.update(productAttributeEvent);
 
-        WorkerWrapper<ProductAttrEvent, Boolean> updateProdAttrWork = WorkerWrapper.<ProductAttrEvent, Boolean>builder().worker(updateAttributeEventWorker).param(productAttr).build();
+        WorkerWrapper<ProductAttr, Boolean> updateProdAttrWork = WorkerWrapper.<ProductAttr, Boolean>builder().worker(updateAttributeEventWorker).param(productAttr).build();
 
         try {
             Async.work(100, updateProdAttrWork).awaitFinish();
@@ -303,7 +302,7 @@ public class ProductAttributeEventService {
      * @param productAttr 属性
      * @return String
      */
-    public void deleteTrapperItem(ProductAttrEvent productAttr) {
+    public void deleteTrapperItem(ProductAttr productAttr) {
 
         List<String> zbxIds = new QProductAttributeEvent().select(QProductAttributeEvent.alias().zbxId).attrId.in(productAttr.getAttrIds()).findSingleAttributeList();
         //删除zbx item

@@ -5,7 +5,7 @@ import com.zmops.iot.async.callback.IWorker;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.ProductAttributeEvent;
 import com.zmops.iot.domain.product.query.QProductAttributeEvent;
-import com.zmops.iot.web.product.dto.ProductAttrEvent;
+import com.zmops.iot.web.product.dto.ProductAttr;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -20,11 +20,11 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-public class UpdateAttributeEventWorker implements IWorker<ProductAttrEvent, Boolean> {
+public class UpdateAttributeEventWorker implements IWorker<ProductAttr, Boolean> {
 
 
     @Override
-    public Boolean action(ProductAttrEvent productAttr, Map<String, WorkerWrapper<?, ?>> map) {
+    public Boolean action(ProductAttr productAttr, Map<String, WorkerWrapper<?, ?>> map) {
         log.debug("UpdateAttributeEventWorker…………");
 
         Long attrId = productAttr.getAttrId();

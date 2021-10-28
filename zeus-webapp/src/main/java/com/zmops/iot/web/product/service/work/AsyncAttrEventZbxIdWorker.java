@@ -7,7 +7,7 @@ import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.ProductAttributeEvent;
 import com.zmops.iot.domain.product.query.QProductAttributeEvent;
 import com.zmops.iot.util.ToolUtil;
-import com.zmops.iot.web.product.dto.ProductAttrEvent;
+import com.zmops.iot.web.product.dto.ProductAttr;
 import com.zmops.zeus.driver.entity.ZbxItemInfo;
 import com.zmops.zeus.driver.service.ZbxItem;
 import io.ebean.DB;
@@ -26,13 +26,13 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class AsyncAttrEventZbxIdWorker implements IWorker<ProductAttrEvent, Boolean> {
+public class AsyncAttrEventZbxIdWorker implements IWorker<ProductAttr, Boolean> {
 
     @Autowired
     ZbxItem zbxItem;
 
     @Override
-    public Boolean action(ProductAttrEvent productAttr, Map<String, WorkerWrapper<?, ?>> map) {
+    public Boolean action(ProductAttr productAttr, Map<String, WorkerWrapper<?, ?>> map) {
         log.debug("AsyncAttrEventZbxIdWorker……");
         Long attrId = productAttr.getAttrId();
 
