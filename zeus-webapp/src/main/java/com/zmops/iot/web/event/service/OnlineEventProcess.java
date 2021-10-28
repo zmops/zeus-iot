@@ -6,6 +6,7 @@ import com.zmops.iot.domain.product.ProductStatusFunctionRelation;
 import com.zmops.iot.domain.product.query.QProductStatusFunctionRelation;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.event.EventProcess;
+import com.zmops.iot.web.event.dto.EventDataDto;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -20,10 +21,10 @@ import java.time.LocalDateTime;
 public class OnlineEventProcess implements EventProcess {
 
     @Override
-    public void process(String triggerId,String triggerName) {
+    public void process(EventDataDto eventData) {
         log.debug("update device online status…………");
 
-        ProductStatusFunctionRelation relation = new QProductStatusFunctionRelation().zbxIdRecovery.eq(triggerId).findOne();
+        ProductStatusFunctionRelation relation = new QProductStatusFunctionRelation().zbxIdRecovery.eq(eventData.getObjectid()).findOne();
         if (null == relation) {
             return;
         }

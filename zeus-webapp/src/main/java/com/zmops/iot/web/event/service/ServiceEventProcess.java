@@ -16,6 +16,7 @@ import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.service.work.DeviceServiceLogWorker;
 import com.zmops.iot.web.device.service.work.ScenesLogWorker;
 import com.zmops.iot.web.event.EventProcess;
+import com.zmops.iot.web.event.dto.EventDataDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,11 +41,11 @@ public class ServiceEventProcess implements EventProcess {
     ScenesLogWorker scenesLogWorker;
 
     @Override
-    public void process(String triggerId, String triggerName) {
-        log.debug("--------service event----------{}", triggerId);
+    public void process(EventDataDto eventData) {
+        log.debug("--------service event----------{}", eventData.getObjectid());
         Map<String, Object> alarmInfo = new ConcurrentHashMap<>(3);
 
-        List<ProductEventRelation> productEventRelationList = new QProductEventRelation().zbxId.eq(triggerId).findList();
+        List<ProductEventRelation> productEventRelationList = new QProductEventRelation().zbxId.eq(eventData.getObjectid()).findList();
         if (ToolUtil.isEmpty(productEventRelationList)) {
             return;
         }

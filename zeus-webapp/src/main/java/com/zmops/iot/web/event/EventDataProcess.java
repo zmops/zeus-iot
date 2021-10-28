@@ -34,7 +34,7 @@ public class EventDataProcess implements Processor {
 
         eventProcessList.forEach(eventProcess -> {
             if(eventProcess.checkTag(eventData.getTag())){
-                eventProcess.process(objectid,eventData.getName());
+                eventProcess.process(eventData);
             }
         });
 

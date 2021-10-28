@@ -16,4 +16,8 @@ public class EventDataDto {
     private String tag;
 
     private String tagValue;
+
+    private String recoveryValue;
+
+    private String acknowledged;
 }
