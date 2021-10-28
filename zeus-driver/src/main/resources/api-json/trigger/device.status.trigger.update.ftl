@@ -6,9 +6,9 @@
             "triggerid": "${triggerId}",
             "description": "${ruleId}", <#--trigger name-->
             <#if ruleFunction == "nodata">
-                "expression": "nodata(/${deviceId}/${itemKey},${ruleCondition}) = 1", <#--下线规则，nodata = 1 -->
+                "expression": "nodata(/${deviceId}/${itemKey},${ruleCondition}) = 1" <#--下线规则，nodata = 1 -->
             <#else>
-                "expression": "last(/${deviceId}/${itemKey}) ${ruleFunction} ${ruleCondition}",
+                "expression": "last(/${deviceId}/${itemKey}) ${ruleFunction} ${ruleCondition}"
             </#if>
         },{
             "triggerid": "${recoveryTriggerId}",
