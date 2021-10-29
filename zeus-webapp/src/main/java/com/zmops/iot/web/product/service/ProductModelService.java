@@ -197,6 +197,8 @@ public class ProductModelService {
         prodAttribute.setAttrId(productAttr.getAttrId());
         prodAttribute.setDepAttrId(productAttr.getDepAttrId());
         prodAttribute.setValuemapid(productAttr.getValuemapid());
+        prodAttribute.setUnit(productAttr.getUnit());
+
         return prodAttribute;
     }
 

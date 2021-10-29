@@ -198,6 +198,11 @@ public class ProductAttributeEventService {
         prodAttribute.setValueType(productAttr.getValueType());
         prodAttribute.setAttrId(productAttr.getAttrId());
         prodAttribute.setEventLevel(productAttr.getEventLevel());
+        prodAttribute.setSource(productAttr.getSource());
+        prodAttribute.setDepAttrId(productAttr.getDepAttrId());
+        prodAttribute.setValuemapid(productAttr.getValuemapid());
+        prodAttribute.setUnit(productAttr.getUnit());
+
         return prodAttribute;
     }
 

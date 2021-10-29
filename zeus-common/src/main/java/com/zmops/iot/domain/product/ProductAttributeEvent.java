@@ -49,4 +49,6 @@ public class ProductAttributeEvent extends BaseEntity {
 
     private String valuemapid;
 
+    private Long depAttrId;
+
 }
