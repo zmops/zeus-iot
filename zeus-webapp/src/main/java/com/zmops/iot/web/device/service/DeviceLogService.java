@@ -58,7 +58,7 @@ public class DeviceLogService {
             List<AlarmDto> alarmList = alarmService.getEventList(alarmParam);
             if (ToolUtil.isNotEmpty(alarmList)) {
                 alarmList.forEach(alarm -> {
-                    deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_ALARM).content(alarm.getName())
+                    deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_EVENT).content(alarm.getName())
                             .triggerTime(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(alarm.getClock()), "yyyy-MM-dd HH:ss:mm"))
                             .status("0".equals(alarm.getRClock()) ? "未解决" : "已解决").build());
                 });
@@ -99,7 +99,7 @@ public class DeviceLogService {
 
         } else if (ToolUtil.isNotEmpty(logType) && LOG_TYPE_SCENES.equals(logType)) {
 
-            deviceLogDtoList = getScenesLog(deviceId, timeFrom, timeTill, content);
+            deviceLogDtoList = getScenesLog(timeFrom, timeTill, content);
 
         } else {
 
@@ -161,7 +161,7 @@ public class DeviceLogService {
         List<AlarmDto> alarmList = alarmService.getEventList(alarmParam);
         if (ToolUtil.isNotEmpty(alarmList)) {
             alarmList.forEach(alarm -> {
-                deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_ALARM).content(alarm.getName())
+                deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_EVENT).content(alarm.getName())
                         .triggerTime(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(alarm.getClock()), "yyyy-MM-dd HH:ss:mm"))
                         .status("0".equals(alarm.getRClock()) ? "未解决" : "已解决").build());
             });
@@ -208,13 +208,12 @@ public class DeviceLogService {
     /**
      * 场景日志
      *
-     * @param deviceId
      * @param timeFrom
      * @param timeTill
      * @param content
      * @return
      */
-    private List<DeviceLogDto> getScenesLog(String deviceId, Long timeFrom, Long timeTill, String content) {
+    private List<DeviceLogDto> getScenesLog(Long timeFrom, Long timeTill, String content) {
         List<DeviceLogDto> deviceLogDtoList = new ArrayList<>();
         QScenesTriggerRecord query = new QScenesTriggerRecord();
         if (ToolUtil.isNotEmpty(content)) {

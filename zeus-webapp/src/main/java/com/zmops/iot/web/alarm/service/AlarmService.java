@@ -206,29 +206,13 @@ public class AlarmService {
         if (ToolUtil.isEmpty(problemList)) {
             return Collections.emptyList();
         }
-        List<String> triggerIds = problemList.parallelStream().map(ZbxProblemInfo::getObjectid).map(Objects::toString).collect(Collectors.toList());
-        String sql = "select d.event_rule_name,r.zbx_id from product_event d INNER JOIN (select event_rule_id," +
-                "zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.event_rule_id=d.event_rule_id";
-        if (ToolUtil.isNotEmpty(alarmParam.getName())) {
-            sql += " where d.event_rule_name like :eventRuleName";
-        }
-        DtoQuery<ProductEventRuleDto> dtoQuery = DB.findDto(ProductEventRuleDto.class, sql)
-                .setParameter("zbxIds", triggerIds);
-        if (ToolUtil.isNotEmpty(alarmParam.getName())) {
-            dtoQuery.setParameter("eventRuleName", "%" + alarmParam.getName() + "%");
-        }
-        List<ProductEventRuleDto> ruleList = dtoQuery.findList();
-        Map<String, String> ruleMap = ruleList.parallelStream().collect(Collectors.toMap(ProductEventRuleDto::getZbxId, ProductEventRuleDto::getEventRuleName));
 
         List<AlarmDto> alarmDtoList = new ArrayList<>();
         problemList.forEach(zbxProblemInfo -> {
-            if (null == ruleMap.get(zbxProblemInfo.getObjectid())) {
-                return;
-            }
             AlarmDto alarmDto = new AlarmDto();
             BeanUtils.copyProperties(zbxProblemInfo, alarmDto);
             alarmDto.setRClock(zbxProblemInfo.getR_clock());
-            alarmDto.setName(ruleMap.get(zbxProblemInfo.getObjectid()));
+            alarmDto.setName(zbxProblemInfo.getName());
             alarmDtoList.add(alarmDto);
         });
 

@@ -39,7 +39,7 @@ public class SaveProdAttrEventTriggerWorker implements IWorker<ProductAttr, Bool
         expression.append(productAttr.getKey());
         expression.append(",#1");
         expression.append(") >0 ");
-        String res = zbxTrigger.triggerCreate(productAttr.getProductId(), expression.toString(), productAttr.getEventLevel());
+        String res = zbxTrigger.executeTriggerCreate(productAttr.getAttrName(), expression.toString(), productAttr.getEventLevel());
 
         String[] triggerids = JSON.parseObject(res, TriggerIds.class).getTriggerids();
         Map<String, String> tags = new ConcurrentHashMap<>(1);
