@@ -3,6 +3,8 @@ package com.zmops.zeus.iot.server.core.servlet;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.zmops.zeus.iot.server.core.analysis.manual.history.History;
+import com.zmops.zeus.iot.server.core.analysis.manual.history.StrHistory;
+import com.zmops.zeus.iot.server.core.analysis.manual.history.TextHistory;
 import com.zmops.zeus.iot.server.core.analysis.manual.history.UIntHistory;
 import com.zmops.zeus.iot.server.core.analysis.record.Record;
 import com.zmops.zeus.iot.server.core.analysis.worker.RecordStreamProcessor;
@@ -60,8 +62,13 @@ public class DataTransferHandler extends JettyJsonHandler {
 
         if (itemValue.getType() == 3) { //uint
             record = new UIntHistory();
-        } else {
+        } else if (itemValue.getType() == 0) { //float
             record = new History();
+        } else if (itemValue.getType() == 4) { //text
+            record = new TextHistory();
+        } else {
+            record = new StrHistory();
+
         }
 
         record.setItemid(itemValue.itemid);

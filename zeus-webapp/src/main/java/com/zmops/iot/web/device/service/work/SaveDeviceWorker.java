@@ -33,7 +33,7 @@ public class SaveDeviceWorker implements IWorker<DeviceDto, Device> {
             DB.update(device);
         } else {
             device.setStatus(CommonStatus.ENABLE.getCode());
-            DB.save(device);
+            DB.insert(device);
         }
         log.debug("step 1:SaveDeviceWorker----DEVICEID:{} complete",deviceDto.getDeviceId());
         return device;

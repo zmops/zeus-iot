@@ -2,6 +2,8 @@ package com.zmops.zeus.iot.server.transfer.sender;
 
 import com.alibaba.fastjson.JSON;
 import com.zmops.zeus.iot.server.core.analysis.manual.history.History;
+import com.zmops.zeus.iot.server.core.analysis.manual.history.StrHistory;
+import com.zmops.zeus.iot.server.core.analysis.manual.history.TextHistory;
 import com.zmops.zeus.iot.server.core.analysis.manual.history.UIntHistory;
 import com.zmops.zeus.iot.server.core.analysis.record.Record;
 import com.zmops.zeus.iot.server.core.analysis.worker.RecordStreamProcessor;
@@ -55,6 +57,10 @@ public class SenderManager {
                     record = new UIntHistory();
                 } else if (itemValue.getType() == 0) {
                     record = new History();
+                } else if (itemValue.getType() == 4) { //text
+                    record = new TextHistory();
+                } else if (itemValue.getType() == 1) {
+                    record = new StrHistory();
                 } else {
                     return;
                 }

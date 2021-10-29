@@ -18,11 +18,14 @@ public class TDEngineDatabaseInstaller {
     private final ModuleManager moduleManager;
     private final TDEngineStorageConfig config;
 
-    private static final String CREATE_ZEUS_STABLE_HISTORY = "create stable if not exists history(clock TIMESTAMP, value DOUBLE) tags (deviceid BINARY(20), itemid BINARY(20))";
-    private static final String CREATE_ZEUS_STABLE_HISTORY_UINT = "create stable if not exists history_uint(clock TIMESTAMP, value BIGINT) tags (deviceid BINARY(20), itemid BINARY(20))";
+    private static final String CREATE_ZEUS_STABLE_HISTORY = "create stable if not exists history(clock TIMESTAMP, value DOUBLE) tags (deviceid BINARY(64), itemid BINARY(20))";
+    private static final String CREATE_ZEUS_STABLE_HISTORY_UINT = "create stable if not exists history_uint(clock TIMESTAMP, value BIGINT) tags (deviceid BINARY(64), itemid BINARY(20))";
+    private static final String CREATE_ZEUS_STABLE_HISTORY_TEXT = "create stable if not exists history_text(clock TIMESTAMP, value NCHAR(255)) tags (deviceid BINARY(64), itemid BINARY(20))";
+    private static final String CREATE_ZEUS_STABLE_HISTORY_STR = "create stable if not exists history_str(clock TIMESTAMP, value NCHAR(255)) tags (deviceid BINARY(64), itemid BINARY(20))";
 
-    private static final String CREATE_ZEUS_STABLE_TRENDS = "create stable if not exists trends(clock TIMESTAMP, value_min DOUBLE, value_avg DOUBLE, value_max DOUBLE) tags (hostid BINARY(20), itemid BINARY(20))";
-    private static final String CREATE_ZEUS_STABLE_TRENDS_UINT = "create stable if not exists trends_uint(clock TIMESTAMP, value_min BIGINT, value_avg BIGINT, value_max BIGINT) tags (hostid BINARY(20), itemid BINARY(20))";
+
+    private static final String CREATE_ZEUS_STABLE_TRENDS = "create stable if not exists trends(clock TIMESTAMP, value_min DOUBLE, value_avg DOUBLE, value_max DOUBLE) tags (hostid BINARY(64), itemid BINARY(20))";
+    private static final String CREATE_ZEUS_STABLE_TRENDS_UINT = "create stable if not exists trends_uint(clock TIMESTAMP, value_min BIGINT, value_avg BIGINT, value_max BIGINT) tags (hostid BINARY(64), itemid BINARY(20))";
 
     public TDEngineDatabaseInstaller(Client client, ModuleManager moduleManager, TDEngineStorageConfig config) {
         this.config = config;
@@ -36,6 +39,8 @@ public class TDEngineDatabaseInstaller {
 
             jdbcHikariCPClient.execute(connection, CREATE_ZEUS_STABLE_HISTORY);
             jdbcHikariCPClient.execute(connection, CREATE_ZEUS_STABLE_HISTORY_UINT);
+            jdbcHikariCPClient.execute(connection, CREATE_ZEUS_STABLE_HISTORY_TEXT);
+            jdbcHikariCPClient.execute(connection, CREATE_ZEUS_STABLE_HISTORY_STR);
             jdbcHikariCPClient.execute(connection, CREATE_ZEUS_STABLE_TRENDS);
             jdbcHikariCPClient.execute(connection, CREATE_ZEUS_STABLE_TRENDS_UINT);
 

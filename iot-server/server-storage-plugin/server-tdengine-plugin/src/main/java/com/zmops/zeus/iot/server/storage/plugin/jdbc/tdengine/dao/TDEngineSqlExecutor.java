@@ -1,6 +1,8 @@
 package com.zmops.zeus.iot.server.storage.plugin.jdbc.tdengine.dao;
 
 import com.zmops.zeus.iot.server.core.analysis.manual.history.History;
+import com.zmops.zeus.iot.server.core.analysis.manual.history.StrHistory;
+import com.zmops.zeus.iot.server.core.analysis.manual.history.TextHistory;
 import com.zmops.zeus.iot.server.core.analysis.manual.history.UIntHistory;
 import com.zmops.zeus.iot.server.core.storage.StorageData;
 import com.zmops.zeus.iot.server.storage.plugin.jdbc.SQLBuilder;
@@ -38,6 +40,25 @@ public class TDEngineSqlExecutor {
                     .append(",").append(uihistory.getItemid() + " )")
                     .append(" VALUES (")
                     .append(uihistory.getClock() + "").append(",").append(uihistory.getValue()).append(")");
+        } else if (modelName.equals("history_text")) {
+
+            TextHistory textHistory = (TextHistory) metrics;
+            String value = textHistory.getValue().replaceAll(",", "\\,");
+
+            sqlBuilder.append("history_text (deviceid, itemid) TAGS")
+                    .append(" ('").append(textHistory.getDeviceId()).append("'")
+                    .append(",").append(textHistory.getItemid() + " )")
+                    .append(" VALUES (")
+                    .append(textHistory.getClock() + "").append(",'").append(value).append("')");
+        } else if (modelName.equals("history_str")) {
+
+            StrHistory strHistory = (StrHistory) metrics;
+            String value = strHistory.getValue().replaceAll(",", "\\,");
+            sqlBuilder.append("history_str (deviceid, itemid) TAGS")
+                    .append(" ('").append(strHistory.getDeviceId()).append("'")
+                    .append(",").append(strHistory.getItemid() + " )")
+                    .append(" VALUES (")
+                    .append(strHistory.getClock() + "").append(",'").append(value).append("')");
         }
 
         List<Object> param = new ArrayList<>();
