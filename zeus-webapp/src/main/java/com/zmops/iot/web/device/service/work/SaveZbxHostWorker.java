@@ -35,8 +35,7 @@ public class SaveZbxHostWorker implements IWorker<DeviceDto, String> {
     public String action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> map) {
         log.debug("step 5:SaveZbxHostWorker----DEVICEID:{}…………",deviceDto.getDeviceId());
         //设备ID 作为zbx HOST name
-        Device device = (Device) map.get("saveDvice").getWorkResult().getResult();
-        String host = device.getDeviceId() + "";
+        String host = deviceDto.getDeviceId();
 
         //取出 设备对应的 zbx主机组ID,模板ID
         List<String> hostGrpIds = new QDeviceGroup().select(QDeviceGroup.alias().zbxId).deviceGroupId.in(deviceDto.getDeviceGroupIds()).findSingleAttributeList();
