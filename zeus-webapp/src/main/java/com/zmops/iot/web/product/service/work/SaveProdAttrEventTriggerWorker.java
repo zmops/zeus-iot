@@ -43,7 +43,7 @@ public class SaveProdAttrEventTriggerWorker implements IWorker<ProductAttr, Bool
 
         String[] triggerids = JSON.parseObject(res, TriggerIds.class).getTriggerids();
         Map<String, String> tags = new ConcurrentHashMap<>(1);
-        tags.put(EVENT_TAG_NAME, "{HOST.HOST}$$"+productAttr.getKey());
+        tags.put(EVENT_TAG_NAME, "{HOST.HOST}##"+productAttr.getKey());
         zbxTrigger.triggerTagCreate(triggerids[0], tags);
 
         return true;

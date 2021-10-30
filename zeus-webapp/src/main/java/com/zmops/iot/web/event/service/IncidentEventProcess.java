@@ -33,7 +33,7 @@ public class IncidentEventProcess implements EventProcess {
 
         log.debug("-------- event----------triggerId:{},tagValue:{}", triggerId, tagValue);
 
-        String[] split = tagValue.split("\\$\\$");
+        String[] split = tagValue.split("##");
         if (split.length != 2) {
             return;
         }
