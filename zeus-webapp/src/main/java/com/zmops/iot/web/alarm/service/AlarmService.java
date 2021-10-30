@@ -128,7 +128,7 @@ public class AlarmService {
         List<String> triggerIds = problemList.parallelStream().map(ZbxProblemInfo::getObjectid).map(Objects::toString).collect(Collectors.toList());
 
         //根据triggerid查询出 规则名称
-        String sql = "select d.event_rule_name,r.zbx_id from product_event d INNER JOIN (select event_rule_id," +
+        String sql = "select d.event_rule_name,r.zbx_id from product_event d INNER JOIN (select distinct event_rule_id," +
                 "zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.event_rule_id=d.event_rule_id";
         if (ToolUtil.isNotEmpty(alarmParam.getName())) {
             sql += " where d.event_rule_name like :eventRuleName";
