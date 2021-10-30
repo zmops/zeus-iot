@@ -13,14 +13,15 @@ import java.time.LocalDateTime;
 @Data
 @Table(name = "service_execute_record")
 @Entity
-public class ScenesTriggerRecord {
+public class EventTriggerRecord {
     @Id
     private Long id;
 
     private LocalDateTime createTime;
 
-    private String ruleName;
+    private String eventName;
 
-    private Long ruleId;
+    private String eventValue;
 
+    private String deviceId;
 }

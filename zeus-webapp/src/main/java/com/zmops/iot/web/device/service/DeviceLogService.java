@@ -1,7 +1,9 @@
 package com.zmops.iot.web.device.service;
 
+import com.zmops.iot.domain.device.EventTriggerRecord;
 import com.zmops.iot.domain.device.ScenesTriggerRecord;
 import com.zmops.iot.domain.device.ServiceExecuteRecord;
+import com.zmops.iot.domain.device.query.QEventTriggerRecord;
 import com.zmops.iot.domain.device.query.QScenesTriggerRecord;
 import com.zmops.iot.domain.device.query.QServiceExecuteRecord;
 import com.zmops.iot.model.page.Pager;
@@ -51,16 +53,19 @@ public class DeviceLogService {
         }
 
         if (ToolUtil.isEmpty(logType) || (ToolUtil.isNotEmpty(logType) && LOG_TYPE_EVENT.equals(logType))) {
-            AlarmParam alarmParam = new AlarmParam();
-            alarmParam.setDeviceId(deviceId);
-            alarmParam.setTimeFrom(timeFrom);
-            alarmParam.setTimeTill(timeTill);
-            List<AlarmDto> alarmList = alarmService.getEventList(alarmParam);
-            if (ToolUtil.isNotEmpty(alarmList)) {
-                alarmList.forEach(alarm -> {
-                    deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_EVENT).content(alarm.getName())
-                            .triggerTime(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(alarm.getClock()), "yyyy-MM-dd HH:ss:mm"))
-                            .status("0".equals(alarm.getRClock()) ? "未解决" : "已解决").build());
+            QEventTriggerRecord query = new QEventTriggerRecord().deviceId.eq(deviceId);
+            if (null != timeFrom) {
+                query.createTime.ge(LocalDateTimeUtils.getLDTByMilliSeconds(timeFrom * 1000));
+            }
+            if (null != timeTill) {
+                query.createTime.lt(LocalDateTimeUtils.getLDTByMilliSeconds(timeTill * 1000));
+            }
+            List<EventTriggerRecord> list = query.findList();
+            if (ToolUtil.isNotEmpty(list)) {
+                list.forEach(service -> {
+                    deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_EVENT).content(service.getEventName())
+                            .triggerTime(LocalDateTimeUtils.formatTime(service.getCreateTime()))
+                            .param(service.getEventName()).build());
                 });
             }
         }
@@ -152,18 +157,26 @@ public class DeviceLogService {
      */
     private List<DeviceLogDto> getEventLog(String deviceId, Long timeFrom, Long timeTill, String content) {
         List<DeviceLogDto> deviceLogDtoList = new ArrayList<>();
-        AlarmParam alarmParam = new AlarmParam();
+        QEventTriggerRecord query = new QEventTriggerRecord();
         if (ToolUtil.isNotEmpty(deviceId)) {
-            alarmParam.setDeviceId(deviceId);
+            query.deviceId.eq(deviceId);
         }
-        alarmParam.setTimeFrom(timeFrom);
-        alarmParam.setTimeTill(timeTill);
-        List<AlarmDto> alarmList = alarmService.getEventList(alarmParam);
-        if (ToolUtil.isNotEmpty(alarmList)) {
-            alarmList.forEach(alarm -> {
-                deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_EVENT).content(alarm.getName())
-                        .triggerTime(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(alarm.getClock()), "yyyy-MM-dd HH:ss:mm"))
-                        .status("0".equals(alarm.getRClock()) ? "未解决" : "已解决").build());
+        if (ToolUtil.isNotEmpty(content)) {
+            query.eventName.contains(content);
+        }
+        if (null != timeFrom) {
+            query.createTime.ge(LocalDateTimeUtils.getLDTByMilliSeconds(timeFrom * 1000));
+        }
+        if (null != timeTill) {
+            query.createTime.lt(LocalDateTimeUtils.getLDTByMilliSeconds(timeTill * 1000));
+        }
+        query.orderBy().createTime.desc();
+        List<EventTriggerRecord> list = query.findList();
+        if (ToolUtil.isNotEmpty(list)) {
+            list.forEach(service -> {
+                deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_EVENT).content(service.getEventName())
+                        .triggerTime(LocalDateTimeUtils.formatTime(service.getCreateTime()))
+                        .param(service.getEventValue()).build());
             });
         }
         return deviceLogDtoList;

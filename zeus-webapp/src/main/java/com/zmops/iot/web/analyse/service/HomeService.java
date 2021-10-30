@@ -5,9 +5,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.dtflys.forest.http.ForestResponse;
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.DeviceOnlineReport;
+import com.zmops.iot.domain.device.EventTriggerRecord;
 import com.zmops.iot.domain.device.ServiceExecuteRecord;
 import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.device.query.QDeviceOnlineReport;
+import com.zmops.iot.domain.device.query.QEventTriggerRecord;
 import com.zmops.iot.domain.device.query.QServiceExecuteRecord;
 import com.zmops.iot.domain.product.query.QProduct;
 import com.zmops.iot.enums.SeverityEnum;
@@ -264,45 +266,34 @@ public class HomeService {
      * 事件数量统计
      */
     public Map<String, Object> getEventNum(long timeFrom, long timeTill) {
-        AlarmParam alarmParam = new AlarmParam();
-        alarmParam.setTimeTill(timeTill);
-        alarmParam.setTimeFrom(timeFrom);
+        List<EventTriggerRecord> list = new QEventTriggerRecord().createTime.ge(LocalDateTimeUtils.getLDTBySeconds((int) timeFrom))
+                .createTime.lt(LocalDateTimeUtils.getLDTBySeconds((int) timeTill)).orderBy().createTime.asc().findList();
 
-        List<ZbxProblemInfo> alarmList = alarmService.getEventProblem(alarmParam);
-        Map<String, Object> alarmMap = new ConcurrentHashMap<>(3);
+        Map<String, Object> eventMap = new HashMap<>(3);
+        if (ToolUtil.isNotEmpty(list)) {
+            eventMap.put("total", list.size());
+            Map<String, Long> initMap = initMap(timeFrom, timeTill);
+            Map<String, Long> tmpMap = list.parallelStream().collect(
+                    Collectors.groupingBy(o -> LocalDateTimeUtils.formatTime(o.getCreateTime(), "yyyy-MM-dd"), Collectors.counting()));
 
-        alarmMap.put("total", alarmList.size());
-        Collections.reverse(alarmList);
-        //过滤出指定时间段内的告警 并顺序排序
-        Map<String, Long> tmpMap = alarmList.parallelStream()
-                .filter(o -> !o.getSeverity().equals("0")).collect(
-                        Collectors.groupingBy(
-                                o -> LocalDateTimeUtils.convertTimeToString(Integer.parseInt(o.getClock()), "yyyy-MM-dd"), Collectors.counting()));
-
-        List<Map<String, Object>> trendsList = new ArrayList<>();
-        Map<String, Long> initMap = initMap(timeFrom, timeTill);
-
-        initMap.forEach((date, val) -> {
-            Map<String, Object> valMap = new ConcurrentHashMap<>(2);
-            valMap.put("date", date);
-
-            valMap.put("val", Optional.ofNullable(tmpMap.get(date)).orElse(val));
-            trendsList.add(valMap);
-        });
-        trendsList.sort(Comparator.comparing(o -> o.get("date").toString()));
-        alarmMap.put("trends", trendsList);
-
+            List<Map<String, Object>> trendsList = new ArrayList<>();
+            initMap.forEach((key, value) -> {
+                Map<String, Object> valMap = new ConcurrentHashMap<>(2);
+                valMap.put("date", key);
+                valMap.put("val", Optional.ofNullable(tmpMap.get(key)).orElse(value));
+                trendsList.add(valMap);
+            });
+            trendsList.sort(Comparator.comparing(o -> o.get("date").toString()));
+            eventMap.put("trends", trendsList);
+        }
 
         //今日开始时间
-        Long timeStart = LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.getDayStart(LocalDateTime.now()));
-        AlarmParam todayParam = new AlarmParam();
-        todayParam.setTimeFrom(timeStart);
+        long timeStart = LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.getDayStart(LocalDateTime.now()));
+        long todayNum = new QEventTriggerRecord().createTime.ge(LocalDateTimeUtils.getLDTBySeconds((int) timeStart)).findCount();
 
-        List<ZbxProblemInfo> todayAlarmList = alarmService.getZbxAlarm(todayParam);
-        Long todayAlarmNum = todayAlarmList.parallelStream().count();
-        alarmMap.put("today", todayAlarmNum);
+        eventMap.put("today", todayNum);
 
-        return alarmMap;
+        return eventMap;
     }
 
     /**

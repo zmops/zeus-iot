@@ -199,45 +199,6 @@ public class AlarmService {
         return JSONObject.parseArray(problem, ZbxProblemInfo.class);
     }
 
-
-    public List<AlarmDto> getEventList(AlarmParam alarmParam) {
-//        Assert.state(ToolUtil.isNotEmpty(alarmParam.getDeviceId()), "设备ID不能为空");
-        List<ZbxProblemInfo> problemList = getEventProblem(alarmParam);
-        if (ToolUtil.isEmpty(problemList)) {
-            return Collections.emptyList();
-        }
-
-        List<AlarmDto> alarmDtoList = new ArrayList<>();
-        problemList.forEach(zbxProblemInfo -> {
-            AlarmDto alarmDto = new AlarmDto();
-            BeanUtils.copyProperties(zbxProblemInfo, alarmDto);
-            alarmDto.setRClock(zbxProblemInfo.getR_clock());
-            alarmDto.setName(zbxProblemInfo.getName());
-            alarmDtoList.add(alarmDto);
-        });
-
-        return alarmDtoList;
-    }
-
-    public List<ZbxProblemInfo> getEventProblem(AlarmParam alarmParam) {
-        String hostId = null;
-        List<String> deviceIds;
-        if (ToolUtil.isNotEmpty(alarmParam.getDeviceId())) {
-            deviceIds = Collections.singletonList(alarmParam.getDeviceId());
-        } else {
-            deviceIds = deviceService.getDeviceIds();
-        }
-
-        List<String> zbxIds = new QDevice().select(QDevice.alias().zbxId).deviceId.in(deviceIds).zbxId.isNotNull().findSingleAttributeList();
-        if (ToolUtil.isEmpty(zbxIds)) {
-            return Collections.EMPTY_LIST;
-        }
-        hostId = zbxIds.toString();
-        //从zbx取告警记录
-        String problem = zbxProblem.getEventProblem(hostId, alarmParam.getTimeFrom(), alarmParam.getTimeTill(), alarmParam.getRecent());
-        return JSONObject.parseArray(problem, ZbxProblemInfo.class);
-    }
-
     public void acknowledgement(String eventId) {
         zbxProblem.acknowledgement(eventId, 2);
     }
