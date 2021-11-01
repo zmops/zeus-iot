@@ -10,6 +10,7 @@ public enum DicType {
     SysUserName(false),
     SysRole,
     ProdType,
+    Device,
     Dictionary;
 
 

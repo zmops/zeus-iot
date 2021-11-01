@@ -1,5 +1,6 @@
 package com.zmops.iot.web.event.service;
 
+import com.zmops.iot.domain.alarm.Problem;
 import com.zmops.iot.domain.messages.MessageBody;
 import com.zmops.iot.domain.messages.NoticeRecord;
 import com.zmops.iot.domain.messages.NoticeResult;
@@ -20,6 +21,7 @@ import com.zmops.iot.web.event.dto.EventDataDto;
 import com.zmops.iot.web.sys.dto.UserGroupDto;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -55,35 +57,51 @@ public class AlarmEventProcess implements EventProcess {
 
         log.debug("--------alarm event----------{}", triggerId);
 
-        List<ProductEventRelation> list = new QProductEventRelation().zbxId.eq(triggerId).findList();
-        if(ToolUtil.isEmpty(list)){
+        //step 1:插入problem
+        Problem problem = new Problem();
+        problem.setEventId(Long.parseLong(eventData.getEventid()));
+        problem.setObjectId(Long.parseLong(eventData.getObjectid()));
+        problem.setAcknowledged(eventData.getAcknowledged());
+        problem.setSeverity(eventData.getSeverity());
+        problem.setName(eventData.getName());
+        problem.setDeviceId(eventData.getTagValue());
+        problem.setClock(LocalDateTimeUtils.getLDTBySeconds(eventData.getClock()));
+        problem.setRClock(eventData.getRClock() == 0 ? null : LocalDateTimeUtils.getLDTBySeconds(eventData.getRClock()));
+        if (eventData.getRClock() == 0 && eventData.getAcknowledged() == 0) {
+            DB.insert(problem);
+        } else {
+            DB.update(problem);
+        }
+
+        //step 2:找出需要通知的用户ID 推送通知
+        List<String> deviceIds = new QProductEventRelation().select(QProductEventRelation.alias().relationId).zbxId.eq(triggerId).findSingleAttributeList();
+        if (ToolUtil.isEmpty(deviceIds)) {
             return;
         }
         Map<String, Object> params = new ConcurrentHashMap<>(2);
-        List<String> deviceIds = list.parallelStream().map(ProductEventRelation::getRelationId).collect(Collectors.toList());
         params.put("hostname", deviceIds);
         params.put("triggerName", triggerName);
 
-        List<Long> userIds = new QSysUser().select(QSysUser.alias().userId).findSingleAttributeList();
-
-        messageService.push(buildMessage(params, userIds));
-        alarmService.alarm(params);
-
-        //发送消息
-        ProductEvent productEvent = new QProductEvent().eventRuleId.eq(Long.parseLong(triggerName)).findOne();
-        Map<String, String> macros = createMacroMap(triggerId,eventData.getRecoveryValue(),eventData.getAcknowledged(),productEvent);
-
         String sql = "select user_group_id from sys_usrgrp_devicegrp where device_group_id in (select device_group_id from devices_groups where device_id in (:deviceIds))";
         List<UserGroupDto> userGroups = DB.findNative(UserGroupDto.class, sql).setParameter("deviceIds", deviceIds).findList();
-        QSysUser qSysUser = new QSysUser();
 
+        QSysUser qSysUser = new QSysUser();
         if (ToolUtil.isNotEmpty(userGroups)) {
             qSysUser.userGroupId.in(userGroups.parallelStream().map(UserGroupDto::getUserGroupId).collect(Collectors.toList()));
         }
         List<SysUser> sysUserList = qSysUser.findList();
+        List<Long> userIds = sysUserList.parallelStream().map(SysUser::getUserId).collect(Collectors.toList());
+
+        messageService.push(buildMessage(params, userIds));
+        alarmService.alarm(params);
+
+        //发送Email消息
+        ProductEvent productEvent = new QProductEvent().eventRuleId.eq(Long.parseLong(triggerName)).findOne();
+        Map<String, String> macros = createMacroMap(triggerId, eventData.getRClock()+"", eventData.getAcknowledged()+"", productEvent);
+
         List<NoticeRecord> noticeRecords = new ArrayList<>();
         sysUserList.forEach(sysUser -> {
-            Map<Integer, NoticeResult> notice = noticeService.notice(sysUser, macros,triggerId);
+            Map<Integer, NoticeResult> notice = noticeService.notice(sysUser, macros, triggerId);
             for (Map.Entry<Integer, NoticeResult> en : notice.entrySet()) {
                 noticeRecords.add(NoticeRecord.builder()
                         .userId(sysUser.getUserId())
@@ -100,8 +118,8 @@ public class AlarmEventProcess implements EventProcess {
         DB.saveAll(noticeRecords);
     }
 
-    private Map<String, String> createMacroMap(String triggerId,String value,String acknowledged,ProductEvent productEvent) {
-        boolean isnew = "1".equals(value);
+    private Map<String, String> createMacroMap(String triggerId, String rclock, String acknowledged, ProductEvent productEvent) {
+        boolean isnew = "0".equals(rclock);
         Map<String, String> macroMap = new HashMap<String, String>();
         macroMap.put("${time}", LocalDateTimeUtils.formatTime(LocalDateTime.now()));
 

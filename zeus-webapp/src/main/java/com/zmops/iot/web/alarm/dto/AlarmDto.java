@@ -3,7 +3,10 @@ package com.zmops.iot.web.alarm.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.zmops.iot.model.cache.filter.CachedValue;
 import com.zmops.iot.model.cache.filter.CachedValueFilter;
+import com.zmops.iot.model.cache.filter.DicType;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 /**
  * @author yefei
@@ -12,22 +15,24 @@ import lombok.Data;
 @JsonSerialize(using = CachedValueFilter.class)
 public class AlarmDto {
 
-    private String eventid;
+    private Long eventId;
 
-    private String clock;
+    private Long objectId;
 
-    private String rClock;
+    private LocalDateTime clock;
+
+    private LocalDateTime rClock;
 
     private String name;
+
+    private Integer acknowledged;
+
+    @CachedValue(type = DicType.Device)
+    private String deviceId;
 
     @CachedValue(value = "EVENT_LEVEL")
     private String severity;
 
-    private String deviceName;
-
     private String status;
 
-    private String acknowledged;
-
-    private String deviceId;
 }

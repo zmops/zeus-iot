@@ -19,5 +19,11 @@ public class EventDataDto {
 
     private String recoveryValue;
 
-    private String acknowledged;
+    private Integer acknowledged;
+
+    private Integer clock;
+
+    private Integer rClock;
+
+    private Integer severity;
 }

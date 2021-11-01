@@ -14,6 +14,5 @@ public class AlarmParam extends BaseQueryParam {
     private Long   timeTill;
     private String name;
     private String statusName;
-    private String recent = "true";
-    private String severity;
+    private Integer severity;
 }

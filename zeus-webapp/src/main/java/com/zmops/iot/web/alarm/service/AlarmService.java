@@ -1,8 +1,9 @@
 package com.zmops.iot.web.alarm.service;
 
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
 import com.zmops.iot.domain.alarm.AlarmMessage;
+import com.zmops.iot.domain.alarm.Problem;
+import com.zmops.iot.domain.alarm.query.QProblem;
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.ProductEvent;
@@ -13,18 +14,17 @@ import com.zmops.iot.util.LocalDateTimeUtils;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.alarm.dto.AlarmDto;
 import com.zmops.iot.web.alarm.dto.param.AlarmParam;
-import com.zmops.iot.web.device.dto.DeviceDto;
 import com.zmops.iot.web.device.service.DeviceService;
-import com.zmops.iot.web.product.dto.ProductEventRuleDto;
-import com.zmops.zeus.driver.entity.ZbxProblemInfo;
 import com.zmops.zeus.driver.service.ZbxProblem;
-import io.ebean.DB;
-import io.ebean.DtoQuery;
+import io.ebean.PagedList;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -41,6 +41,8 @@ public class AlarmService {
 
     @Autowired
     DeviceService deviceService;
+
+    private static final String PROBLEM_RESOLVE = "已解決";
 
 
     public void alarm(Map<String, Object> alarmInfo) {
@@ -92,112 +94,131 @@ public class AlarmService {
 
     public Pager<AlarmDto> getAlarmByPage(AlarmParam alarmParam) {
 
-        List<ZbxProblemInfo> zbxProblemInfos = getZbxAlarm(alarmParam);
-        if (ToolUtil.isEmpty(zbxProblemInfos)) {
-            return new Pager<>();
-        }
-        if (ToolUtil.isNotEmpty(alarmParam.getStatusName()) && "已解决".equals(alarmParam.getStatusName())) {
-            zbxProblemInfos = zbxProblemInfos.parallelStream().filter(o -> !"0".equals(o.getR_clock())).collect(Collectors.toList());
-        }
+        QProblem query = buildQproblem(alarmParam);
 
-        if (ToolUtil.isNotEmpty(alarmParam.getStatusName()) && "未解决".equals(alarmParam.getStatusName())) {
-            zbxProblemInfos = zbxProblemInfos.parallelStream().filter(o -> "0".equals(o.getR_clock())).collect(Collectors.toList());
-        }
-        //分页
-        List<ZbxProblemInfo> problemList = zbxProblemInfos.stream()
-                .skip((alarmParam.getPage() - 1) * alarmParam.getMaxRow())
-                .limit(alarmParam.getMaxRow()).collect(Collectors.toList());
-        if (ToolUtil.isEmpty(problemList)) {
-            return new Pager<>(Collections.emptyList(), zbxProblemInfos.size());
-        }
-        List<AlarmDto> alarmDtoList = formatAlarmList(problemList, alarmParam);
+        PagedList<Problem> problemList = query.setFirstRow((alarmParam.getPage() - 1) * alarmParam.getMaxRow())
+                .setMaxRows(alarmParam.getMaxRow()).findPagedList();
 
-        return new Pager<>(alarmDtoList, zbxProblemInfos.size());
+        return new Pager<>(formatAlarmList(problemList.getList()), problemList.getTotalCount());
     }
 
     public List<AlarmDto> getAlarmList(AlarmParam alarmParam) {
-        List<ZbxProblemInfo> problemList = getZbxAlarm(alarmParam);
-        if (ToolUtil.isEmpty(problemList)) {
-            return Collections.emptyList();
-        }
 
-        return formatAlarmList(problemList, alarmParam);
+        QProblem query = buildQproblem(alarmParam);
+
+        return formatAlarmList(query.findList());
     }
 
-    private List<AlarmDto> formatAlarmList(List<ZbxProblemInfo> problemList, AlarmParam alarmParam) {
-        List<String> triggerIds = problemList.parallelStream().map(ZbxProblemInfo::getObjectid).map(Objects::toString).collect(Collectors.toList());
-
-        //根据triggerid查询出 规则名称
-        String sql = "select d.event_rule_name,r.zbx_id from product_event d INNER JOIN (select distinct event_rule_id," +
-                "zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.event_rule_id=d.event_rule_id";
-        if (ToolUtil.isNotEmpty(alarmParam.getName())) {
-            sql += " where d.event_rule_name like :eventRuleName";
-        }
-        DtoQuery<ProductEventRuleDto> dtoQuery = DB.findDto(ProductEventRuleDto.class, sql).setParameter("zbxIds", triggerIds);
-        if (ToolUtil.isNotEmpty(alarmParam.getName())) {
-            dtoQuery.setParameter("eventRuleName", "%" + alarmParam.getName() + "%");
-        }
-        List<ProductEventRuleDto> ruleList = dtoQuery.findList();
-        Map<String, String> ruleMap = ruleList.parallelStream().collect(Collectors.toMap(ProductEventRuleDto::getZbxId, ProductEventRuleDto::getEventRuleName));
-
-        //根据triggerid查询出 所属设备
-        sql = "select distinct name,device_id,r.zbx_id from device d INNER JOIN (select relation_id,zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.relation_id=d.device_id";
+    private QProblem buildQproblem(AlarmParam alarmParam) {
+        QProblem query = new QProblem();
         if (ToolUtil.isNotEmpty(alarmParam.getDeviceId())) {
-            sql += " where d.device_id = :deviceId";
+            query.deviceId.eq(alarmParam.getDeviceId());
         }
-        DtoQuery<DeviceDto> deviceQuery = DB.findDto(DeviceDto.class, sql).setParameter("zbxIds", triggerIds);
-        if (ToolUtil.isNotEmpty(alarmParam.getDeviceId())) {
-            deviceQuery.setParameter("deviceId", alarmParam.getDeviceId());
+        if (ToolUtil.isNotEmpty(alarmParam.getTimeFrom())) {
+            query.clock.ge(LocalDateTimeUtils.getLDTByMilliSeconds(alarmParam.getTimeFrom() * 1000));
         }
-        List<DeviceDto> deviceList = deviceQuery.findList();
-        Map<String, List<DeviceDto>> deviceMap = deviceList.parallelStream().collect(Collectors.groupingBy(DeviceDto::getZbxId));
-
-        List<AlarmDto> alarmDtoList = new ArrayList<>();
-        problemList.forEach(zbxProblemInfo -> {
-            if (null == ruleMap.get(zbxProblemInfo.getObjectid())) {
-                return;
+        if (ToolUtil.isNotEmpty(alarmParam.getTimeTill())) {
+            query.clock.lt(LocalDateTimeUtils.getLDTByMilliSeconds(alarmParam.getTimeTill() * 1000));
+        }
+        if (ToolUtil.isNotEmpty(alarmParam.getStatusName())) {
+            if (PROBLEM_RESOLVE.equals(alarmParam.getStatusName())) {
+                query.rClock.isNotNull();
+            } else {
+                query.rClock.isNull();
             }
-            if (ToolUtil.isNotEmpty(deviceMap.get(zbxProblemInfo.getObjectid()))) {
-                deviceMap.get(zbxProblemInfo.getObjectid()).forEach(deviceDto -> {
-                    AlarmDto alarmDto = new AlarmDto();
-                    BeanUtils.copyProperties(zbxProblemInfo, alarmDto);
-                    alarmDto.setRClock(zbxProblemInfo.getR_clock());
-                    alarmDto.setClock(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(zbxProblemInfo.getClock()), "yyyy-MM-dd HH:mm:ss"));
-                    alarmDto.setRClock("0".equals(zbxProblemInfo.getR_clock()) ? "0" :
-                            LocalDateTimeUtils.convertTimeToString(Integer.parseInt(zbxProblemInfo.getR_clock()), "yyyy-MM-dd HH:mm:ss"));
-                    alarmDto.setStatus("0".equals(zbxProblemInfo.getR_clock()) ? "未解决" : "已解决");
-                    alarmDto.setAcknowledged("0".equals(zbxProblemInfo.getAcknowledged()) ? "未确认" : "已确认");
+        }
+        if (ToolUtil.isNotEmpty(alarmParam.getSeverity())) {
+            query.severity.eq(alarmParam.getSeverity());
+        }
+        query.orderBy().clock.desc();
+        return query;
+    }
 
-                    alarmDto.setDeviceName(deviceDto.getName());
-                    alarmDto.setDeviceId(deviceDto.getDeviceId());
-
-                    alarmDto.setName(ruleMap.get(zbxProblemInfo.getObjectid()));
-                    alarmDtoList.add(alarmDto);
-                });
-            }
+    private List<AlarmDto> formatAlarmList(List<Problem> problemList) {
+        List<AlarmDto> list = new ArrayList<>();
+        problemList.forEach(problem -> {
+            AlarmDto alarmDto = new AlarmDto();
+            BeanUtils.copyProperties(problem, alarmDto);
+            alarmDto.setSeverity(problem.getSeverity() + "");
+            list.add(alarmDto);
         });
-
-        return alarmDtoList;
+        return list;
     }
 
-    public List<ZbxProblemInfo> getZbxAlarm(AlarmParam alarmParam) {
-        String hostId;
-        List<String> deviceIds;
-        if (ToolUtil.isNotEmpty(alarmParam.getDeviceId())) {
-            deviceIds = Collections.singletonList(alarmParam.getDeviceId());
-        } else {
-            deviceIds = deviceService.getDeviceIds();
-        }
+//    private List<AlarmDto> formatAlarmList(List<ZbxProblemInfo> problemList, AlarmParam alarmParam) {
+//        List<String> triggerIds = problemList.parallelStream().map(ZbxProblemInfo::getObjectid).map(Objects::toString).collect(Collectors.toList());
+//
+//        //根据triggerid查询出 规则名称
+//        String sql = "select d.event_rule_name,r.zbx_id from product_event d INNER JOIN (select distinct event_rule_id," +
+//                "zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.event_rule_id=d.event_rule_id";
+//        if (ToolUtil.isNotEmpty(alarmParam.getName())) {
+//            sql += " where d.event_rule_name like :eventRuleName";
+//        }
+//        DtoQuery<ProductEventRuleDto> dtoQuery = DB.findDto(ProductEventRuleDto.class, sql).setParameter("zbxIds", triggerIds);
+//        if (ToolUtil.isNotEmpty(alarmParam.getName())) {
+//            dtoQuery.setParameter("eventRuleName", "%" + alarmParam.getName() + "%");
+//        }
+//        List<ProductEventRuleDto> ruleList = dtoQuery.findList();
+//        Map<String, String> ruleMap = ruleList.parallelStream().collect(Collectors.toMap(ProductEventRuleDto::getZbxId, ProductEventRuleDto::getEventRuleName));
+//
+//        //根据triggerid查询出 所属设备
+//        sql = "select distinct name,device_id,r.zbx_id from device d INNER JOIN (select relation_id,zbx_id from product_event_relation where zbx_id in (:zbxIds)) r on r.relation_id=d.device_id";
+//        if (ToolUtil.isNotEmpty(alarmParam.getDeviceId())) {
+//            sql += " where d.device_id = :deviceId";
+//        }
+//        DtoQuery<DeviceDto> deviceQuery = DB.findDto(DeviceDto.class, sql).setParameter("zbxIds", triggerIds);
+//        if (ToolUtil.isNotEmpty(alarmParam.getDeviceId())) {
+//            deviceQuery.setParameter("deviceId", alarmParam.getDeviceId());
+//        }
+//        List<DeviceDto> deviceList = deviceQuery.findList();
+//        Map<String, List<DeviceDto>> deviceMap = deviceList.parallelStream().collect(Collectors.groupingBy(DeviceDto::getZbxId));
+//
+//        List<AlarmDto> alarmDtoList = new ArrayList<>();
+//        problemList.forEach(zbxProblemInfo -> {
+//            if (null == ruleMap.get(zbxProblemInfo.getObjectid())) {
+//                return;
+//            }
+//            if (ToolUtil.isNotEmpty(deviceMap.get(zbxProblemInfo.getObjectid()))) {
+//                deviceMap.get(zbxProblemInfo.getObjectid()).forEach(deviceDto -> {
+//                    AlarmDto alarmDto = new AlarmDto();
+//                    BeanUtils.copyProperties(zbxProblemInfo, alarmDto);
+//                    alarmDto.setRClock(zbxProblemInfo.getR_clock());
+//                    alarmDto.setClock(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(zbxProblemInfo.getClock()), "yyyy-MM-dd HH:mm:ss"));
+//                    alarmDto.setRClock("0".equals(zbxProblemInfo.getR_clock()) ? "0" :
+//                            LocalDateTimeUtils.convertTimeToString(Integer.parseInt(zbxProblemInfo.getR_clock()), "yyyy-MM-dd HH:mm:ss"));
+//                    alarmDto.setStatus("0".equals(zbxProblemInfo.getR_clock()) ? "未解决" : "已解决");
+//                    alarmDto.setAcknowledged("0".equals(zbxProblemInfo.getAcknowledged()) ? "未确认" : "已确认");
+//
+//                    alarmDto.setDeviceName(deviceDto.getName());
+//                    alarmDto.setDeviceId(deviceDto.getDeviceId());
+//
+//                    alarmDto.setName(ruleMap.get(zbxProblemInfo.getObjectid()));
+//                    alarmDtoList.add(alarmDto);
+//                });
+//            }
+//        });
+//
+//        return alarmDtoList;
+//    }
 
-        List<String> zbxIds = new QDevice().select(QDevice.alias().zbxId).deviceId.in(deviceIds).zbxId.isNotNull().findSingleAttributeList();
-        if (ToolUtil.isEmpty(zbxIds)) {
-            return Collections.EMPTY_LIST;
-        }
-        hostId = zbxIds.toString();
-        //从zbx取告警记录
-        String problem = zbxProblem.getProblem(hostId, alarmParam.getTimeFrom(), alarmParam.getTimeTill(), alarmParam.getRecent(), alarmParam.getSeverity());
-        return JSONObject.parseArray(problem, ZbxProblemInfo.class);
-    }
+//    public List<ZbxProblemInfo> getZbxAlarm(AlarmParam alarmParam) {
+//        String hostId;
+//        List<String> deviceIds;
+//        if (ToolUtil.isNotEmpty(alarmParam.getDeviceId())) {
+//            deviceIds = Collections.singletonList(alarmParam.getDeviceId());
+//        } else {
+//            deviceIds = deviceService.getDeviceIds();
+//        }
+//
+//        List<String> zbxIds = new QDevice().select(QDevice.alias().zbxId).deviceId.in(deviceIds).zbxId.isNotNull().findSingleAttributeList();
+//        if (ToolUtil.isEmpty(zbxIds)) {
+//            return Collections.EMPTY_LIST;
+//        }
+//        hostId = zbxIds.toString();
+//        //从zbx取告警记录
+//        String problem = zbxProblem.getProblem(hostId, alarmParam.getTimeFrom(), alarmParam.getTimeTill(), alarmParam.getRecent(), alarmParam.getSeverity());
+//        return JSONObject.parseArray(problem, ZbxProblemInfo.class);
+//    }
 
     public void acknowledgement(String eventId) {
         zbxProblem.acknowledgement(eventId, 2);

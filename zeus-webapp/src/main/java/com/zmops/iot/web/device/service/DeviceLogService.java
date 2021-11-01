@@ -46,8 +46,8 @@ public class DeviceLogService {
             if (ToolUtil.isNotEmpty(alarmList)) {
                 alarmList.forEach(alarm -> {
                     deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_ALARM).content(alarm.getName())
-                            .triggerTime(alarm.getClock())
-                            .status("0".equals(alarm.getRClock()) ? "未解决" : "已解决").build());
+                            .triggerTime(LocalDateTimeUtils.formatTime(alarm.getClock()))
+                            .status(null == alarm.getRClock() ? "未解决" : "已解决").build());
                 });
             }
         }
@@ -138,9 +138,9 @@ public class DeviceLogService {
         if (ToolUtil.isNotEmpty(alarmList)) {
             alarmList.forEach(alarm -> {
                 deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_ALARM).content(alarm.getName())
-                        .triggerTime(alarm.getClock())
-                        .status("0".equals(alarm.getRClock()) ? "未解决" : "已解决").severity(alarm.getSeverity())
-                        .deviceId(alarm.getDeviceId()).deviceName(alarm.getDeviceName()).build());
+                        .triggerTime(LocalDateTimeUtils.formatTime(alarm.getClock()))
+                        .status(null == alarm.getRClock() ? "未解决" : "已解决").severity(alarm.getSeverity())
+                        .deviceId(alarm.getDeviceId()).build());
             });
         }
         return deviceLogDtoList;

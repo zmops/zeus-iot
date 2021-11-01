@@ -96,15 +96,15 @@ public class DeviceEventTriggerController {
                     .collect(Collectors.toMap(DeviceEventRule.Tag::getTag, DeviceEventRule.Tag::getValue, (k1, k2) -> k2));
         }
         if (!tags.containsKey(ALARM_TAG_NAME)) {
-            tags.put(ALARM_TAG_NAME, eventRuleId + "");
+            tags.put(ALARM_TAG_NAME, "{HOST.HOST}");
         }
-        if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
-            tags.put(EXECUTE_TAG_NAME, eventRuleId + "");
-        }
-        Optional<DeviceEventRule.Expression> any = eventRule.getExpList().parallelStream().filter(o -> EVENT_TYPE_NAME.equals(o.getProductAttrType())).findAny();
-        if (any.isPresent()) {
-            tags.put(EVENT_TAG_NAME, eventRuleId + "");
-        }
+//        if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
+//            tags.put(EXECUTE_TAG_NAME, eventRuleId + "");
+//        }
+//        Optional<DeviceEventRule.Expression> any = eventRule.getExpList().parallelStream().filter(o -> EVENT_TYPE_NAME.equals(o.getProductAttrType())).findAny();
+//        if (any.isPresent()) {
+//            tags.put(EVENT_TAG_NAME, eventRuleId + "");
+//        }
         for (String triggerId : triggerIds) {
             zbxTrigger.triggerTagCreate(triggerId, tags);
         }
@@ -179,15 +179,15 @@ public class DeviceEventTriggerController {
             tags = new HashMap<>(2);
         }
         if (!tags.containsKey(ALARM_TAG_NAME)) {
-            tags.put(ALARM_TAG_NAME, eventRule.getEventRuleId() + "");
+            tags.put(ALARM_TAG_NAME, "{HOST.HOST}");
         }
-        if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
-            tags.put(EXECUTE_TAG_NAME, eventRule.getEventRuleId() + "");
-        }
-        Optional<DeviceEventRule.Expression> any = eventRule.getExpList().parallelStream().filter(o -> EVENT_TYPE_NAME.equals(o.getProductAttrType())).findAny();
-        if (any.isPresent()) {
-            tags.put(EVENT_TAG_NAME, eventRule.getEventRuleId() + "");
-        }
+//        if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
+//            tags.put(EXECUTE_TAG_NAME, eventRule.getEventRuleId() + "");
+//        }
+//        Optional<DeviceEventRule.Expression> any = eventRule.getExpList().parallelStream().filter(o -> EVENT_TYPE_NAME.equals(o.getProductAttrType())).findAny();
+//        if (any.isPresent()) {
+//            tags.put(EVENT_TAG_NAME, eventRule.getEventRuleId() + "");
+//        }
         for (String triggerId : triggerIds) {
             zbxTrigger.triggerTagCreate(triggerId, tags);
         }

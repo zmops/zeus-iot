@@ -41,6 +41,10 @@ public class DefinitionsUtil {
     @Setter
     private static ProductServiceParamCache productServiceParamCache = new ProductServiceParamCache();
 
+    @Getter
+    @Setter
+    private static DeviceCache deviceCache = new DeviceCache();
+
     public static void updateDictionaries(Table<String, String, String> dictionarys) {
         dictionaryCache.updateDictionaries(dictionarys);
     }
@@ -84,5 +88,13 @@ public class DefinitionsUtil {
 
     public static List<ProductServiceParam> getServiceParam(long value) {
         return productServiceParamCache.getServiceParam(value);
+    }
+
+    public static void updateDeviceCache(Map<String, String> map) {
+        deviceCache.updateDeviceName(map);
+    }
+
+    public static String getDeviceName(String value) {
+        return deviceCache.getDeviceName(value);
     }
 }

@@ -107,6 +107,11 @@ public class CachedValueFilter extends JsonSerializer<Object> {
                     return DefinitionsUtil.getTypeName((long) value);
                 }
                 break;
+            case Device:
+                if (value instanceof String) {
+                    return DefinitionsUtil.getDeviceName((String) value);
+                }
+                break;
             default:
                 return null;
         }

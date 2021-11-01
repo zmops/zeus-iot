@@ -10,9 +10,12 @@ import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.device.query.QDevicesGroups;
 import com.zmops.iot.domain.device.query.QTag;
 import com.zmops.iot.domain.product.Product;
+import com.zmops.iot.domain.product.ProductService;
+import com.zmops.iot.domain.product.ProductServiceParam;
 import com.zmops.iot.domain.product.query.*;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
+import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.dto.DeviceDto;
 import com.zmops.iot.web.device.dto.param.DeviceParam;
@@ -26,15 +29,17 @@ import io.ebean.DB;
 import io.ebean.DtoQuery;
 import io.ebean.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author yefei
  **/
 @Service
-public class DeviceService {
+public class DeviceService  implements CommandLineRunner{
 
     @Autowired
     private SaveDeviceWorker saveDeviceWorker;
@@ -541,5 +546,16 @@ public class DeviceService {
             zbxHost.hostStatusUpdate(zbxId, "ENABLE".equals(status) ? "0" : "1");
         }
         DB.update(Device.class).where().eq("device_id", deviceId).asUpdate().set("status", status).setNull("online").update();
+    }
+
+    private void updateDevice() {
+        List<Device> deviceList = new QDevice().findList();
+        Map<String, String> map = deviceList.parallelStream().collect(Collectors.toMap(Device::getDeviceId, Device::getName));
+        DefinitionsUtil.updateDeviceCache(map);
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        updateDevice();
     }
 }

@@ -118,7 +118,7 @@ public class ProductEventTriggerController {
                     .collect(Collectors.toMap(ProductEventRule.Tag::getTag, ProductEventRule.Tag::getValue, (k1, k2) -> k2));
         }
         if (!tags.containsKey(ALARM_TAG_NAME)) {
-            tags.put(ALARM_TAG_NAME, eventRuleId + "");
+            tags.put(ALARM_TAG_NAME, "{HOST.HOST}");
         }
 //        if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
 //            tags.put(EXECUTE_TAG_NAME, eventRuleId + "");
@@ -186,7 +186,7 @@ public class ProductEventTriggerController {
             tags = new HashMap<>(2);
         }
         if (!tags.containsKey(ALARM_TAG_NAME)) {
-            tags.put(ALARM_TAG_NAME, eventRule.getEventRuleId() + "");
+            tags.put(ALARM_TAG_NAME, "{HOST.HOST}");
         }
 //        if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
 //            tags.put(EXECUTE_TAG_NAME, eventRule.getEventRuleId() + "");

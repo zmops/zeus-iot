@@ -170,7 +170,7 @@ public class ProductSvcService implements CommandLineRunner{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
+        updateService();
         return productServiceDto;
     }
 
@@ -209,7 +209,7 @@ public class ProductSvcService implements CommandLineRunner{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
+        updateService();
         return productServiceDto;
     }
 
