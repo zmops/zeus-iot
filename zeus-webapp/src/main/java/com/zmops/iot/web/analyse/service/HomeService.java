@@ -23,6 +23,8 @@ import com.zmops.iot.web.alarm.service.AlarmService;
 import com.zmops.iot.web.analyse.dto.LatestDto;
 import com.zmops.iot.web.device.dto.DeviceDto;
 import com.zmops.iot.web.device.dto.TaosResponseData;
+import com.zmops.iot.web.device.dto.param.DeviceParams;
+import com.zmops.iot.web.device.service.DeviceService;
 import com.zmops.zeus.driver.entity.ZbxItemInfo;
 import com.zmops.zeus.driver.entity.ZbxProblemInfo;
 import com.zmops.zeus.driver.service.TDEngineRest;
@@ -61,6 +63,9 @@ public class HomeService {
 
     @Autowired
     TDEngineRest tdEngineRest;
+
+    @Autowired
+    DeviceService deviceService;
 
     private static String hostId = "";
 
@@ -172,7 +177,7 @@ public class HomeService {
     public Map<String, Object> getDeviceNum(Integer timeFrom, Integer timeTill) {
         Map<String, Object> deviceNumMap = new HashMap<>(4);
 
-        List<Device> list = new QDevice().findList();
+        List<Device> list = deviceService.deviceList(new DeviceParams());
         deviceNumMap.put("total", list.size());
         deviceNumMap.put("disable", (int) list.parallelStream().filter(o -> "DISABLE".equals(o.getStatus())).count());
         deviceNumMap.put("online", (int) list.parallelStream().filter(o -> null != o.getOnline() && 1 == o.getOnline()).count());
