@@ -1,11 +1,9 @@
 package com.zmops.iot.util;
 
 import com.google.common.collect.Table;
+import com.zmops.iot.domain.product.ProductServiceParam;
 import com.zmops.iot.domain.sys.SysUser;
-import com.zmops.iot.model.cache.DictionaryCache;
-import com.zmops.iot.model.cache.ProductTypeCache;
-import com.zmops.iot.model.cache.SysRoleCache;
-import com.zmops.iot.model.cache.SysUserCache;
+import com.zmops.iot.model.cache.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,6 +33,14 @@ public class DefinitionsUtil {
     @Setter
     private static ProductTypeCache productTypeCache = new ProductTypeCache();
 
+    @Getter
+    @Setter
+    private static ProductServiceCache productServiceCache = new ProductServiceCache();
+
+    @Getter
+    @Setter
+    private static ProductServiceParamCache productServiceParamCache = new ProductServiceParamCache();
+
     public static void updateDictionaries(Table<String, String, String> dictionarys) {
         dictionaryCache.updateDictionaries(dictionarys);
     }
@@ -62,5 +68,21 @@ public class DefinitionsUtil {
 
     public static String getTypeName(long value) {
         return productTypeCache.getTypeName(value);
+    }
+
+    public static void updateServiceCache(Map<Long, String> map) {
+        productServiceCache.updateProductService(map);
+    }
+
+    public static String getServiceName(long value) {
+        return productServiceCache.getServiceName(value);
+    }
+
+    public static void updateServiceParamCache(Map<Long, List<ProductServiceParam>> paramMap) {
+        productServiceParamCache.updateProductServiceParam(paramMap);
+    }
+
+    public static List<ProductServiceParam> getServiceParam(long value) {
+        return productServiceParamCache.getServiceParam(value);
     }
 }

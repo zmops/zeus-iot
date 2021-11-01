@@ -6,12 +6,10 @@ import com.zmops.iot.async.executor.Async;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.ProductEventRelation;
 import com.zmops.iot.domain.product.ProductEventService;
-import com.zmops.iot.domain.product.ProductService;
 import com.zmops.iot.domain.product.ProductServiceParam;
 import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEventService;
-import com.zmops.iot.domain.product.query.QProductService;
-import com.zmops.iot.domain.product.query.QProductServiceParam;
+import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.service.work.DeviceServiceLogWorker;
 import com.zmops.iot.web.device.service.work.ScenesLogWorker;
@@ -70,23 +68,17 @@ public class ServiceEventProcess implements EventProcess {
                 .or().deviceId.isNull().deviceId.eq(productEventRelationList.get(0).getRelationId()).endOr().findList();
         List<Map<String, Object>> list = new ArrayList<>();
         Map<String, List<ProductEventService>> collect = productEventServiceList.parallelStream().collect(Collectors.groupingBy(ProductEventService::getExecuteDeviceId));
+
         collect.forEach((key, value) -> {
             Map<String, Object> map = new ConcurrentHashMap<>();
-//            Device device = new QDevice().deviceId.eq(key).findOne();
-//            if (null == device) {
-//                return;
-//            }
             map.put("device", key);
+
             List<Map<String, Object>> serviceList = new ArrayList<>();
             value.forEach(val -> {
                 Map<String, Object> serviceMap = new ConcurrentHashMap<>();
-                ProductService productService = new QProductService().id.eq(val.getServiceId()).findOne();
-                if (null == productService) {
-                    return;
-                }
-                serviceMap.put("name", productService.getName());
+                serviceMap.put("name", DefinitionsUtil.getServiceName(val.getServiceId()));
 
-                List<ProductServiceParam> paramList = new QProductServiceParam().serviceId.eq(val.getServiceId()).findList();
+                List<ProductServiceParam> paramList = DefinitionsUtil.getServiceParam(val.getServiceId());
                 if (ToolUtil.isNotEmpty(paramList)) {
                     serviceMap.put("param", paramList.parallelStream().collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue)));
                 }

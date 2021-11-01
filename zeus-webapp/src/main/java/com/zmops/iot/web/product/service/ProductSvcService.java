@@ -1,5 +1,7 @@
 package com.zmops.iot.web.product.service;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import com.zmops.iot.async.executor.Async;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.ProductService;
@@ -8,8 +10,13 @@ import com.zmops.iot.domain.product.ProductServiceRelation;
 import com.zmops.iot.domain.product.query.QProductService;
 import com.zmops.iot.domain.product.query.QProductServiceParam;
 import com.zmops.iot.domain.product.query.QProductServiceRelation;
+import com.zmops.iot.domain.sys.SysDict;
+import com.zmops.iot.domain.sys.SysDictType;
+import com.zmops.iot.domain.sys.query.QSysDict;
+import com.zmops.iot.domain.sys.query.QSysDictType;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
+import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductServiceDto;
@@ -19,6 +26,7 @@ import com.zmops.iot.web.product.service.work.UpdateProdSvcWorker;
 import io.ebean.DB;
 import io.ebean.DtoQuery;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +41,7 @@ import java.util.stream.Collectors;
  * 产品 物模型 服务
  **/
 @Service
-public class ProductSvcService {
+public class ProductSvcService implements CommandLineRunner{
 
     @Autowired
     SaveProdSvcWorker saveProdSvcWorker;
@@ -228,5 +236,20 @@ public class ProductSvcService {
      */
     public List<ProductServiceParam> paramList(long serviceId) {
         return new QProductServiceParam().serviceId.eq(serviceId).findList();
+    }
+
+    private void updateService() {
+        List<ProductService> serviceList = new QProductService().findList();
+        Map<Long, String> map = serviceList.parallelStream().collect(Collectors.toMap(ProductService::getId, ProductService::getName));
+        DefinitionsUtil.updateServiceCache(map);
+
+        List<ProductServiceParam> serviceParamList = new QProductServiceParam().findList();
+        Map<Long, List<ProductServiceParam>> paramMap = serviceParamList.parallelStream().collect(Collectors.groupingBy(ProductServiceParam::getServiceId));
+        DefinitionsUtil.updateServiceParamCache(paramMap);
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        updateService();
     }
 }
