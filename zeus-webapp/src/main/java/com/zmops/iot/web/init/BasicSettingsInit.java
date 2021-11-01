@@ -28,7 +28,7 @@ public class BasicSettingsInit {
     @Autowired
     private ZbxInitService zbxInitService;
 
-    private String zbxApiToken;
+    public static String zbxApiToken;
 
     @PostConstruct
     public void init() {

@@ -1,6 +1,8 @@
 package com.zmops.iot.web.event.service;
 
+import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.EventTriggerRecord;
+import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.ProductAttributeEvent;
 import com.zmops.iot.domain.product.query.QProductAttributeEvent;
 import com.zmops.iot.web.analyse.dto.LatestDto;
@@ -40,9 +42,11 @@ public class IncidentEventProcess implements EventProcess {
         String deviceId = split[0];
         String key = split[1];
 
+        Device device = new QDevice().deviceId.eq(deviceId).findOne();
         ProductAttributeEvent productAttributeEvent = new QProductAttributeEvent().productId.eq(deviceId).key.eq(key).findOne();
 
-        List<LatestDto> latestDtos = latestService.qeuryLatest(deviceId, Collections.singletonList(productAttributeEvent.getAttrId()));
+        List<LatestDto> latestDtos = latestService.queryEventLatest(device.getZbxId(), Collections.singletonList(productAttributeEvent.getZbxId()),
+                Integer.parseInt(productAttributeEvent.getValueType()));
 
         EventTriggerRecord eventTriggerRecord = new EventTriggerRecord();
         eventTriggerRecord.setCreateTime(LocalDateTime.now());

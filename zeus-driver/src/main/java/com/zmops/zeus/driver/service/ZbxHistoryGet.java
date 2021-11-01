@@ -26,4 +26,13 @@ public interface ZbxHistoryGet {
                       @ParamName("valueType") Integer valueType,
                       @ParamName("timeFrom") Long timeFrom,
                       @ParamName("timeTill") Long timeTill);
+
+
+    @Post(headers = "authTag: noAuth")
+    @JsonPath("/history/history.get")
+    String historyGetWithNoAuth(@ParamName("hostid") String hostid,
+                                @ParamName("itemids") List<String> itemids,
+                                @ParamName("hisNum") Integer hisNum,
+                                @ParamName("valueType") Integer valueType,
+                                @ParamName("userAuth") String zbxApiToken);
 }

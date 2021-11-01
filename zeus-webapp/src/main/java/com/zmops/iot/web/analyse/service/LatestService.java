@@ -12,6 +12,7 @@ import com.zmops.iot.web.analyse.dto.LatestDto;
 import com.zmops.iot.web.analyse.dto.Mapping;
 import com.zmops.iot.web.analyse.dto.ValueMap;
 import com.zmops.iot.web.analyse.dto.param.LatestParam;
+import com.zmops.iot.web.init.BasicSettingsInit;
 import com.zmops.zeus.driver.service.ZbxHistoryGet;
 import com.zmops.zeus.driver.service.ZbxValueMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,6 +123,26 @@ public class LatestService {
 
         return latestDtos;
     }
+
+    /**
+     * 取事件属性 最新数据
+     * @return
+     */
+    public List<LatestDto> queryEventLatest(String hostid,List<String> zbxIds, int valueType) {
+
+        //根据属性值类型 查询最新数据
+
+        String res = zbxHistoryGet.historyGetWithNoAuth(hostid, zbxIds, 1, valueType, BasicSettingsInit.zbxApiToken);
+        List<LatestDto> latestDtos = JSONObject.parseArray(res, LatestDto.class);
+
+        latestDtos.forEach(latestDto -> {
+            latestDto.setClock(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(latestDto.getClock()), "yyyy-MM-dd HH:mm:ss"));
+            latestDto.setOriginalValue(latestDto.getValue());
+        });
+
+        return latestDtos;
+    }
+
 
     public Map<String, Object> queryMap(String deviceId) {
         List<LatestDto> latestDtos = qeuryLatest(deviceId, Collections.emptyList());
