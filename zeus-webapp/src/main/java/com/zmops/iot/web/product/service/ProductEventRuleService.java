@@ -13,6 +13,7 @@ import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.enums.CommonStatus;
 import com.zmops.iot.enums.InheritStatus;
 import com.zmops.iot.model.page.Pager;
+import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.product.dto.ProductEventDto;
 import com.zmops.iot.web.product.dto.ProductEventRule;
@@ -23,6 +24,7 @@ import io.ebean.DB;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -39,7 +41,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class ProductEventRuleService {
+public class ProductEventRuleService implements CommandLineRunner {
 
     @Autowired
     private ZbxTrigger zbxTrigger;
@@ -86,6 +88,9 @@ public class ProductEventRuleService {
         productEventRelation.setInherit(InheritStatus.NO.getCode());
         productEventRelation.setRemark(eventRule.getRemark());
         DB.save(productEventRelation);
+
+        //更新緩存
+        updateProductEvent();
     }
 
     /**
@@ -140,6 +145,8 @@ public class ProductEventRuleService {
                     .asUpdate().set("remark", eventRule.getRemark()).update();
         }
 
+        //更新緩存
+        updateProductEvent();
     }
 
 
@@ -286,6 +293,17 @@ public class ProductEventRuleService {
         return productEventRuleDto;
     }
 
+    public void updateProductEvent() {
+        List<ProductEvent> deviceList = new QProductEvent().findList();
+        Map<Long, String> map = deviceList.parallelStream().collect(Collectors.toMap(ProductEvent::getEventRuleId, ProductEvent::getEventRuleName));
+        DefinitionsUtil.updateProductEventCache(map);
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        updateProductEvent();
+    }
+
 
     @Data
     static class TriggerIds {
@@ -294,8 +312,8 @@ public class ProductEventRuleService {
 
     @Data
     public static class Triggers {
-        private String triggerid;
-        private String description;
+        private String      triggerid;
+        private String      description;
         private List<Hosts> hosts;
     }
 

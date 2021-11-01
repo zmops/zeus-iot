@@ -5,7 +5,6 @@ import com.zmops.iot.domain.messages.MessageBody;
 import com.zmops.iot.domain.messages.NoticeRecord;
 import com.zmops.iot.domain.messages.NoticeResult;
 import com.zmops.iot.domain.product.ProductEvent;
-import com.zmops.iot.domain.product.ProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEvent;
 import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.domain.sys.SysUser;
@@ -21,7 +20,6 @@ import com.zmops.iot.web.event.dto.EventDataDto;
 import com.zmops.iot.web.sys.dto.UserGroupDto;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -63,7 +61,7 @@ public class AlarmEventProcess implements EventProcess {
         problem.setObjectId(Long.parseLong(eventData.getObjectid()));
         problem.setAcknowledged(eventData.getAcknowledged());
         problem.setSeverity(eventData.getSeverity());
-        problem.setName(eventData.getName());
+        problem.setName(DefinitionsUtil.getTriggerName(Long.parseLong(eventData.getName())));
         problem.setDeviceId(eventData.getTagValue());
         problem.setClock(LocalDateTimeUtils.getLDTBySeconds(eventData.getClock()));
         problem.setRClock(eventData.getRClock() == 0 ? null : LocalDateTimeUtils.getLDTBySeconds(eventData.getRClock()));
@@ -97,7 +95,7 @@ public class AlarmEventProcess implements EventProcess {
 
         //发送Email消息
         ProductEvent productEvent = new QProductEvent().eventRuleId.eq(Long.parseLong(triggerName)).findOne();
-        Map<String, String> macros = createMacroMap(triggerId, eventData.getRClock()+"", eventData.getAcknowledged()+"", productEvent);
+        Map<String, String> macros = createMacroMap(triggerId, eventData.getRClock() + "", eventData.getAcknowledged() + "", productEvent);
 
         List<NoticeRecord> noticeRecords = new ArrayList<>();
         sysUserList.forEach(sysUser -> {

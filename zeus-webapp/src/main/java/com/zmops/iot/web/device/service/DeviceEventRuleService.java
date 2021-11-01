@@ -16,6 +16,7 @@ import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.dto.DeviceEventRule;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductEventRuleDto;
+import com.zmops.iot.web.product.service.ProductEventRuleService;
 import com.zmops.zeus.driver.service.ZbxTrigger;
 import io.ebean.DB;
 import io.ebean.annotation.Transactional;
@@ -38,6 +39,8 @@ public class DeviceEventRuleService {
     @Autowired
     private ZbxTrigger zbxTrigger;
 
+    @Autowired
+    ProductEventRuleService productEventRuleService;
 
     /**
      * 保存触发器
@@ -95,6 +98,9 @@ public class DeviceEventRuleService {
             productEventRelationList.add(productEventRelation);
         });
         DB.saveAll(productEventRelationList);
+
+        //更新缓存
+        productEventRuleService.updateProductEvent();
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -158,6 +164,9 @@ public class DeviceEventRuleService {
             productEventRelationList.add(productEventRelation);
         });
         DB.saveAll(productEventRelationList);
+
+        //更新缓存
+        productEventRuleService.updateProductEvent();
     }
 
 

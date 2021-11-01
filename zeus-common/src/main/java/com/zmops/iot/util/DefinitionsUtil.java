@@ -45,6 +45,10 @@ public class DefinitionsUtil {
     @Setter
     private static DeviceCache deviceCache = new DeviceCache();
 
+    @Getter
+    @Setter
+    private static ProductEventCache productEventCache = new ProductEventCache();
+
     public static void updateDictionaries(Table<String, String, String> dictionarys) {
         dictionaryCache.updateDictionaries(dictionarys);
     }
@@ -96,5 +100,13 @@ public class DefinitionsUtil {
 
     public static String getDeviceName(String value) {
         return deviceCache.getDeviceName(value);
+    }
+
+    public static void updateProductEventCache(Map<Long, String> map) {
+        productEventCache.updateTriggerName(map);
+    }
+
+    public static String getTriggerName(Long value) {
+        return productEventCache.getTriggerName(value);
     }
 }
