@@ -140,6 +140,8 @@ public class AlarmService {
             AlarmDto alarmDto = new AlarmDto();
             BeanUtils.copyProperties(problem, alarmDto);
             alarmDto.setSeverity(problem.getSeverity() + "");
+            alarmDto.setStatus(problem.getRClock() == null ? "未解决" : "已解决");
+            alarmDto.setAcknowledged(problem.getAcknowledged() == 0 ? "未确认" : "已确认");
             list.add(alarmDto);
         });
         return list;

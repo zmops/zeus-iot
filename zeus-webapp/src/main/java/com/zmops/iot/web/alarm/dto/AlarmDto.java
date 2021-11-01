@@ -25,7 +25,7 @@ public class AlarmDto {
 
     private String name;
 
-    private Integer acknowledged;
+    private String acknowledged;
 
     @CachedValue(type = DicType.Device)
     private String deviceId;
