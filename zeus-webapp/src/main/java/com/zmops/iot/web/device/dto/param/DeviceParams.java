@@ -18,7 +18,7 @@ public class DeviceParams extends BaseQueryParam {
 
     private List<Long> deviceGroupIds;
 
-    private List<String> prodTypes;
+    private List<Long> prodTypes;
 
     private String tag;
 

@@ -93,8 +93,9 @@ public class DeviceService {
         if (ToolUtil.isNotEmpty(deviceParams.getProductIds())) {
             qDevice.productId.in(deviceParams.getProductIds());
         }
-        if (ToolUtil.isNotEmpty(deviceParams.getProdTypes())) {
-            qDevice.type.in(deviceParams.getProdTypes());
+        if (ToolUtil.isEmpty(deviceParams.getProductIds()) && ToolUtil.isNotEmpty(deviceParams.getProdTypes())) {
+            List<Long> productIdList = new QProduct().select(QProduct.Alias.productId).groupId.in(deviceParams.getProdTypes()).findSingleAttributeList();
+            qDevice.productId.in(productIdList);
         }
         if (ToolUtil.isNotEmpty(deviceParams.getDeviceGroupIds())) {
             List<String> deviceList = new QDevicesGroups().select(QDevicesGroups.Alias.deviceId).deviceGroupId.in(deviceParams.getDeviceGroupIds()).findSingleAttributeList();
