@@ -16,6 +16,7 @@ import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.dto.DeviceDto;
 import com.zmops.iot.web.device.dto.param.DeviceParam;
+import com.zmops.iot.web.device.dto.param.DeviceParams;
 import com.zmops.iot.web.device.service.work.*;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductTag;
@@ -71,10 +72,10 @@ public class DeviceService {
     /**
      * 设备列表
      *
-     * @param deviceParam
+     * @param deviceParams
      * @return
      */
-    public List<Device> deviceList(DeviceParam deviceParam) {
+    public List<Device> deviceList(DeviceParams deviceParams) {
         List<String> deviceIds = getDeviceIds();
         if (ToolUtil.isEmpty(deviceIds)) {
             return Collections.emptyList();
@@ -83,17 +84,20 @@ public class DeviceService {
 
         qDevice.deviceId.in(deviceIds);
 
-        if (ToolUtil.isNotEmpty(deviceParam.getName())) {
-            qDevice.name.contains(deviceParam.getName());
+        if (ToolUtil.isNotEmpty(deviceParams.getName())) {
+            qDevice.name.contains(deviceParams.getName());
         }
-        if (ToolUtil.isNotEmpty(deviceParam.getProductId())) {
-            qDevice.productId.eq(deviceParam.getProductId());
+        if (ToolUtil.isNotEmpty(deviceParams.getDeviceId())) {
+            qDevice.deviceId.eq(deviceParams.getDeviceId());
         }
-        if (ToolUtil.isNotEmpty(deviceParam.getProdType())) {
-            qDevice.type.contains(deviceParam.getProdType());
+        if (ToolUtil.isNotEmpty(deviceParams.getProductIds())) {
+            qDevice.productId.in(deviceParams.getProductIds());
         }
-        if (ToolUtil.isNotEmpty(deviceParam.getDeviceGroupId())) {
-            List<String> deviceList = new QDevicesGroups().select(QDevicesGroups.Alias.deviceId).deviceGroupId.eq(deviceParam.getDeviceGroupId()).findSingleAttributeList();
+        if (ToolUtil.isNotEmpty(deviceParams.getProdTypes())) {
+            qDevice.type.in(deviceParams.getProdTypes());
+        }
+        if (ToolUtil.isNotEmpty(deviceParams.getDeviceGroupIds())) {
+            List<String> deviceList = new QDevicesGroups().select(QDevicesGroups.Alias.deviceId).deviceGroupId.in(deviceParams.getDeviceGroupIds()).findSingleAttributeList();
             qDevice.deviceId.in(deviceList);
         }
         return qDevice.findList();

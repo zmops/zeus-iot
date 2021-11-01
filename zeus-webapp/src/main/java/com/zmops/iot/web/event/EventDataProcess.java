@@ -30,8 +30,6 @@ public class EventDataProcess implements Processor {
 
         EventDataDto eventData = JSONObject.parseObject(split[1], EventDataDto.class);
 
-        String objectid = eventData.getObjectid();
-
         eventProcessList.forEach(eventProcess -> {
             if(eventProcess.checkTag(eventData.getTag())){
                 eventProcess.process(eventData);

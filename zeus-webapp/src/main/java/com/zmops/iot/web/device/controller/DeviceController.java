@@ -12,6 +12,7 @@ import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.auth.Permission;
 import com.zmops.iot.web.device.dto.DeviceDto;
 import com.zmops.iot.web.device.dto.param.DeviceParam;
+import com.zmops.iot.web.device.dto.param.DeviceParams;
 import com.zmops.iot.web.device.service.DeviceService;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductTag;
@@ -52,8 +53,8 @@ public class DeviceController {
      */
     @Permission(code = "dev_list")
     @PostMapping("/list")
-    public ResponseData deviceList(@RequestBody DeviceParam deviceParam) {
-        return ResponseData.success(deviceService.deviceList(deviceParam));
+    public ResponseData deviceList(@RequestBody DeviceParams deviceParams) {
+        return ResponseData.success(deviceService.deviceList(deviceParams));
     }
 
     /**
