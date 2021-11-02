@@ -1,13 +1,17 @@
 package com.zmops.iot.web.device.service.work;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.async.callback.IWorker;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.device.ServiceExecuteRecord;
 import com.zmops.iot.domain.product.ProductEventService;
 import com.zmops.iot.domain.product.ProductService;
+import com.zmops.iot.domain.product.ProductServiceParam;
 import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.domain.product.query.QProductService;
+import com.zmops.iot.util.DefinitionsUtil;
+import com.zmops.iot.util.ToolUtil;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -44,7 +48,10 @@ public class DeviceServiceLogWorker implements IWorker<Map<String, Object>, Bool
         productEventServiceList.forEach(productEventService -> {
             ServiceExecuteRecord serviceExecuteRecord = new ServiceExecuteRecord();
             serviceExecuteRecord.setDeviceId(productEventService.getExecuteDeviceId());
-            //TODO 执行的参数
+            List<ProductServiceParam> paramList = DefinitionsUtil.getServiceParam(productEventService.getServiceId());
+            if (ToolUtil.isNotEmpty(paramList)) {
+                serviceExecuteRecord.setParam(JSONObject.toJSONString(paramList.parallelStream().collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue))));
+            }
             serviceExecuteRecord.setServiceName(Optional.ofNullable(productServiceMap.get(productEventService.getServiceId())).map(ProductService::getName).orElse(""));
             serviceExecuteRecord.setCreateTime(LocalDateTime.now());
             serviceExecuteRecordList.add(serviceExecuteRecord);
