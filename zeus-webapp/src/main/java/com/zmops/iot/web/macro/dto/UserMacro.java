@@ -24,8 +24,8 @@ public class UserMacro {
     private String description;
 
     @NotBlank(groups = BaseEntity.Update.class)
-    private String inherit;
-    private String inheritName="否";
+    private String inherit     = "0";
+    private String inheritName = "否";
 
     @NotBlank(groups = {BaseEntity.Delete.class, BaseEntity.Update.class})
     private String hostmacroid;

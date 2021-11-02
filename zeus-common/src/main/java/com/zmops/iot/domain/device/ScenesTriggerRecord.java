@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  * @author yefei
  **/
 @Data
-@Table(name = "service_execute_record")
+@Table(name = "scenes_trigger_record")
 @Entity
 public class ScenesTriggerRecord {
     @Id
