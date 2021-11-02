@@ -7,6 +7,7 @@ import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.exception.enums.CoreExceptionEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.core.env.Environment;
 
 import java.io.IOException;
@@ -26,8 +27,8 @@ public class ToolUtil {
     /**
      * 如果对象不是数字类型 就加上双引号返回
      */
-    public static String addQuotes(String value){
-        if(isNum(value)){
+    public static String addQuotes(String value) {
+        if (isNum(value)) {
             return value;
         }
         return "\\\\\"" + value + "\\\\\"";
@@ -406,6 +407,35 @@ public class ToolUtil {
             }
         }
         return true;
+    }
+
+
+    /**
+     * 将一个对象转换为另一个对象
+     *
+     * @param <T1>      要转换的对象
+     * @param <T2>      转换后的类
+     * @param oriList   要转换的对象
+     * @param castClass 转换后的对象
+     * @return 转换后的对象
+     */
+    public static <T1, T2> List<T2> convertBean(List<T1> oriList, Class<T2> castClass) {
+        if (isEmpty(oriList)) {
+            return Collections.emptyList();
+        }
+        List<T2> resList = new ArrayList<>();
+        oriList.forEach(orimodel -> {
+            try {
+                T2 returnModel = castClass.newInstance();
+                copyProperties(orimodel, returnModel);
+                resList.add(returnModel);
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        });
+        return resList;
     }
 
 }

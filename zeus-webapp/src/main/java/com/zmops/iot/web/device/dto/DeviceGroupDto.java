@@ -16,6 +16,8 @@
 package com.zmops.iot.web.device.dto;
 
 import com.zmops.iot.domain.BaseEntity;
+import com.zmops.iot.model.cache.filter.CachedValue;
+import com.zmops.iot.model.cache.filter.DicType;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -29,12 +31,16 @@ import javax.validation.constraints.NotNull;
 @Data
 public class DeviceGroupDto {
 
-    @NotNull(groups = BaseEntity.Update.class)
     private Long deviceGroupId;
 
-    @NotBlank
     private String name;
 
     private String remark;
 
+    @CachedValue(type = DicType.SysUserName)
+    private Long createUser;
+    private String createTime;
+    @CachedValue(type = DicType.SysUserName)
+    private Long updateUser;
+    private String updateTime;
 }

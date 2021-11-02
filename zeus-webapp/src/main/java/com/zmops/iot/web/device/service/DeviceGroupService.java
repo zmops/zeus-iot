@@ -44,7 +44,7 @@ public class DeviceGroupService {
      * @param devGroupParam
      * @return
      */
-    public Pager<DeviceGroup> deviceGroupPageList(DeviceGroupParam devGroupParam) {
+    public Pager<DeviceGroupDto> deviceGroupPageList(DeviceGroupParam devGroupParam) {
         List<Long> devGroupIds = getDevGroupIds();
         if (ToolUtil.isEmpty(devGroupIds)) {
             return new Pager<>();
@@ -61,7 +61,8 @@ public class DeviceGroupService {
                 .setFirstRow((devGroupParam.getPage() - 1) * devGroupParam.getMaxRow())
                 .setMaxRows(devGroupParam.getMaxRow());
         PagedList<DeviceGroup> pagedList = qDeviceGroup.orderBy(" create_time desc").findPagedList();
-        return new Pager<>(pagedList.getList(), pagedList.getTotalCount());
+        List<DeviceGroupDto> deviceGroupDtos = ToolUtil.convertBean(pagedList.getList(), DeviceGroupDto.class);
+        return new Pager<>(deviceGroupDtos, pagedList.getTotalCount());
     }
 
     /**
@@ -107,7 +108,7 @@ public class DeviceGroupService {
     /**
      * 添加设备組
      */
-    public DeviceGroup createDeviceGroup(DeviceGroupDto deviceGroup) {
+    public DeviceGroup createDeviceGroup(DeviceGroupParam deviceGroup) {
         // 判断设备组是否重复
         checkByGroupName(deviceGroup.getName(), -1L);
         //获取ID
@@ -131,7 +132,7 @@ public class DeviceGroupService {
      * @param deviceGroup
      * @return DeviceGroup
      */
-    public DeviceGroup updateDeviceGroup(DeviceGroupDto deviceGroup) {
+    public DeviceGroup updateDeviceGroup(DeviceGroupParam deviceGroup) {
         // 判断设备组是否重复
         checkByGroupName(deviceGroup.getName(), deviceGroup.getDeviceGroupId());
 

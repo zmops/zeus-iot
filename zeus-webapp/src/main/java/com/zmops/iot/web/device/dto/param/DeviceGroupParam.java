@@ -15,9 +15,11 @@
  */
 package com.zmops.iot.web.device.dto.param;
 
+import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.web.sys.dto.param.BaseQueryParam;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -29,8 +31,14 @@ import java.util.List;
 @Data
 public class DeviceGroupParam extends BaseQueryParam {
 
+    @NotNull(groups = BaseEntity.Update.class)
+    private Long deviceGroupId;
+
+    @NotBlank(groups = {BaseEntity.Update.class,BaseEntity.Create.class})
     private String name;
 
-    @NotNull
+    private String remark;
+
+    @NotNull(groups = BaseEntity.Delete.class)
     private List<Long> deviceGroupIds;
 }
