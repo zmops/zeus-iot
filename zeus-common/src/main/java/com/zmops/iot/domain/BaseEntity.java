@@ -5,6 +5,7 @@ import io.ebean.annotation.WhenCreated;
 import io.ebean.annotation.WhenModified;
 import io.ebean.annotation.WhoCreated;
 import io.ebean.annotation.WhoModified;
+import lombok.Data;
 
 import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
  * @author nantian created at 2021/7/30 20:37
  */
 @MappedSuperclass
+@Data
 public abstract class BaseEntity extends Model {
 
     @WhenCreated

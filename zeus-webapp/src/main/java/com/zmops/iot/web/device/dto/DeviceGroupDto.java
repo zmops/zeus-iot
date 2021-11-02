@@ -15,8 +15,10 @@
  */
 package com.zmops.iot.web.device.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.model.cache.filter.CachedValue;
+import com.zmops.iot.model.cache.filter.CachedValueFilter;
 import com.zmops.iot.model.cache.filter.DicType;
 import lombok.Data;
 
@@ -29,6 +31,7 @@ import javax.validation.constraints.NotNull;
  * @author yefei
  */
 @Data
+@JsonSerialize(using = CachedValueFilter.class)
 public class DeviceGroupDto {
 
     private Long deviceGroupId;
