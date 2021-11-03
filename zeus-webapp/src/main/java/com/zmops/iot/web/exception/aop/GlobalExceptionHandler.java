@@ -219,4 +219,20 @@ public class GlobalExceptionHandler {
         getRequest().setAttribute("tip", message);
         return new ErrorResponseData(BizExceptionEnum.SERVER_ERROR.getCode(), message);
     }
+
+    /**
+     * 拦截运行时异常
+     */
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ErrorResponseData runtime(RuntimeException e) {
+        log.error("运行时异常:", e);
+        if (LoginContextHolder.getContext().hasLogin()) {
+            LogManager.me().executeLog(LogTaskFactory.exceptionLog(LoginContextHolder.getContext().getUserId(), e));
+        }
+        String message = String.format("服务器运行异常请联系管理员");
+        getRequest().setAttribute("tip", message);
+        return new ErrorResponseData(BizExceptionEnum.SERVER_ERROR.getCode(), message);
+    }
 }
