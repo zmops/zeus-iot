@@ -9,6 +9,7 @@ import com.zmops.iot.domain.product.ProductServiceParam;
 import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.ToolUtil;
+import com.zmops.iot.web.device.service.MultipleDeviceEventRuleService;
 import com.zmops.iot.web.device.service.work.DeviceServiceLogWorker;
 import com.zmops.iot.web.device.service.work.ScenesLogWorker;
 import com.zmops.iot.web.event.EventProcess;
@@ -31,62 +32,17 @@ import java.util.stream.Collectors;
 public class SceneEventProcess implements EventProcess {
 
     @Autowired
-    DeviceServiceLogWorker deviceServiceLogWorker;
-
-    @Autowired
-    ScenesLogWorker scenesLogWorker;
+    MultipleDeviceEventRuleService eventRuleService;
 
     @Override
     public void process(EventDataDto eventData) {
-        log.debug("--------scene event----------{}", eventData.getObjectid());
-        Map<String, Object> alarmInfo = new ConcurrentHashMap<>(3);
+        log.debug("--------scene event----------ruleId:{}", eventData.getName());
 
-        String productEventRuleId = eventData.getName();
-        if (ToolUtil.isEmpty(productEventRuleId)) {
+        if (ToolUtil.isEmpty(eventData.getName())) {
             return;
         }
-        long eventRuleId = Long.parseLong(productEventRuleId);
 
-        alarmInfo.put("eventRuleId", eventRuleId);
-
-        WorkerWrapper<Map<String, Object>, Boolean> deviceServiceLogWork = WorkerWrapper.<Map<String, Object>, Boolean>builder().id("deviceServiceLogWorker")
-                .worker(deviceServiceLogWorker).param(alarmInfo)
-                .build();
-        WorkerWrapper<Map<String, Object>, Boolean> scenesLogWork = WorkerWrapper.<Map<String, Object>, Boolean>builder().id("scenesLogWorker")
-                .worker(scenesLogWorker).param(alarmInfo)
-                .build();
-
-        try {
-            Async.work(1000, deviceServiceLogWork, scenesLogWork).awaitFinish();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        List<ProductEventService> productEventServiceList = new QProductEventService().eventRuleId.eq(eventRuleId)
-                .deviceId.isNull().findList();
-        List<Map<String, Object>> list = new ArrayList<>();
-        Map<String, List<ProductEventService>> collect = productEventServiceList.parallelStream().collect(Collectors.groupingBy(ProductEventService::getExecuteDeviceId));
-
-        collect.forEach((key, value) -> {
-            Map<String, Object> map = new ConcurrentHashMap<>();
-            map.put("device", key);
-
-            List<Map<String, Object>> serviceList = new ArrayList<>();
-            value.forEach(val -> {
-                Map<String, Object> serviceMap = new ConcurrentHashMap<>();
-                serviceMap.put("name", DefinitionsUtil.getServiceName(val.getServiceId()));
-
-                List<ProductServiceParam> paramList = DefinitionsUtil.getServiceParam(val.getServiceId());
-                if (ToolUtil.isNotEmpty(paramList)) {
-                    serviceMap.put("param", paramList.parallelStream().collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue)));
-                }
-                serviceList.add(serviceMap);
-            });
-            map.put("service", serviceList);
-            list.add(map);
-        });
-
-        Forest.post("/device/action/exec").host("127.0.0.1").port(12800).contentTypeJson().addBody(JSON.toJSON(list)).execute();
+        eventRuleService.execute(Long.parseLong(eventData.getName()));
     }
 
     @Override

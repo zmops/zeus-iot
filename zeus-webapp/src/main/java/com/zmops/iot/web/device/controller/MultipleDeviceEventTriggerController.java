@@ -226,4 +226,10 @@ public class MultipleDeviceEventTriggerController {
         return ResponseData.success();
     }
 
+    @RequestMapping("/execute")
+    public ResponseData execute(@RequestParam("eventRuleId") Long eventRuleId){
+        multipleDeviceEventRuleService.execute(eventRuleId);
+        return ResponseData.success();
+    }
+
 }
