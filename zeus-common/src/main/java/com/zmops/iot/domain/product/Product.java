@@ -39,4 +39,6 @@ public class Product extends BaseEntity {
 
     private String zbxId;
 
+    private String icon;
+
 }

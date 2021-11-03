@@ -49,6 +49,8 @@ public class ProductDto {
 
     private Long deviceNum;
 
+    private String icon;
+
 //    private List<ProductTag.Tag> productTag;
 //    private JSONArray            valueMaps;
 

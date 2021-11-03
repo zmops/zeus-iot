@@ -223,7 +223,7 @@ public class ProductService {
         product.setRemark(prodBasicInfo.getRemark());
         product.setType(prodBasicInfo.getProdType());
         product.setGroupId(prodBasicInfo.getGroupId());
-
+        product.setIcon(prodBasicInfo.getIcon());
         return product;
     }
 
