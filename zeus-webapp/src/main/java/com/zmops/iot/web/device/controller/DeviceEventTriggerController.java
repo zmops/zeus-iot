@@ -98,9 +98,9 @@ public class DeviceEventTriggerController {
         if (!tags.containsKey(ALARM_TAG_NAME)) {
             tags.put(ALARM_TAG_NAME, "{HOST.HOST}");
         }
-//        if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
-//            tags.put(EXECUTE_TAG_NAME, eventRuleId + "");
-//        }
+        if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
+            tags.put(EXECUTE_TAG_NAME, eventRuleId + "");
+        }
 //        Optional<DeviceEventRule.Expression> any = eventRule.getExpList().parallelStream().filter(o -> EVENT_TYPE_NAME.equals(o.getProductAttrType())).findAny();
 //        if (any.isPresent()) {
 //            tags.put(EVENT_TAG_NAME, eventRuleId + "");

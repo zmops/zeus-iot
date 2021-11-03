@@ -4,10 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.dtflys.forest.Forest;
 import com.zmops.iot.async.executor.Async;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
-import com.zmops.iot.domain.product.ProductEventRelation;
 import com.zmops.iot.domain.product.ProductEventService;
 import com.zmops.iot.domain.product.ProductServiceParam;
-import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.ToolUtil;
@@ -30,7 +28,7 @@ import java.util.stream.Collectors;
  **/
 @Slf4j
 @Component
-public class ServiceEventProcess implements EventProcess {
+public class SceneEventProcess implements EventProcess {
 
     @Autowired
     DeviceServiceLogWorker deviceServiceLogWorker;
@@ -40,28 +38,32 @@ public class ServiceEventProcess implements EventProcess {
 
     @Override
     public void process(EventDataDto eventData) {
-        log.debug("--------service event----------{}", eventData.getObjectid());
+        log.debug("--------scene event----------{}", eventData.getObjectid());
         Map<String, Object> alarmInfo = new ConcurrentHashMap<>(3);
 
-        List<ProductEventRelation> productEventRelationList = new QProductEventRelation().zbxId.eq(eventData.getObjectid()).findList();
-        if (ToolUtil.isEmpty(productEventRelationList)) {
+        String productEventRuleId = eventData.getName();
+        if (ToolUtil.isEmpty(productEventRuleId)) {
             return;
         }
+        long eventRuleId = Long.parseLong(productEventRuleId);
 
-        alarmInfo.put("eventRuleId", productEventRelationList.get(0).getEventRuleId());
-        alarmInfo.put("relationId", productEventRelationList.get(0).getRelationId());
+        alarmInfo.put("eventRuleId", eventRuleId);
 
         WorkerWrapper<Map<String, Object>, Boolean> deviceServiceLogWork = WorkerWrapper.<Map<String, Object>, Boolean>builder().id("deviceServiceLogWorker")
                 .worker(deviceServiceLogWorker).param(alarmInfo)
                 .build();
+        WorkerWrapper<Map<String, Object>, Boolean> scenesLogWork = WorkerWrapper.<Map<String, Object>, Boolean>builder().id("scenesLogWorker")
+                .worker(scenesLogWorker).param(alarmInfo)
+                .build();
+
         try {
-            Async.work(1000, deviceServiceLogWork).awaitFinish();
+            Async.work(1000, deviceServiceLogWork, scenesLogWork).awaitFinish();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        List<ProductEventService> productEventServiceList = new QProductEventService().eventRuleId.eq(productEventRelationList.get(0).getEventRuleId())
-                .or().deviceId.isNull().deviceId.eq(productEventRelationList.get(0).getRelationId()).endOr().findList();
+        List<ProductEventService> productEventServiceList = new QProductEventService().eventRuleId.eq(eventRuleId)
+                .deviceId.isNull().findList();
         List<Map<String, Object>> list = new ArrayList<>();
         Map<String, List<ProductEventService>> collect = productEventServiceList.parallelStream().collect(Collectors.groupingBy(ProductEventService::getExecuteDeviceId));
 

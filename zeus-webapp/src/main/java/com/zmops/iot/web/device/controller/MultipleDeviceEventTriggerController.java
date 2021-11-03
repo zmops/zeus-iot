@@ -48,7 +48,7 @@ public class MultipleDeviceEventTriggerController {
     @Autowired
     private ZbxTrigger zbxTrigger;
 
-    private static final String EXECUTE_TAG_NAME = "__execute__";
+    private static final String EXECUTE_TAG_NAME = "__scene__";
 
     /**
      * 触发器 分页列表
