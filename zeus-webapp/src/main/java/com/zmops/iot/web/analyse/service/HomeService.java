@@ -11,6 +11,7 @@ import com.zmops.iot.domain.device.EventTriggerRecord;
 import com.zmops.iot.domain.device.ServiceExecuteRecord;
 import com.zmops.iot.domain.device.query.QDeviceOnlineReport;
 import com.zmops.iot.domain.device.query.QEventTriggerRecord;
+import com.zmops.iot.domain.device.query.QScenesTriggerRecord;
 import com.zmops.iot.domain.device.query.QServiceExecuteRecord;
 import com.zmops.iot.domain.product.query.QProduct;
 import com.zmops.iot.enums.SeverityEnum;
@@ -373,6 +374,9 @@ public class HomeService {
 
         int serviceExecuteNum = new QServiceExecuteRecord().findCount();
         dataMap.put("serviceExecuteNum", ParseUtil.getCommaFormat(serviceExecuteNum + ""));
+
+        int sceneTriggerNum = new QScenesTriggerRecord().findCount();
+        dataMap.put("sceneTriggerNum", ParseUtil.getCommaFormat(sceneTriggerNum + ""));
 
         return dataMap;
     }
