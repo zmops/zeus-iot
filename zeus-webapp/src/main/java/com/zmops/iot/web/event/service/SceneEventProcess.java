@@ -91,7 +91,7 @@ public class SceneEventProcess implements EventProcess {
 
     @Override
     public boolean checkTag(String tag) {
-        return "__execute__".equals(tag);
+        return "__scene__".equals(tag);
     }
 
 }
