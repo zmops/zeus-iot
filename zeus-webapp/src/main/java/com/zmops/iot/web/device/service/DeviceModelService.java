@@ -147,7 +147,7 @@ public class DeviceModelService {
     public ProductAttrDto detail(Long attrId) {
         ProductAttrDto attr = new QProductAttribute().attrId.eq(attrId).asDto(ProductAttrDto.class).findOne();
 
-        if (null == attr.getZbxId()) {
+        if (attr == null || ToolUtil.isEmpty(attr.getZbxId())) {
             return attr;
         }
         JSONArray itemInfo = JSONObject.parseArray(zbxItem.getItemInfo(attr.getZbxId(), null));
