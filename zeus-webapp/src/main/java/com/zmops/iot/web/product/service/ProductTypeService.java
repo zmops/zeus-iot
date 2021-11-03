@@ -29,7 +29,7 @@ public class ProductTypeService implements CommandLineRunner {
      * 产品分类树
      */
     public List<TreeNode> tree() {
-        String sql = "select id,pid pId,name,pids from product_type";
+        String sql = "select p.id,p.pid pId,p.name,p.pids,p.create_time,u.name createUserName from product_type p LEFT JOIN sys_user u on u.user_id = p.create_user";
         List<TreeNode> list = DB.findDto(TreeNode.class, sql).findList();
         DefaultTreeBuildFactory<TreeNode> treeBuildFactory = new DefaultTreeBuildFactory<>();
         treeBuildFactory.setRootParentId("0");

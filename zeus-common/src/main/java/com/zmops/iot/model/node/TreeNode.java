@@ -3,6 +3,7 @@ package com.zmops.iot.model.node;
 import com.zmops.iot.util.ToolUtil;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -45,6 +46,10 @@ public class TreeNode implements Tree {
      * 是否已授权
      */
     private Boolean isChecked;
+
+    private LocalDateTime createTime;
+
+    private String createUserName;
 
     /**
      * 子节点
