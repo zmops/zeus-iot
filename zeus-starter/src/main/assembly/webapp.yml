@@ -48,6 +48,7 @@ forest:
     ## Zabbix API IP And ServerIp and ServerPort
     zbxServerIp: ${ZEUS_ZABBIX_HOST:127.0.0.1}
     zbxServerPort: ${ZEUS_ZABBIX_PORT:80}
+    zbxApiUrl: ${ZEUS_ZABBIX_API_URL:/zabbix/api_jsonrpc.php}
     zbxApiToken: 3464dee6b3fa3ce4173972e0497d7b84a93bdf8477ff1bdd51a7719cc0db2cd9
 
     ## tdengine http request address
