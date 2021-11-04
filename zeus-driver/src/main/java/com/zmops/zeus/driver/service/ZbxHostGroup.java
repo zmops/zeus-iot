@@ -13,7 +13,7 @@ import java.util.List;
  */
 
 @BaseRequest(
-        baseURL = "http://${zbxServerIp}:${zbxServerPort}/zabbix/api_jsonrpc.php",
+        baseURL = "http://${zbxServerIp}:${zbxServerPort}${zbxApiUrl}",
         interceptor = JsonBodyBuildInterceptor.class
 )
 public interface ZbxHostGroup {

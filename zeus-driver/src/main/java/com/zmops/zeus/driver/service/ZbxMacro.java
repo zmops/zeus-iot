@@ -13,7 +13,7 @@ import java.util.List;
  * 宏定义接口
  */
 @BaseRequest(
-        baseURL = "http://${zbxServerIp}:${zbxServerPort}/zabbix/api_jsonrpc.php",
+        baseURL = "http://${zbxServerIp}:${zbxServerPort}${zbxApiUrl}",
         interceptor = JsonBodyBuildInterceptor.class
 )
 public interface ZbxMacro {

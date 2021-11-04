@@ -12,7 +12,7 @@ import com.zmops.zeus.driver.inteceptor.JsonBodyBuildInterceptor;
  * 设备离线 在线触发器，判断设备 在线，离线 状态
  */
 @BaseRequest(
-        baseURL = "http://${zbxServerIp}:${zbxServerPort}/zabbix/api_jsonrpc.php",
+        baseURL = "http://${zbxServerIp}:${zbxServerPort}${zbxApiUrl}",
         interceptor = JsonBodyBuildInterceptor.class
 )
 public interface ZbxDeviceStatusTrigger {

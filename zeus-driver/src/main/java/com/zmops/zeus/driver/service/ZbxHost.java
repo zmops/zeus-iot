@@ -16,7 +16,7 @@ import java.util.Map;
  * 主机驱动
  */
 @BaseRequest(
-        baseURL = "http://${zbxServerIp}:${zbxServerPort}/zabbix/api_jsonrpc.php",
+        baseURL = "http://${zbxServerIp}:${zbxServerPort}${zbxApiUrl}",
         interceptor = JsonBodyBuildInterceptor.class
 )
 public interface ZbxHost {
