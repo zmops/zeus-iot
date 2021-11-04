@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author yefei
@@ -27,6 +28,9 @@ public class ScenesLogWorker implements IWorker<Map<String, Object>, Boolean> {
         log.debug("insert into ScenesLogWorker…………");
 
         long eventRuleId = (long) param.get("eventRuleId");
+        String triggerType = (String) param.get("triggerType");
+        Long triggerUser = Optional.ofNullable(param.get("triggerUser")).map(Object::toString).map(Long::parseLong).orElse(null);
+
         ProductEvent productEvent = new QProductEvent().eventRuleId.eq(eventRuleId).findOne();
         if (productEvent == null) {
             return true;
@@ -35,6 +39,9 @@ public class ScenesLogWorker implements IWorker<Map<String, Object>, Boolean> {
         scenesTriggerRecord.setRuleId(eventRuleId);
         scenesTriggerRecord.setRuleName(productEvent.getEventRuleName());
         scenesTriggerRecord.setCreateTime(LocalDateTime.now());
+        scenesTriggerRecord.setTriggerType(triggerType);
+        scenesTriggerRecord.setTriggerUser(triggerUser);
+
 
         DB.save(scenesTriggerRecord);
 

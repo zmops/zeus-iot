@@ -12,7 +12,6 @@ import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.service.work.DeviceServiceLogWorker;
-import com.zmops.iot.web.device.service.work.ScenesLogWorker;
 import com.zmops.iot.web.event.EventProcess;
 import com.zmops.iot.web.event.dto.EventDataDto;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +34,6 @@ public class ServiceEventProcess implements EventProcess {
     @Autowired
     DeviceServiceLogWorker deviceServiceLogWorker;
 
-    @Autowired
-    ScenesLogWorker scenesLogWorker;
-
     @Override
     public void process(EventDataDto eventData) {
         log.debug("--------service event----------{}", eventData.getObjectid());
@@ -50,6 +46,7 @@ public class ServiceEventProcess implements EventProcess {
 
         alarmInfo.put("eventRuleId", productEventRelationList.get(0).getEventRuleId());
         alarmInfo.put("relationId", productEventRelationList.get(0).getRelationId());
+        alarmInfo.put("triggerType", "自动");
 
         WorkerWrapper<Map<String, Object>, Boolean> deviceServiceLogWork = WorkerWrapper.<Map<String, Object>, Boolean>builder().id("deviceServiceLogWorker")
                 .worker(deviceServiceLogWorker).param(alarmInfo)

@@ -2,6 +2,7 @@ package com.zmops.iot.web.device.controller;
 
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.domain.product.ProductEvent;
 import com.zmops.iot.domain.product.ProductEventRelation;
@@ -10,7 +11,6 @@ import com.zmops.iot.domain.product.query.QProductEventExpression;
 import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.enums.CommonStatus;
-import com.zmops.iot.enums.InheritStatus;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -227,8 +226,8 @@ public class MultipleDeviceEventTriggerController {
     }
 
     @RequestMapping("/execute")
-    public ResponseData execute(@RequestParam("eventRuleId") Long eventRuleId){
-        multipleDeviceEventRuleService.execute(eventRuleId);
+    public ResponseData execute(@RequestParam("eventRuleId") Long eventRuleId) {
+        multipleDeviceEventRuleService.execute(eventRuleId, "手动", LoginContextHolder.getContext().getUser().getId());
         return ResponseData.success();
     }
 

@@ -27,4 +27,10 @@ public class ServiceExecuteRecord {
     private String deviceId;
 
     private String param;
+
+    private String executeType;
+
+    private Long executeUser;
+
+    private Long executeRuleId;
 }

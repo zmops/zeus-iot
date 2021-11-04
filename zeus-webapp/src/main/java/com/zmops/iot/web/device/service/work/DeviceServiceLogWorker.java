@@ -37,6 +37,8 @@ public class DeviceServiceLogWorker implements IWorker<Map<String, Object>, Bool
         log.debug("insert into service log…………");
 
         long eventRuleId = (long) param.get("eventRuleId");
+        String executeType = (String) param.get("triggerType");
+        Long executeUser = Optional.ofNullable(param.get("triggerUser")).map(Object::toString).map(Long::parseLong).orElse(null);
 
         List<ProductEventService> productEventServiceList = new QProductEventService().eventRuleId.eq(eventRuleId).findList();
         List<Long> serviceIds = productEventServiceList.parallelStream().map(ProductEventService::getServiceId).collect(Collectors.toList());
@@ -54,6 +56,10 @@ public class DeviceServiceLogWorker implements IWorker<Map<String, Object>, Bool
             }
             serviceExecuteRecord.setServiceName(Optional.ofNullable(productServiceMap.get(productEventService.getServiceId())).map(ProductService::getName).orElse(""));
             serviceExecuteRecord.setCreateTime(LocalDateTime.now());
+            serviceExecuteRecord.setExecuteRuleId(eventRuleId);
+            serviceExecuteRecord.setExecuteType(executeType);
+            serviceExecuteRecord.setExecuteUser(executeUser);
+
             serviceExecuteRecordList.add(serviceExecuteRecord);
         });
         DB.saveAll(serviceExecuteRecordList);
