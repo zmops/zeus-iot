@@ -168,7 +168,7 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     EVENT_EXPRESSION_NOT_EXISTS(1705, "告警表达式关联关系不存在"),
 
     EVENT_PRODUCT_CANNOT_DELETE(1706, "来自产品的触发器不能删除"),
-
+    SCENE_NOT_EXISTS(1707, "场景不存在"),
 
     /**
      * 租户相关的异常

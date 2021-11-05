@@ -227,6 +227,10 @@ public class MultipleDeviceEventTriggerController {
 
     @RequestMapping("/execute")
     public ResponseData execute(@RequestParam("eventRuleId") Long eventRuleId) {
+        int count = new QProductEvent().eventRuleId.eq(eventRuleId).classify.eq("1").findCount();
+        if (count <= 0) {
+            throw new ServiceException(BizExceptionEnum.SCENE_NOT_EXISTS);
+        }
         multipleDeviceEventRuleService.execute(eventRuleId, "手动", LoginContextHolder.getContext().getUser().getId());
         return ResponseData.success();
     }
