@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.dtflys.forest.Forest;
 import com.zmops.iot.async.executor.Async;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
-import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.domain.product.*;
 import com.zmops.iot.domain.product.query.QProductEvent;
 import com.zmops.iot.domain.product.query.QProductEventExpression;
@@ -344,11 +343,13 @@ public class MultipleDeviceEventRuleService {
         return JSON.parseObject(res, TriggerIds.class).getTriggerids();
     }
 
-    public void execute(Long eventRuleId,String type,Long userId) {
+    public void execute(Long eventRuleId, String type, Long userId) {
         Map<String, Object> alarmInfo = new ConcurrentHashMap<>(3);
         alarmInfo.put("eventRuleId", eventRuleId);
         alarmInfo.put("triggerType", type);
-        alarmInfo.put("triggerUser", userId);
+        if (null != userId) {
+            alarmInfo.put("triggerUser", userId);
+        }
 
         WorkerWrapper<Map<String, Object>, Boolean> deviceServiceLogWork = WorkerWrapper.<Map<String, Object>, Boolean>builder().id("deviceServiceLogWorker")
                 .worker(deviceServiceLogWorker).param(alarmInfo)
