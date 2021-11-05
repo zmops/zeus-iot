@@ -9,15 +9,6 @@ if [ "${DEBUG_MODE,,}" == "true" ]; then
     set -o xtrace
 fi
 
-#Enable PostgreSQL timescaleDB feature:
-: ${ENABLE_TIMESCALEDB:="false"}
-
-# Default directories
-# User 'zabbix' home directory
-ZABBIX_USER_HOME_DIR="/var/lib/zabbix"
-# Configuration files directory
-ZABBIX_ETC_DIR="/etc/zabbix"
-
 # usage: file_env VAR [DEFAULT]
 # as example: file_env 'MYSQL_PASSWORD' 'zabbix'
 #    (will allow for "$MYSQL_PASSWORD_FILE" to fill in the value of "$MYSQL_PASSWORD" from a file)
@@ -66,76 +57,7 @@ escape_spec_char() {
     echo "$var_value"
 }
 
-update_config_var() {
-    local config_path=$1
-    local var_name=$2
-    local var_value=$3
-    local is_multiple=$4
 
-    local masklist=("DBPassword TLSPSKIdentity")
-
-    if [ ! -f "$config_path" ]; then
-        echo "**** Configuration file '$config_path' does not exist"
-        return
-    fi
-
-    if [[ " ${masklist[@]} " =~ " $var_name " ]] && [ ! -z "$var_value" ]; then
-        echo -n "** Updating '$config_path' parameter \"$var_name\": '****'. Enable DEBUG_MODE to view value ..."
-    else
-        echo -n "** Updating '$config_path' parameter \"$var_name\": '$var_value'..."
-    fi
-
-    # Remove configuration parameter definition in case of unset parameter value
-    if [ -z "$var_value" ]; then
-        sed -i -e "/^$var_name=/d" "$config_path"
-        echo "removed"
-        return
-    fi
-
-    # Remove value from configuration parameter in case of double quoted parameter value
-    if [ "$var_value" == '""' ]; then
-        sed -i -e "/^$var_name=/s/=.*/=/" "$config_path"
-        echo "undefined"
-        return
-    fi
-
-    # Use full path to a file for TLS related configuration parameters
-    if [[ $var_name =~ ^TLS.*File$ ]]; then
-        var_value=$ZABBIX_USER_HOME_DIR/enc/$var_value
-    fi
-
-    # Escaping characters in parameter value and name
-    var_value=$(escape_spec_char "$var_value")
-    var_name=$(escape_spec_char "$var_name")
-
-    if [ "$(grep -E "^$var_name=" $config_path)" ] && [ "$is_multiple" != "true" ]; then
-        sed -i -e "/^$var_name=/s/=.*/=$var_value/" "$config_path"
-        echo "updated"
-    elif [ "$(grep -Ec "^# $var_name=" $config_path)" -gt 1 ]; then
-        sed -i -e  "/^[#;] $var_name=$/i\\$var_name=$var_value" "$config_path"
-        echo "added first occurrence"
-    else
-        sed -i -e "/^[#;] $var_name=/s/.*/&\n$var_name=$var_value/" "$config_path"
-        echo "added"
-    fi
-
-}
-
-update_config_multiple_var() {
-    local config_path=$1
-    local var_name=$2
-    local var_value=$3
-
-    var_value="${var_value%\"}"
-    var_value="${var_value#\"}"
-
-    local IFS=,
-    local OPT_LIST=($var_value)
-
-    for value in "${OPT_LIST[@]}"; do
-        update_config_var $config_path $var_name $value true
-    done
-}
 
 # Check prerequisites for PostgreSQL database
 check_variables_postgresql() {
@@ -211,8 +133,8 @@ psql_query() {
 
     local result=""
 
-    if [ -n "${DB_SERVER_ZBX_PASS}" ]; then
-        export PGPASSWORD="${DB_SERVER_ZBX_PASS}"
+    if [ -n "${DB_SERVER_ZEUS_PASS}" ]; then
+        export PGPASSWORD="${DB_SERVER_ZEUS_PASS}"
     fi
 
     if [ "${POSTGRES_USE_IMPLICIT_SEARCH_PATH,,}" == "false" ] && [ -n "${DB_SERVER_SCHEMA}" ]; then
@@ -279,23 +201,20 @@ create_db_database_postgresql() {
 }
 
 create_db_schema_postgresql() {
-    DBVERSION_TABLE_EXISTS=$(psql_query "SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid = 
-                                         c.relnamespace WHERE  n.nspname = '$DB_SERVER_SCHEMA' AND c.relname = 'dbversion'" "${DB_SERVER_DBNAME}")
+    ZEUS_TABLE_EXISTS=$(psql_query "SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid = 
+                                         c.relnamespace WHERE  n.nspname = '$DB_SERVER_SCHEMA' AND c.relname = 'tag'" "${DB_SERVER_DBNAME}")
 
-    if [ -n "${DBVERSION_TABLE_EXISTS}" ]; then
-        echo "** Table '${DB_SERVER_DBNAME}.dbversion' already exists."
-        ZEUS_DB_VERSION=$(psql_query "SELECT mandatory FROM ${DB_SERVER_SCHEMA}.dbversion" "${DB_SERVER_DBNAME}")
-    fi
+#    if [ -n "${DBVERSION_TABLE_EXISTS}" ]; then
+#        echo "** Table '${DB_SERVER_DBNAME}.dbversion' already exists."
+#        ZEUS_DB_VERSION=$(psql_query "SELECT mandatory FROM ${DB_SERVER_SCHEMA}.dbversion" "${DB_SERVER_DBNAME}")
+#    fi
 
-    if [ -z "${ZEUS_DB_VERSION}" ]; then
+    if [ -z "${ZEUS_TABLE_EXISTS}" ]; then
         echo "** Creating '${DB_SERVER_DBNAME}' schema in PostgreSQL"
 
-        if [ "${ENABLE_TIMESCALEDB,,}" == "true" ]; then
-            psql_query "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;" "${DB_SERVER_DBNAME}"
-        fi
 
         if [ -n "${DB_SERVER_ZEUS_PASS}" ]; then
-            export PGPASSWORD="${DB_SERVER_ZBX_PASS}"
+            export PGPASSWORD="${DB_SERVER_ZEUS_PASS}"
         fi
 
         if [ "${POSTGRES_USE_IMPLICIT_SEARCH_PATH,,}" == "false" ] && [ -n "${DB_SERVER_SCHEMA}" ]; then
@@ -324,6 +243,50 @@ create_db_schema_postgresql() {
 }
 
 
+# Get zabbix api token 
+    
+get_zbx_apitoken() {
+
+    WAIT_TIMEOUT=5
+
+    ZBX_API_URL="http://${ZEUS_ZABBIX_HOST}:${ZEUS_ZABBIX_PORT}/api_jsonrpc.php"
+
+    data='{"jsonrpc": "2.0","method": "user.login","params":{"user":"Admin","password":"zabbix"},"id":1,"auth":null}'
+
+    # Check zbx ui is ok
+
+    while true :
+    do
+
+        res=`eval exec "curl -d '$data' -H 'Content-Type: application/json' -X POST -s $ZBX_API_URL"`
+
+        if auth=`echo $res | python -c 'import sys, json; print(json.load(sys.stdin)["result"])' 2> /dev/null`;then
+            break
+        fi
+        echo "****  zabbix-web-nginx-pgsql is not available. Waiting $WAIT_TIMEOUT seconds..."
+        sleep $WAIT_TIMEOUT
+    done
+
+
+    # Check token
+    data='{"jsonrpc": "2.0","method": "token.get","params":{"output": ["tokenid"], "filter": {"name": "zeus"}},"id":1,"auth":"'${auth}'"}'
+    res=`eval exec "curl -d '$data' -H 'Content-Type: application/json' -X POST -s $ZBX_API_URL"`
+    if ! tokenid=`echo $res | python -c 'import sys, json; print(json.load(sys.stdin)["result"][0]["tokenid"])' 2> /dev/null`;then
+            data='{"jsonrpc": "2.0","method": "token.create","params":{"name":"zeus","userid":"1"},"id":1,"auth":"'${auth}'"}'
+            res=`eval exec "curl -d '$data' -H 'Content-Type: application/json' -X POST -s $ZBX_API_URL"`
+            tokenid=`echo $res | python -c 'import sys, json; print(json.load(sys.stdin)["result"]["tokenids"][0])'`
+    fi
+
+    # Get API token
+    data='{"jsonrpc": "2.0","method": "token.generate","params":["'${tokenid}'"],"id":1,"auth":"'${auth}'"}'
+    res=`eval exec "curl -d '$data' -H 'Content-Type: application/json' -X POST -s $ZBX_API_URL"`
+    token=`echo $res | python -c 'import sys, json; print(json.load(sys.stdin)["result"][0]["token"])'`
+    export ZBXAPITOKEN=$token
+
+}
+
+
+
 prepare_server() {
     echo "** Preparing Zeus IoT Server"
 
@@ -331,6 +294,7 @@ prepare_server() {
     check_db_connect_postgresql
     create_db_database_postgresql
     create_db_schema_postgresql
+    get_zbx_apitoken
 
 }
 
