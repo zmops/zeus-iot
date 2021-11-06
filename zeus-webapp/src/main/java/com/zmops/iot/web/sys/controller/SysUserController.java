@@ -2,9 +2,11 @@ package com.zmops.iot.web.sys.controller;
 
 import com.zmops.iot.core.log.BussinessLog;
 import com.zmops.iot.domain.BaseEntity;
+import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.web.auth.Permission;
+import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.sys.dto.UserDto;
 import com.zmops.iot.web.sys.dto.param.UserParam;
 import com.zmops.iot.web.sys.service.SysUserService;
@@ -93,6 +95,9 @@ public class SysUserController {
     @RequestMapping("/reset")
     @BussinessLog(value = "重置密码")
     public ResponseData reset(@RequestParam("userId") Long userId) {
+        if(userId==1){
+            throw new ServiceException(BizExceptionEnum.CANT_CHANGE_ADMIN_PWD);
+        }
         sysUserService.reset(userId);
         return ResponseData.success();
     }

@@ -153,6 +153,9 @@ public class SysUserService implements CommandLineRunner {
         if (null == oldUser) {
             throw new ServiceException(BizExceptionEnum.USER_NOT_EXIST);
         }
+        if (user.getUserId() == 1) {
+            throw new ServiceException(BizExceptionEnum.CANT_CHANGE_ADMIN);
+        }
         //判断角色是否存在
         checkByRole(user.getRoleId());
 
@@ -175,6 +178,9 @@ public class SysUserService implements CommandLineRunner {
      * @return
      */
     public void deleteUser(UserParam user) {
+        if (user.getUserIds().contains(1)) {
+            throw new ServiceException(BizExceptionEnum.CANT_DELETE_ADMIN);
+        }
         List<SysUser> list = new QSysUser().userId.in(user.getUserIds()).findList();
         if (ToolUtil.isEmpty(list)) {
             throw new ServiceException(BizExceptionEnum.USER_NOT_EXIST);
@@ -227,6 +233,9 @@ public class SysUserService implements CommandLineRunner {
 
         if (null == loginUser) {
             throw new ServiceException(AuthExceptionEnum.NOT_LOGIN_ERROR);
+        }
+        if (loginUser.getId() == 1) {
+            throw new ServiceException(BizExceptionEnum.CANT_CHANGE_ADMIN_PWD);
         }
         SysUser user = new QSysUser().userId.eq(loginUser.getId()).findOne();
         String rawNewPasswd = "";

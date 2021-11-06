@@ -50,6 +50,7 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     CANT_DELETE_ADMIN(600, "不能删除超级管理员"),
     CANT_FREEZE_ADMIN(600, "不能冻结超级管理员"),
     CANT_CHANGE_ADMIN(600, "不能修改超级管理员角色"),
+    CANT_CHANGE_ADMIN_PWD(600, "不能修改超级管理员密码"),
     ROLE_HAS_EXIST(601, "角色已存在"),
     ROLE_HAS_BIND_USER(602, "角色绑定了用户,请先解除绑定!"),
     MENU_NOT_EXIST_OR_NO_PRERMISSION(603, "菜单不存在或无权授权此菜单"),
