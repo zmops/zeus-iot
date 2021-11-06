@@ -3,8 +3,10 @@ package com.zmops.iot.web.sys.service;
 import com.zmops.iot.domain.sys.SysConfig;
 import com.zmops.iot.domain.sys.query.QSysConfig;
 import com.zmops.iot.enums.CommonStatus;
+import com.zmops.iot.web.init.SysConfigInit;
 import com.zmops.iot.web.sys.dto.SysParamDto;
 import io.ebean.DB;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +18,9 @@ import java.util.stream.Collectors;
  **/
 @Service
 public class SysParamService {
+
+    @Autowired
+    SysConfigInit sysConfigInit;
 
     public List<SysConfig> list() {
         return new QSysConfig().status.eq(CommonStatus.ENABLE.getCode()).orderBy().id.desc().findList();
@@ -31,5 +36,7 @@ public class SysParamService {
             sysConfig.setRemark(sysParam.getRemark());
         }
         DB.saveAll(sysParamList);
+
+        sysConfigInit.initConfigConst();
     }
 }
