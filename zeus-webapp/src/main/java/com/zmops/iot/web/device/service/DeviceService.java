@@ -10,8 +10,6 @@ import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.device.query.QDevicesGroups;
 import com.zmops.iot.domain.device.query.QTag;
 import com.zmops.iot.domain.product.Product;
-import com.zmops.iot.domain.product.ProductService;
-import com.zmops.iot.domain.product.ProductServiceParam;
 import com.zmops.iot.domain.product.query.*;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
@@ -39,7 +37,7 @@ import java.util.stream.Collectors;
  * @author yefei
  **/
 @Service
-public class DeviceService  implements CommandLineRunner{
+public class DeviceService implements CommandLineRunner {
 
     @Autowired
     private SaveDeviceWorker saveDeviceWorker;
@@ -281,8 +279,8 @@ public class DeviceService  implements CommandLineRunner{
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return deviceWork.getWorkResult().getResult().getDeviceId();
+        updateDeviceNameCache(deviceDto.getDeviceId(), deviceDto.getName());
+        return deviceDto.getDeviceId();
     }
 
     /**
@@ -333,7 +331,7 @@ public class DeviceService  implements CommandLineRunner{
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        updateDeviceNameCache(deviceDto.getDeviceId(), deviceDto.getName());
         return deviceWork.getWorkResult().getResult().getDeviceId();
     }
 
@@ -408,6 +406,7 @@ public class DeviceService  implements CommandLineRunner{
             e.printStackTrace();
         }
 
+        removeDeviceNameCache(deviceDto.getDeviceId());
 
         return deviceDto.getDeviceId();
     }
@@ -548,14 +547,30 @@ public class DeviceService  implements CommandLineRunner{
         DB.update(Device.class).where().eq("device_id", deviceId).asUpdate().set("status", status).setNull("online").update();
     }
 
-    private void updateDevice() {
-        List<Device> deviceList = new QDevice().findList();
+    /**
+     * 更新设备名称缓存
+     */
+    private void updateDeviceCache() {
+        List<Device> deviceList = new QDevice().select(QDevice.Alias.deviceId, QDevice.Alias.name).findList();
         Map<String, String> map = deviceList.parallelStream().collect(Collectors.toMap(Device::getDeviceId, Device::getName));
         DefinitionsUtil.updateDeviceCache(map);
     }
 
+    private void updateDeviceNameCache(String deviceId, String name) {
+        Map<String, String> all = DefinitionsUtil.getDeviceCache().getAll();
+        all.put(deviceId, name);
+        DefinitionsUtil.updateDeviceCache(all);
+    }
+
+    private void removeDeviceNameCache(String deviceId) {
+        Map<String, String> all = DefinitionsUtil.getDeviceCache().getAll();
+        all.remove(deviceId);
+        DefinitionsUtil.updateDeviceCache(all);
+    }
+
+
     @Override
     public void run(String... args) throws Exception {
-        updateDevice();
+        updateDeviceCache();
     }
 }
