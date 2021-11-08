@@ -55,6 +55,7 @@ public class ProductServiceController {
      */
     @RequestMapping("/create")
     public ResponseData create(@Validated(BaseEntity.Create.class) @RequestBody ProductServiceDto productServiceDto) {
+        productServiceDto.setId(null);
         return ResponseData.success(productSvcService.create(productServiceDto));
     }
 

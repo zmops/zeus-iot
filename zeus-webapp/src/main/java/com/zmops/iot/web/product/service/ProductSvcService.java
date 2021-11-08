@@ -1,7 +1,5 @@
 package com.zmops.iot.web.product.service;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
 import com.zmops.iot.async.executor.Async;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.ProductService;
@@ -10,10 +8,6 @@ import com.zmops.iot.domain.product.ProductServiceRelation;
 import com.zmops.iot.domain.product.query.QProductService;
 import com.zmops.iot.domain.product.query.QProductServiceParam;
 import com.zmops.iot.domain.product.query.QProductServiceRelation;
-import com.zmops.iot.domain.sys.SysDict;
-import com.zmops.iot.domain.sys.SysDictType;
-import com.zmops.iot.domain.sys.query.QSysDict;
-import com.zmops.iot.domain.sys.query.QSysDictType;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.DefinitionsUtil;
@@ -41,7 +35,7 @@ import java.util.stream.Collectors;
  * 产品 物模型 服务
  **/
 @Service
-public class ProductSvcService implements CommandLineRunner{
+public class ProductSvcService implements CommandLineRunner {
 
     @Autowired
     SaveProdSvcWorker saveProdSvcWorker;
@@ -156,6 +150,7 @@ public class ProductSvcService implements CommandLineRunner{
 
         if (ToolUtil.isNotEmpty(productServiceDto.getProductServiceParamList())) {
             for (ProductServiceParam productServiceParam : productServiceDto.getProductServiceParamList()) {
+                productServiceParam.setServiceId(null);
                 productServiceParam.setServiceId(serviceId);
                 productServiceParam.setDeviceId(productServiceDto.getRelationId());
             }
