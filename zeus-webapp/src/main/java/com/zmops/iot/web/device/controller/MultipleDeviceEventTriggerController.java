@@ -98,7 +98,7 @@ public class MultipleDeviceEventTriggerController {
     public ResponseData createDeviceEventRule(@RequestBody @Validated(value = BaseEntity.Create.class)
                                                       MultipleDeviceEventRule eventRule) {
 
-        Long eventRuleId = IdUtil.getSnowflake().nextId(); // ruleId, trigger name
+        Long eventRuleId = IdUtil.getSnowflake().nextId();
 
         multipleDeviceEventRuleService.createDeviceEventRule(eventRuleId, eventRule);
 
@@ -138,11 +138,10 @@ public class MultipleDeviceEventTriggerController {
      */
     @PostMapping("/status")
     public ResponseData updateProductEventStatus(@RequestBody @Validated(value = BaseEntity.Status.class) MultipleDeviceEventRule eventRule) {
-        DB.update(ProductEventRelation.class).where().eq("eventRuleId", eventRule.getEventRuleId()).eq("relationId", eventRule.getDeviceId()).asUpdate()
+        DB.update(ProductEventRelation.class).where().eq("eventRuleId", eventRule.getEventRuleId()).asUpdate()
                 .set("status", eventRule.getStatus()).update();
 
-        ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId())
-                .relationId.eq(eventRule.getDeviceId()).findOne();
+        ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId()).findOne();
 
         if (null != productEventRelation && null != productEventRelation.getZbxId()) {
             zbxTrigger.triggerStatusUpdate(productEventRelation.getZbxId(), eventRule.getStatus().equals(CommonStatus.ENABLE.getCode()) ? "0" : "1");
