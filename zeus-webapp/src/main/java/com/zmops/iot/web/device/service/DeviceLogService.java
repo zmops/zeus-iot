@@ -284,14 +284,14 @@ public class DeviceLogService {
         }
         //关联触发设备
         List<Long> eventRuleIds = pagedList.getList().parallelStream().map(ScenesTriggerRecord::getRuleId).collect(Collectors.toList());
-        String sql = "select d.device_id,d.name,p.event_rule_id from product_event_relation p LEFT JOIN device d on d.device_id = p.relation_id where p.event_rule_id in (:eventRuleIds)";
+        String sql = "select distinct d.device_id,d.name,p.event_rule_id from product_event_relation p LEFT JOIN device d on d.device_id = p.relation_id where p.event_rule_id in (:eventRuleIds)";
 
         List<DeviceRelationDto> triggerDeviceDtos = DB.findDto(DeviceRelationDto.class, sql).setParameter("eventRuleIds", eventRuleIds).findList();
         Map<Long, List<DeviceRelationDto>> triggerDeviceMap = triggerDeviceDtos.parallelStream()
                 .collect(Collectors.groupingBy(DeviceRelationDto::getEventRuleId));
 
         //关联 执行设备
-        sql = "select d.device_id,d.name,p.event_rule_id from product_event_service p LEFT JOIN device d on d.device_id = p.execute_device_id where p.event_rule_id in (:eventRuleIds)";
+        sql = "select distinct d.device_id,d.name,p.event_rule_id from product_event_service p LEFT JOIN device d on d.device_id = p.execute_device_id where p.event_rule_id in (:eventRuleIds)";
         List<DeviceRelationDto> executeDeviceDtos = DB.findDto(DeviceRelationDto.class, sql).setParameter("eventRuleIds", eventRuleIds).findList();
         Map<Long, List<DeviceRelationDto>> executeDeviceMap = executeDeviceDtos.parallelStream()
                 .collect(Collectors.groupingBy(DeviceRelationDto::getEventRuleId));
