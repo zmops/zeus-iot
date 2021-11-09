@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * @author yefei
  **/
@@ -18,13 +20,29 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonSerialize(using = CachedValueFilter.class)
 public class DeviceLogDto {
+
     private String logType;
+
     private String triggerTime;
+
     private String content;
+
     @CachedValue(type = DicType.Device)
     private String deviceId;
+
     @CachedValue(value = "EVENT_LEVEL")
     private String severity;
+
     private String param;
+
     private String status;
+
+    private String triggerType;
+
+    private String triggerBody;
+
+    private List<DeviceRelationDto> triggerDevice;
+
+    private List<DeviceRelationDto> executeDevice;
+
 }

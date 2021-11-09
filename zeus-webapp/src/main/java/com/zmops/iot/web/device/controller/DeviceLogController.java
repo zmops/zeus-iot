@@ -33,7 +33,6 @@ public class DeviceLogController {
     @RequestMapping("getLogByPage")
     public Pager<DeviceLogDto> getLogByPage(@RequestBody DeviceLogParam deviceLogParam) {
 
-        return deviceLogService.getLogByPage(deviceLogParam.getDeviceId(), deviceLogParam.getLogType(), deviceLogParam.getTimeFrom(),
-                deviceLogParam.getTimeTill(),deviceLogParam.getContent(), deviceLogParam.getPage(), deviceLogParam.getMaxRow());
+        return deviceLogService.getLogByPage(deviceLogParam);
     }
 }

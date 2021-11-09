@@ -8,10 +8,23 @@ import lombok.Data;
  **/
 @Data
 public class DeviceLogParam extends BaseQueryParam {
+
     private String logType;
+
     private String deviceId;
+
     private String content;
+
     private Long timeFrom;
+
     private Long timeTill;
+
+    private String triggerType;
+
+    private Long triggerUser;
+
+    private Long eventRuleId;
+
+    private String triggerDeviceId;
 
 }

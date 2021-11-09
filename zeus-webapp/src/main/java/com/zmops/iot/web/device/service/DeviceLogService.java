@@ -6,19 +6,24 @@ import com.zmops.iot.domain.device.ServiceExecuteRecord;
 import com.zmops.iot.domain.device.query.QEventTriggerRecord;
 import com.zmops.iot.domain.device.query.QScenesTriggerRecord;
 import com.zmops.iot.domain.device.query.QServiceExecuteRecord;
+import com.zmops.iot.domain.product.query.QProductEventRelation;
+import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.model.page.Pager;
+import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.LocalDateTimeUtils;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.alarm.dto.AlarmDto;
 import com.zmops.iot.web.alarm.dto.param.AlarmParam;
 import com.zmops.iot.web.alarm.service.AlarmService;
 import com.zmops.iot.web.device.dto.DeviceLogDto;
+import com.zmops.iot.web.device.dto.DeviceRelationDto;
+import com.zmops.iot.web.device.dto.param.DeviceLogParam;
+import io.ebean.DB;
+import io.ebean.PagedList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -92,29 +97,24 @@ public class DeviceLogService {
     }
 
 
-    public Pager<DeviceLogDto> getLogByPage(String deviceId, String logType, Long timeFrom, Long timeTill, String content, int page, int maxSize) {
-        List<DeviceLogDto> deviceLogDtoList;
-        if (ToolUtil.isNotEmpty(logType) && LOG_TYPE_ALARM.equals(logType)) {
+    public Pager<DeviceLogDto> getLogByPage(DeviceLogParam deviceLogParam) {
 
-            deviceLogDtoList = getAlarmLog(deviceId, timeFrom, timeTill, content);
+        String logType = deviceLogParam.getLogType();
 
-        } else if (ToolUtil.isNotEmpty(logType) && LOG_TYPE_SERVICE.equals(logType)) {
+        if (ToolUtil.isNotEmpty(logType) && LOG_TYPE_SERVICE.equals(logType)) {
 
-            deviceLogDtoList = getServiceLog(deviceId, timeFrom, timeTill, content);
+            return getServiceLog(deviceLogParam);
 
         } else if (ToolUtil.isNotEmpty(logType) && LOG_TYPE_SCENES.equals(logType)) {
 
-            deviceLogDtoList = getScenesLog(timeFrom, timeTill, content);
+            return getScenesLog(deviceLogParam);
 
         } else {
 
-            deviceLogDtoList = getEventLog(deviceId, timeFrom, timeTill, content);
+            return getEventLog(deviceLogParam);
 
         }
 
-        List<DeviceLogDto> res = deviceLogDtoList.parallelStream().skip((page - 1) * maxSize)
-                .limit(maxSize).collect(Collectors.toList());
-        return new Pager<>(res, deviceLogDtoList.size());
     }
 
     /**
@@ -149,104 +149,160 @@ public class DeviceLogService {
     /**
      * 事件日志
      *
-     * @param deviceId
-     * @param timeFrom
-     * @param timeTill
-     * @param content
+     * @param deviceLogParam
      * @return
      */
-    private List<DeviceLogDto> getEventLog(String deviceId, Long timeFrom, Long timeTill, String content) {
+    private Pager<DeviceLogDto> getEventLog(DeviceLogParam deviceLogParam) {
         List<DeviceLogDto> deviceLogDtoList = new ArrayList<>();
+
         QEventTriggerRecord query = new QEventTriggerRecord();
-        if (ToolUtil.isNotEmpty(deviceId)) {
-            query.deviceId.eq(deviceId);
+        if (ToolUtil.isNotEmpty(deviceLogParam.getDeviceId())) {
+            query.deviceId.eq(deviceLogParam.getDeviceId());
         }
-        if (ToolUtil.isNotEmpty(content)) {
-            query.eventName.contains(content);
+        if (ToolUtil.isNotEmpty(deviceLogParam.getContent())) {
+            query.eventName.eq(deviceLogParam.getContent());
         }
-        if (null != timeFrom) {
-            query.createTime.ge(LocalDateTimeUtils.getLDTByMilliSeconds(timeFrom * 1000));
+        if (null != deviceLogParam.getTimeFrom()) {
+            query.createTime.ge(LocalDateTimeUtils.getLDTByMilliSeconds(deviceLogParam.getTimeFrom() * 1000));
         }
-        if (null != timeTill) {
-            query.createTime.lt(LocalDateTimeUtils.getLDTByMilliSeconds(timeTill * 1000));
+        if (null != deviceLogParam.getTimeTill()) {
+            query.createTime.lt(LocalDateTimeUtils.getLDTByMilliSeconds(deviceLogParam.getTimeTill() * 1000));
         }
         query.orderBy().createTime.desc();
-        List<EventTriggerRecord> list = query.findList();
-        if (ToolUtil.isNotEmpty(list)) {
-            list.forEach(service -> {
+
+        PagedList<EventTriggerRecord> pagedList = query.setFirstRow((deviceLogParam.getPage() - 1) * deviceLogParam.getMaxRow())
+                .setMaxRows(deviceLogParam.getMaxRow()).findPagedList();
+
+        if (ToolUtil.isNotEmpty(pagedList.getList())) {
+            pagedList.getList().forEach(service -> {
                 deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_EVENT).content(service.getEventName())
-                        .triggerTime(LocalDateTimeUtils.formatTime(service.getCreateTime()))
+                        .triggerTime(LocalDateTimeUtils.formatTime(service.getCreateTime())).deviceId(service.getDeviceId())
                         .param(service.getEventValue()).build());
             });
         }
-        return deviceLogDtoList;
+        return new Pager<>(deviceLogDtoList, pagedList.getTotalCount());
     }
 
     /**
      * 服务日志
      *
-     * @param deviceId
-     * @param timeFrom
-     * @param timeTill
-     * @param content
+     * @param deviceLogParam
      * @return
      */
-    private List<DeviceLogDto> getServiceLog(String deviceId, Long timeFrom, Long timeTill, String content) {
+    private Pager<DeviceLogDto> getServiceLog(DeviceLogParam deviceLogParam) {
         List<DeviceLogDto> deviceLogDtoList = new ArrayList<>();
+
         QServiceExecuteRecord query = new QServiceExecuteRecord();
-        if (ToolUtil.isNotEmpty(deviceId)) {
-            query.deviceId.eq(deviceId);
+        if (ToolUtil.isNotEmpty(deviceLogParam.getDeviceId())) {
+            query.deviceId.eq(deviceLogParam.getDeviceId());
         }
-        if (ToolUtil.isNotEmpty(content)) {
-            query.serviceName.contains(content);
+        if (ToolUtil.isNotEmpty(deviceLogParam.getContent())) {
+            query.serviceName.eq(deviceLogParam.getContent());
         }
-        if (null != timeFrom) {
-            query.createTime.ge(LocalDateTimeUtils.getLDTByMilliSeconds(timeFrom * 1000));
+        if (ToolUtil.isNotEmpty(deviceLogParam.getTriggerType())) {
+            query.executeType.eq(deviceLogParam.getTriggerType());
         }
-        if (null != timeTill) {
-            query.createTime.lt(LocalDateTimeUtils.getLDTByMilliSeconds(timeTill * 1000));
+        if (ToolUtil.isNotEmpty(deviceLogParam.getTriggerUser())) {
+            query.executeUser.eq(deviceLogParam.getTriggerUser());
+        }
+        if (ToolUtil.isNotEmpty(deviceLogParam.getEventRuleId())) {
+            query.executeRuleId.eq(deviceLogParam.getEventRuleId());
+        }
+        if (null != deviceLogParam.getTimeFrom()) {
+            query.createTime.ge(LocalDateTimeUtils.getLDTByMilliSeconds(deviceLogParam.getTimeFrom() * 1000));
+        }
+        if (null != deviceLogParam.getTimeTill()) {
+            query.createTime.lt(LocalDateTimeUtils.getLDTByMilliSeconds(deviceLogParam.getTimeTill() * 1000));
         }
         query.orderBy().createTime.desc();
-        List<ServiceExecuteRecord> list = query.findList();
-        if (ToolUtil.isNotEmpty(list)) {
-            list.forEach(service -> {
+
+        PagedList<ServiceExecuteRecord> pagedList = query.setFirstRow((deviceLogParam.getPage() - 1) * deviceLogParam.getMaxRow())
+                .setMaxRows(deviceLogParam.getMaxRow()).findPagedList();
+
+        if (ToolUtil.isNotEmpty(pagedList.getList())) {
+            pagedList.getList().forEach(service -> {
+
+                String triggerBody = null != service.getExecuteUser() ?
+                        DefinitionsUtil.getSysUserName(service.getExecuteUser()) : DefinitionsUtil.getTriggerName(service.getExecuteRuleId());
+
                 deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_SERVICE).content(service.getServiceName())
                         .triggerTime(LocalDateTimeUtils.formatTime(service.getCreateTime()))
-                        .param(service.getParam()).build());
+                        .param(service.getParam()).triggerType(service.getExecuteType()).triggerBody(triggerBody).build());
             });
         }
-        return deviceLogDtoList;
+        return new Pager<>(deviceLogDtoList, pagedList.getTotalCount());
     }
 
     /**
      * 场景日志
      *
-     * @param timeFrom
-     * @param timeTill
-     * @param content
+     * @param deviceLogParam
      * @return
      */
-    private List<DeviceLogDto> getScenesLog(Long timeFrom, Long timeTill, String content) {
+    private Pager<DeviceLogDto> getScenesLog(DeviceLogParam deviceLogParam) {
         List<DeviceLogDto> deviceLogDtoList = new ArrayList<>();
+
         QScenesTriggerRecord query = new QScenesTriggerRecord();
-        if (ToolUtil.isNotEmpty(content)) {
-            query.ruleName.contains(content);
+        if (null != deviceLogParam.getEventRuleId()) {
+            query.ruleId.eq(deviceLogParam.getEventRuleId());
         }
-        if (null != timeFrom) {
-            query.createTime.ge(LocalDateTimeUtils.getLDTByMilliSeconds(timeFrom * 1000));
+        if (ToolUtil.isNotEmpty(deviceLogParam.getTriggerType())) {
+            query.triggerType.eq(deviceLogParam.getTriggerType());
         }
-        if (null != timeTill) {
-            query.createTime.lt(LocalDateTimeUtils.getLDTByMilliSeconds(timeTill * 1000));
+        if (null != deviceLogParam.getTriggerUser()) {
+            query.triggerUser.eq(deviceLogParam.getTriggerUser());
         }
+        if (null != deviceLogParam.getTimeFrom()) {
+            query.createTime.ge(LocalDateTimeUtils.getLDTByMilliSeconds(deviceLogParam.getTimeFrom() * 1000));
+        }
+        if (null != deviceLogParam.getTimeTill()) {
+            query.createTime.lt(LocalDateTimeUtils.getLDTByMilliSeconds(deviceLogParam.getTimeTill() * 1000));
+        }
+
+        if (ToolUtil.isNotEmpty(deviceLogParam.getTriggerDeviceId())) {
+            List<Long> triggerRuleIds = new QProductEventRelation().select(QProductEventRelation.alias().eventRuleId).relationId.eq(deviceLogParam.getTriggerDeviceId()).findSingleAttributeList();
+            if (ToolUtil.isEmpty(triggerRuleIds)) {
+                return new Pager<>(Collections.emptyList(), 0);
+            }
+            query.ruleId.in(triggerRuleIds);
+        }
+
+        if (ToolUtil.isNotEmpty(deviceLogParam.getDeviceId())) {
+            List<Long> executeRuleIds = new QProductEventService().select(QProductEventService.alias().eventRuleId).executeDeviceId.eq(deviceLogParam.getTriggerDeviceId()).findSingleAttributeList();
+            if (ToolUtil.isEmpty(executeRuleIds)) {
+                return new Pager<>(Collections.emptyList(), 0);
+            }
+            query.ruleId.in(executeRuleIds);
+        }
+
         query.orderBy().createTime.desc();
-        List<ScenesTriggerRecord> list = query.findList();
-        if (ToolUtil.isNotEmpty(list)) {
-            list.forEach(service -> {
-                deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_SCENES).content(service.getRuleName())
-                        .triggerTime(LocalDateTimeUtils.formatTime(service.getCreateTime()))
-                        .build());
-            });
+        PagedList<ScenesTriggerRecord> pagedList = query.setFirstRow((deviceLogParam.getPage() - 1) * deviceLogParam.getMaxRow())
+                .setMaxRows(deviceLogParam.getMaxRow()).findPagedList();
+
+        if (ToolUtil.isEmpty(pagedList.getList())) {
+            return new Pager<>(deviceLogDtoList, pagedList.getTotalCount());
         }
-        return deviceLogDtoList;
+        //关联触发设备
+        List<Long> eventRuleIds = pagedList.getList().parallelStream().map(ScenesTriggerRecord::getRuleId).collect(Collectors.toList());
+        String sql = "select d.device_id,d.name,p.event_rule_id from product_event_relation p LEFT JOIN device d on d.device_id = p.relation_id where p.event_rule_id in (:eventRuleIds)";
+
+        List<DeviceRelationDto> triggerDeviceDtos = DB.findDto(DeviceRelationDto.class, sql).setParameter("eventRuleIds", eventRuleIds).findList();
+        Map<Long, List<DeviceRelationDto>> triggerDeviceMap = triggerDeviceDtos.parallelStream()
+                .collect(Collectors.groupingBy(DeviceRelationDto::getEventRuleId));
+
+        //关联 执行设备
+        sql = "select d.device_id,d.name,p.event_rule_id from product_event_service p LEFT JOIN device d on d.device_id = p.execute_device_id where p.event_rule_id in (:eventRuleIds)";
+        List<DeviceRelationDto> executeDeviceDtos = DB.findDto(DeviceRelationDto.class, sql).setParameter("eventRuleIds", eventRuleIds).findList();
+        Map<Long, List<DeviceRelationDto>> executeDeviceMap = executeDeviceDtos.parallelStream()
+                .collect(Collectors.groupingBy(DeviceRelationDto::getEventRuleId));
+
+        pagedList.getList().forEach(service -> {
+            deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_SCENES).content(service.getRuleName())
+                    .triggerTime(LocalDateTimeUtils.formatTime(service.getCreateTime())).triggerType(service.getTriggerType())
+                    .triggerBody(Optional.ofNullable(service.getTriggerUser()).map(DefinitionsUtil::getSysUserName).orElse("-"))
+                    .triggerDevice(triggerDeviceMap.get(service.getRuleId())).executeDevice(executeDeviceMap.get(service.getRuleId()))
+                    .build());
+        });
+        return new Pager<>(deviceLogDtoList, pagedList.getTotalCount());
     }
 }

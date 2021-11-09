@@ -11,7 +11,4 @@ public class MultipleDeviceEventParm extends BaseQueryParam {
 
     private String eventRuleName;
 
-
-
-    private String classify = "1";
 }

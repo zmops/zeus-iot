@@ -50,7 +50,7 @@ public class MultipleDeviceEventTriggerController {
     private static final String EXECUTE_TAG_NAME = "__scene__";
 
     /**
-     * 触发器 分页列表
+     * 场景 分页列表
      *
      * @param eventParm
      * @return
@@ -58,6 +58,17 @@ public class MultipleDeviceEventTriggerController {
     @PostMapping("/getEventByPage")
     public Pager<MultipleDeviceEventDto> getEventByPage(@RequestBody MultipleDeviceEventParm eventParm) {
         return multipleDeviceEventRuleService.getEventByPage(eventParm);
+    }
+
+    /**
+     * 场景 列表
+     *
+     * @param eventParm
+     * @return
+     */
+    @PostMapping("/list")
+    public ResponseData list(@RequestBody MultipleDeviceEventParm eventParm) {
+        return ResponseData.success(multipleDeviceEventRuleService.list(eventParm));
     }
 
     /**

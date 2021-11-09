@@ -54,6 +54,27 @@ public class MultipleDeviceEventRuleService {
     @Autowired
     ScenesLogWorker scenesLogWorker;
 
+    private static final String EVENT_CLASSIFY = "1";
+
+    /**
+     * 场景列表
+     *
+     * @param eventParm
+     * @return
+     */
+    public List<MultipleDeviceEventDto> list(MultipleDeviceEventParm eventParm) {
+        QProductEvent query = new QProductEvent();
+
+        if (ToolUtil.isNotEmpty(eventParm.getEventRuleName())) {
+            query.eventRuleName.contains(eventParm.getEventRuleName());
+        }
+        query.classify.eq(EVENT_CLASSIFY);
+
+        List<MultipleDeviceEventDto> list = query.orderBy(" create_time desc").asDto(MultipleDeviceEventDto.class).findList();
+
+        return list;
+    }
+
     /**
      * 设备联动 分页列表
      *
@@ -66,9 +87,7 @@ public class MultipleDeviceEventRuleService {
         if (ToolUtil.isNotEmpty(eventParm.getEventRuleName())) {
             query.eventRuleName.contains(eventParm.getEventRuleName());
         }
-        if (ToolUtil.isNotEmpty(eventParm.getClassify())) {
-            query.classify.eq(eventParm.getClassify());
-        }
+        query.classify.eq(EVENT_CLASSIFY);
 
         List<MultipleDeviceEventDto> list = query.setFirstRow((eventParm.getPage() - 1) * eventParm.getMaxRow())
                 .setMaxRows(eventParm.getMaxRow()).orderBy(" create_time desc").asDto(MultipleDeviceEventDto.class).findList();
