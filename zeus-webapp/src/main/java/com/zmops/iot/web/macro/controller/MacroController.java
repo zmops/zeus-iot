@@ -37,13 +37,13 @@ import java.util.stream.Collectors;
 public class MacroController {
 
     @Autowired
-    ZbxMacro zbxMacro;
+    private ZbxMacro zbxMacro;
 
     @Autowired
-    ZbxHost zbxHost;
+    private ZbxHost zbxHost;
 
     @Autowired
-    MacroService macroService;
+    private MacroService macroService;
 
     /**
      * 创建 变量
