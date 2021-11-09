@@ -41,6 +41,10 @@ public class DeviceLogDto {
 
     private String triggerBody;
 
+    private String key;
+
+    private Long eventRuleId;
+
     private List<DeviceRelationDto> triggerDevice;
 
     private List<DeviceRelationDto> executeDevice;

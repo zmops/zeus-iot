@@ -177,6 +177,7 @@ public class DeviceLogService {
             pagedList.getList().forEach(service -> {
                 deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_EVENT).content(service.getEventName())
                         .triggerTime(LocalDateTimeUtils.formatTime(service.getCreateTime())).deviceId(service.getDeviceId())
+                        .key(service.getKey())
                         .param(service.getEventValue()).build());
             });
         }
@@ -226,7 +227,7 @@ public class DeviceLogService {
                         DefinitionsUtil.getSysUserName(service.getExecuteUser()) : DefinitionsUtil.getTriggerName(service.getExecuteRuleId());
 
                 deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_SERVICE).content(service.getServiceName())
-                        .triggerTime(LocalDateTimeUtils.formatTime(service.getCreateTime()))
+                        .triggerTime(LocalDateTimeUtils.formatTime(service.getCreateTime())).deviceId(service.getDeviceId())
                         .param(service.getParam()).triggerType(service.getExecuteType()).triggerBody(triggerBody).build());
             });
         }
@@ -297,7 +298,7 @@ public class DeviceLogService {
                 .collect(Collectors.groupingBy(DeviceRelationDto::getEventRuleId));
 
         pagedList.getList().forEach(service -> {
-            deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_SCENES).content(service.getRuleName())
+            deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_SCENES).content(service.getRuleName()).eventRuleId(service.getRuleId())
                     .triggerTime(LocalDateTimeUtils.formatTime(service.getCreateTime())).triggerType(service.getTriggerType())
                     .triggerBody(Optional.ofNullable(service.getTriggerUser()).map(DefinitionsUtil::getSysUserName).orElse("-"))
                     .triggerDevice(triggerDeviceMap.get(service.getRuleId())).executeDevice(executeDeviceMap.get(service.getRuleId()))
