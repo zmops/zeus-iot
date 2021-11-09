@@ -50,12 +50,12 @@ public class SysUserController {
      */
     @Permission(code = "mgr")
     @PostMapping("/list")
-    public List<SysUser> list(@RequestBody UserParam userParam) {
+    public ResponseData list(@RequestBody UserParam userParam) {
         QSysUser qSysUser = new QSysUser();
         if (ToolUtil.isNotEmpty(userParam.getName())) {
             qSysUser.name.contains(userParam.getName());
         }
-        return qSysUser.findList();
+        return ResponseData.success(qSysUser.findList());
     }
 
     /**
