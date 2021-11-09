@@ -2,9 +2,12 @@ package com.zmops.iot.web.sys.controller;
 
 import com.zmops.iot.core.log.BussinessLog;
 import com.zmops.iot.domain.BaseEntity;
+import com.zmops.iot.domain.sys.SysUser;
+import com.zmops.iot.domain.sys.query.QSysUser;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
+import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.auth.Permission;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.sys.dto.UserDto;
@@ -15,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author nantian created at 2021/8/1 21:56
@@ -29,7 +33,7 @@ public class SysUserController {
     SysUserService sysUserService;
 
     /**
-     * 用户列表
+     * 用户分页列表
      *
      * @return
      */
@@ -37,6 +41,21 @@ public class SysUserController {
     @PostMapping("/getUserByPage")
     public Pager<UserDto> userList(@RequestBody UserParam userParam) {
         return sysUserService.userList(userParam);
+    }
+
+    /**
+     * 用户列表
+     *
+     * @return
+     */
+    @Permission(code = "mgr")
+    @PostMapping("/list")
+    public List<SysUser> list(@RequestBody UserParam userParam) {
+        QSysUser qSysUser = new QSysUser();
+        if (ToolUtil.isNotEmpty(userParam.getName())) {
+            qSysUser.name.contains(userParam.getName());
+        }
+        return qSysUser.findList();
     }
 
     /**
@@ -95,7 +114,7 @@ public class SysUserController {
     @RequestMapping("/reset")
     @BussinessLog(value = "重置密码")
     public ResponseData reset(@RequestParam("userId") Long userId) {
-        if(userId==1){
+        if (userId == 1) {
             throw new ServiceException(BizExceptionEnum.CANT_CHANGE_ADMIN_PWD);
         }
         sysUserService.reset(userId);
