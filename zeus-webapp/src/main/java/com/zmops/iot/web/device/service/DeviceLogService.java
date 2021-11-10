@@ -226,8 +226,8 @@ public class DeviceLogService {
                 String triggerBody = null != service.getExecuteUser() ?
                         DefinitionsUtil.getSysUserName(service.getExecuteUser()) : DefinitionsUtil.getTriggerName(service.getExecuteRuleId());
 
-                deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_SERVICE).content(service.getServiceName())
-                        .triggerTime(LocalDateTimeUtils.formatTime(service.getCreateTime())).deviceId(service.getDeviceId())
+                deviceLogDtoList.add(DeviceLogDto.builder().logType(LOG_TYPE_SERVICE).content(service.getServiceName()).eventRuleId(service.getExecuteRuleId())
+                        .triggerTime(LocalDateTimeUtils.formatTime(service.getCreateTime())).deviceId(service.getDeviceId()).userId(service.getExecuteUser())
                         .param(service.getParam()).triggerType(service.getExecuteType()).triggerBody(triggerBody).build());
             });
         }

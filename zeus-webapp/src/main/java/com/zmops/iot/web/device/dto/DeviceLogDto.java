@@ -45,6 +45,8 @@ public class DeviceLogDto {
 
     private Long eventRuleId;
 
+    private Long userId;
+
     private List<DeviceRelationDto> triggerDevice;
 
     private List<DeviceRelationDto> executeDevice;
