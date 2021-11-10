@@ -268,6 +268,7 @@ public class DeviceService implements CommandLineRunner {
         WorkerWrapper<DeviceDto, String> saveZbxHostWork = new WorkerWrapper.Builder<DeviceDto, String>().id("saveZbxHostWork")
                 .worker(saveZbxHostWorker).param(deviceDto)
                 .next(updateAttrZbxIdWork, updateDeviceZbxIdWork, saveOtherWork)
+                .callback(ICallback.PRINT_EXCEPTION_STACK_TRACE)
                 .build();
 
         WorkerWrapper<DeviceDto, Device> deviceWork = new WorkerWrapper.Builder<DeviceDto, Device>().id("saveDvice")
@@ -320,7 +321,6 @@ public class DeviceService implements CommandLineRunner {
         WorkerWrapper<DeviceDto, String> saveZbxHostWork = new WorkerWrapper.Builder<DeviceDto, String>().id("saveZbxHostWork")
                 .worker(saveZbxHostWorker).param(deviceDto)
                 .next(updateAttrZbxIdWork, saveOtherWork)
-                .callback(ICallback.PRINT_EXCEPTION_STACK_TRACE)
                 .build();
 
         WorkerWrapper<DeviceDto, Device> deviceWork = new WorkerWrapper.Builder<DeviceDto, Device>().id("saveDvice")
