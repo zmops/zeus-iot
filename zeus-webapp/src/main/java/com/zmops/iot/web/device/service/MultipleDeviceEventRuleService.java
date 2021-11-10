@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -68,11 +69,10 @@ public class MultipleDeviceEventRuleService {
         if (ToolUtil.isNotEmpty(eventParm.getEventRuleName())) {
             query.eventRuleName.contains(eventParm.getEventRuleName());
         }
+
         query.classify.eq(EVENT_CLASSIFY);
 
-        List<MultipleDeviceEventDto> list = query.orderBy(" create_time desc").asDto(MultipleDeviceEventDto.class).findList();
-
-        return list;
+        return query.orderBy(" create_time desc").asDto(MultipleDeviceEventDto.class).findList();
     }
 
     /**
@@ -125,7 +125,9 @@ public class MultipleDeviceEventRuleService {
                 " ps.event_rule_id IN (:eventRuleIds) " +
                 "GROUP BY " +
                 " ps.event_rule_id";
+
         List<MultipleDeviceServiceDto> deviceServiceDtos = DB.findDto(MultipleDeviceServiceDto.class, sql).setParameter("eventRuleIds", eventRuleIds).findList();
+
         Map<Long, MultipleDeviceServiceDto> deviceServiceMap = deviceServiceDtos.parallelStream()
                 .collect(Collectors.toConcurrentMap(MultipleDeviceServiceDto::getEventRuleId, o -> o));
 
@@ -176,7 +178,7 @@ public class MultipleDeviceEventRuleService {
         if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
             eventRule.getDeviceServices().forEach(i -> {
                 DB.sqlUpdate("insert into product_event_service(event_rule_id, execute_device_id, service_id) " +
-                        "values (:eventRuleId, :executeDeviceId, :serviceId)")
+                                "values (:eventRuleId, :executeDeviceId, :serviceId)")
                         .setParameter("eventRuleId", eventRuleId)
                         .setParameter("executeDeviceId", i.getExecuteDeviceId())
                         .setParameter("serviceId", i.getServiceId())
@@ -370,16 +372,16 @@ public class MultipleDeviceEventRuleService {
             alarmInfo.put("triggerUser", userId);
         }
 
-        WorkerWrapper<Map<String, Object>, Boolean> deviceServiceLogWork = WorkerWrapper.<Map<String, Object>, Boolean>builder().id("deviceServiceLogWorker")
+        WorkerWrapper<Map<String, Object>, Boolean> deviceServiceLogWork = new WorkerWrapper.Builder<Map<String, Object>, Boolean>().id("deviceServiceLogWorker")
                 .worker(deviceServiceLogWorker).param(alarmInfo)
                 .build();
-        WorkerWrapper<Map<String, Object>, Boolean> scenesLogWork = WorkerWrapper.<Map<String, Object>, Boolean>builder().id("scenesLogWorker")
+        WorkerWrapper<Map<String, Object>, Boolean> scenesLogWork = new WorkerWrapper.Builder<Map<String, Object>, Boolean>().id("scenesLogWorker")
                 .worker(scenesLogWorker).param(alarmInfo)
                 .build();
 
         try {
-            Async.work(1000, deviceServiceLogWork, scenesLogWork).awaitFinish();
-        } catch (Exception e) {
+            Async.beginWork(1000, deviceServiceLogWork, scenesLogWork);
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 
@@ -417,8 +419,8 @@ public class MultipleDeviceEventRuleService {
 
     @Data
     public static class Triggers {
-        private String      triggerid;
-        private String      description;
+        private String triggerid;
+        private String description;
         private List<Hosts> hosts;
     }
 

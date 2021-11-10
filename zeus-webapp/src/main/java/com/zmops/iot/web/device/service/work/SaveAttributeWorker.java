@@ -32,7 +32,7 @@ public class SaveAttributeWorker implements IWorker<DeviceDto, Boolean> {
     private static final String ATTR_TYPE_RELY = "18";
 
     @Override
-    public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> map) {
+    public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper> map) {
         log.debug("step 3:saveAttributeWorker----DEVICEID:{}…………",deviceDto.getDeviceId());
 
         String deviceId = deviceDto.getDeviceId();

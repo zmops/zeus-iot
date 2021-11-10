@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -173,14 +174,14 @@ public class ProductModelService {
         productAttribute.save();
 
 
-        WorkerWrapper<ProductAttr, Boolean> asyncAttrZbxIdWork = WorkerWrapper.<ProductAttr, Boolean>builder()
+        WorkerWrapper<ProductAttr, Boolean> asyncAttrZbxIdWork = new WorkerWrapper.Builder<ProductAttr, Boolean>()
                 .worker(asyncAttrZbxIdWorker).param(productAttr).build();
-        WorkerWrapper<ProductAttr, Boolean> saveProdAttrWork = WorkerWrapper.<ProductAttr, Boolean>builder()
-                .worker(saveProdAttrWorker).param(productAttr).nextOf(asyncAttrZbxIdWork).build();
+        WorkerWrapper<ProductAttr, Boolean> saveProdAttrWork = new WorkerWrapper.Builder<ProductAttr, Boolean>()
+                .worker(saveProdAttrWorker).param(productAttr).next(asyncAttrZbxIdWork).build();
 
         try {
-            Async.work(10000, saveProdAttrWork).awaitFinish();
-        } catch (Exception e) {
+            Async.beginWork(10000, saveProdAttrWork);
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -277,11 +278,11 @@ public class ProductModelService {
 
         DB.update(productAttribute);
 
-        WorkerWrapper<ProductAttr, Boolean> updateProdAttrWork = WorkerWrapper.<ProductAttr, Boolean>builder().worker(updateProdAttrWorker).param(productAttr).build();
+        WorkerWrapper<ProductAttr, Boolean> updateProdAttrWork = new WorkerWrapper.Builder<ProductAttr, Boolean>().worker(updateProdAttrWorker).param(productAttr).build();
 
         try {
-            Async.work(100, updateProdAttrWork).awaitFinish();
-        } catch (InterruptedException e) {
+            Async.beginWork(100, updateProdAttrWork);
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
 

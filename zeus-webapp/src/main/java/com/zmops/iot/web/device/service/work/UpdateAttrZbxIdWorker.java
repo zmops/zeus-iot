@@ -36,7 +36,7 @@ public class UpdateAttrZbxIdWorker implements IWorker<DeviceDto, Boolean> {
     ZbxItem zbxItem;
 
     @Override
-    public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> map) {
+    public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper> map) {
         log.debug("step 6:resolve Attr zbxID async----deviceid: {} …………",deviceDto.getDeviceId());
         String deviceId = deviceDto.getDeviceId();
 

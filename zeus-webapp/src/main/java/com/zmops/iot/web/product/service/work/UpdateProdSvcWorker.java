@@ -27,7 +27,7 @@ public class UpdateProdSvcWorker implements IWorker<ProductServiceDto, Boolean> 
 
 
     @Override
-    public Boolean action(ProductServiceDto productServiceDto, Map<String, WorkerWrapper<?, ?>> map) {
+    public Boolean action(ProductServiceDto productServiceDto, Map<String, WorkerWrapper> map) {
         log.debug("UpdateProdSvcWorker…………");
 
         String prodId = productServiceDto.getRelationId();

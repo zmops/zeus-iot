@@ -41,7 +41,7 @@ public class SaveOtherWorker implements IWorker<DeviceDto, Boolean> {
     ZbxTrigger zbxTrigger;
 
     @Override
-    public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> allWrappers) {
+    public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper> allWrappers) {
         log.debug("step 8:SaveOtherWorker----DEVICEID:{}…………", deviceDto.getDeviceId());
 
         String deviceId = deviceDto.getDeviceId();

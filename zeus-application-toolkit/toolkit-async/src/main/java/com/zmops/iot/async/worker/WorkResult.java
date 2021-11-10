@@ -7,12 +7,12 @@ public class WorkResult<V> {
     /**
      * 执行的结果
      */
-    private final V result;
+    private V result;
     /**
      * 结果状态
      */
-    private final ResultState resultState;
-    private final Exception ex;
+    private ResultState resultState;
+    private Exception ex;
 
     public WorkResult(V result, ResultState resultState) {
         this(result, resultState, null);
@@ -24,15 +24,9 @@ public class WorkResult<V> {
         this.ex = ex;
     }
 
-    /**
-     * 返回不可修改的DEFAULT单例。
-     */
     public static <V> WorkResult<V> defaultResult() {
-        //noinspection unchecked
-        return (WorkResult<V>) DEFAULT;
+        return new WorkResult<>(null, ResultState.DEFAULT);
     }
-
-    private static final WorkResult<?> DEFAULT = new WorkResult<>(null, ResultState.DEFAULT);
 
     @Override
     public String toString() {
@@ -47,11 +41,23 @@ public class WorkResult<V> {
         return ex;
     }
 
+    public void setEx(Exception ex) {
+        this.ex = ex;
+    }
+
     public V getResult() {
         return result;
     }
 
+    public void setResult(V result) {
+        this.result = result;
+    }
+
     public ResultState getResultState() {
         return resultState;
+    }
+
+    public void setResultState(ResultState resultState) {
+        this.resultState = resultState;
     }
 }

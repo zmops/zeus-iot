@@ -28,7 +28,7 @@ public class SaveProdAttrEventTriggerWorker implements IWorker<ProductAttr, Bool
     private static final String EVENT_TAG_NAME   = "__event__";
 
     @Override
-    public Boolean action(ProductAttr productAttr, Map<String, WorkerWrapper<?, ?>> map) {
+    public Boolean action(ProductAttr productAttr, Map<String, WorkerWrapper> map) {
         log.debug("SaveProdAttrEventTriggerWorker…………");
 
         String prodId = productAttr.getProductId();

@@ -34,8 +34,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -55,8 +55,8 @@ public class ProductEventTriggerController {
     @Autowired
     private ZbxTrigger zbxTrigger;
 
-    private static final String ALARM_TAG_NAME   = "__alarm__";
-    private static final String EXECUTE_TAG_NAME   = "__execute__";
+    private static final String ALARM_TAG_NAME = "__alarm__";
+    private static final String EXECUTE_TAG_NAME = "__execute__";
 
     @Autowired
     SaveProductEventTriggerWorker saveProductEventTriggerWorker;
@@ -136,10 +136,15 @@ public class ProductEventTriggerController {
         productEventRuleService.updateProductEventRuleZbxId(eventRuleId, triggerIds);
 
         //step 6: 同步到产品下的设备
-        WorkerWrapper<ProductEventRule, Boolean> saveProductEventTriggerWork = WorkerWrapper.<ProductEventRule, Boolean>builder().worker(saveProductEventTriggerWorker).param(eventRule).build();
+        WorkerWrapper<ProductEventRule, Boolean> saveProductEventTriggerWork =
+                new WorkerWrapper.Builder<ProductEventRule, Boolean>().worker(saveProductEventTriggerWorker).param(eventRule).build();
 
         try {
-            Async.work(1000, saveProductEventTriggerWork).awaitFinish();
+            try {
+                Async.beginWork(1000, saveProductEventTriggerWork);
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -201,11 +206,12 @@ public class ProductEventTriggerController {
 
 
         //step 4: 同步到产品下的设备
-        WorkerWrapper<ProductEventRule, Boolean> updateProductEventTriggerWork = WorkerWrapper.<ProductEventRule, Boolean>builder().worker(updateProductEventTriggerWorker).param(eventRule).build();
+        WorkerWrapper<ProductEventRule, Boolean> updateProductEventTriggerWork =
+                new WorkerWrapper.Builder<ProductEventRule, Boolean>().worker(updateProductEventTriggerWorker).param(eventRule).build();
 
         try {
-            Async.work(1000, updateProductEventTriggerWork).awaitFinish();
-        } catch (InterruptedException e) {
+            Async.beginWork(1000, updateProductEventTriggerWork);
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 

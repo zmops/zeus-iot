@@ -24,7 +24,7 @@ import java.util.Optional;
 public class ScenesLogWorker implements IWorker<Map<String, Object>, Boolean> {
 
     @Override
-    public Boolean action(Map<String, Object> param, Map<String, WorkerWrapper<?, ?>> allWrappers) {
+    public Boolean action(Map<String, Object> param, Map<String, WorkerWrapper> allWrappers) {
         log.debug("insert into ScenesLogWorker…………");
 
         long eventRuleId = (long) param.get("eventRuleId");

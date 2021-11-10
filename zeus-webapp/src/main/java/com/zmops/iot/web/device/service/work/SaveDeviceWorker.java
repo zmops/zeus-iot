@@ -23,7 +23,7 @@ import java.util.Map;
 public class SaveDeviceWorker implements IWorker<DeviceDto, Device> {
 
     @Override
-    public Device action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> allWrappers) {
+    public Device action(DeviceDto deviceDto, Map<String, WorkerWrapper> allWrappers) {
         log.debug("step 1:SaveDeviceWorker----DEVICEID:{}…………",deviceDto.getDeviceId());
 
         Device device = new Device();

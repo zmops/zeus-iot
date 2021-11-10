@@ -27,7 +27,7 @@ public class SaveProdAttrEventWorker implements IWorker<ProductAttr, Boolean> {
 
 
     @Override
-    public Boolean action(ProductAttr productAttr, Map<String, WorkerWrapper<?, ?>> map) {
+    public Boolean action(ProductAttr productAttr, Map<String, WorkerWrapper> map) {
         log.debug("SaveProdAttrEventTriggerWorker…………");
 
         String prodId = productAttr.getProductId();

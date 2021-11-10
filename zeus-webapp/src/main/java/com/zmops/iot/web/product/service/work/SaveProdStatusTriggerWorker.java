@@ -25,7 +25,7 @@ public class SaveProdStatusTriggerWorker implements IWorker<ProductServiceDto, B
 
 
     @Override
-    public Boolean action(ProductServiceDto productServiceDto, Map<String, WorkerWrapper<?, ?>> map) {
+    public Boolean action(ProductServiceDto productServiceDto, Map<String, WorkerWrapper> map) {
 
         String prodId = productServiceDto.getRelationId();
 

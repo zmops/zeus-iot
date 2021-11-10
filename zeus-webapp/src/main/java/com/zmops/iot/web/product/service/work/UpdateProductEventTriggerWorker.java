@@ -30,7 +30,7 @@ public class UpdateProductEventTriggerWorker implements IWorker<ProductEventRule
     ZbxTrigger zbxTrigger;
 
     @Override
-    public Boolean action(ProductEventRule productEventRule, Map<String, WorkerWrapper<?, ?>> map) {
+    public Boolean action(ProductEventRule productEventRule, Map<String, WorkerWrapper> map) {
         log.debug("UpdateProductEventTriggerWorker…………");
 
         String prodId = productEventRule.getProductId();

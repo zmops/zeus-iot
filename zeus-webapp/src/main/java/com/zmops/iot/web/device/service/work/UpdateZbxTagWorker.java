@@ -31,7 +31,7 @@ public class UpdateZbxTagWorker implements IWorker<DeviceDto, Boolean> {
     ZbxHost zbxHost;
 
     @Override
-    public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> map) {
+    public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper> map) {
         log.debug("UpdateZbxTagWorker……");
         //取出 ZBX hostid
         Object result = map.get("saveZbxHostWork").getWorkResult().getResult();

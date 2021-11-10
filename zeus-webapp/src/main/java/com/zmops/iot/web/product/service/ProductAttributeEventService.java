@@ -173,16 +173,16 @@ public class ProductAttributeEventService {
         productAttributeEvent.save();
 
 
-        WorkerWrapper<ProductAttr, Boolean> saveProdAttrEventTriggerWork = WorkerWrapper.<ProductAttr, Boolean>builder()
+        WorkerWrapper<ProductAttr, Boolean> saveProdAttrEventTriggerWork = new WorkerWrapper.Builder<ProductAttr, Boolean>()
                 .worker(saveProdAttrEventTriggerWorker).param(productAttr).build();
 
-        WorkerWrapper<ProductAttr, Boolean> asyncAttrEventZbxIdWork = WorkerWrapper.<ProductAttr, Boolean>builder()
+        WorkerWrapper<ProductAttr, Boolean> asyncAttrEventZbxIdWork = new WorkerWrapper.Builder<ProductAttr, Boolean>()
                 .worker(asyncAttrEventZbxIdWorker).param(productAttr).build();
-        WorkerWrapper<ProductAttr, Boolean> saveProdAttrEventWork = WorkerWrapper.<ProductAttr, Boolean>builder()
-                .worker(saveProdAttrEventWorker).param(productAttr).nextOf(asyncAttrEventZbxIdWork).build();
+        WorkerWrapper<ProductAttr, Boolean> saveProdAttrEventWork = new WorkerWrapper.Builder<ProductAttr, Boolean>()
+                .worker(saveProdAttrEventWorker).param(productAttr).next(asyncAttrEventZbxIdWork).build();
 
         try {
-            Async.work(10000, saveProdAttrEventWork,saveProdAttrEventTriggerWork).awaitFinish();
+            Async.beginWork(10000, saveProdAttrEventWork, saveProdAttrEventTriggerWork);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -290,11 +290,11 @@ public class ProductAttributeEventService {
 
         DB.update(productAttributeEvent);
 
-        WorkerWrapper<ProductAttr, Boolean> updateProdAttrWork = WorkerWrapper.<ProductAttr, Boolean>builder().worker(updateAttributeEventWorker).param(productAttr).build();
+        WorkerWrapper<ProductAttr, Boolean> updateProdAttrWork = new WorkerWrapper.Builder<ProductAttr, Boolean>().worker(updateAttributeEventWorker).param(productAttr).build();
 
         try {
-            Async.work(100, updateProdAttrWork).awaitFinish();
-        } catch (InterruptedException e) {
+            Async.beginWork(100, updateProdAttrWork);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

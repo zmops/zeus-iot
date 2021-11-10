@@ -312,8 +312,8 @@ public class ProductEventRuleService implements CommandLineRunner {
 
     @Data
     public static class Triggers {
-        private String      triggerid;
-        private String      description;
+        private String triggerid;
+        private String description;
         private List<Hosts> hosts;
     }
 

@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public class DeviceServiceLogWorker implements IWorker<Map<String, Object>, Boolean> {
 
     @Override
-    public Boolean action(Map<String, Object> param, Map<String, WorkerWrapper<?, ?>> allWrappers) {
+    public Boolean action(Map<String, Object> param, Map<String, WorkerWrapper> allWrappers) {
         log.debug("insert into service log…………");
 
         long eventRuleId = (long) param.get("eventRuleId");

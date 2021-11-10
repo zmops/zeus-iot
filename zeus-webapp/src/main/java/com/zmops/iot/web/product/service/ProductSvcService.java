@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -158,11 +159,12 @@ public class ProductSvcService implements CommandLineRunner {
         }
 
         //同步到设备
-        WorkerWrapper<ProductServiceDto, Boolean> saveProdAttrWork = WorkerWrapper.<ProductServiceDto, Boolean>builder().worker(saveProdSvcWorker).param(productServiceDto).build();
+        WorkerWrapper<ProductServiceDto, Boolean> saveProdAttrWork =
+                new WorkerWrapper.Builder<ProductServiceDto, Boolean>().worker(saveProdSvcWorker).param(productServiceDto).build();
 
         try {
-            Async.work(100, saveProdAttrWork).awaitFinish();
-        } catch (InterruptedException e) {
+            Async.beginWork(100, saveProdAttrWork);
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         updateService();
@@ -197,11 +199,12 @@ public class ProductSvcService implements CommandLineRunner {
         }
 
         //同步到设备
-        WorkerWrapper<ProductServiceDto, Boolean> updateProdSvcWork = WorkerWrapper.<ProductServiceDto, Boolean>builder().worker(updateProdSvcWorker).param(productServiceDto).build();
+        WorkerWrapper<ProductServiceDto, Boolean> updateProdSvcWork =
+                new WorkerWrapper.Builder<ProductServiceDto, Boolean>().worker(updateProdSvcWorker).param(productServiceDto).build();
 
         try {
-            Async.work(1000, updateProdSvcWork).awaitFinish();
-        } catch (InterruptedException e) {
+            Async.beginWork(1000, updateProdSvcWork);
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         updateService();

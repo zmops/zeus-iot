@@ -1,9 +1,8 @@
 package com.zmops.iot.async.callback;
 
+import java.util.Map;
 
 import com.zmops.iot.async.wrapper.WorkerWrapper;
-
-import java.util.Map;
 
 /**
  * 每个最小执行单元需要实现该接口
@@ -18,10 +17,10 @@ public interface IWorker<T, V> {
      * @param object      object
      * @param allWrappers 任务包装
      */
-    V action(T object, Map<String, WorkerWrapper<?, ?>> allWrappers);
+    V action(T object, Map<String, WorkerWrapper> allWrappers);
 
     /**
-     * 超时、异常、跳过时，返回的默认值
+     * 超时、异常时，返回的默认值
      *
      * @return 默认值
      */

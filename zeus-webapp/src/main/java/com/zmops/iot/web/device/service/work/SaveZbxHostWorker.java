@@ -32,7 +32,7 @@ public class SaveZbxHostWorker implements IWorker<DeviceDto, String> {
     ZbxHost zbxHost;
 
     @Override
-    public String action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> map) {
+    public String action(DeviceDto deviceDto, Map<String, WorkerWrapper> map) {
         log.debug("step 5:SaveZbxHostWorker----DEVICEID:{}…………",deviceDto.getDeviceId());
         //设备ID 作为zbx HOST name
         String host = deviceDto.getDeviceId();

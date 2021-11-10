@@ -23,7 +23,7 @@ public class UpdateDeviceZbxIdWorker implements IWorker<String, Boolean> {
 
 
     @Override
-    public Boolean action(String deviceDto, Map<String, WorkerWrapper<?, ?>> map) {
+    public Boolean action(String deviceDto, Map<String, WorkerWrapper> map) {
 
         Object result = map.get("saveZbxHostWork").getWorkResult().getResult();
         JSONArray hostid = JSONObject.parseObject(result.toString()).getJSONArray("hostids");

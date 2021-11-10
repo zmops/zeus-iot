@@ -20,11 +20,12 @@ import java.util.Map;
 @Component
 public class DeviceEventLogWorker implements IWorker<Map<String, String>, Boolean> {
 
+
     @Override
-    public Boolean action(Map<String, String> param, Map<String, WorkerWrapper<?, ?>> allWrappers) {
+    public Boolean action(Map<String, String> object, Map<String, WorkerWrapper> allWrappers) {
         log.debug("insert into event log…………");
 
-        String deviceId = param.get("hostname");
+        String deviceId = object.get("hostname");
         if (ToolUtil.isEmpty(deviceId)) {
             return false;
         }
@@ -32,7 +33,6 @@ public class DeviceEventLogWorker implements IWorker<Map<String, String>, Boolea
         if (null == device) {
             return false;
         }
-
 
         return true;
     }

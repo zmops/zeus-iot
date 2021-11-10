@@ -31,6 +31,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -241,42 +242,42 @@ public class DeviceService implements CommandLineRunner {
      */
     public String create(DeviceDto deviceDto) {
 
-        WorkerWrapper<DeviceDto, Boolean> saveTagWork = WorkerWrapper.<DeviceDto, Boolean>builder().id("saveTagWork")
+        WorkerWrapper<DeviceDto, Boolean> saveTagWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("saveTagWork")
                 .worker(saveTagWorker).param(deviceDto).build();
 
-        WorkerWrapper<DeviceDto, Boolean> saveAttributeWork = WorkerWrapper.<DeviceDto, Boolean>builder().id("saveAttributeWork")
+        WorkerWrapper<DeviceDto, Boolean> saveAttributeWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("saveAttributeWork")
                 .worker(saveAttributeWorker).param(deviceDto).build();
 
-        WorkerWrapper<DeviceDto, Boolean> saveDeviceGrpWork = WorkerWrapper.<DeviceDto, Boolean>builder().id("saveDeviceGrpWork")
+        WorkerWrapper<DeviceDto, Boolean> saveDeviceGrpWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("saveDeviceGrpWork")
                 .worker(saveDeviceGrpWorker).param(deviceDto)
                 .build();
 
-        WorkerWrapper<DeviceDto, Boolean> updateAttrZbxIdWork = WorkerWrapper.<DeviceDto, Boolean>builder().id("updateAttrZbxIdWork")
+        WorkerWrapper<DeviceDto, Boolean> updateAttrZbxIdWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("updateAttrZbxIdWork")
                 .worker(updateAttrZbxIdWorker).param(deviceDto)
                 .build();
 
-        WorkerWrapper<String, Boolean> updateDeviceZbxIdWork = WorkerWrapper.<String, Boolean>builder().id("updateDeviceZbxIdWork")
+        WorkerWrapper<String, Boolean> updateDeviceZbxIdWork = new WorkerWrapper.Builder<String, Boolean>().id("updateDeviceZbxIdWork")
                 .worker(updateDeviceZbxIdWorker)
                 .build();
 
-        WorkerWrapper<DeviceDto, Boolean> saveOtherWork = WorkerWrapper.<DeviceDto, Boolean>builder().id("saveOtherWork")
+        WorkerWrapper<DeviceDto, Boolean> saveOtherWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("saveOtherWork")
                 .worker(saveOtherWorker).param(deviceDto)
                 .build();
 
-        WorkerWrapper<DeviceDto, String> saveZbxHostWork = WorkerWrapper.<DeviceDto, String>builder().id("saveZbxHostWork")
+        WorkerWrapper<DeviceDto, String> saveZbxHostWork = new WorkerWrapper.Builder<DeviceDto, String>().id("saveZbxHostWork")
                 .worker(saveZbxHostWorker).param(deviceDto)
-                .nextOf(updateAttrZbxIdWork, updateDeviceZbxIdWork, saveOtherWork)
+                .next(updateAttrZbxIdWork, updateDeviceZbxIdWork, saveOtherWork)
                 .build();
 
-        WorkerWrapper<DeviceDto, Device> deviceWork = WorkerWrapper.<DeviceDto, Device>builder().id("saveDvice")
+        WorkerWrapper<DeviceDto, Device> deviceWork = new WorkerWrapper.Builder<DeviceDto, Device>().id("saveDvice")
                 .worker(saveDeviceWorker).param(deviceDto)
-                .nextOf(saveTagWork, saveAttributeWork, saveDeviceGrpWork, saveZbxHostWork)
+                .next(saveTagWork, saveAttributeWork, saveDeviceGrpWork, saveZbxHostWork)
                 .build();
 
         try {
 
-            Async.work(10000, deviceWork).awaitFinish();
-        } catch (Exception e) {
+            Async.beginWork(10000, deviceWork);
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         updateDeviceNameCache(deviceDto.getDeviceId(), deviceDto.getName());
@@ -297,38 +298,38 @@ public class DeviceService implements CommandLineRunner {
         deviceDto.setOldProductId(device.getProductId());
         deviceDto.setZbxId(device.getZbxId());
 
-        WorkerWrapper<DeviceDto, Boolean> saveTagWork = WorkerWrapper.<DeviceDto, Boolean>builder().id("saveTagWork")
+        WorkerWrapper<DeviceDto, Boolean> saveTagWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("saveTagWork")
                 .worker(saveTagWorker).param(deviceDto).build();
 
-        WorkerWrapper<DeviceDto, Boolean> saveAttributeWork = WorkerWrapper.<DeviceDto, Boolean>builder().id("saveAttributeWork")
+        WorkerWrapper<DeviceDto, Boolean> saveAttributeWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("saveAttributeWork")
                 .worker(saveAttributeWorker).param(deviceDto).build();
 
-        WorkerWrapper<DeviceDto, Boolean> saveDeviceGrpWork = WorkerWrapper.<DeviceDto, Boolean>builder().id("saveDeviceGrpWork")
+        WorkerWrapper<DeviceDto, Boolean> saveDeviceGrpWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("saveDeviceGrpWork")
                 .worker(saveDeviceGrpWorker).param(deviceDto)
                 .build();
 
-        WorkerWrapper<DeviceDto, Boolean> updateAttrZbxIdWork = WorkerWrapper.<DeviceDto, Boolean>builder().id("updateAttrZbxIdWork")
+        WorkerWrapper<DeviceDto, Boolean> updateAttrZbxIdWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("updateAttrZbxIdWork")
                 .worker(updateAttrZbxIdWorker)
                 .build();
 
-        WorkerWrapper<DeviceDto, Boolean> saveOtherWork = WorkerWrapper.<DeviceDto, Boolean>builder().id("saveOtherWork")
+        WorkerWrapper<DeviceDto, Boolean> saveOtherWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("saveOtherWork")
                 .worker(saveOtherWorker).param(deviceDto)
                 .build();
 
-        WorkerWrapper<DeviceDto, String> saveZbxHostWork = WorkerWrapper.<DeviceDto, String>builder().id("saveZbxHostWork")
+        WorkerWrapper<DeviceDto, String> saveZbxHostWork = new WorkerWrapper.Builder<DeviceDto, String>().id("saveZbxHostWork")
                 .worker(saveZbxHostWorker).param(deviceDto)
-                .nextOf(updateAttrZbxIdWork, saveOtherWork)
+                .next(updateAttrZbxIdWork, saveOtherWork)
                 .build();
 
-        WorkerWrapper<DeviceDto, Device> deviceWork = WorkerWrapper.<DeviceDto, Device>builder().id("saveDvice")
+        WorkerWrapper<DeviceDto, Device> deviceWork = new WorkerWrapper.Builder<DeviceDto, Device>().id("saveDvice")
                 .worker(saveDeviceWorker).param(deviceDto)
-                .nextOf(saveTagWork, saveAttributeWork, saveDeviceGrpWork, saveZbxHostWork)
+                .next(saveTagWork, saveAttributeWork, saveDeviceGrpWork, saveZbxHostWork)
                 .build();
 
         try {
 
-            Async.work(10000, deviceWork).awaitFinish();
-        } catch (Exception e) {
+            Async.beginWork(10000, deviceWork);
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         updateDeviceNameCache(deviceDto.getDeviceId(), deviceDto.getName());
@@ -354,25 +355,25 @@ public class DeviceService implements CommandLineRunner {
             return deviceDto.getDeviceId();
         }
         String zbxId = device.getZbxId();
-        WorkerWrapper<String, Boolean> delTagWork = WorkerWrapper.<String, Boolean>builder().id("delTagWork")
+        WorkerWrapper<String, Boolean> delTagWork = new WorkerWrapper.Builder<String, Boolean>().id("delTagWork")
                 .worker((deviceId, allWrappers) -> {
                     new QTag().sid.eq(deviceId).delete();
                     return true;
                 }).param(deviceDto.getDeviceId()).build();
 
-        WorkerWrapper<String, Boolean> delAttrWork = WorkerWrapper.<String, Boolean>builder().id("delAttrWork")
+        WorkerWrapper<String, Boolean> delAttrWork = new WorkerWrapper.Builder<String, Boolean>().id("delAttrWork")
                 .worker((deviceId, allWrappers) -> {
                     new QProductAttribute().productId.eq(deviceId).delete();
                     return true;
                 }).param(deviceDto.getDeviceId()).build();
 
-        WorkerWrapper<String, Boolean> delGropusWork = WorkerWrapper.<String, Boolean>builder().id("delGropusWork")
+        WorkerWrapper<String, Boolean> delGropusWork = new WorkerWrapper.Builder<String, Boolean>().id("delGropusWork")
                 .worker((deviceId, allWrappers) -> {
                     new QDevicesGroups().deviceId.eq(deviceId).delete();
                     return true;
                 }).param(deviceDto.getDeviceId()).build();
 
-        WorkerWrapper<String, Boolean> delZbxWork = WorkerWrapper.<String, Boolean>builder().id("delZbxWork")
+        WorkerWrapper<String, Boolean> delZbxWork = new WorkerWrapper.Builder<String, Boolean>().id("delZbxWork")
                 .worker((zbxid, allWrappers) -> {
                     if (ToolUtil.isNotEmpty(zbxid)) {
                         JSONArray jsonArray = JSONObject.parseArray(zbxHost.hostDetail(zbxId));
@@ -383,7 +384,7 @@ public class DeviceService implements CommandLineRunner {
                     return true;
                 }).param(zbxId).build();
 
-        WorkerWrapper<String, Boolean> delOtherWork = WorkerWrapper.<String, Boolean>builder().id("delOtherWork")
+        WorkerWrapper<String, Boolean> delOtherWork = new WorkerWrapper.Builder<String, Boolean>().id("delOtherWork")
                 .worker((deviceId, allWrappers) -> {
                     new QProductStatusFunctionRelation().relationId.eq(deviceId).delete();
                     new QProductServiceRelation().relationId.eq(deviceId).delete();
@@ -392,17 +393,19 @@ public class DeviceService implements CommandLineRunner {
                     return true;
                 }).param(deviceDto.getDeviceId()).build();
 
-        WorkerWrapper<String, Boolean> delDeviceWork = WorkerWrapper.<String, Boolean>builder().id("delDeviceWork")
+        WorkerWrapper<String, Boolean> delDeviceWork = new WorkerWrapper.Builder<String, Boolean>()
+                .id("delDeviceWork")
                 .worker((deviceId, allWrappers) -> {
                     new QDevice().deviceId.eq(deviceId).delete();
                     return true;
-                }).param(deviceDto.getDeviceId())
-                .nextOf(delTagWork, delAttrWork, delGropusWork, delZbxWork, delOtherWork).build();
+                })
+                .param(deviceDto.getDeviceId())
+                .next(delTagWork, delAttrWork, delGropusWork, delZbxWork, delOtherWork).build();
 
         try {
 
-            Async.work(5000, delDeviceWork).awaitFinish();
-        } catch (Exception e) {
+            Async.beginWork(5000, delDeviceWork);
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 

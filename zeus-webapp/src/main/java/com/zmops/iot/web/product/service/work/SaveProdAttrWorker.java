@@ -31,7 +31,7 @@ public class SaveProdAttrWorker implements IWorker<ProductAttr, Boolean> {
     private static final String ATTR_SOURCE_DEPEND = "18";
 
     @Override
-    public Boolean action(ProductAttr productAttr, Map<String, WorkerWrapper<?, ?>> map) {
+    public Boolean action(ProductAttr productAttr, Map<String, WorkerWrapper> map) {
         log.debug("SaveProdAttrWorker…………");
 
         String sql = "select device_id from device " +

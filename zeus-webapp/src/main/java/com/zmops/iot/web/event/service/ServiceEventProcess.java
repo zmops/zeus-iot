@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -48,19 +49,29 @@ public class ServiceEventProcess implements EventProcess {
         alarmInfo.put("relationId", productEventRelationList.get(0).getRelationId());
         alarmInfo.put("triggerType", "自动");
 
-        WorkerWrapper<Map<String, Object>, Boolean> deviceServiceLogWork = WorkerWrapper.<Map<String, Object>, Boolean>builder().id("deviceServiceLogWorker")
-                .worker(deviceServiceLogWorker).param(alarmInfo)
+        WorkerWrapper<Map<String, Object>, Boolean> deviceServiceLogWork = new WorkerWrapper.Builder<Map<String, Object>, Boolean>()
+                .id("deviceServiceLogWorker")
+                .worker(deviceServiceLogWorker)
+                .param(alarmInfo)
                 .build();
+
         try {
-            Async.work(1000, deviceServiceLogWork).awaitFinish();
-        } catch (Exception e) {
+            Async.beginWork(1000, deviceServiceLogWork);
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 
-        List<ProductEventService> productEventServiceList = new QProductEventService().eventRuleId.eq(productEventRelationList.get(0).getEventRuleId())
-                .or().deviceId.isNull().deviceId.eq(productEventRelationList.get(0).getRelationId()).endOr().findList();
+        List<ProductEventService> productEventServiceList = new QProductEventService()
+                .eventRuleId.eq(productEventRelationList.get(0).getEventRuleId())
+                .or()
+                .deviceId.isNull()
+                .deviceId.eq(productEventRelationList.get(0).getRelationId())
+                .endOr()
+                .findList();
+
         List<Map<String, Object>> list = new ArrayList<>();
-        Map<String, List<ProductEventService>> collect = productEventServiceList.parallelStream().collect(Collectors.groupingBy(ProductEventService::getExecuteDeviceId));
+        Map<String, List<ProductEventService>> collect = productEventServiceList.parallelStream()
+                .collect(Collectors.groupingBy(ProductEventService::getExecuteDeviceId));
 
         collect.forEach((key, value) -> {
             Map<String, Object> map = new ConcurrentHashMap<>();
@@ -73,7 +84,8 @@ public class ServiceEventProcess implements EventProcess {
 
                 List<ProductServiceParam> paramList = DefinitionsUtil.getServiceParam(val.getServiceId());
                 if (ToolUtil.isNotEmpty(paramList)) {
-                    serviceMap.put("param", paramList.parallelStream().collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue)));
+                    serviceMap.put("param", paramList.parallelStream()
+                            .collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue)));
                 }
                 serviceList.add(serviceMap);
             });

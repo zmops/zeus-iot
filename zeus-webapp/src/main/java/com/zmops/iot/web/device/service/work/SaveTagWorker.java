@@ -23,7 +23,7 @@ import java.util.Map;
 public class SaveTagWorker implements IWorker<DeviceDto, Boolean> {
 
     @Override
-    public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> allWrappers) {
+    public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper> allWrappers) {
         log.debug("step 2:SaveTagWorker----DEVICEID:{}…………",deviceDto.getDeviceId());
 
         String deviceId = deviceDto.getDeviceId();

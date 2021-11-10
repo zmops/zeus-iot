@@ -32,7 +32,7 @@ public class AsyncAttrEventZbxIdWorker implements IWorker<ProductAttr, Boolean> 
     ZbxItem zbxItem;
 
     @Override
-    public Boolean action(ProductAttr productAttr, Map<String, WorkerWrapper<?, ?>> map) {
+    public Boolean action(ProductAttr productAttr, Map<String, WorkerWrapper> map) {
         log.debug("AsyncAttrEventZbxIdWorker……");
         Long attrId = productAttr.getAttrId();
 
