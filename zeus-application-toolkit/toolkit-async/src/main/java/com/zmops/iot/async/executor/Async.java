@@ -1,18 +1,17 @@
 package com.zmops.iot.async.executor;
 
 
-import com.zmops.iot.async.callback.DefaultGroupCallback;
-import com.zmops.iot.async.callback.IGroupCallback;
 import com.zmops.iot.async.executor.timer.SystemClock;
 import com.zmops.iot.async.worker.OnceWork;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.async.wrapper.WorkerWrapperGroup;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 /**
  * 核心工具类。
@@ -79,8 +78,7 @@ public class Async {
         if (workerWrappers == null || workerWrappers.isEmpty()) {
             return OnceWork.emptyWork(workId);
         }
-        //保存上次执行的线程池变量（为了兼容以前的旧功能）
-        Async.lastExecutorService.set(Objects.requireNonNull(executorService, "ExecutorService is null ! "));
+
         final WorkerWrapperGroup group = new WorkerWrapperGroup(SystemClock.now(), timeout);
         final OnceWork.Impl onceWork = new OnceWork.Impl(group, workId);
         group.addWrapper(workerWrappers);
@@ -111,17 +109,6 @@ public class Async {
      */
     private static volatile ThreadPoolExecutor COMMON_POOL;
 
-    /**
-     * 在以前（及现在）的版本中：
-     * 当执行{@link #beginWork(long, ExecutorService, Collection)}方法时，ExecutorService将会被记录下来。
-     * <p/>
-     * 注意，这里是个static，也就是只能有一个线程池。用户自定义线程池时，也只能定义一个
-     *
-     * @deprecated 不明意义、毫无用处的字段。记录之前使用的线程池没啥意义。
-     */
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    @Deprecated
-    private static final AtomicReference<ExecutorService> lastExecutorService = new AtomicReference<>(null);
 
     /**
      * 该方法将会返回{@link #COMMON_POOL}，如果还未初始化则会懒加载初始化后再返回。
@@ -165,15 +152,6 @@ public class Async {
         return COMMON_POOL;
     }
 
-    /**
-     * @deprecated 不明意义的输出信息的方法
-     */
-    @Deprecated
-    public static String getThreadCount() {
-        return "activeCount=" + COMMON_POOL.getActiveCount() +
-                ",completedCount=" + COMMON_POOL.getCompletedTaskCount() +
-                ",largestCount=" + COMMON_POOL.getLargestPoolSize();
-    }
 
     /**
      * @param now 是否立即关闭
@@ -194,130 +172,4 @@ public class Async {
         return true;
     }
 
-    // ========================= deprecated =========================
-
-    /**
-     * 同步执行一次任务。
-     *
-     * @return 只要执行未超时，就返回true。
-     * @deprecated 已经被 {@link #work(long, ExecutorService, Collection, String)}方法取代。
-     */
-    @Deprecated
-    public static boolean beginWork(long timeout,
-                                    ExecutorService executorService,
-                                    Collection<? extends WorkerWrapper<?, ?>> workerWrappers)
-            throws InterruptedException {
-        final OnceWork work = work(timeout, executorService, workerWrappers);
-        work.awaitFinish();
-        return work.hasTimeout();
-    }
-
-    /**
-     * 同步执行一次任务。
-     * 如果想自定义线程池，请传pool。不自定义的话，就走默认的COMMON_POOL
-     *
-     * @deprecated 已经被 {@link #work(long, ExecutorService, Collection, String)}方法取代。
-     */
-    @Deprecated
-    public static boolean beginWork(long timeout, ExecutorService executorService, WorkerWrapper... workerWrapper)
-            throws ExecutionException, InterruptedException {
-        if (workerWrapper == null || workerWrapper.length == 0) {
-            return false;
-        }
-        Set workerWrappers = Arrays.stream(workerWrapper).collect(Collectors.toSet());
-        //noinspection unchecked
-        return beginWork(timeout, executorService, workerWrappers);
-    }
-
-    /**
-     * 同步阻塞,直到所有都完成,或失败
-     *
-     * @deprecated 已经被 {@link #work(long, ExecutorService, Collection, String)}方法取代。
-     */
-    @Deprecated
-    public static boolean beginWork(long timeout, WorkerWrapper... workerWrapper) throws ExecutionException, InterruptedException {
-        return beginWork(timeout, getCommonPool(), workerWrapper);
-    }
-
-    /**
-     * @deprecated 已经被 {@link #work(long, ExecutorService, Collection, String)}方法取代。
-     */
-    @Deprecated
-    public static void beginWorkAsync(long timeout, IGroupCallback groupCallback, WorkerWrapper... workerWrapper) {
-        beginWorkAsync(timeout, getCommonPool(), groupCallback, workerWrapper);
-    }
-
-    /**
-     * 异步执行,直到所有都完成,或失败后，发起回调
-     *
-     * @deprecated 已经被 {@link #work(long, ExecutorService, Collection, String)}方法取代。
-     */
-    @Deprecated
-    public static void beginWorkAsync(long timeout, ExecutorService executorService, IGroupCallback groupCallback, WorkerWrapper... workerWrapper) {
-        if (groupCallback == null) {
-            groupCallback = new DefaultGroupCallback();
-        }
-        IGroupCallback finalGroupCallback = groupCallback;
-        if (executorService != null) {
-            executorService.submit(() -> {
-                try {
-                    boolean success = beginWork(timeout, executorService, workerWrapper);
-                    if (success) {
-                        finalGroupCallback.success(Arrays.asList(workerWrapper));
-                    } else {
-                        finalGroupCallback.failure(Arrays.asList(workerWrapper), new TimeoutException());
-                    }
-                } catch (ExecutionException | InterruptedException e) {
-                    e.printStackTrace();
-                    finalGroupCallback.failure(Arrays.asList(workerWrapper), e);
-                }
-            });
-        } else {
-            final ExecutorService commonPool = getCommonPool();
-            commonPool.submit(() -> {
-                try {
-                    boolean success = beginWork(timeout, commonPool, workerWrapper);
-                    if (success) {
-                        finalGroupCallback.success(Arrays.asList(workerWrapper));
-                    } else {
-                        finalGroupCallback.failure(Arrays.asList(workerWrapper), new TimeoutException());
-                    }
-                } catch (ExecutionException | InterruptedException e) {
-                    e.printStackTrace();
-                    finalGroupCallback.failure(Arrays.asList(workerWrapper), e);
-                }
-            });
-        }
-
-    }
-
-    /**
-     * 关闭上次使用的线程池
-     *
-     * @deprecated 因此在v1.5时加上了废弃注解。
-     * <p>
-     * 这是一个很迷的方法，多线程时调用该方法的{@link #lastExecutorService}可能会被别的线程修改而引发不必要、不可控的错误。仅建议用来测试。
-     * 另外，该方法现在不会关闭默认线程池。
-     * </p>
-     */
-    @Deprecated
-    public static void shutDown() {
-        final ExecutorService last = lastExecutorService.get();
-        if (last != COMMON_POOL) {
-            shutDown(last);
-        }
-    }
-
-    /**
-     * 关闭指定的线程池
-     *
-     * @param executorService 指定的线程池。传入null则会关闭默认线程池。
-     * @deprecated 没啥用的方法，要关闭线程池还不如直接调用线程池的关闭方法，避免歧义。
-     */
-    @Deprecated
-    public static void shutDown(ExecutorService executorService) {
-        if (executorService != null) {
-            executorService.shutdown();
-        }
-    }
 }

@@ -4,7 +4,6 @@ package com.zmops.iot.web.device.service.work;
 import com.zmops.iot.async.callback.IWorker;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.constant.ConstantsContext;
-import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.query.QDeviceGroup;
 import com.zmops.iot.domain.product.query.QProduct;
 import com.zmops.iot.util.ToolUtil;
@@ -33,7 +32,7 @@ public class SaveZbxHostWorker implements IWorker<DeviceDto, String> {
 
     @Override
     public String action(DeviceDto deviceDto, Map<String, WorkerWrapper<?, ?>> map) {
-        log.debug("step 5:SaveZbxHostWorker----DEVICEID:{}…………",deviceDto.getDeviceId());
+        log.debug("step 5:SaveZbxHostWorker----DEVICEID:{}…………", deviceDto.getDeviceId());
         //设备ID 作为zbx HOST name
         String host = deviceDto.getDeviceId();
 
@@ -49,7 +48,7 @@ public class SaveZbxHostWorker implements IWorker<DeviceDto, String> {
         } else {
             s = zbxHost.hostCreate(host, hostGrpIds, templateId);
         }
-        log.debug("step 5:SaveZbxHostWorker----DEVICEID:{} complete",deviceDto.getDeviceId());
+        log.debug("step 5:SaveZbxHostWorker----DEVICEID:{} complete", deviceDto.getDeviceId());
         return s;
     }
 

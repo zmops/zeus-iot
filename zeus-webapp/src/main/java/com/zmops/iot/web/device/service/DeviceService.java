@@ -2,6 +2,7 @@ package com.zmops.iot.web.device.service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.zmops.iot.async.callback.ICallback;
 import com.zmops.iot.async.executor.Async;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.device.Device;
@@ -266,6 +267,7 @@ public class DeviceService implements CommandLineRunner {
         WorkerWrapper<DeviceDto, String> saveZbxHostWork = WorkerWrapper.<DeviceDto, String>builder().id("saveZbxHostWork")
                 .worker(saveZbxHostWorker).param(deviceDto)
                 .nextOf(updateAttrZbxIdWork, updateDeviceZbxIdWork, saveOtherWork)
+                .callback(ICallback.PRINT_EXCEPTION_STACK_TRACE)
                 .build();
 
         WorkerWrapper<DeviceDto, Device> deviceWork = WorkerWrapper.<DeviceDto, Device>builder().id("saveDvice")
