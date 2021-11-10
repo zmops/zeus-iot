@@ -23,4 +23,25 @@ public interface ICallback<T, V> {
      * 耗时操作执行完毕后，就给value注入值
      */
     void result(boolean success, T param, WorkResult<V> workResult);
+
+    /**
+     * 提供常量选项：
+     * <p/>
+     * 如果发生了异常，则打印异常信息。
+     * 正常结束（例如取消、跳过）的异常不会打印。
+     */
+    ICallback PRINT_EXCEPTION_STACK_TRACE = new ICallback<Object, Object>() {
+        @Override
+        public void result(boolean success, Object param, WorkResult<Object> workResult) {
+            Exception ex = workResult.getEx();
+            if (ex != null) {
+                ex.printStackTrace();
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "PRINT_EXCEPTION_STACK_TRACE";
+        }
+    };
 }
