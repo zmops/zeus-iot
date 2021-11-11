@@ -5,6 +5,7 @@ import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.ProductService;
 import com.zmops.iot.domain.product.ProductServiceParam;
 import com.zmops.iot.domain.product.ProductServiceRelation;
+import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.domain.product.query.QProductService;
 import com.zmops.iot.domain.product.query.QProductServiceParam;
 import com.zmops.iot.domain.product.query.QProductServiceRelation;
@@ -223,6 +224,12 @@ public class ProductSvcService implements CommandLineRunner {
      * @return
      */
     public void delete(List<Long> ids) {
+
+        //检查服务是否被 告警 联动规则引用
+        int count = new QProductEventService().serviceId.in(ids).findCount();
+        if (count > 0) {
+            throw new ServiceException(BizExceptionEnum.PRODUCT_EVENT_HAS_DEPTED);
+        }
 
         new QProductServiceParam().serviceId.in(ids).delete();
         new QProductServiceRelation().serviceId.in(ids).delete();

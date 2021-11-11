@@ -144,6 +144,8 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     PRODUCT_ATTR_KEY_NOT_EXISTS(1404, "该属性Key不存在"),
     PRODUCT_ATTR_DEPTED_NULL(1402, "依赖的属性不能为空"),
     PRODUCT_ATTR_DEPTED_NOT_EXIST(1403, "依赖的属性不能为空"),
+    PRODUCT_ATTR_DEPTED(1404, "属性被依赖不能删除"),
+    PRODUCT_EVENT_HASDEPTED(1405,"属性已用于告警规则,不能删除"),
 
     /**
      * 设备相关
@@ -157,6 +159,7 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
      */
     SERVICE_EXISTS(1601, "服务已存在"),
     SERVICE_NOT_EXISTS(1602, "服务不存在"),
+    PRODUCT_EVENT_HAS_DEPTED(1605,"服务已用于告警规则或场景联动,不能删除"),
 
     /**
      * 触发规则相关
@@ -171,10 +174,14 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     EVENT_PRODUCT_CANNOT_DELETE(1706, "来自产品的触发器不能删除"),
     SCENE_NOT_EXISTS(1707, "场景不存在"),
 
+
+
     /**
      * 租户相关的异常
      */
     AUTH_REQUEST_ERROR(400, "账号密码错误");
+
+
 
 
     BizExceptionEnum(int code, String message) {

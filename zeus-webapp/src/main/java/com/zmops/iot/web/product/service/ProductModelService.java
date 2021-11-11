@@ -8,6 +8,7 @@ import com.zmops.iot.domain.product.Product;
 import com.zmops.iot.domain.product.ProductAttribute;
 import com.zmops.iot.domain.product.query.QProduct;
 import com.zmops.iot.domain.product.query.QProductAttribute;
+import com.zmops.iot.domain.product.query.QProductEventExpression;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
@@ -296,6 +297,19 @@ public class ProductModelService {
      * @return String
      */
     public void deleteTrapperItem(ProductAttr productAttr) {
+
+        //检查是否有属性依赖
+        int count = new QProductAttribute().depAttrId.in(productAttr.getAttrIds()).findCount();
+        if (count > 0) {
+            throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_DEPTED);
+        }
+
+        //检查属性是否被告警规则引入
+        List<Long> attrIds = new QProductAttribute().select(QProductAttribute.alias().attrId).templateId.in(productAttr.getAttrIds()).findSingleAttributeList();
+        count = new QProductEventExpression().productAttrId.in(attrIds).findCount();
+        if (count > 0) {
+            throw new ServiceException(BizExceptionEnum.PRODUCT_EVENT_HASDEPTED);
+        }
 
         List<String> zbxIds = new QProductAttribute().select(QProductAttribute.alias().zbxId).attrId.in(productAttr.getAttrIds()).findSingleAttributeList();
         //删除zbx item

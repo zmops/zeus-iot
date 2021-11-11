@@ -6,6 +6,7 @@ import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.ProductAttribute;
 import com.zmops.iot.domain.product.query.QProductAttribute;
+import com.zmops.iot.domain.product.query.QProductEventExpression;
 import com.zmops.iot.enums.CommonTimeUnit;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
@@ -294,6 +295,18 @@ public class DeviceModelService {
      * @return String
      */
     public void deleteTrapperItem(ProductAttr productAttr) {
+
+        //检查是否有属性依赖
+        int count = new QProductAttribute().depAttrId.in(productAttr.getAttrIds()).findCount();
+        if (count > 0) {
+            throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_DEPTED);
+        }
+
+        //检查属性是否被告警规则引入
+        count = new QProductEventExpression().productAttrId.in(productAttr.getAttrIds()).findCount();
+        if (count > 0) {
+            throw new ServiceException(BizExceptionEnum.PRODUCT_EVENT_HASDEPTED);
+        }
 
         List<String> zbxIds = new QProductAttribute().select(QProductAttribute.alias().zbxId).attrId.in(productAttr.getAttrIds()).zbxId.isNotNull().findSingleAttributeList();
         //删除zbx item
