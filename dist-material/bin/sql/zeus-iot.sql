@@ -1,18 +1,18 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : 172.16.60.98-测试LOT
+ Source Server         : 172.16.60.130-专业演示LOT
  Source Server Type    : PostgreSQL
  Source Server Version : 130004
- Source Host           : 172.16.60.98:5432
- Source Catalog        : zeus-iot
+ Source Host           : 172.16.60.130:5432
+ Source Catalog        : zeus-iot-开源空库不要删
  Source Schema         : public
 
  Target Server Type    : PostgreSQL
  Target Server Version : 130004
  File Encoding         : 65001
 
- Date: 13/10/2021 20:52:05
+ Date: 11/11/2021 19:00:16
 */
 
 
@@ -39,6 +39,28 @@ START 1
 CACHE 1;
 
 -- ----------------------------
+-- Sequence structure for event_trigger_record_id_seq
+-- ----------------------------
+DROP SEQUENCE IF EXISTS "public"."event_trigger_record_id_seq";
+CREATE SEQUENCE "public"."event_trigger_record_id_seq" 
+INCREMENT 1
+MINVALUE  1
+MAXVALUE 2147483647
+START 1
+CACHE 1;
+
+-- ----------------------------
+-- Sequence structure for mail_setting_id_seq
+-- ----------------------------
+DROP SEQUENCE IF EXISTS "public"."mail_setting_id_seq";
+CREATE SEQUENCE "public"."mail_setting_id_seq" 
+INCREMENT 1
+MINVALUE  1
+MAXVALUE 2147483647
+START 1
+CACHE 1;
+
+-- ----------------------------
 -- Sequence structure for media_type_setting_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."media_type_setting_id_seq";
@@ -57,6 +79,17 @@ CREATE SEQUENCE "public"."messages_id_seq"
 INCREMENT 1
 MINVALUE  1
 MAXVALUE 9223372036854775807
+START 1
+CACHE 1;
+
+-- ----------------------------
+-- Sequence structure for notice_record_record_id_seq
+-- ----------------------------
+DROP SEQUENCE IF EXISTS "public"."notice_record_record_id_seq";
+CREATE SEQUENCE "public"."notice_record_record_id_seq" 
+INCREMENT 1
+MINVALUE  1
+MAXVALUE 2147483647
 START 1
 CACHE 1;
 
@@ -112,6 +145,17 @@ CREATE SEQUENCE "public"."product_type_product_type_id_seq"
 INCREMENT 1
 MINVALUE  1
 MAXVALUE 2147483647
+START 1
+CACHE 1;
+
+-- ----------------------------
+-- Sequence structure for scenes_trigger_record_id_seq
+-- ----------------------------
+DROP SEQUENCE IF EXISTS "public"."scenes_trigger_record_id_seq";
+CREATE SEQUENCE "public"."scenes_trigger_record_id_seq" 
+INCREMENT 1
+MINVALUE  1
+MAXVALUE 9223372036854775807
 START 1
 CACHE 1;
 
@@ -290,6 +334,59 @@ COMMENT ON COLUMN "public"."devices_groups"."device_group_id" IS '设备组ID';
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for event_trigger_record
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."event_trigger_record";
+CREATE TABLE "public"."event_trigger_record" (
+  "id" int4 NOT NULL DEFAULT nextval('event_trigger_record_id_seq'::regclass),
+  "event_name" varchar(128) COLLATE "pg_catalog"."default",
+  "event_value" varchar(255) COLLATE "pg_catalog"."default",
+  "device_id" varchar(64) COLLATE "pg_catalog"."default",
+  "create_time" timestamp(6),
+  "key" varchar(64) COLLATE "pg_catalog"."default"
+)
+;
+COMMENT ON COLUMN "public"."event_trigger_record"."event_name" IS '事件名称';
+COMMENT ON COLUMN "public"."event_trigger_record"."event_value" IS '事件发生时的值';
+COMMENT ON COLUMN "public"."event_trigger_record"."device_id" IS '设备ID';
+COMMENT ON COLUMN "public"."event_trigger_record"."create_time" IS '发生时间';
+COMMENT ON COLUMN "public"."event_trigger_record"."key" IS '事件标识';
+
+-- ----------------------------
+-- Records of event_trigger_record
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for mail_setting
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."mail_setting";
+CREATE TABLE "public"."mail_setting" (
+  "host" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+  "port" int4 NOT NULL,
+  "account" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+  "password" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+  "sender" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+  "ssl" int4 NOT NULL DEFAULT 0,
+  "tls" int4 NOT NULL DEFAULT 0,
+  "severity" varchar(255) COLLATE "pg_catalog"."default" NOT NULL DEFAULT ''::character varying,
+  "silent" int2 NOT NULL DEFAULT 3,
+  "id" int4 NOT NULL DEFAULT nextval('mail_setting_id_seq'::regclass)
+)
+;
+COMMENT ON COLUMN "public"."mail_setting"."host" IS 'smtp服务器地址';
+COMMENT ON COLUMN "public"."mail_setting"."port" IS 'smtp服务器端口';
+COMMENT ON COLUMN "public"."mail_setting"."account" IS 'smtp登陆账号';
+COMMENT ON COLUMN "public"."mail_setting"."password" IS 'smtp密码';
+COMMENT ON COLUMN "public"."mail_setting"."sender" IS '发送邮箱';
+COMMENT ON COLUMN "public"."mail_setting"."ssl" IS '1-是 0-否';
+COMMENT ON COLUMN "public"."mail_setting"."tls" IS '1-是 0-否';
+
+-- ----------------------------
+-- Records of mail_setting
+-- ----------------------------
+INSERT INTO "public"."mail_setting" VALUES ('172.16.2.221', 587, 'sanshi@zmops.cn', 'Zmops@0610', 'sanshi@zmops.cn', 0, 1, '54', 3, 1);
+
+-- ----------------------------
 -- Table structure for media_type_setting
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."media_type_setting";
@@ -353,6 +450,56 @@ COMMENT ON COLUMN "public"."messages"."readed" IS '是否已读 1-是 0-否';
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for notice_record
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."notice_record";
+CREATE TABLE "public"."notice_record" (
+  "record_id" int4 NOT NULL DEFAULT nextval('notice_record_record_id_seq'::regclass),
+  "user_id" int4,
+  "problem_id" varchar(32) COLLATE "pg_catalog"."default",
+  "notice_type" int4,
+  "notice_status" varchar(255) COLLATE "pg_catalog"."default",
+  "notice_msg" varchar(2550) COLLATE "pg_catalog"."default",
+  "alarm_info" varchar(255) COLLATE "pg_catalog"."default" DEFAULT NULL::character varying,
+  "receive_account" varchar(255) COLLATE "pg_catalog"."default" DEFAULT NULL::character varying,
+  "creat_time" timestamp(6) NOT NULL
+)
+;
+COMMENT ON COLUMN "public"."notice_record"."record_id" IS '通知记录表主键id';
+COMMENT ON COLUMN "public"."notice_record"."user_id" IS '用户id';
+COMMENT ON COLUMN "public"."notice_record"."problem_id" IS '告警id';
+COMMENT ON COLUMN "public"."notice_record"."notice_type" IS '通知类型(1:sms 2:email 3:wechat 4:dingtalk)';
+COMMENT ON COLUMN "public"."notice_record"."notice_status" IS '通知状态';
+COMMENT ON COLUMN "public"."notice_record"."notice_msg" IS '通知消息';
+COMMENT ON COLUMN "public"."notice_record"."alarm_info" IS '告警信息';
+COMMENT ON COLUMN "public"."notice_record"."receive_account" IS '接收账号';
+COMMENT ON COLUMN "public"."notice_record"."creat_time" IS '创建时间';
+
+-- ----------------------------
+-- Records of notice_record
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for problem
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."problem";
+CREATE TABLE "public"."problem" (
+  "event_id" int8 NOT NULL,
+  "object_id" int8 NOT NULL DEFAULT '0'::bigint,
+  "name" varchar(2048) COLLATE "pg_catalog"."default" NOT NULL DEFAULT ''::character varying,
+  "acknowledged" int4 NOT NULL DEFAULT 0,
+  "severity" int4 NOT NULL DEFAULT 0,
+  "clock" timestamp(6),
+  "r_clock" timestamp(6),
+  "device_id" varchar(64) COLLATE "pg_catalog"."default"
+)
+;
+
+-- ----------------------------
+-- Records of problem
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for product
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."product";
@@ -369,7 +516,8 @@ CREATE TABLE "public"."product" (
   "update_time" timestamp(6),
   "update_user" int8,
   "product_code" varchar(255) COLLATE "pg_catalog"."default",
-  "zbx_id" varchar(32) COLLATE "pg_catalog"."default"
+  "zbx_id" varchar(32) COLLATE "pg_catalog"."default",
+  "icon" text COLLATE "pg_catalog"."default"
 )
 ;
 COMMENT ON COLUMN "public"."product"."product_id" IS '产品ID';
@@ -385,6 +533,7 @@ COMMENT ON COLUMN "public"."product"."update_time" IS '更新时间';
 COMMENT ON COLUMN "public"."product"."update_user" IS '更新人';
 COMMENT ON COLUMN "public"."product"."product_code" IS '产品编号';
 COMMENT ON COLUMN "public"."product"."zbx_id" IS 'Zabbix对应模板ID';
+COMMENT ON COLUMN "public"."product"."icon" IS '图片';
 
 -- ----------------------------
 -- Records of product
@@ -456,7 +605,12 @@ CREATE TABLE "public"."product_attribute_event" (
   "zbx_id" varchar(32) COLLATE "pg_catalog"."default",
   "value_type" varchar(16) COLLATE "pg_catalog"."default",
   "template_id" int8,
-  "event_level" char(1) COLLATE "pg_catalog"."default"
+  "event_level" char(1) COLLATE "pg_catalog"."default",
+  "source" varchar(16) COLLATE "pg_catalog"."default",
+  "delay" int2,
+  "unit" varchar(4) COLLATE "pg_catalog"."default",
+  "valuemapid" varchar(8) COLLATE "pg_catalog"."default",
+  "dep_attr_id" int8
 )
 ;
 COMMENT ON COLUMN "public"."product_attribute_event"."attr_id" IS '属性ID';
@@ -473,6 +627,11 @@ COMMENT ON COLUMN "public"."product_attribute_event"."zbx_id" IS 'itemid';
 COMMENT ON COLUMN "public"."product_attribute_event"."value_type" IS '值类型';
 COMMENT ON COLUMN "public"."product_attribute_event"."template_id" IS '继承的属性ID';
 COMMENT ON COLUMN "public"."product_attribute_event"."event_level" IS '事件级别';
+COMMENT ON COLUMN "public"."product_attribute_event"."source" IS '数据来源';
+COMMENT ON COLUMN "public"."product_attribute_event"."delay" IS '取数间隔';
+COMMENT ON COLUMN "public"."product_attribute_event"."unit" IS '取数间隔单位 s m h ';
+COMMENT ON COLUMN "public"."product_attribute_event"."valuemapid" IS '值映射ID';
+COMMENT ON COLUMN "public"."product_attribute_event"."dep_attr_id" IS '依赖属性ID';
 
 -- ----------------------------
 -- Records of product_attribute_event
@@ -673,7 +832,6 @@ COMMENT ON COLUMN "public"."product_service_relation"."inherit" IS '是否继承
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."product_status_function";
 CREATE TABLE "public"."product_status_function" (
-  "zbx_id" varchar(32) COLLATE "pg_catalog"."default",
   "rule_function" varchar(10) COLLATE "pg_catalog"."default",
   "rule_status" int2 DEFAULT 1,
   "create_user" int8,
@@ -690,7 +848,6 @@ CREATE TABLE "public"."product_status_function" (
   "unit_recovery" varchar(8) COLLATE "pg_catalog"."default"
 )
 ;
-COMMENT ON COLUMN "public"."product_status_function"."zbx_id" IS 'zabbix trigger id';
 COMMENT ON COLUMN "public"."product_status_function"."rule_function" IS '''nodata'' or ''last''';
 COMMENT ON COLUMN "public"."product_status_function"."rule_status" IS '0 or 1';
 COMMENT ON COLUMN "public"."product_status_function"."rule_id" IS '触发器ID，离线 上线';
@@ -712,10 +869,14 @@ CREATE TABLE "public"."product_status_function_relation" (
   "rule_id" int8 NOT NULL,
   "relation_id" varchar(64) COLLATE "pg_catalog"."default" NOT NULL,
   "id" int8 NOT NULL DEFAULT nextval('product_status_function_relation_id_seq'::regclass),
-  "inherit" varchar(4) COLLATE "pg_catalog"."default" DEFAULT 0
+  "inherit" varchar(4) COLLATE "pg_catalog"."default" DEFAULT 0,
+  "zbx_id" varchar(32) COLLATE "pg_catalog"."default",
+  "zbx_id_recovery" varchar(32) COLLATE "pg_catalog"."default"
 )
 ;
 COMMENT ON COLUMN "public"."product_status_function_relation"."inherit" IS '是否继承自产品 1是0否';
+COMMENT ON COLUMN "public"."product_status_function_relation"."zbx_id" IS 'zabbix trigger id';
+COMMENT ON COLUMN "public"."product_status_function_relation"."zbx_id_recovery" IS 'zbx recovery trigger id';
 
 -- ----------------------------
 -- Records of product_status_function_relation
@@ -730,17 +891,48 @@ CREATE TABLE "public"."product_type" (
   "pid" int4,
   "name" varchar(32) COLLATE "pg_catalog"."default",
   "remark" varchar(255) COLLATE "pg_catalog"."default",
-  "pids" varchar(255) COLLATE "pg_catalog"."default"
+  "pids" varchar(255) COLLATE "pg_catalog"."default",
+  "create_user" int8,
+  "create_time" timestamp(6),
+  "update_user" int8,
+  "update_time" timestamp(6)
 )
 ;
 COMMENT ON COLUMN "public"."product_type"."name" IS '分类名称';
 COMMENT ON COLUMN "public"."product_type"."remark" IS '备注';
 COMMENT ON COLUMN "public"."product_type"."pids" IS '所有父ID';
+COMMENT ON COLUMN "public"."product_type"."create_user" IS '创建人';
+COMMENT ON COLUMN "public"."product_type"."create_time" IS '创建时间';
+COMMENT ON COLUMN "public"."product_type"."update_user" IS '更新人';
+COMMENT ON COLUMN "public"."product_type"."update_time" IS '更新时间';
 
 -- ----------------------------
 -- Records of product_type
 -- ----------------------------
-INSERT INTO "public"."product_type" VALUES (1, 0, '默认产品分组', NULL, '[0],');
+INSERT INTO "public"."product_type" VALUES (1, 0, '默认产品分组', NULL, '[0],', NULL, NULL, NULL, NULL);
+
+-- ----------------------------
+-- Table structure for scenes_trigger_record
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."scenes_trigger_record";
+CREATE TABLE "public"."scenes_trigger_record" (
+  "id" int8 NOT NULL DEFAULT nextval('scenes_trigger_record_id_seq'::regclass),
+  "create_time" timestamp(6),
+  "rule_name" varchar(64) COLLATE "pg_catalog"."default",
+  "rule_id" int8,
+  "trigger_type" varchar(16) COLLATE "pg_catalog"."default",
+  "trigger_user" int8
+)
+;
+COMMENT ON COLUMN "public"."scenes_trigger_record"."create_time" IS '触发时间';
+COMMENT ON COLUMN "public"."scenes_trigger_record"."rule_name" IS '场景联动名称';
+COMMENT ON COLUMN "public"."scenes_trigger_record"."rule_id" IS '场景联动ID';
+COMMENT ON COLUMN "public"."scenes_trigger_record"."trigger_type" IS '触发类型  手动 自动';
+COMMENT ON COLUMN "public"."scenes_trigger_record"."trigger_user" IS '触发人';
+
+-- ----------------------------
+-- Records of scenes_trigger_record
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for service_execute_record
@@ -751,12 +943,18 @@ CREATE TABLE "public"."service_execute_record" (
   "create_time" timestamp(6),
   "service_name" varchar(64) COLLATE "pg_catalog"."default",
   "param" varchar(255) COLLATE "pg_catalog"."default",
-  "device_id" varchar(64) COLLATE "pg_catalog"."default"
+  "device_id" varchar(64) COLLATE "pg_catalog"."default",
+  "execute_type" varchar(16) COLLATE "pg_catalog"."default",
+  "execute_user" int8,
+  "execute_rule_id" int8
 )
 ;
 COMMENT ON COLUMN "public"."service_execute_record"."service_name" IS '服务名称';
 COMMENT ON COLUMN "public"."service_execute_record"."param" IS '执行参数';
 COMMENT ON COLUMN "public"."service_execute_record"."device_id" IS '设备ID';
+COMMENT ON COLUMN "public"."service_execute_record"."execute_type" IS '执行方式   手动触发  场景触发';
+COMMENT ON COLUMN "public"."service_execute_record"."execute_user" IS '执行人 执行方式未手动触发时有值';
+COMMENT ON COLUMN "public"."service_execute_record"."execute_rule_id" IS '执行场景ID';
 
 -- ----------------------------
 -- Records of service_execute_record
@@ -797,19 +995,19 @@ COMMENT ON COLUMN "public"."sys_config"."status" IS '是否可修改  ENABLE可�
 -- ----------------------------
 -- Records of sys_config
 -- ----------------------------
-INSERT INTO "public"."sys_config" VALUES (1145915627211370502, '获取token的header标识', 'ZEUS_TOKEN_HEADER_NAME', 'N', NULL, 'Authorization', '获取token的header标识', 1, 1, '2019-10-16 23:02:39', '2021-08-03 16:38:12.432', 'DISABLE');
-INSERT INTO "public"."sys_config" VALUES (1143468689664876546, '管理系统名称', 'ZEUS_SYSTEM_NAME', 'N', NULL, 'ZEUS-IOT', '管理系统名称', 1, 1, '2019-06-25 18:39:15', '2021-08-09 17:17:30.189', 'ENABLE');
-INSERT INTO "public"."sys_config" VALUES (1145915627211370501, '获取系统地密钥过期时间', 'ZEUS_JWT_SECRET_EXPIRE', 'N', NULL, '86400', '获取系统地密钥过期时间（单位：秒），默认1天', 1, 1, '2019-10-16 23:02:39', '2021-08-03 16:38:12.432', 'ENABLE');
-INSERT INTO "public"."sys_config" VALUES (1143469008025133058, 'OAuth2登录用户的账号标识', 'ZEUS_OAUTH2_PREFIX', 'N', NULL, 'oauth2', 'OAuth2登录用户的账号标识', 1, 1, '2019-06-25 18:40:31', '2021-08-03 16:38:12.432', 'ENABLE');
-INSERT INTO "public"."sys_config" VALUES (1145915627211370499, '文件上传路径', 'ZEUS_FILE_UPLOAD_PATH', 'N', NULL, '/tmp', '文件上传默认目录', 1, 1, '2019-08-30 09:10:40', '2021-08-03 16:38:12.432', 'ENABLE');
 INSERT INTO "public"."sys_config" VALUES (1143324237579165697, '验证码开关', 'ZEUS_KAPTCHA_OPEN', 'Y', 1106120265689055233, 'DISABLE', '是否开启验证码', 1, 1, '2019-06-24 12:46:43', '2021-08-03 16:38:12.432', 'ENABLE');
-INSERT INTO "public"."sys_config" VALUES (1145915627211370498, 'Zeus发布的编号', 'ZEUS_SYSTEM_RELEASE_VERSION', 'N', NULL, '10', '用于防止浏览器缓存相关的js和css', 1, 1, '2019-07-02 12:42:30', '2021-08-03 16:38:12.432', 'ENABLE');
-INSERT INTO "public"."sys_config" VALUES (1143468867767607297, '默认系统密码', 'ZEUS_DEFAULT_PASSWORD', 'N', NULL, '111111', '默认系统密码', 1, 1, '2019-06-25 18:39:57', '2021-08-03 16:38:12.432', 'ENABLE');
-INSERT INTO "public"."sys_config" VALUES (1143468867767607208, '单点登录开关', 'ZEUS_SIGN_IN', 'N', NULL, 'DISABLE', '是否启用单点登录', 1, 1, '2019-06-25 18:39:57', '2021-08-03 16:38:12.432', 'ENABLE');
+INSERT INTO "public"."sys_config" VALUES (1143468689664876546, '管理系统名称', 'ZEUS_SYSTEM_NAME', 'N', NULL, 'ZEUS-IOT', '管理系统名称', 1, 1, '2019-06-25 18:39:15', '2021-08-09 17:17:30.189', 'ENABLE');
 INSERT INTO "public"."sys_config" VALUES (1143468867767607207, '默认租户角色ID', 'ZEUS_TENANT_ROLE_ID', 'N', NULL, '1', '默认租户角色ID', 1, 1, '2019-06-25 18:39:57', '2021-08-03 16:38:12.432', 'ENABLE');
-INSERT INTO "public"."sys_config" VALUES (1145915627211370496, '全局主机组Id', 'ZEUS_HOST_GROUP_ID', 'Y', NULL, '19', '全局主机和模板组ID', NULL, NULL, NULL, NULL, 'DISABLE');
+INSERT INTO "public"."sys_config" VALUES (1143468867767607208, '单点登录开关', 'ZEUS_SIGN_IN', 'N', NULL, 'DISABLE', '是否启用单点登录', 1, 1, '2019-06-25 18:39:57', '2021-08-03 16:38:12.432', 'ENABLE');
+INSERT INTO "public"."sys_config" VALUES (1143468867767607297, '默认系统密码', 'ZEUS_DEFAULT_PASSWORD', 'N', NULL, '111111', '默认系统密码', 1, 1, '2019-06-25 18:39:57', '2021-08-03 16:38:12.432', 'ENABLE');
 INSERT INTO "public"."sys_config" VALUES (1143468867767607298, '用户角色ID', 'ZEUS_ADMIN_ROLE_ID', 'N', NULL, '3', '用户角色ID', 1, 1, NULL, NULL, 'DISABLE');
+INSERT INTO "public"."sys_config" VALUES (1143469008025133058, 'OAuth2登录用户的账号标识', 'ZEUS_OAUTH2_PREFIX', 'N', NULL, 'oauth2', 'OAuth2登录用户的账号标识', 1, 1, '2019-06-25 18:40:31', '2021-08-03 16:38:12.432', 'ENABLE');
+INSERT INTO "public"."sys_config" VALUES (1145915627211370496, '全局主机组Id', 'ZEUS_HOST_GROUP_ID', 'Y', NULL, '19', '全局主机和模板组ID', NULL, NULL, NULL, NULL, 'DISABLE');
 INSERT INTO "public"."sys_config" VALUES (1145915627211370497, '离线回调ActionId', 'ZEUS_OFFLINE_ACTION_ID', 'Y', NULL, '7', '回调动作ID', NULL, NULL, NULL, NULL, 'DISABLE');
+INSERT INTO "public"."sys_config" VALUES (1145915627211370498, 'Zeus发布的编号', 'ZEUS_SYSTEM_RELEASE_VERSION', 'N', NULL, '10', '用于防止浏览器缓存相关的js和css', 1, 1, '2019-07-02 12:42:30', '2021-08-03 16:38:12.432', 'ENABLE');
+INSERT INTO "public"."sys_config" VALUES (1145915627211370499, '文件上传路径', 'ZEUS_FILE_UPLOAD_PATH', 'N', NULL, '/tmp', '文件上传默认目录', 1, 1, '2019-08-30 09:10:40', '2021-08-03 16:38:12.432', 'ENABLE');
+INSERT INTO "public"."sys_config" VALUES (1145915627211370501, '获取系统地密钥过期时间', 'ZEUS_JWT_SECRET_EXPIRE', 'N', NULL, '86400', '获取系统地密钥过期时间（单位：秒），默认1天', 1, 1, '2019-10-16 23:02:39', '2021-08-03 16:38:12.432', 'ENABLE');
+INSERT INTO "public"."sys_config" VALUES (1145915627211370502, '获取token的header标识', 'ZEUS_TOKEN_HEADER_NAME', 'N', NULL, 'Authorization', '获取token的header标识', 1, 1, '2019-10-16 23:02:39', '2021-08-03 16:38:12.432', 'DISABLE');
 INSERT INTO "public"."sys_config" VALUES (1145915627211370503, '告警回调ActionId', 'ZEUS_ALARM_ACTION_ID', 'Y', NULL, '8', '回调动作ID', NULL, NULL, NULL, NULL, 'DISABLE');
 INSERT INTO "public"."sys_config" VALUES (1145915627211370504, '动作回调ActionId', 'ZEUS_EXEC_ACTION_ID', 'Y', NULL, '9', '回调动作ID', NULL, NULL, NULL, NULL, 'DISABLE');
 INSERT INTO "public"."sys_config" VALUES (1145915627211370505, '事件回调ActionId', 'ZEUS_EVENT_ACTION_ID', 'Y', NULL, '10', '回调动作ID', NULL, NULL, NULL, NULL, 'DISABLE');
@@ -883,16 +1081,29 @@ INSERT INTO "public"."sys_dict" VALUES (1423897784372199424, 1423840415470653440
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199425, 1160532886713155587, 'wechat', '企业微信', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199426, 1160532886713155587, 'dingtalk', '钉钉', 'ENABLE', 2, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199427, 1160532886713155587, 'feishu', '飞书', 'ENABLE', 3, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199428, 1160532886713155588, '2', '主动上报', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199430, 1160532886713155588, '18', '根据单个属性预处理', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199431, 1160532886713155590, '3', '整数', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199432, 1160532886713155590, '0', '小数', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199433, 1160532886713155590, '1', '字符', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199434, 1160532886713155590, '4', '文本', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199470, 1160532886713155589, 'mg', '毫克', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '质量单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199471, 1160532886713155589, 'g', '克', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '质量单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199472, 1160532886713155589, 'kg', '千克', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '质量单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199473, 1160532886713155589, 't', '吨', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '质量单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199474, 1160532886713155589, 'Pa', '帕斯卡', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '压力单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199475, 1160532886713155589, 'kPa', '千帕斯卡', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '压力单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199435, 1160532886713155589, '%', '百分比', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '常用单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199436, 1160532886713155589, 'count', '次', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '常用单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199437, 1160532886713155589, 'r/min', '转每分钟', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '常用单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199438, 1160532886713155589, 'nm', '纳米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '长度单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199439, 1160532886713155589, 'μm', '微米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '长度单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199440, 1160532886713155589, 'mm', '毫米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '长度单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199441, 1160532886713155589, 'cm', '厘米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '长度单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199442, 1160532886713155589, 'm', '米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '长度单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199443, 1160532886713155589, 'km', '千米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '长度单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199444, 1160532886713155589, 'mm²', '平方毫米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '面积单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199445, 1160532886713155589, 'cm²', '平方厘米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '面积单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199446, 1160532886713155589, 'm²', '平方米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '面积单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199447, 1160532886713155589, 'km²', '平方千米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '面积单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199448, 1160532886713155589, 'hm²', '公顷', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '面积单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199449, 1160532886713155589, 'd', '天', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '时间单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199450, 1160532886713155589, 'h', '小时', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '时间单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199451, 1160532886713155589, 'min', '分钟', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '时间单位');
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199452, 1160532886713155589, 's', '秒', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '时间单位');
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199453, 1160532886713155589, 'ms', '毫秒', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '时间单位');
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199454, 1160532886713155589, 'μs', '微秒', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '时间单位');
@@ -910,41 +1121,23 @@ INSERT INTO "public"."sys_dict" VALUES (1423897784372199465, 1160532886713155589
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199466, 1160532886713155589, 'cm³/h', '立方厘米每小时', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '流量单位');
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199467, 1160532886713155589, 'l/h', '升每小时', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '流量单位');
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199468, 1160532886713155589, 'mL', '毫升', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '容积单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199435, 1160532886713155589, '%', '百分比', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '常用单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199437, 1160532886713155589, 'r/min', '转每分钟', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '常用单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199438, 1160532886713155589, 'nm', '纳米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '长度单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199439, 1160532886713155589, 'μm', '微米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '长度单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199440, 1160532886713155589, 'mm', '毫米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '长度单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199441, 1160532886713155589, 'cm', '厘米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '长度单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199442, 1160532886713155589, 'm', '米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '长度单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199443, 1160532886713155589, 'km', '千米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '长度单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199444, 1160532886713155589, 'mm²', '平方毫米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '面积单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199445, 1160532886713155589, 'cm²', '平方厘米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '面积单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199446, 1160532886713155589, 'm²', '平方米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '面积单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199447, 1160532886713155589, 'km²', '平方千米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '面积单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199448, 1160532886713155589, 'hm²', '公顷', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '面积单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199449, 1160532886713155589, 'd', '天', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '时间单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199450, 1160532886713155589, 'h', '小时', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '时间单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199451, 1160532886713155589, 'min', '分钟', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '时间单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199428, 1160532886713155588, '2', '主动上报', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199430, 1160532886713155588, '18', '根据单个属性预处理', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199436, 1160532886713155589, 'count', '次', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '常用单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199506, 1160532886713155591, '25', 'Replace', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '文本');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199507, 1160532886713155591, '4', 'Trim', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '文本');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199508, 1160532886713155591, '2', 'Right trim', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '文本');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199509, 1160532886713155591, '3', 'Left trim', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '文本');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199510, 1160532886713155591, '11', 'XML XPath', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '结构化数据');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199511, 1160532886713155591, '12', 'JSONPath', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '结构化数据');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199514, 1160532886713155591, '1', '自定义倍数', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '自定义计算');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199517, 1160532886713155591, '7', '八进制转十进制', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '数制转换');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199518, 1160532886713155591, '8', '十六进制转十进制', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '数制转换');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199519, 1160532886713155591, '21', 'JavaScript', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '自定义脚本');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199500, 1160532886713155589, 'Ω', '欧姆', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '电力单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199501, 1160532886713155589, 'KΩ', '千欧', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '电力单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199502, 1160532886713155589, 'MΩ', '兆欧', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '电力单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199503, 1160532886713155589, 'eV', '电子伏', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '电力单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199504, 1160532886713155589, 'kW·h', '千瓦·时', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '电力单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199505, 1160532886713155589, 'kgce', 'Kg标准煤', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '能源单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199469, 1160532886713155589, 'L', '升', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '容积单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199470, 1160532886713155589, 'mg', '毫克', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '质量单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199471, 1160532886713155589, 'g', '克', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '质量单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199472, 1160532886713155589, 'kg', '千克', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '质量单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199473, 1160532886713155589, 't', '吨', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '质量单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199474, 1160532886713155589, 'Pa', '帕斯卡', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '压力单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199475, 1160532886713155589, 'kPa', '千帕斯卡', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '压力单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199476, 1160532886713155589, 'N', '牛顿', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '力单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199477, 1160532886713155589, 'N.m', '牛·米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '力单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199478, 1160532886713155589, 'K', '开尔文', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '温度单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199479, 1160532886713155589, '℃', '摄氏度', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '温度单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199480, 1160532886713155589, '℉', '华氏度', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '温度单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199481, 1160532886713155589, 'J', '焦耳', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '能量单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199482, 1160532886713155589, 'cal', '卡', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '能量单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199483, 1160532886713155589, 'W', '瓦特', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '功率单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199484, 1160532886713155589, 'kW', '千瓦特', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '功率单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199485, 1160532886713155589, 'rad', '弧度', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '角度单位');
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199486, 1160532886713155589, '°', '度', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '角度单位');
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199487, 1160532886713155589, '′', '[角]分', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '角度单位');
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199488, 1160532886713155589, '″', '[角]秒', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '角度单位');
@@ -959,29 +1152,34 @@ INSERT INTO "public"."sys_dict" VALUES (1423897784372199496, 1160532886713155589
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199497, 1160532886713155589, 'mV', '毫伏', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '电力单位');
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199498, 1160532886713155589, 'μV', '微伏', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '电力单位');
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199499, 1160532886713155589, 'A', '安培', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '电力单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199469, 1160532886713155589, 'L', '升', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '容积单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199476, 1160532886713155589, 'N', '牛顿', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '力单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199477, 1160532886713155589, 'N.m', '牛·米', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '力单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199478, 1160532886713155589, 'K', '开尔文', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '温度单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199479, 1160532886713155589, '℃', '摄氏度', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '温度单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199480, 1160532886713155589, '℉', '华氏度', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '温度单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199481, 1160532886713155589, 'J', '焦耳', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '能量单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199482, 1160532886713155589, 'cal', '卡', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '能量单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199483, 1160532886713155589, 'W', '瓦特', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '功率单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199484, 1160532886713155589, 'kW', '千瓦特', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '功率单位');
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199485, 1160532886713155589, 'rad', '弧度', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '角度单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199500, 1160532886713155589, 'Ω', '欧姆', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '电力单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199501, 1160532886713155589, 'KΩ', '千欧', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '电力单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199502, 1160532886713155589, 'MΩ', '兆欧', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '电力单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199503, 1160532886713155589, 'eV', '电子伏', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '电力单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199504, 1160532886713155589, 'kW·h', '千瓦·时', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '电力单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199505, 1160532886713155589, 'kgce', 'Kg标准煤', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '能源单位');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199506, 1160532886713155591, '25', 'Replace', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '文本');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199507, 1160532886713155591, '4', 'Trim', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '文本');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199508, 1160532886713155591, '2', 'Right trim', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '文本');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199509, 1160532886713155591, '3', 'Left trim', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '文本');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199510, 1160532886713155591, '11', 'XML XPath', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '结构化数据');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199511, 1160532886713155591, '12', 'JSONPath', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '结构化数据');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199512, 1160532886713155591, '13', 'In range', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '验证');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199514, 1160532886713155591, '1', '自定义倍数', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '自定义计算');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199517, 1160532886713155591, '7', '八进制转十进制', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '数制转换');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199518, 1160532886713155591, '8', '十六进制转十进制', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '数制转换');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199519, 1160532886713155591, '21', 'JavaScript', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '自定义脚本');
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199525, 1440492220332449792, '5', '紧急', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199526, 1440492220332449792, '4', '高级', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199527, 1440492220332449792, '3', '中级', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199528, 1440492220332449792, '1', '信息', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199529, 1440492220332449792, '2', '低级', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199531, 1160532886713155588, '0', 'Agent 采集', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO "public"."sys_dict" VALUES (1428599180229115911, 1428599180229115904, '0', '', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO "public"."sys_dict" VALUES (1428599180229115912, 1428599180229115904, '1', '是', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO "public"."sys_dict" VALUES (1429987619034984449, 1142859918022911591, '1', '异步', 'ENABLE', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO "public"."sys_dict" VALUES (1429987619034984450, 1142859918022911591, '0', '同步', 'ENABLE', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199512, 1160532886713155591, '13', 'In range', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, '验证');
 INSERT INTO "public"."sys_dict" VALUES (1440492197892923392, 1440492197679013888, 'SSm5lxzi', '三石Test3OrlDb', 'DISABLE', 99, NULL, '2021-09-22 09:44:37.685', '2021-09-22 09:44:37.755', 1, 1, NULL);
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199531, 1160532886713155588, '0', 'Agent 采集', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199528, 1440492220332449792, '1', '信息', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199529, 1440492220332449792, '2', '低级', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199527, 1440492220332449792, '3', '中级', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199526, 1440492220332449792, '4', '高级', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199525, 1440492220332449792, '5', '紧急', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for sys_dict_type
@@ -1017,24 +1215,24 @@ COMMENT ON TABLE "public"."sys_dict_type" IS '字典类型表';
 -- ----------------------------
 -- Records of sys_dict_type
 -- ----------------------------
+INSERT INTO "public"."sys_dict_type" VALUES (1106120208097067009, 'SEX', '性别', '', 'Y', 'ENABLE', 4, '2019-03-14 17:09:43', 1, NULL, NULL);
 INSERT INTO "public"."sys_dict_type" VALUES (1106120265689055233, 'STATUS', '状态', '', 'Y', 'ENABLE', 3, '2019-03-14 17:09:57', 1, NULL, NULL);
 INSERT INTO "public"."sys_dict_type" VALUES (1106120322450571266, 'ACCOUNT_STATUS', '账号状态', '', 'Y', 'ENABLE', 40, '2019-03-14 17:10:10', 1, '2019-08-11 20:46:38', 1);
 INSERT INTO "public"."sys_dict_type" VALUES (1106120388036902914, 'DEL_FLAG', '是否删除', '', 'Y', 'ENABLE', 2, '2019-03-14 17:10:26', 1, '2019-03-27 16:26:31', 1);
+INSERT INTO "public"."sys_dict_type" VALUES (1142859918022911591, 'EXECUTE_TYPE', '服务执行方式', '服务执行方式', 'N', 'ENABLE', 1, NULL, NULL, '2021-09-10 15:56:14.127', 1);
 INSERT INTO "public"."sys_dict_type" VALUES (1149217131989069826, 'SYSTEM_TYPE', '系统分类', '系统所有分类的维护', 'Y', 'ENABLE', 50, '2019-07-11 15:21:30', 1, '2019-08-11 20:46:47', 1);
 INSERT INTO "public"."sys_dict_type" VALUES (1160532704105742337, 'FLOW_CATEGARY', '工作流分类', '工作流分类', 'Y', 'ENABLE', 60, '2019-08-11 20:45:33', 1, NULL, NULL);
 INSERT INTO "public"."sys_dict_type" VALUES (1160532775455047681, 'FLOW_KEY', '工作流标识', '工作流标识', 'Y', 'ENABLE', 70, '2019-08-11 20:45:50', 1, NULL, NULL);
 INSERT INTO "public"."sys_dict_type" VALUES (1160532886713155585, 'LEAVE_TYPE', '请假类型', '请假类型', 'Y', 'ENABLE', 80, '2019-08-11 20:46:17', 1, '2019-08-11 20:46:23', 1);
-INSERT INTO "public"."sys_dict_type" VALUES (1106120208097067009, 'SEX', '性别', '', 'Y', 'ENABLE', 4, '2019-03-14 17:09:43', 1, NULL, NULL);
-INSERT INTO "public"."sys_dict_type" VALUES (1423160140530053120, 'DICTTYPE', '字典类型', '测试', 'N', 'ENABLE', NULL, '2021-08-05 13:53:13.196', 1, '2021-08-05 13:53:13.196', 1);
-INSERT INTO "public"."sys_dict_type" VALUES (1160532886713155587, 'MEDIA_TYPE', '通知类型', '通知类型', 'N', 'ENABLE', 1, '2019-08-11 20:46:17', 1, '2019-08-11 20:46:23', 1);
 INSERT INTO "public"."sys_dict_type" VALUES (1160532886713155586, 'DEVICE_TYPE', '设备类型', '设备类型', 'Y', 'ENABLE', 1, '2019-08-11 20:46:17', 1, '2019-08-11 20:46:23', 1);
+INSERT INTO "public"."sys_dict_type" VALUES (1160532886713155587, 'MEDIA_TYPE', '通知类型', '通知类型', 'N', 'ENABLE', 1, '2019-08-11 20:46:17', 1, '2019-08-11 20:46:23', 1);
 INSERT INTO "public"."sys_dict_type" VALUES (1160532886713155588, 'ATTR_TYPE', '产品属性类型', '产品属性类型', 'Y', 'ENABLE', 1, '2019-08-11 20:46:17', 1, '2019-08-11 20:46:23', 1);
 INSERT INTO "public"."sys_dict_type" VALUES (1160532886713155589, 'UNITS', '产品属性单位', '产品属性单位', 'Y', 'ENABLE', 1, '2019-08-11 20:46:17', 1, '2019-08-11 20:46:23', 1);
 INSERT INTO "public"."sys_dict_type" VALUES (1160532886713155590, 'DATA_TYPE', '产品属性值类型', '产品属性值类型', 'Y', 'ENABLE', 1, '2019-08-11 20:46:17', 1, '2019-08-11 20:46:23', 1);
 INSERT INTO "public"."sys_dict_type" VALUES (1160532886713155591, 'DATA_PRE_TYPE', '数据预处理方法名称', '数据预处理方法名称', 'Y', 'ENABLE', 1, '2019-08-11 20:46:17', 1, '2019-08-11 20:46:23', 1);
-INSERT INTO "public"."sys_dict_type" VALUES (1440492220332449792, 'EVENT_LEVEL', '告警级别', '告警级别', 'N', 'ENABLE', NULL, '2021-09-22 09:44:43.035', 1, '2021-09-22 09:44:43.102', 1);
-INSERT INTO "public"."sys_dict_type" VALUES (1142859918022911591, 'EXECUTE_TYPE', '服务执行方式', '服务执行方式', 'N', 'ENABLE', 1, NULL, NULL, '2021-09-10 15:56:14.127', 1);
+INSERT INTO "public"."sys_dict_type" VALUES (1423160140530053120, 'DICTTYPE', '字典类型', '测试', 'N', 'ENABLE', NULL, '2021-08-05 13:53:13.196', 1, '2021-08-05 13:53:13.196', 1);
 INSERT INTO "public"."sys_dict_type" VALUES (1428599180229115904, 'WHETHER', '是否', '是否', 'N', 'ENABLE', NULL, '2021-08-20 14:06:01.311', 1, '2021-08-20 14:06:01.311', 1);
+INSERT INTO "public"."sys_dict_type" VALUES (1440492220332449792, 'EVENT_LEVEL', '告警级别', '告警级别', 'N', 'ENABLE', NULL, '2021-09-22 09:44:43.035', 1, '2021-09-22 09:44:43.102', 1);
 
 -- ----------------------------
 -- Table structure for sys_login_log
@@ -1100,55 +1298,63 @@ COMMENT ON COLUMN "public"."sys_menu"."admin_flag" IS '是否是超级管理员�
 -- ----------------------------
 -- Records of sys_menu
 -- ----------------------------
-INSERT INTO "public"."sys_menu" VALUES (113, 'mgr_setRole', 'mgr', '[0],[system],[mgr],', '分配角色', NULL, '/mgr/setRole', 7, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:48:07', NULL, 1, 'Y');
-INSERT INTO "public"."sys_menu" VALUES (139, 'dict_update', 'dict', '[0],[system],[dict],', '修改字典', NULL, '/dictType/editItem', 1, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:49:04', NULL, 1, 'Y');
-INSERT INTO "public"."sys_menu" VALUES (140, 'dict_delete', 'dict', '[0],[system],[dict],', '删除字典', NULL, '/dictType/delete', 1, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:49:04', NULL, 1, 'Y');
-INSERT INTO "public"."sys_menu" VALUES (151, 'menu_list', 'menu', '[0],[system],[menu],', '菜单列表', '', '/menu/list', 5, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:48:25', NULL, 1, 'Y');
-INSERT INTO "public"."sys_menu" VALUES (115, 'role_add', 'role', '[0],[system],[role],', '添加角色', NULL, '/role/add', 1, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:48:12', NULL, 1, 'Y');
-INSERT INTO "public"."sys_menu" VALUES (116, 'role_edit', 'role', '[0],[system],[role],', '修改角色', NULL, '/role/edit', 2, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:48:12', NULL, 1, 'Y');
+INSERT INTO "public"."sys_menu" VALUES (105, 'system', '0', '[0],', '系统管理', 'layui-icon layui-icon-set', '/system', 20, 1, 'Y', NULL, 'ENABLE', NULL, '2019-03-29 16:32:27', NULL, 1, 'N');
+INSERT INTO "public"."sys_menu" VALUES (106, 'userMgr', '0', '[0],', '用户管理', '', '/userMgr', 10, 1, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:48:07', NULL, 1, 'N');
 INSERT INTO "public"."sys_menu" VALUES (107, 'mgr_add', 'mgr', '[0],[system],[mgr],', '添加用户', NULL, '/mgr/add', 1, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:48:07', NULL, 1, 'N');
 INSERT INTO "public"."sys_menu" VALUES (108, 'mgr_edit', 'mgr', '[0],[system],[mgr],', '修改用户', NULL, '/mgr/edit', 2, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:48:07', NULL, 1, 'N');
 INSERT INTO "public"."sys_menu" VALUES (109, 'mgr_delete', 'mgr', '[0],[system],[mgr],', '删除用户', NULL, '/mgr/delete', 3, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:48:07', NULL, 1, 'N');
-INSERT INTO "public"."sys_menu" VALUES (117, 'role_remove', 'role', '[0],[system],[role],', '删除角色', NULL, '/role/remove', 3, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:48:12', NULL, 1, 'N');
-INSERT INTO "public"."sys_menu" VALUES (156, 'dict_list', 'dict', '[0],[system],[dict],', '字典列表', '', '/dict/list', 5, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:49:04', NULL, 1, 'Y');
-INSERT INTO "public"."sys_menu" VALUES (164, 'role_list', 'role', '[0],[system],[role],', '角色列表', '', '/role/list', 7, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:48:12', NULL, 1, 'Y');
-INSERT INTO "public"."sys_menu" VALUES (114, 'role', 'system', '[0],[system],', '角色管理', '', '/system/role', 20, 2, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:48:12', NULL, 1, 'Y');
-INSERT INTO "public"."sys_menu" VALUES (128, 'businessLog', 'log', '[0],[log],', '业务日志', '', '/log/businessLog', 70, 2, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:48:39', NULL, 1, 'N');
-INSERT INTO "public"."sys_menu" VALUES (181, 'product_type', 'product_mgr', '[0],[product_mgr],', '产品分类', NULL, '/productMgr/productType', 3, 2, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
-INSERT INTO "public"."sys_menu" VALUES (119, 'menu', 'system', '[0],[system],', '菜单管理', '', '/menu', 50, 2, 'Y', NULL, 'DISABLE', NULL, '2019-06-30 13:48:25', NULL, 1, 'Y');
-INSERT INTO "public"."sys_menu" VALUES (132, 'dict', 'system', '[0],[system],', '字典管理', '', '/system/dictType', 40, 2, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:49:04', NULL, 1, 'Y');
-INSERT INTO "public"."sys_menu" VALUES (158, 'log_list', 'log', '[0],[system],[log],', '日志列表', '', '/log/list', 2, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:48:39', NULL, 1, 'N');
-INSERT INTO "public"."sys_menu" VALUES (133, 'loginLog', 'log', '[0],[log],', '登录日志', '', '/log/loginLog', 60, 2, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:49:29', NULL, 1, 'N');
-INSERT INTO "public"."sys_menu" VALUES (186, 'sysParam', 'system', '[0],[system],', '系统参数', '', '/system/sysParam', 10, 2, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:48:07', NULL, 1, 'Y');
-INSERT INTO "public"."sys_menu" VALUES (167, 'mgr_list', 'mgr', '[0],[system],[mgr],', '用户列表', '', '/mgr/list', 10, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:48:07', NULL, 1, 'N');
-INSERT INTO "public"."sys_menu" VALUES (174, 'auth', '0', '[0],', '平台授权', NULL, '/auth', 3, 1, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'Y');
-INSERT INTO "public"."sys_menu" VALUES (196, 'api', 'dev_mgr', '[0],[dev_mgr],', '设备调试', NULL, '/deviceMgr/debug', 3, 2, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
 INSERT INTO "public"."sys_menu" VALUES (110, 'reset', 'mgr', '[0],[system],[mgr],', '重置密码', NULL, '/mgr/reset', 4, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:48:07', NULL, 1, 'Y');
+INSERT INTO "public"."sys_menu" VALUES (113, 'mgr_setRole', 'mgr', '[0],[system],[mgr],', '分配角色', NULL, '/mgr/setRole', 7, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:48:07', NULL, 1, 'Y');
+INSERT INTO "public"."sys_menu" VALUES (114, 'role', 'system', '[0],[system],', '角色管理', '', '/system/role', 20, 2, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:48:12', NULL, 1, 'Y');
+INSERT INTO "public"."sys_menu" VALUES (115, 'role_add', 'role', '[0],[system],[role],', '添加角色', NULL, '/role/add', 1, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:48:12', NULL, 1, 'Y');
+INSERT INTO "public"."sys_menu" VALUES (116, 'role_edit', 'role', '[0],[system],[role],', '修改角色', NULL, '/role/edit', 2, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:48:12', NULL, 1, 'Y');
+INSERT INTO "public"."sys_menu" VALUES (117, 'role_remove', 'role', '[0],[system],[role],', '删除角色', NULL, '/role/remove', 3, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:48:12', NULL, 1, 'N');
+INSERT INTO "public"."sys_menu" VALUES (119, 'menu', 'system', '[0],[system],', '菜单管理', '', '/menu', 50, 2, 'Y', NULL, 'DISABLE', NULL, '2019-06-30 13:48:25', NULL, 1, 'Y');
+INSERT INTO "public"."sys_menu" VALUES (128, 'businessLog', 'log', '[0],[log],', '业务日志', '', '/log/businessLog', 70, 2, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:48:39', NULL, 1, 'N');
+INSERT INTO "public"."sys_menu" VALUES (132, 'dict', 'system', '[0],[system],', '字典管理', '', '/system/dictType', 40, 2, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:49:04', NULL, 1, 'Y');
+INSERT INTO "public"."sys_menu" VALUES (133, 'loginLog', 'log', '[0],[log],', '登录日志', '', '/log/loginLog', 60, 2, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:49:29', NULL, 1, 'N');
+INSERT INTO "public"."sys_menu" VALUES (138, 'dict_add', 'dict', '[0],[system],[dict],', '添加字典', NULL, '/dictType/addItem', 1, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:49:04', NULL, 1, 'Y');
+INSERT INTO "public"."sys_menu" VALUES (139, 'dict_update', 'dict', '[0],[system],[dict],', '修改字典', NULL, '/dictType/editItem', 1, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:49:04', NULL, 1, 'Y');
+INSERT INTO "public"."sys_menu" VALUES (140, 'dict_delete', 'dict', '[0],[system],[dict],', '删除字典', NULL, '/dictType/delete', 1, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:49:04', NULL, 1, 'Y');
+INSERT INTO "public"."sys_menu" VALUES (151, 'menu_list', 'menu', '[0],[system],[menu],', '菜单列表', '', '/menu/list', 5, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:48:25', NULL, 1, 'Y');
+INSERT INTO "public"."sys_menu" VALUES (156, 'dict_list', 'dict', '[0],[system],[dict],', '字典列表', '', '/dict/list', 5, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:49:04', NULL, 1, 'Y');
+INSERT INTO "public"."sys_menu" VALUES (158, 'log_list', 'log', '[0],[system],[log],', '日志列表', '', '/log/list', 2, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:48:39', NULL, 1, 'N');
+INSERT INTO "public"."sys_menu" VALUES (164, 'role_list', 'role', '[0],[system],[role],', '角色列表', '', '/role/list', 7, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:48:12', NULL, 1, 'Y');
+INSERT INTO "public"."sys_menu" VALUES (167, 'mgr_list', 'mgr', '[0],[system],[mgr],', '用户列表', '', '/mgr/list', 10, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:48:07', NULL, 1, 'N');
+INSERT INTO "public"."sys_menu" VALUES (168, 'usrGrp', 'userMgr', '[0],[userMgr],', '用户组管理', NULL, '/userMgr/userGroup', 9, 1, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
+INSERT INTO "public"."sys_menu" VALUES (169, 'analyse', '0', '[0],', '统计分析', NULL, '/analyse', 1, 1, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
+INSERT INTO "public"."sys_menu" VALUES (170, 'dev_mgr', '0', '[0],', '设备管理', NULL, '/deviceMgr', 2, 1, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
+INSERT INTO "public"."sys_menu" VALUES (171, 'product_mgr', '0', '[0],', '产品管理', NULL, '/productMgr', 3, 1, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
+INSERT INTO "public"."sys_menu" VALUES (173, 'view', '0', '[0],', '可视化', NULL, '/view', 3, 1, 'Y', NULL, 'DISABLE', NULL, NULL, NULL, NULL, 'N');
+INSERT INTO "public"."sys_menu" VALUES (174, 'auth', '0', '[0],', '平台授权', NULL, '/auth', 3, 1, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'Y');
+INSERT INTO "public"."sys_menu" VALUES (176, 'dev_log', 'analyse', '[0],[analyse],', '设备日志', NULL, '/analyse/devLog', 3, 2, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
 INSERT INTO "public"."sys_menu" VALUES (177, 'dev', 'dev_mgr', '[0],[dev_mgr],', '设备', NULL, '/deviceMgr/device', 3, 2, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
 INSERT INTO "public"."sys_menu" VALUES (178, 'dev_group', 'dev_mgr', '[0],[dev_mgr],', '设备组', NULL, '/deviceMgr/deviceGroup', 3, 2, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
-INSERT INTO "public"."sys_menu" VALUES (171, 'product_mgr', '0', '[0],', '产品管理', NULL, '/productMgr', 3, 1, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
+INSERT INTO "public"."sys_menu" VALUES (179, 'alarmList', 'alarm', '[0],[alarm],', '告警记录', NULL, '/alarm/alarmList', 3, 2, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
 INSERT INTO "public"."sys_menu" VALUES (180, 'product', 'product_mgr', '[0],[product_mgr],', '产品', NULL, '/productMgr/product', 3, 2, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
+INSERT INTO "public"."sys_menu" VALUES (181, 'product_type', 'product_mgr', '[0],[product_mgr],', '产品分类', NULL, '/productMgr/productType', 3, 2, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
+INSERT INTO "public"."sys_menu" VALUES (183, 'grafana', 'view', '[0],[view],', 'Grafana配置', NULL, '/view/grafana', 3, 2, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
 INSERT INTO "public"."sys_menu" VALUES (184, 'log', '0', '[0]', '日志管理', NULL, '/log', 4, 1, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
-INSERT INTO "public"."sys_menu" VALUES (105, 'system', '0', '[0],', '系统管理', 'layui-icon layui-icon-set', '/system', 20, 1, 'Y', NULL, 'ENABLE', NULL, '2019-03-29 16:32:27', NULL, 1, 'N');
-INSERT INTO "public"."sys_menu" VALUES (170, 'dev_mgr', '0', '[0],', '设备管理', NULL, '/deviceMgr', 2, 1, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
+INSERT INTO "public"."sys_menu" VALUES (186, 'sysParam', 'system', '[0],[system],', '系统参数', '', '/system/sysParam', 10, 2, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:48:07', NULL, 1, 'Y');
 INSERT INTO "public"."sys_menu" VALUES (187, 'media', 'system', '[0],[system],', '通知配置', '', '/system/media', 80, 2, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:50:06', NULL, 1, 'N');
 INSERT INTO "public"."sys_menu" VALUES (189, 'home', 'analyse', '[0],[analyse],', '全局概览', NULL, '/analyse/home', 1, 1, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
-INSERT INTO "public"."sys_menu" VALUES (179, 'alarmList', 'alarm', '[0],[alarm],', '告警记录', NULL, '/alarm/alarmList', 3, 2, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
-INSERT INTO "public"."sys_menu" VALUES (169, 'analyse', '0', '[0],', '统计分析', NULL, '/analyse', 1, 1, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
 INSERT INTO "public"."sys_menu" VALUES (190, 'latest', 'analyse', '[0],[analyse],', '最新数据', NULL, '/analyse/latest', 1, 1, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
 INSERT INTO "public"."sys_menu" VALUES (191, 'alarmAnalyse', 'alarm', '[0],[alarm],', '告警分析', NULL, '/alarm/analyse', 3, 2, 'Y', NULL, 'DISABLE', NULL, NULL, NULL, NULL, 'N');
-INSERT INTO "public"."sys_menu" VALUES (173, 'view', '0', '[0],', '可视化', NULL, '/view', 3, 1, 'Y', NULL, 'DISABLE', NULL, NULL, NULL, NULL, 'N');
-INSERT INTO "public"."sys_menu" VALUES (176, 'dev_log', 'analyse', '[0],[analyse],', '设备日志', NULL, '/analyse/devLog', 3, 2, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
-INSERT INTO "public"."sys_menu" VALUES (183, 'grafana', 'view', '[0],[view],', 'Grafana配置', NULL, '/view/grafana', 3, 2, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
 INSERT INTO "public"."sys_menu" VALUES (192, 'alarm', '0', '[0],', '告警管理', NULL, '/alarm', 3, 1, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
+INSERT INTO "public"."sys_menu" VALUES (193, 'scene ', 'rule', '[0],[rule],', '场景联动', NULL, '/rule/scene', 3, 2, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
 INSERT INTO "public"."sys_menu" VALUES (194, 'rule', '0', '[0],', '规则引擎', NULL, '/rule', 3, 1, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
+INSERT INTO "public"."sys_menu" VALUES (195, 'nodeRed', 'rule', '[0],[rule],', 'Node-Red', NULL, '/rule/nodeRed', 3, 2, 'Y', NULL, 'DISABLE', NULL, NULL, NULL, NULL, 'N');
+INSERT INTO "public"."sys_menu" VALUES (196, 'api', 'dev_mgr', '[0],[dev_mgr],', '设备调试', NULL, '/deviceMgr/debug', 3, 2, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
 INSERT INTO "public"."sys_menu" VALUES (197, 'about', '0', '[0],', '关于我们', NULL, '/about', 2, 1, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
-INSERT INTO "public"."sys_menu" VALUES (106, 'userMgr', '0', '[0],', '用户管理', '', '/userMgr', 10, 1, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:48:07', NULL, 1, 'N');
-INSERT INTO "public"."sys_menu" VALUES (168, 'usrGrp', 'userMgr', '[0],[userMgr],', '用户组管理', NULL, '/userMgr/userGroup', 9, 1, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
-INSERT INTO "public"."sys_menu" VALUES (138, 'dict_add', 'dict', '[0],[system],[dict],', '添加字典', NULL, '/dictType/addItem', 1, 3, 'N', NULL, 'ENABLE', NULL, '2019-06-30 13:49:04', NULL, 1, 'Y');
-INSERT INTO "public"."sys_menu" VALUES (206, 'dev_detail', 'dev', '[0],[dev_mgr],[dev]', '设备详情', NULL, '/deviceMgr/device/detail', 3, 3, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
-INSERT INTO "public"."sys_menu" VALUES (205, 'dev_list', 'dev', '[0],[dev_mgr],[dev]', '设备列表', NULL, '/deviceMgr/device/list', 3, 3, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
+INSERT INTO "public"."sys_menu" VALUES (198, 'proxy', 'system', '[0],', '边缘采集', '', '/proxy', 20, 1, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:48:12', NULL, 1, 'N');
+INSERT INTO "public"."sys_menu" VALUES (199, 'proxyInfo', 'system', '[0],[proxy],', '代理管理', '', '/proxy/proxyInfo', 20, 2, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:48:12', NULL, 1, 'N');
+INSERT INTO "public"."sys_menu" VALUES (200, 'proxyMonitor', 'system', '[0],[proxy],', '代理监控', '', '/proxy/proxyMonitor', 20, 2, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:48:12', NULL, 1, 'N');
+INSERT INTO "public"."sys_menu" VALUES (201, 'grafana', 'analyse', '[0],[analyse],', 'Grafana 演示大屏', NULL, '/analyse/grafana', 5, 2, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
+INSERT INTO "public"."sys_menu" VALUES (202, 'dev_add', 'dev', '[0],[dev_mgr],[dev]', '增加设备', NULL, '/deviceMgr/device/add', 3, 3, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
+INSERT INTO "public"."sys_menu" VALUES (203, 'dev_update', 'dev', '[0],[dev_mgr],[dev]', '修改设备', NULL, '/deviceMgr/device/update', 3, 3, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
 INSERT INTO "public"."sys_menu" VALUES (204, 'dev_delete', 'dev', '[0],[dev_mgr],[dev]', '删除设备', NULL, '/deviceMgr/device/delete', 3, 3, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
+INSERT INTO "public"."sys_menu" VALUES (205, 'dev_list', 'dev', '[0],[dev_mgr],[dev]', '设备列表', NULL, '/deviceMgr/device/list', 3, 3, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
+INSERT INTO "public"."sys_menu" VALUES (206, 'dev_detail', 'dev', '[0],[dev_mgr],[dev]', '设备详情', NULL, '/deviceMgr/device/detail', 3, 3, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
 INSERT INTO "public"."sys_menu" VALUES (207, 'product_add', 'product', '[0],[product_mgr],[product]', '增加产品', NULL, '/productMgr/product', 3, 3, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
 INSERT INTO "public"."sys_menu" VALUES (208, 'product_update', 'product', '[0],[product_mgr],[product]', '修改产品', NULL, '/productMgr/product', 3, 3, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
 INSERT INTO "public"."sys_menu" VALUES (209, 'product_delete', 'product', '[0],[product_mgr],[product]', '删除产品', NULL, '/productMgr/product', 3, 3, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
@@ -1160,14 +1366,7 @@ INSERT INTO "public"."sys_menu" VALUES (214, 'tenant_update', 'tenant', '[0],[sy
 INSERT INTO "public"."sys_menu" VALUES (215, 'tenant_list', 'tenant', '[0],[system],', '租户列表', '', '/system/tenant', 10, 3, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:48:07', NULL, 1, 'N');
 INSERT INTO "public"."sys_menu" VALUES (216, 'tenant_delete', 'tenant', '[0],[system],', '租户删除', '', '/system/tenant', 10, 3, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:48:07', NULL, 1, 'N');
 INSERT INTO "public"."sys_menu" VALUES (217, 'mgr', 'userMgr', '[0],[userMgr],', '用户', '', '/userMgr/user', 10, 1, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:48:07', NULL, 1, 'N');
-INSERT INTO "public"."sys_menu" VALUES (195, 'nodeRed', 'rule', '[0],[rule],', 'Node-Red', NULL, '/rule/nodeRed', 3, 2, 'Y', NULL, 'DISABLE', NULL, NULL, NULL, NULL, 'N');
-INSERT INTO "public"."sys_menu" VALUES (199, 'proxyInfo', 'system', '[0],[proxy],', '代理管理', '', '/proxy/proxyInfo', 20, 2, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:48:12', NULL, 1, 'N');
-INSERT INTO "public"."sys_menu" VALUES (200, 'proxyMonitor', 'system', '[0],[proxy],', '代理监控', '', '/proxy/proxyMonitor', 20, 2, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:48:12', NULL, 1, 'N');
-INSERT INTO "public"."sys_menu" VALUES (198, 'proxy', 'system', '[0],', '边缘采集', '', '/proxy', 20, 1, 'Y', NULL, 'ENABLE', NULL, '2019-06-30 13:48:12', NULL, 1, 'N');
-INSERT INTO "public"."sys_menu" VALUES (201, 'grafana', 'analyse', '[0],[analyse],', 'Grafana 演示大屏', NULL, '/analyse/grafana', 5, 2, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
-INSERT INTO "public"."sys_menu" VALUES (203, 'dev_update', 'dev', '[0],[dev_mgr],[dev]', '修改设备', NULL, '/deviceMgr/device/update', 3, 3, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
-INSERT INTO "public"."sys_menu" VALUES (202, 'dev_add', 'dev', '[0],[dev_mgr],[dev]', '增加设备', NULL, '/deviceMgr/device/add', 3, 3, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
-INSERT INTO "public"."sys_menu" VALUES (193, 'scene ', 'rule', '[0],[rule],', '场景联动', NULL, '/rule/scene', 3, 2, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
+INSERT INTO "public"."sys_menu" VALUES (218, 'distributed', 'dev_mgr', '[0],[dev_mgr],', '设备分布', NULL, '/deviceMgr/distributed', 3, 2, 'Y', NULL, 'ENABLE', NULL, NULL, NULL, NULL, 'N');
 
 -- ----------------------------
 -- Table structure for sys_operation_log
@@ -1266,6 +1465,7 @@ INSERT INTO "public"."sys_role_menu" VALUES (1, 211);
 INSERT INTO "public"."sys_role_menu" VALUES (1, 210);
 INSERT INTO "public"."sys_role_menu" VALUES (1, 212);
 INSERT INTO "public"."sys_role_menu" VALUES (1, 217);
+INSERT INTO "public"."sys_role_menu" VALUES (1, 219);
 INSERT INTO "public"."sys_role_menu" VALUES (1, 105);
 INSERT INTO "public"."sys_role_menu" VALUES (1, 106);
 INSERT INTO "public"."sys_role_menu" VALUES (1, 107);
@@ -1348,8 +1548,8 @@ COMMENT ON COLUMN "public"."sys_user"."zbx_id" IS 'zabbix 用户ID';
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
-INSERT INTO "public"."sys_user" VALUES ('Admin', 'cbde417443393372dbac9c185a6ec159', 'gt3zs', '超级管理员', '', '', 1, 1437232484602372096, 'ENABLE', 1, 1, '2021-09-28 09:38:33.668', '2021-09-28 09:38:33.668', 122, 'f93a1bea2549f93fad75bdde71e6b4fe', '1');
 INSERT INTO "public"."sys_user" VALUES ('root', '17db03c22596b7609c7c9704f16663e0', 'abcdef', '超级管理员', '888888@qq.com', '13812345678', 1, 1437232484602372096, 'ENABLE', 1, 1, '2021-07-30 21:43:02.686', '2021-07-30 21:43:02.686', 1, '5859e004e8d2a23e6c330c3f9cd277e2', '4');
+INSERT INTO "public"."sys_user" VALUES ('Admin', 'cbde417443393372dbac9c185a6ec159', 'gt3zs', '超级管理员', '', '', 1, 1437232484602372096, 'ENABLE', 1, 1, '2021-09-28 09:38:33.668', '2021-09-28 09:38:33.668', 122, 'f6ce31c5f70bf40fae2067087254202c', '1');
 
 -- ----------------------------
 -- Table structure for sys_user_group
@@ -1421,7 +1621,7 @@ COMMENT ON COLUMN "public"."tag"."update_time" IS '更新时间';
 -- ----------------------------
 ALTER SEQUENCE "public"."device_online_report_id_seq"
 OWNED BY "public"."device_online_report"."id";
-SELECT setval('"public"."device_online_report_id_seq"', 7, true);
+SELECT setval('"public"."device_online_report_id_seq"', 21, true);
 
 -- ----------------------------
 -- Alter sequences owned by
@@ -1429,6 +1629,20 @@ SELECT setval('"public"."device_online_report_id_seq"', 7, true);
 ALTER SEQUENCE "public"."devices_groups_id_seq"
 OWNED BY "public"."devices_groups"."id";
 SELECT setval('"public"."devices_groups_id_seq"', 183, true);
+
+-- ----------------------------
+-- Alter sequences owned by
+-- ----------------------------
+ALTER SEQUENCE "public"."event_trigger_record_id_seq"
+OWNED BY "public"."event_trigger_record"."id";
+SELECT setval('"public"."event_trigger_record_id_seq"', 2, false);
+
+-- ----------------------------
+-- Alter sequences owned by
+-- ----------------------------
+ALTER SEQUENCE "public"."mail_setting_id_seq"
+OWNED BY "public"."mail_setting"."id";
+SELECT setval('"public"."mail_setting_id_seq"', 2, false);
 
 -- ----------------------------
 -- Alter sequences owned by
@@ -1443,6 +1657,13 @@ SELECT setval('"public"."media_type_setting_id_seq"', 2, false);
 ALTER SEQUENCE "public"."messages_id_seq"
 OWNED BY "public"."messages"."id";
 SELECT setval('"public"."messages_id_seq"', 234, true);
+
+-- ----------------------------
+-- Alter sequences owned by
+-- ----------------------------
+ALTER SEQUENCE "public"."notice_record_record_id_seq"
+OWNED BY "public"."notice_record"."record_id";
+SELECT setval('"public"."notice_record_record_id_seq"', 2, false);
 
 -- ----------------------------
 -- Alter sequences owned by
@@ -1478,6 +1699,13 @@ SELECT setval('"public"."product_status_function_relation_id_seq"', 8, true);
 ALTER SEQUENCE "public"."product_type_product_type_id_seq"
 OWNED BY "public"."product_type"."id";
 SELECT setval('"public"."product_type_product_type_id_seq"', 226, true);
+
+-- ----------------------------
+-- Alter sequences owned by
+-- ----------------------------
+ALTER SEQUENCE "public"."scenes_trigger_record_id_seq"
+OWNED BY "public"."scenes_trigger_record"."id";
+SELECT setval('"public"."scenes_trigger_record_id_seq"', 3, false);
 
 -- ----------------------------
 -- Alter sequences owned by
@@ -1542,6 +1770,16 @@ ALTER TABLE "public"."device_online_report" ADD CONSTRAINT "device_online_report
 ALTER TABLE "public"."devices_groups" ADD CONSTRAINT "devices_groups_pkey" PRIMARY KEY ("id");
 
 -- ----------------------------
+-- Primary Key structure for table event_trigger_record
+-- ----------------------------
+ALTER TABLE "public"."event_trigger_record" ADD CONSTRAINT "event_trigger_record_pkey" PRIMARY KEY ("id");
+
+-- ----------------------------
+-- Primary Key structure for table mail_setting
+-- ----------------------------
+ALTER TABLE "public"."mail_setting" ADD CONSTRAINT "mail_setting_pkey" PRIMARY KEY ("id");
+
+-- ----------------------------
 -- Primary Key structure for table media_type_setting
 -- ----------------------------
 ALTER TABLE "public"."media_type_setting" ADD CONSTRAINT "media_type_setting_pkey" PRIMARY KEY ("id");
@@ -1550,6 +1788,16 @@ ALTER TABLE "public"."media_type_setting" ADD CONSTRAINT "media_type_setting_pke
 -- Primary Key structure for table messages
 -- ----------------------------
 ALTER TABLE "public"."messages" ADD CONSTRAINT "messages_pkey" PRIMARY KEY ("id");
+
+-- ----------------------------
+-- Primary Key structure for table notice_record
+-- ----------------------------
+ALTER TABLE "public"."notice_record" ADD CONSTRAINT "notice_record_pkey" PRIMARY KEY ("record_id");
+
+-- ----------------------------
+-- Primary Key structure for table problem
+-- ----------------------------
+ALTER TABLE "public"."problem" ADD CONSTRAINT "problem_pkey" PRIMARY KEY ("event_id");
 
 -- ----------------------------
 -- Primary Key structure for table product
@@ -1615,6 +1863,11 @@ ALTER TABLE "public"."product_status_function_relation" ADD CONSTRAINT "product_
 -- Primary Key structure for table product_type
 -- ----------------------------
 ALTER TABLE "public"."product_type" ADD CONSTRAINT "product_type_pkey" PRIMARY KEY ("id");
+
+-- ----------------------------
+-- Primary Key structure for table scenes_trigger_record
+-- ----------------------------
+ALTER TABLE "public"."scenes_trigger_record" ADD CONSTRAINT "scenes_trigger_record_pkey" PRIMARY KEY ("id");
 
 -- ----------------------------
 -- Primary Key structure for table service_execute_record
