@@ -1,5 +1,6 @@
 package com.zmops.iot.web.schedule;
 
+import com.zmops.iot.domain.schedule.Task;
 import com.zmops.iot.schedule.config.ScheduleConfig;
 import com.zmops.iot.schedule.cron.CronExpression;
 import io.ebean.DB;
@@ -51,7 +52,7 @@ public class TaskScheduleImpl {
                     DB.beginTransaction();
 
                     long nowTime = System.currentTimeMillis();
-                    List<Task> taskList = DB.findDto(Task.class,
+                    List<Task> taskList = DB.findNative(Task.class,
                                     "SELECT T.ID, T.remark, T.trigger_status, T.trigger_next_time, T.schedule_type, T.schedule_conf " +
                                             "   FROM task_info AS T " +
                                             "   WHERE T.trigger_status = 1 " +
@@ -69,12 +70,13 @@ public class TaskScheduleImpl {
                                 MisfireStrategyEnum misfireStrategyEnum = MisfireStrategyEnum.match(task.getMisfireStrategy(), MisfireStrategyEnum.DO_NOTHING);
 
                                 if (MisfireStrategyEnum.FIRE_ONCE_NOW == misfireStrategyEnum) {
-                                    TaskTriggerPool.trigger(task.getId(), TriggerTypeEnum.MISFIRE, -1, null, null, null);
-                                    log.debug("schedule push trigger : taskId = {}", task.getId());
+                                    TaskTriggerPool.trigger(task.getId(), TriggerTypeEnum.MISFIRE, -1, null, null);
                                 }
                                 refreshNextValidTime(task, new Date());
+
                             } else if (nowTime > task.getTriggerNextTime()) {
-                                TaskTriggerPool.trigger(task.getId(), TriggerTypeEnum.CRON, -1, null, null, null);
+
+                                TaskTriggerPool.trigger(task.getId(), TriggerTypeEnum.CRON, -1, null, null);
                                 refreshNextValidTime(task, new Date());
 
                                 if (task.getTriggerStatus() == 1 && nowTime + PRE_READ_MS > task.getTriggerNextTime()) {
@@ -82,29 +84,18 @@ public class TaskScheduleImpl {
                                     pushTimeRing(ringSecond, task.getId());
                                     refreshNextValidTime(task, new Date(task.getTriggerNextTime()));
                                 }
-
                             } else {
                                 int ringSecond = (int) ((task.getTriggerNextTime() / 1000) % 60);
                                 pushTimeRing(ringSecond, task.getId());
                                 refreshNextValidTime(task, new Date(task.getTriggerNextTime()));
                             }
                         }
+                        DB.updateAll(taskList);
 
-                        for (Task task : taskList) {
-                            DB.sqlUpdate("update task_info set " +
-                                            "   trigger_last_time = :lastTime, " +
-                                            "   trigger_next_time = :nextTime, " +
-                                            "   trigger_status = :status " +
-                                            "where id = :id ")
-                                    .setParameter("lastTime", task.getTriggerLastTime())
-                                    .setParameter("nextTime", task.getTriggerNextTime())
-                                    .setParameter("status", task.getTriggerStatus())
-                                    .setParameter("id", task.getId())
-                                    .execute();
-                        }
                     } else {
                         preReadSuc = false;
                     }
+
                 } catch (Exception e) {
                     if (!scheduleThreadToStop) {
                         log.error("JobScheduleHelper error: {}", e.getMessage());
@@ -157,7 +148,7 @@ public class TaskScheduleImpl {
                     if (ringItemData.size() > 0) {
 
                         for (int jobId : ringItemData) {
-                            TaskTriggerPool.trigger(jobId, TriggerTypeEnum.CRON, -1, null, null, null);
+                            TaskTriggerPool.trigger(jobId, TriggerTypeEnum.CRON, -1, null, null);
                         }
                         ringItemData.clear();
                     }

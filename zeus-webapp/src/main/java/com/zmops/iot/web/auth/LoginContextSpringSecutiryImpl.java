@@ -21,6 +21,11 @@ public class LoginContextSpringSecutiryImpl implements LoginContext {
 
     @Override
     public LoginUser getUser() {
+
+        if (null == SecurityContextHolder.getContext().getAuthentication()) {
+            return new LoginUser(1L); //默认 Admin
+        }
+
         if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof String) {
             throw new AuthException(AuthExceptionEnum.NOT_LOGIN_ERROR);
         } else {

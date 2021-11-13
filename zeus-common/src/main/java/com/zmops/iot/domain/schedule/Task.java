@@ -1,15 +1,29 @@
-package com.zmops.iot.web.schedule;
+package com.zmops.iot.domain.schedule;
 
-import lombok.Data;
+import com.zmops.iot.domain.BaseEntity;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
- * @author nantian created at 2021/11/12 19:11
+ * @author nantian created at 2021/11/13 11:23
  */
 
-@Data
-public class Task {
+@Getter
+@Setter
+@Table(name = "task_info")
+@Entity
+public class Task extends BaseEntity {
 
+
+    @Id
+    @Column(name = "id", nullable = false)
     private Integer id;
+
 
     private String scheduleType;            // 调度类型
     private String scheduleConf;            // 调度配置，值含义取决于调度类型
@@ -25,4 +39,5 @@ public class Task {
 
     private String remark;
 
+    private String executorParam;
 }

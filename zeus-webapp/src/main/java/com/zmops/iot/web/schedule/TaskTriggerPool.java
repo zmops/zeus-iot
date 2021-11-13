@@ -55,7 +55,6 @@ public class TaskTriggerPool {
     public void addTrigger(final int jobId,
                            final TriggerTypeEnum triggerType,
                            final int failRetryCount,
-                           final String executorShardingParam,
                            final String executorParam,
                            final String addressList) {
 
@@ -69,7 +68,7 @@ public class TaskTriggerPool {
             long start = System.currentTimeMillis();
 
             try {
-                System.out.println(123);
+                log.info("jobid : {}", jobId);
 
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
@@ -94,7 +93,7 @@ public class TaskTriggerPool {
 
     private static TaskTriggerPool helper;
 
-    public static void trigger(int jobId, TriggerTypeEnum triggerType, int failRetryCount, String executorShardingParam, String executorParam, String addressList) {
-        helper.addTrigger(jobId, triggerType, failRetryCount, executorShardingParam, executorParam, addressList);
+    public static void trigger(int jobId, TriggerTypeEnum triggerType, int failRetryCount, String executorParam, String addressList) {
+        helper.addTrigger(jobId, triggerType, failRetryCount, executorParam, addressList);
     }
 }
