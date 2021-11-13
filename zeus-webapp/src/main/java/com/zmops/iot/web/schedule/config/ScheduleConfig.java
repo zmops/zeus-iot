@@ -1,4 +1,4 @@
-package com.zmops.iot.schedule.config;
+package com.zmops.iot.web.schedule.config;
 
 import lombok.Data;
 

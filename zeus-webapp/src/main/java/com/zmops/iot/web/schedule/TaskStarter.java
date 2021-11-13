@@ -1,6 +1,6 @@
 package com.zmops.iot.web.schedule;
 
-import com.zmops.iot.schedule.config.ScheduleConfig;
+import com.zmops.iot.web.schedule.config.ScheduleConfig;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;

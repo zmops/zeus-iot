@@ -1,6 +1,6 @@
 package com.zmops.iot.web.schedule;
 
-import com.zmops.iot.schedule.config.ScheduleConfig;
+import com.zmops.iot.web.schedule.config.ScheduleConfig;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.*;

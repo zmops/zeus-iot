@@ -1,7 +1,7 @@
 package com.zmops.iot.web.schedule;
 
 import com.zmops.iot.domain.schedule.Task;
-import com.zmops.iot.schedule.config.ScheduleConfig;
+import com.zmops.iot.web.schedule.config.ScheduleConfig;
 import com.zmops.iot.schedule.cron.CronExpression;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
