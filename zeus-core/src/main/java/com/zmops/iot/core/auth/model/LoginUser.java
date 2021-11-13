@@ -36,6 +36,15 @@ public class LoginUser implements UserDetails, Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public LoginUser() {
+        super();
+    }
+
+    public LoginUser(Long id) {
+        super();
+        this.id = id;
+    }
+
     /**
      * 用户主键ID
      */
