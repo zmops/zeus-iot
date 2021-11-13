@@ -21,10 +21,13 @@ public class ProductEvent extends BaseEntity {
     @Id
     private Long eventRuleId;
 
-    private String eventRuleName;
-    private String eventLevel;
-    private String expLogic;
-    private String classify;
-    private String eventNotify;
-
+    private String  eventRuleName;
+    private String  eventLevel;
+    private String  expLogic;
+    private String  classify;
+    private String  eventNotify;
+    private String  status;
+    private String  remark;
+    private Integer taskId;
+    private Integer triggerType;
 }

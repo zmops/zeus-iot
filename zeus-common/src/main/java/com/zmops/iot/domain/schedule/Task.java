@@ -33,7 +33,7 @@ public class Task extends BaseEntity {
 
     private Integer taskFailRetryCount;
 
-    private Integer triggerStatus;   // 调度状态：0-停止，1-运行
+    private String triggerStatus;   // 调度状态：DISABLE-停止，ENABLE-运行
     private Long triggerLastTime;    // 上次调度时间
     private Long triggerNextTime;
 

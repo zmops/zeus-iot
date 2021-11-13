@@ -41,4 +41,6 @@ public class MultipleDeviceEventDto {
     private String triggerDevice;
 
     private String executeDevice;
+
+    private Integer taskId;
 }

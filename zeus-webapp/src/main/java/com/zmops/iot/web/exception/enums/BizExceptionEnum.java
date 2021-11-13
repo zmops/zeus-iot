@@ -173,14 +173,20 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
 
     EVENT_PRODUCT_CANNOT_DELETE(1706, "来自产品的触发器不能删除"),
     SCENE_NOT_EXISTS(1707, "场景不存在"),
+    SCENE_EXPRESSION_NOT_EXISTS(1708, "场景触发条件不能为空"),
 
 
+    /**
+     * 任务相关
+     * @param code
+     * @param message
+     */
+    TASK_NOT_SCHEDULE_CONF(2201,"任务调度配置不能为空"),
 
     /**
      * 租户相关的异常
      */
     AUTH_REQUEST_ERROR(400, "账号密码错误");
-
 
 
 

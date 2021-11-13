@@ -26,6 +26,8 @@ import com.zmops.iot.web.device.service.work.DeviceServiceLogWorker;
 import com.zmops.iot.web.device.service.work.ScenesLogWorker;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductEventRuleDto;
+import com.zmops.iot.web.task.dto.TaskDto;
+import com.zmops.iot.web.task.service.TaskService;
 import com.zmops.zeus.driver.service.ZbxTrigger;
 import io.ebean.DB;
 import io.ebean.annotation.Transactional;
@@ -34,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -56,6 +59,9 @@ public class MultipleDeviceEventRuleService {
     ScenesLogWorker scenesLogWorker;
 
     private static final String EVENT_CLASSIFY = "1";
+
+    @Autowired
+    TaskService taskService;
 
     /**
      * 场景列表
@@ -150,17 +156,56 @@ public class MultipleDeviceEventRuleService {
         return new Pager<>(list, query.findCount());
     }
 
+    private String generateExecuteParam(MultipleDeviceEventRule eventRule) {
+        Map<String, Object> param = new HashMap<>(2);
+        param.put("eventRuleId", eventRule.getEventRuleId());
+
+        List<Map<String, Object>> list = new ArrayList<>();
+        Map<String, List<MultipleDeviceEventRule.DeviceService>> collect = eventRule.getDeviceServices().parallelStream().collect(Collectors.groupingBy(MultipleDeviceEventRule.DeviceService::getExecuteDeviceId));
+
+        collect.forEach((key, value) -> {
+            Map<String, Object> map = new ConcurrentHashMap<>();
+            map.put("device", key);
+
+            List<Map<String, Object>> serviceList = new ArrayList<>();
+            value.forEach(val -> {
+                Map<String, Object> serviceMap = new ConcurrentHashMap<>(2);
+                serviceMap.put("name", DefinitionsUtil.getServiceName(val.getServiceId()));
+
+                List<ProductServiceParam> paramList = DefinitionsUtil.getServiceParam(val.getServiceId());
+                if (ToolUtil.isNotEmpty(paramList)) {
+                    serviceMap.put("param", paramList.parallelStream().collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue)));
+                }
+                serviceList.add(serviceMap);
+            });
+            map.put("service", serviceList);
+            list.add(map);
+        });
+        param.put("executeParam", list);
+        return JSON.toJSONString(param);
+    }
+
     /**
      * 保存设备联动
      *
-     * @param eventRuleId 设备联动ID
-     * @param eventRule   设备联动规则
+     * @param eventRule 设备联动规则
      */
     @Transactional(rollbackFor = Exception.class)
-    public void createDeviceEventRule(Long eventRuleId, MultipleDeviceEventRule eventRule) {
+    public void createDeviceEventRule(MultipleDeviceEventRule eventRule) {
+
+        //setp 0: 创建任务
+        Integer taskId = null;
+        if (eventRule.getTriggerType() == 1) {
+            TaskDto taskDto = new TaskDto();
+            taskDto.setScheduleConf(eventRule.getScheduleConf());
+            taskDto.setExecutorParam(generateExecuteParam(eventRule));
+            taskId = taskService.createTask(taskDto);
+        }
+
         // step 1: 保存产品告警规则
         ProductEvent event = initEventRule(eventRule);
-        event.setEventRuleId(eventRuleId);
+        event.setEventRuleId(eventRule.getEventRuleId());
+        event.setTaskId(taskId);
         DB.save(event);
 
         //step 2: 保存 表达式，方便回显
@@ -168,7 +213,7 @@ public class MultipleDeviceEventRuleService {
 
         eventRule.getExpList().forEach(i -> {
             ProductEventExpression exp = initEventExpression(i);
-            exp.setEventRuleId(eventRuleId);
+            exp.setEventRuleId(eventRule.getEventRuleId());
             expList.add(exp);
         });
 
@@ -178,8 +223,8 @@ public class MultipleDeviceEventRuleService {
         if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
             eventRule.getDeviceServices().forEach(i -> {
                 DB.sqlUpdate("insert into product_event_service(event_rule_id, execute_device_id, service_id) " +
-                                "values (:eventRuleId, :executeDeviceId, :serviceId)")
-                        .setParameter("eventRuleId", eventRuleId)
+                        "values (:eventRuleId, :executeDeviceId, :serviceId)")
+                        .setParameter("eventRuleId", eventRule.getEventRuleId())
                         .setParameter("executeDeviceId", i.getExecuteDeviceId())
                         .setParameter("serviceId", i.getServiceId())
                         .execute();
@@ -194,7 +239,7 @@ public class MultipleDeviceEventRuleService {
         List<ProductEventRelation> productEventRelationList = new ArrayList<>();
         relationIds.forEach(relationId -> {
             ProductEventRelation productEventRelation = new ProductEventRelation();
-            productEventRelation.setEventRuleId(eventRuleId);
+            productEventRelation.setEventRuleId(eventRule.getEventRuleId());
             productEventRelation.setRelationId(relationId);
             productEventRelation.setInherit(InheritStatus.NO.getCode());
             productEventRelation.setStatus(CommonStatus.ENABLE.getCode());
@@ -205,7 +250,16 @@ public class MultipleDeviceEventRuleService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateDeviceEventRule(Long eventRuleId, MultipleDeviceEventRule eventRule) {
+    public void updateDeviceEventRule(MultipleDeviceEventRule eventRule) {
+
+        //setp 0: 创建任务
+        Integer taskId = null;
+        if (eventRule.getTriggerType() == 1) {
+            TaskDto taskDto = new TaskDto();
+            taskDto.setScheduleConf(eventRule.getScheduleConf());
+            taskDto.setExecutorParam(generateExecuteParam(eventRule));
+            taskId = taskService.createTask(taskDto);
+        }
 
         //step 1: 函数表达式
         DB.sqlUpdate("delete from product_event_expression where event_rule_id = :eventRuleId")
@@ -222,7 +276,8 @@ public class MultipleDeviceEventRuleService {
 
         // step 3: 保存产品告警规则
         ProductEvent event = initEventRule(eventRule);
-        event.setEventRuleId(eventRuleId);
+        event.setEventRuleId(eventRule.getEventRuleId());
+        event.setTaskId(taskId);
         event.update();
 
         //step 4: 保存 表达式，方便回显
@@ -230,7 +285,7 @@ public class MultipleDeviceEventRuleService {
 
         eventRule.getExpList().forEach(i -> {
             ProductEventExpression exp = initEventExpression(i);
-            exp.setEventRuleId(eventRuleId);
+            exp.setEventRuleId(eventRule.getEventRuleId());
             expList.add(exp);
         });
 
@@ -240,7 +295,7 @@ public class MultipleDeviceEventRuleService {
         if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
             eventRule.getDeviceServices().forEach(i -> {
                 DB.sqlUpdate("insert into product_event_service(event_rule_id,execute_device_id, service_id) values (:eventRuleId, :executeDeviceId, :serviceId)")
-                        .setParameter("eventRuleId", eventRuleId)
+                        .setParameter("eventRuleId", eventRule.getEventRuleId())
                         .setParameter("executeDeviceId", i.getExecuteDeviceId())
                         .setParameter("serviceId", i.getServiceId())
                         .execute();
@@ -255,7 +310,7 @@ public class MultipleDeviceEventRuleService {
         List<ProductEventRelation> productEventRelationList = new ArrayList<>();
         relationIds.forEach(relationId -> {
             ProductEventRelation productEventRelation = new ProductEventRelation();
-            productEventRelation.setEventRuleId(eventRuleId);
+            productEventRelation.setEventRuleId(eventRule.getEventRuleId());
             productEventRelation.setRelationId(relationId);
             productEventRelation.setStatus(CommonStatus.ENABLE.getCode());
             productEventRelation.setRemark(eventRule.getRemark());
@@ -272,6 +327,9 @@ public class MultipleDeviceEventRuleService {
         event.setEventNotify(eventRule.getEventNotify().toString());
         event.setClassify(eventRule.getClassify());
         event.setEventRuleName(eventRule.getEventRuleName());
+        event.setStatus(CommonStatus.ENABLE.getCode());
+        event.setRemark(eventRule.getRemark());
+        event.setTriggerType(eventRule.getTriggerType());
         return event;
     }
 
@@ -412,6 +470,19 @@ public class MultipleDeviceEventRuleService {
         Forest.post("/device/action/exec").host("127.0.0.1").port(12800).contentTypeJson().addBody(JSON.toJSON(list)).execute();
     }
 
+
+    public void checkParam(MultipleDeviceEventRule eventRule) {
+        if (eventRule.getTriggerType() == 0) {
+            if (ToolUtil.isEmpty(eventRule.getExpList())) {
+                throw new ServiceException(BizExceptionEnum.SCENE_EXPRESSION_NOT_EXISTS);
+            }
+        } else {
+            if (ToolUtil.isEmpty(eventRule.getScheduleConf())) {
+                throw new ServiceException(BizExceptionEnum.SCENE_EXPRESSION_NOT_EXISTS);
+            }
+        }
+    }
+
     @Data
     static class TriggerIds {
         private String[] triggerids;
@@ -419,8 +490,8 @@ public class MultipleDeviceEventRuleService {
 
     @Data
     public static class Triggers {
-        private String triggerid;
-        private String description;
+        private String      triggerid;
+        private String      description;
         private List<Hosts> hosts;
     }
 

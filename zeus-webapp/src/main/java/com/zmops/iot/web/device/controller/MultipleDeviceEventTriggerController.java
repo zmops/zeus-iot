@@ -98,9 +98,12 @@ public class MultipleDeviceEventTriggerController {
     public ResponseData createDeviceEventRule(@RequestBody @Validated(value = BaseEntity.Create.class)
                                                       MultipleDeviceEventRule eventRule) {
 
+        multipleDeviceEventRuleService.checkParam(eventRule);
+
         Long eventRuleId = IdUtil.getSnowflake().nextId();
 
-        multipleDeviceEventRuleService.createDeviceEventRule(eventRuleId, eventRule);
+        eventRule.setEventRuleId(eventRuleId);
+        multipleDeviceEventRuleService.createDeviceEventRule(eventRule);
 
         //step 1: 先创建 zbx 触发器
         String expression = eventRule.getExpList()
@@ -165,8 +168,11 @@ public class MultipleDeviceEventTriggerController {
             throw new ServiceException(BizExceptionEnum.EVENT_NOT_EXISTS);
         }
 
+        //检查参数
+        multipleDeviceEventRuleService.checkParam(eventRule);
+
         //step 1: 删除原有的 关联关系
-        multipleDeviceEventRuleService.updateDeviceEventRule(eventRule.getEventRuleId(), eventRule);
+        multipleDeviceEventRuleService.updateDeviceEventRule(eventRule);
 
         //step 1: 先创建 zbx 触发器
         String expression = eventRule.getExpList()

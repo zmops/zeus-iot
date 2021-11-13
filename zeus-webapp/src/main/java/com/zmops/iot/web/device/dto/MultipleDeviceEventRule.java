@@ -36,12 +36,9 @@ public class MultipleDeviceEventRule {
     private Byte eventLevel = 1;
 
     // 表达式列表
-    @Valid
-    @NotEmpty(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
     private List<Expression> expList;
 
-    @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
-    private String expLogic; // and or
+    private String expLogic="and"; // and or
 
     private String remark;
 
@@ -58,6 +55,11 @@ public class MultipleDeviceEventRule {
     private String status;
 
     private String classify = "1";
+
+    private String scheduleConf;
+
+    @NotNull
+    private Integer triggerType;
 
     @Data
     public static class Tag {

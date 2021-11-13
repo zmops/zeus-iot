@@ -1,6 +1,7 @@
 package com.zmops.iot.web.schedule;
 
 import com.zmops.iot.domain.schedule.Task;
+import com.zmops.iot.enums.CommonStatus;
 import com.zmops.iot.web.schedule.config.ScheduleConfig;
 import com.zmops.iot.schedule.cron.CronExpression;
 import io.ebean.DB;
@@ -55,7 +56,7 @@ public class TaskScheduleImpl {
                     List<Task> taskList = DB.findNative(Task.class,
                                     "SELECT T.ID, T.remark, T.trigger_status, T.trigger_next_time, T.schedule_type, T.schedule_conf " +
                                             "   FROM task_info AS T " +
-                                            "   WHERE T.trigger_status = 1 " +
+                                            "   WHERE T.trigger_status = '"+ CommonStatus.ENABLE.getCode() +"' " +
                                             "       and t.trigger_next_time <= :nextTime " +
                                             "   ORDER BY ID ASC " +
                                             "   LIMIT :preReadCount")
@@ -79,7 +80,7 @@ public class TaskScheduleImpl {
                                 TaskTriggerPool.trigger(task.getId(), TriggerTypeEnum.CRON, -1, null, null);
                                 refreshNextValidTime(task, new Date());
 
-                                if (task.getTriggerStatus() == 1 && nowTime + PRE_READ_MS > task.getTriggerNextTime()) {
+                                if (CommonStatus.ENABLE.getCode().equals(task.getTriggerStatus()) && nowTime + PRE_READ_MS > task.getTriggerNextTime()) {
                                     int ringSecond = (int) ((task.getTriggerNextTime() / 1000) % 60);
                                     pushTimeRing(ringSecond, task.getId());
                                     refreshNextValidTime(task, new Date(task.getTriggerNextTime()));
@@ -171,7 +172,7 @@ public class TaskScheduleImpl {
             task.setTriggerLastTime(task.getTriggerNextTime());
             task.setTriggerNextTime(nextValidTime.getTime());
         } else {
-            task.setTriggerStatus(0);
+            task.setTriggerStatus(CommonStatus.DISABLE.getCode());
             task.setTriggerLastTime(0L);
             task.setTriggerNextTime(0L);
             log.warn("refreshNextValidTime fail for job: jobId={}, scheduleType={}, scheduleConf={}", task.getId(), task.getScheduleType(), task.getScheduleConf());
