@@ -209,15 +209,17 @@ public class MultipleDeviceEventRuleService {
         DB.save(event);
 
         //step 2: 保存 表达式，方便回显
-        List<ProductEventExpression> expList = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(eventRule.getExpList())) {
+            List<ProductEventExpression> expList = new ArrayList<>();
 
-        eventRule.getExpList().forEach(i -> {
-            ProductEventExpression exp = initEventExpression(i);
-            exp.setEventRuleId(eventRule.getEventRuleId());
-            expList.add(exp);
-        });
+            eventRule.getExpList().forEach(i -> {
+                ProductEventExpression exp = initEventExpression(i);
+                exp.setEventRuleId(eventRule.getEventRuleId());
+                expList.add(exp);
+            });
 
-        DB.saveAll(expList);
+            DB.saveAll(expList);
+        }
 
         //step 3: 保存触发器 调用 本产品方法
         if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
@@ -232,21 +234,23 @@ public class MultipleDeviceEventRuleService {
         }
 
         //step 4: 保存关联关系
-        List<String> relationIds = eventRule.getExpList().parallelStream().map(MultipleDeviceEventRule.Expression::getDeviceId).distinct().collect(Collectors.toList());
-        if (ToolUtil.isEmpty(relationIds)) {
-            throw new ServiceException(BizExceptionEnum.EVENT_HAS_NOT_DEVICE);
+        if (ToolUtil.isNotEmpty(eventRule.getExpList())) {
+            List<String> relationIds = eventRule.getExpList().parallelStream().map(MultipleDeviceEventRule.Expression::getDeviceId).distinct().collect(Collectors.toList());
+            if (ToolUtil.isEmpty(relationIds)) {
+                throw new ServiceException(BizExceptionEnum.EVENT_HAS_NOT_DEVICE);
+            }
+            List<ProductEventRelation> productEventRelationList = new ArrayList<>();
+            relationIds.forEach(relationId -> {
+                ProductEventRelation productEventRelation = new ProductEventRelation();
+                productEventRelation.setEventRuleId(eventRule.getEventRuleId());
+                productEventRelation.setRelationId(relationId);
+                productEventRelation.setInherit(InheritStatus.NO.getCode());
+                productEventRelation.setStatus(CommonStatus.ENABLE.getCode());
+                productEventRelation.setRemark(eventRule.getRemark());
+                productEventRelationList.add(productEventRelation);
+            });
+            DB.saveAll(productEventRelationList);
         }
-        List<ProductEventRelation> productEventRelationList = new ArrayList<>();
-        relationIds.forEach(relationId -> {
-            ProductEventRelation productEventRelation = new ProductEventRelation();
-            productEventRelation.setEventRuleId(eventRule.getEventRuleId());
-            productEventRelation.setRelationId(relationId);
-            productEventRelation.setInherit(InheritStatus.NO.getCode());
-            productEventRelation.setStatus(CommonStatus.ENABLE.getCode());
-            productEventRelation.setRemark(eventRule.getRemark());
-            productEventRelationList.add(productEventRelation);
-        });
-        DB.saveAll(productEventRelationList);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -281,15 +285,17 @@ public class MultipleDeviceEventRuleService {
         event.update();
 
         //step 4: 保存 表达式，方便回显
-        List<ProductEventExpression> expList = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(eventRule.getExpList())) {
+            List<ProductEventExpression> expList = new ArrayList<>();
 
-        eventRule.getExpList().forEach(i -> {
-            ProductEventExpression exp = initEventExpression(i);
-            exp.setEventRuleId(eventRule.getEventRuleId());
-            expList.add(exp);
-        });
+            eventRule.getExpList().forEach(i -> {
+                ProductEventExpression exp = initEventExpression(i);
+                exp.setEventRuleId(eventRule.getEventRuleId());
+                expList.add(exp);
+            });
 
-        DB.saveAll(expList);
+            DB.saveAll(expList);
+        }
 
         //step 5: 保存触发器 调用 本产品方法
         if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
@@ -303,20 +309,22 @@ public class MultipleDeviceEventRuleService {
         }
 
         // step 6: 保存关联关系
-        List<String> relationIds = eventRule.getExpList().parallelStream().map(MultipleDeviceEventRule.Expression::getDeviceId).distinct().collect(Collectors.toList());
-        if (ToolUtil.isEmpty(relationIds)) {
-            throw new ServiceException(BizExceptionEnum.EVENT_HAS_NOT_DEVICE);
+        if (ToolUtil.isNotEmpty(eventRule.getExpList())) {
+            List<String> relationIds = eventRule.getExpList().parallelStream().map(MultipleDeviceEventRule.Expression::getDeviceId).distinct().collect(Collectors.toList());
+            if (ToolUtil.isEmpty(relationIds)) {
+                throw new ServiceException(BizExceptionEnum.EVENT_HAS_NOT_DEVICE);
+            }
+            List<ProductEventRelation> productEventRelationList = new ArrayList<>();
+            relationIds.forEach(relationId -> {
+                ProductEventRelation productEventRelation = new ProductEventRelation();
+                productEventRelation.setEventRuleId(eventRule.getEventRuleId());
+                productEventRelation.setRelationId(relationId);
+                productEventRelation.setStatus(CommonStatus.ENABLE.getCode());
+                productEventRelation.setRemark(eventRule.getRemark());
+                productEventRelationList.add(productEventRelation);
+            });
+            DB.saveAll(productEventRelationList);
         }
-        List<ProductEventRelation> productEventRelationList = new ArrayList<>();
-        relationIds.forEach(relationId -> {
-            ProductEventRelation productEventRelation = new ProductEventRelation();
-            productEventRelation.setEventRuleId(eventRule.getEventRuleId());
-            productEventRelation.setRelationId(relationId);
-            productEventRelation.setStatus(CommonStatus.ENABLE.getCode());
-            productEventRelation.setRemark(eventRule.getRemark());
-            productEventRelationList.add(productEventRelation);
-        });
-        DB.saveAll(productEventRelationList);
     }
 
 
@@ -478,7 +486,7 @@ public class MultipleDeviceEventRuleService {
             }
         } else {
             if (ToolUtil.isEmpty(eventRule.getScheduleConf())) {
-                throw new ServiceException(BizExceptionEnum.SCENE_EXPRESSION_NOT_EXISTS);
+                throw new ServiceException(BizExceptionEnum.TASK_NOT_SCHEDULE_CONF);
             }
         }
     }

@@ -105,31 +105,32 @@ public class MultipleDeviceEventTriggerController {
         eventRule.setEventRuleId(eventRuleId);
         multipleDeviceEventRuleService.createDeviceEventRule(eventRule);
 
-        //step 1: 先创建 zbx 触发器
-        String expression = eventRule.getExpList()
-                .stream().map(Object::toString).collect(Collectors.joining(" " + eventRule.getExpLogic() + " "));
+        if(ToolUtil.isNotEmpty(eventRule.getExpList())) {
+            //step 1: 先创建 zbx 触发器
+            String expression = eventRule.getExpList()
+                    .stream().map(Object::toString).collect(Collectors.joining(" " + eventRule.getExpLogic() + " "));
 
-        //step 2: zbx 保存触发器
-        String[] triggerIds = multipleDeviceEventRuleService.createZbxTrigger(eventRuleId + "", expression, eventRule.getEventLevel());
+            //step 2: zbx 保存触发器
+            String[] triggerIds = multipleDeviceEventRuleService.createZbxTrigger(eventRuleId + "", expression, eventRule.getEventLevel());
 
-        //step 4: zbx 触发器创建 Tag
-        Map<String, String> tags = new ConcurrentHashMap<>(1);
-        if (ToolUtil.isNotEmpty(eventRule.getTags())) {
-            tags = eventRule.getTags().stream()
-                    .collect(Collectors.toMap(MultipleDeviceEventRule.Tag::getTag, MultipleDeviceEventRule.Tag::getValue, (k1, k2) -> k2));
+            //step 4: zbx 触发器创建 Tag
+            Map<String, String> tags = new ConcurrentHashMap<>(1);
+            if (ToolUtil.isNotEmpty(eventRule.getTags())) {
+                tags = eventRule.getTags().stream()
+                        .collect(Collectors.toMap(MultipleDeviceEventRule.Tag::getTag, MultipleDeviceEventRule.Tag::getValue, (k1, k2) -> k2));
+            }
+
+            if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
+                tags.put(EXECUTE_TAG_NAME, eventRuleId + "");
+            }
+
+            for (String triggerId : triggerIds) {
+                zbxTrigger.triggerTagCreate(triggerId, tags);
+            }
+
+            //step 5: 更新 zbxId
+            multipleDeviceEventRuleService.updateProductEventRuleZbxId(eventRuleId, triggerIds);
         }
-
-        if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
-            tags.put(EXECUTE_TAG_NAME, eventRuleId + "");
-        }
-
-        for (String triggerId : triggerIds) {
-            zbxTrigger.triggerTagCreate(triggerId, tags);
-        }
-
-        //step 5: 更新 zbxId
-        multipleDeviceEventRuleService.updateProductEventRuleZbxId(eventRuleId, triggerIds);
-
         // 返回触发器ID
         return ResponseData.success(eventRuleId);
     }
@@ -174,31 +175,32 @@ public class MultipleDeviceEventTriggerController {
         //step 1: 删除原有的 关联关系
         multipleDeviceEventRuleService.updateDeviceEventRule(eventRule);
 
-        //step 1: 先创建 zbx 触发器
-        String expression = eventRule.getExpList()
-                .stream().map(Object::toString).collect(Collectors.joining(" " + eventRule.getExpLogic() + " "));
+        if(ToolUtil.isNotEmpty(eventRule.getExpList())) {
+            //step 1: 先创建 zbx 触发器
+            String expression = eventRule.getExpList()
+                    .stream().map(Object::toString).collect(Collectors.joining(" " + eventRule.getExpLogic() + " "));
 
-        //step 2: zbx 保存触发器
-        String[] triggerIds = multipleDeviceEventRuleService.updateZbxTrigger(productEventRelation.getZbxId(), expression, eventRule.getEventLevel());
+            //step 2: zbx 保存触发器
+            String[] triggerIds = multipleDeviceEventRuleService.updateZbxTrigger(productEventRelation.getZbxId(), expression, eventRule.getEventLevel());
 
-        //step 4: zbx 触发器创建 Tag
-        Map<String, String> tags = new ConcurrentHashMap<>(1);
-        if (ToolUtil.isNotEmpty(eventRule.getTags())) {
-            tags = eventRule.getTags().stream()
-                    .collect(Collectors.toMap(MultipleDeviceEventRule.Tag::getTag, MultipleDeviceEventRule.Tag::getValue, (k1, k2) -> k2));
+            //step 4: zbx 触发器创建 Tag
+            Map<String, String> tags = new ConcurrentHashMap<>(1);
+            if (ToolUtil.isNotEmpty(eventRule.getTags())) {
+                tags = eventRule.getTags().stream()
+                        .collect(Collectors.toMap(MultipleDeviceEventRule.Tag::getTag, MultipleDeviceEventRule.Tag::getValue, (k1, k2) -> k2));
+            }
+
+            if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
+                tags.put(EXECUTE_TAG_NAME, eventRule.getEventRuleId() + "");
+            }
+
+            for (String triggerId : triggerIds) {
+                zbxTrigger.triggerTagCreate(triggerId, tags);
+            }
+
+            //step 5: 更新 zbxId 反写
+            multipleDeviceEventRuleService.updateProductEventRuleZbxId(eventRule.getEventRuleId(), triggerIds);
         }
-
-        if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
-            tags.put(EXECUTE_TAG_NAME, eventRule.getEventRuleId() + "");
-        }
-
-        for (String triggerId : triggerIds) {
-            zbxTrigger.triggerTagCreate(triggerId, tags);
-        }
-
-        //step 5: 更新 zbxId 反写
-        multipleDeviceEventRuleService.updateProductEventRuleZbxId(eventRule.getEventRuleId(), triggerIds);
-
         // 返回触发器ID
         return ResponseData.success(eventRule.getEventRuleId());
     }

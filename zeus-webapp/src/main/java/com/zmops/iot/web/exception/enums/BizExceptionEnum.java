@@ -174,7 +174,7 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     EVENT_PRODUCT_CANNOT_DELETE(1706, "来自产品的触发器不能删除"),
     SCENE_NOT_EXISTS(1707, "场景不存在"),
     SCENE_EXPRESSION_NOT_EXISTS(1708, "场景触发条件不能为空"),
-
+    SCENE_EXISTED(1709, "场景名称已存在"),
 
     /**
      * 任务相关
