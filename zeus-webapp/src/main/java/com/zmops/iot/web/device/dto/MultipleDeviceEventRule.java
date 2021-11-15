@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -38,7 +37,7 @@ public class MultipleDeviceEventRule {
     // 表达式列表
     private List<Expression> expList;
 
-    private String expLogic="and"; // and or
+    private String expLogic = "and"; // and or
 
     private String remark;
 
@@ -59,7 +58,7 @@ public class MultipleDeviceEventRule {
     private String scheduleConf;
 
     @NotNull
-    private Integer triggerType;
+    private Integer triggerType = 0;
 
     private Integer taskId;
 
