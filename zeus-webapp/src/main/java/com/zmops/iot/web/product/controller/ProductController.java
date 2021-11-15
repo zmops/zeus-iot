@@ -7,7 +7,7 @@ import com.zmops.iot.domain.device.Tag;
 import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.device.query.QTag;
 import com.zmops.iot.domain.product.Product;
-import com.zmops.iot.domain.product.query.QProduct;
+import com.zmops.iot.domain.product.query.*;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
@@ -161,6 +161,30 @@ public class ProductController {
         //第二步：删除Zabbix对应的模板
         productService.zbxTemplateDelete(product.getZbxId() + "");
 
+        //删除关联信息
+        List<Long> statusFunctionRuleIds = new QProductStatusFunctionRelation().select(QProductStatusFunctionRelation.alias().ruleId).relationId.eq(product.getProductId() + "").findSingleAttributeList();
+        if (ToolUtil.isNotEmpty(statusFunctionRuleIds)) {
+            new QProductStatusFunction().ruleId.in(statusFunctionRuleIds).delete();
+            new QProductStatusFunctionRelation().relationId.eq(product.getProductId() + "").delete();
+        }
+
+        List<Long> serviceIds = new QProductServiceRelation().select(QProductServiceRelation.alias().serviceId).relationId.eq(product.getProductId() + "").findSingleAttributeList();
+        if (ToolUtil.isNotEmpty(serviceIds)) {
+            new QProductService().id.in(serviceIds).delete();
+            new QProductServiceParam().serviceId.in(serviceIds).delete();
+            new QProductServiceRelation().relationId.eq(product.getProductId() + "").delete();
+        }
+
+        List<Long> eventIds = new QProductEventRelation().select(QProductEventRelation.alias().eventRuleId).relationId.eq(product.getProductId() + "").findSingleAttributeList();
+        if (ToolUtil.isNotEmpty(eventIds)) {
+            new QProductEvent().eventRuleId.in(eventIds).delete();
+            new QProductEventExpression().eventRuleId.in(eventIds).delete();
+            new QProductEventService().eventRuleId.in(eventIds).delete();
+            new QProductEventRelation().relationId.eq(product.getProductId() + "").delete();
+        }
+
+        new QProductAttribute().productId.eq(product.getProductId() + "").delete();
+        new QProductAttributeEvent().productId.eq(product.getProductId() + "").delete();
 
         //第三步：删除产品
         boolean del = product.delete();

@@ -392,6 +392,7 @@ public class DeviceService implements CommandLineRunner {
                     new QProductServiceRelation().relationId.eq(deviceId).delete();
                     new QProductEventRelation().relationId.eq(deviceId).delete();
                     new QProductEventService().deviceId.eq(deviceId).delete();
+                    new QProductServiceParam().deviceId.eq(deviceId).delete();
                     return true;
                 }).param(deviceDto.getDeviceId()).build();
 
