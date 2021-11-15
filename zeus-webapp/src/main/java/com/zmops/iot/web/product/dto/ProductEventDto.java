@@ -38,4 +38,6 @@ public class ProductEventDto {
     private Long updateUser;
     private String updateTime;
     private Integer taskId;
+    @CachedValue(value = "triggerType")
+    private String triggerType;
 }

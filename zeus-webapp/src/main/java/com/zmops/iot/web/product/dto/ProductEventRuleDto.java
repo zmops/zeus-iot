@@ -53,6 +53,8 @@ public class ProductEventRuleDto {
     @CachedValue(value = "triggerType")
     private Integer triggerType;
 
+    private Integer taskId;
+
     @Data
     public static class Tag {
 
