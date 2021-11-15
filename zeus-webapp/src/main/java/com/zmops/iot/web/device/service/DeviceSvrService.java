@@ -46,7 +46,7 @@ public class DeviceSvrService {
         }
         serviceMap.put("name", productService.getName());
 
-        List<ProductServiceParam> paramList = new QProductServiceParam().serviceId.eq(serviceId).findList();
+        List<ProductServiceParam> paramList = DefinitionsUtil.getServiceParam(serviceId);
         if (ToolUtil.isNotEmpty(paramList)) {
             serviceMap.put("param", paramList.parallelStream().collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue)));
         }
