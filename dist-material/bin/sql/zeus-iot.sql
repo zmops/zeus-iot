@@ -12,7 +12,7 @@
  Target Server Version : 130004
  File Encoding         : 65001
 
- Date: 11/11/2021 19:00:16
+ Date: 15/11/2021 16:48:12
 */
 
 
@@ -219,6 +219,17 @@ CACHE 1;
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."tag_id_seq";
 CREATE SEQUENCE "public"."tag_id_seq" 
+INCREMENT 1
+MINVALUE  1
+MAXVALUE 2147483647
+START 1
+CACHE 1;
+
+-- ----------------------------
+-- Sequence structure for task_info_id_seq
+-- ----------------------------
+DROP SEQUENCE IF EXISTS "public"."task_info_id_seq";
+CREATE SEQUENCE "public"."task_info_id_seq" 
 INCREMENT 1
 MINVALUE  1
 MAXVALUE 2147483647
@@ -652,8 +663,10 @@ CREATE TABLE "public"."product_event" (
   "update_user" int8,
   "exp_logic" varchar(10) COLLATE "pg_catalog"."default",
   "event_notify" varchar(1) COLLATE "pg_catalog"."default",
-  "status" char(1) COLLATE "pg_catalog"."default",
-  "classify" varchar(2) COLLATE "pg_catalog"."default"
+  "status" varchar(8) COLLATE "pg_catalog"."default",
+  "classify" varchar(2) COLLATE "pg_catalog"."default",
+  "task_id" int4,
+  "trigger_type" int2
 )
 ;
 COMMENT ON COLUMN "public"."product_event"."event_rule_id" IS '告警规则ID';
@@ -663,6 +676,8 @@ COMMENT ON COLUMN "public"."product_event"."remark" IS '备注';
 COMMENT ON COLUMN "public"."product_event"."exp_logic" IS 'and 或者 or';
 COMMENT ON COLUMN "public"."product_event"."event_notify" IS '0 否 1 是';
 COMMENT ON COLUMN "public"."product_event"."classify" IS '0 告警 1场景联动';
+COMMENT ON COLUMN "public"."product_event"."task_id" IS '任务ID';
+COMMENT ON COLUMN "public"."product_event"."trigger_type" IS '触发类型 0-条件触发 1-定时触发';
 
 -- ----------------------------
 -- Records of product_event
@@ -1617,6 +1632,44 @@ COMMENT ON COLUMN "public"."tag"."update_time" IS '更新时间';
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for task_info
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."task_info";
+CREATE TABLE "public"."task_info" (
+  "id" int4 NOT NULL DEFAULT nextval('task_info_id_seq'::regclass),
+  "remark" varchar(255) COLLATE "pg_catalog"."default",
+  "task_timeout" int4 NOT NULL,
+  "task_fail_retry_count" int4 NOT NULL,
+  "trigger_status" varchar(8) COLLATE "pg_catalog"."default" NOT NULL,
+  "trigger_last_time" int8 NOT NULL,
+  "trigger_next_time" int8 NOT NULL,
+  "misfire_strategy" varchar(255) COLLATE "pg_catalog"."default" NOT NULL,
+  "schedule_type" varchar(255) COLLATE "pg_catalog"."default",
+  "schedule_conf" varchar(255) COLLATE "pg_catalog"."default",
+  "executor_param" text COLLATE "pg_catalog"."default",
+  "create_time" timestamp(0),
+  "create_user" int8,
+  "update_time" timestamp(0),
+  "update_user" int8
+)
+;
+COMMENT ON COLUMN "public"."task_info"."id" IS '任务ID';
+COMMENT ON COLUMN "public"."task_info"."remark" IS '任务描述';
+COMMENT ON COLUMN "public"."task_info"."task_timeout" IS '任务执行超时时间';
+COMMENT ON COLUMN "public"."task_info"."task_fail_retry_count" IS '失败重试次数';
+COMMENT ON COLUMN "public"."task_info"."trigger_status" IS '调度状态：DISABLE-停止，ENABLE-运行';
+COMMENT ON COLUMN "public"."task_info"."trigger_last_time" IS '上次调度时间';
+COMMENT ON COLUMN "public"."task_info"."trigger_next_time" IS '下次调度时间';
+COMMENT ON COLUMN "public"."task_info"."misfire_strategy" IS '调度过期策略';
+COMMENT ON COLUMN "public"."task_info"."schedule_type" IS '调度类型';
+COMMENT ON COLUMN "public"."task_info"."schedule_conf" IS '调度配置，值含义取决于调度类型';
+COMMENT ON COLUMN "public"."task_info"."executor_param" IS '任务执行参数';
+
+-- ----------------------------
+-- Records of task_info
+-- ----------------------------
+
+-- ----------------------------
 -- Alter sequences owned by
 -- ----------------------------
 ALTER SEQUENCE "public"."device_online_report_id_seq"
@@ -1750,6 +1803,13 @@ OWNED BY "public"."tag"."id";
 SELECT setval('"public"."tag_id_seq"', 196, true);
 
 -- ----------------------------
+-- Alter sequences owned by
+-- ----------------------------
+ALTER SEQUENCE "public"."task_info_id_seq"
+OWNED BY "public"."task_info"."id";
+SELECT setval('"public"."task_info_id_seq"', 3, true);
+
+-- ----------------------------
 -- Primary Key structure for table device
 -- ----------------------------
 ALTER TABLE "public"."device" ADD CONSTRAINT "device_pkey" PRIMARY KEY ("device_id");
@@ -1828,6 +1888,16 @@ ALTER TABLE "public"."product_event_expression" ADD CONSTRAINT "product_event_co
 -- Primary Key structure for table product_event_relation
 -- ----------------------------
 ALTER TABLE "public"."product_event_relation" ADD CONSTRAINT "product_event_relation_pkey" PRIMARY KEY ("id");
+
+-- ----------------------------
+-- Indexes structure for table product_event_service
+-- ----------------------------
+CREATE INDEX "eventRuleId" ON "public"."product_event_service" USING btree (
+  "event_rule_id" "pg_catalog"."int8_ops" ASC NULLS LAST
+);
+CREATE INDEX "serviceId" ON "public"."product_event_service" USING btree (
+  "service_id" "pg_catalog"."int8_ops" ASC NULLS LAST
+);
 
 -- ----------------------------
 -- Primary Key structure for table product_event_tags
@@ -1923,3 +1993,8 @@ ALTER TABLE "public"."sys_user_group" ADD CONSTRAINT "sys_user_group_pkey" PRIMA
 -- Primary Key structure for table tag
 -- ----------------------------
 ALTER TABLE "public"."tag" ADD CONSTRAINT "tag_pkey" PRIMARY KEY ("id");
+
+-- ----------------------------
+-- Primary Key structure for table task_info
+-- ----------------------------
+ALTER TABLE "public"."task_info" ADD CONSTRAINT "task_info_pkey" PRIMARY KEY ("id");
