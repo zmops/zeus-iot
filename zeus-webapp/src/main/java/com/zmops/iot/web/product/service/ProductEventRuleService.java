@@ -46,6 +46,7 @@ public class ProductEventRuleService implements CommandLineRunner {
     @Autowired
     private ZbxTrigger zbxTrigger;
 
+    private static final String TRIGGER_CLASSIFY = "0";
     /**
      * 保存触发器
      *
@@ -229,9 +230,9 @@ public class ProductEventRuleService implements CommandLineRunner {
         if (ToolUtil.isNotEmpty(eventParm.getEventRuleName())) {
             query.eventRuleName.contains(eventParm.getEventRuleName());
         }
-        if (ToolUtil.isNotEmpty(eventParm.getClassify())) {
-            query.classify.eq(eventParm.getClassify());
-        }
+
+        query.classify.eq(TRIGGER_CLASSIFY);
+
         List<ProductEventRelation> productEventRelationList = new QProductEventRelation().relationId.eq(eventParm.getProdId()).findList();
         if (ToolUtil.isEmpty(productEventRelationList)) {
             return new Pager<>();

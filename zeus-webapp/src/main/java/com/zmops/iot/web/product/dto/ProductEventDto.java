@@ -37,4 +37,5 @@ public class ProductEventDto {
     @CachedValue(type = DicType.SysUserName)
     private Long updateUser;
     private String updateTime;
+    private Integer taskId;
 }
