@@ -61,6 +61,8 @@ public class MultipleDeviceEventRule {
     @NotNull
     private Integer triggerType;
 
+    private Integer taskId;
+
     @Data
     public static class Tag {
 

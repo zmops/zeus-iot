@@ -1,6 +1,7 @@
 package com.zmops.iot.web.schedule;
 
 import com.zmops.iot.web.schedule.config.ScheduleConfig;
+import com.zmops.zeus.iot.server.eventbus.core.EventControllerFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.*;
@@ -16,11 +17,13 @@ public class TaskTriggerPool {
     private ThreadPoolExecutor fastTriggerPool = null;
     private ThreadPoolExecutor slowTriggerPool = null;
 
+    private EventControllerFactory eventControllerFactory;
 
     private final ScheduleConfig scheduleConfig;
 
-    public TaskTriggerPool(ScheduleConfig scheduleConfig) {
+    public TaskTriggerPool(ScheduleConfig scheduleConfig,EventControllerFactory eventControllerFactory) {
         this.scheduleConfig = scheduleConfig;
+        this.eventControllerFactory = eventControllerFactory;
         helper = this;
     }
 
@@ -48,8 +51,8 @@ public class TaskTriggerPool {
         slowTriggerPool.shutdownNow();
     }
 
-    private volatile long minTim = System.currentTimeMillis() / 60000;
-    private final ConcurrentMap<Integer, AtomicInteger> jobTimeoutCountMap = new ConcurrentHashMap<>();
+    private volatile long                                  minTim             = System.currentTimeMillis() / 60000;
+    private final    ConcurrentMap<Integer, AtomicInteger> jobTimeoutCountMap = new ConcurrentHashMap<>();
 
 
     public void addTrigger(final int jobId,
@@ -68,7 +71,9 @@ public class TaskTriggerPool {
             long start = System.currentTimeMillis();
 
             try {
-                log.info("jobid : {}", jobId);
+                log.info("jobid : {},executeParam : {}", jobId,executorParam);
+
+                eventControllerFactory.getAsyncController("scene").post(executorParam);
 
             } catch (Exception e) {
                 log.error(e.getMessage(), e);

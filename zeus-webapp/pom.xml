@@ -58,6 +58,12 @@
             <version>2.25.4</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>iot-eventbus</artifactId>
+            <version>1.0-beta</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <properties>

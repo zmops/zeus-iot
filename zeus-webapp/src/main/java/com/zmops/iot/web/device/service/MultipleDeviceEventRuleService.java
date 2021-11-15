@@ -11,6 +11,8 @@ import com.zmops.iot.domain.product.query.QProductEvent;
 import com.zmops.iot.domain.product.query.QProductEventExpression;
 import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEventService;
+import com.zmops.iot.domain.schedule.Task;
+import com.zmops.iot.domain.schedule.query.QTask;
 import com.zmops.iot.enums.CommonStatus;
 import com.zmops.iot.enums.InheritStatus;
 import com.zmops.iot.model.exception.ServiceException;
@@ -59,6 +61,10 @@ public class MultipleDeviceEventRuleService {
     ScenesLogWorker scenesLogWorker;
 
     private static final String EVENT_CLASSIFY = "1";
+
+    public static final int TRIGGER_TYPE_SCHEDULE = 1;
+
+    public static final int TRIGGER_TYPE_CONDITION = 0;
 
     @Autowired
     TaskService taskService;
@@ -195,10 +201,11 @@ public class MultipleDeviceEventRuleService {
 
         //setp 0: 创建任务
         Integer taskId = null;
-        if (eventRule.getTriggerType() == 1) {
+        if (eventRule.getTriggerType() == TRIGGER_TYPE_SCHEDULE) {
             TaskDto taskDto = new TaskDto();
             taskDto.setScheduleConf(eventRule.getScheduleConf());
             taskDto.setExecutorParam(generateExecuteParam(eventRule));
+            taskDto.setRemark(eventRule.getRemark());
             taskId = taskService.createTask(taskDto);
         }
 
@@ -209,7 +216,7 @@ public class MultipleDeviceEventRuleService {
         DB.save(event);
 
         //step 2: 保存 表达式，方便回显
-        if (ToolUtil.isNotEmpty(eventRule.getExpList())) {
+        if (TRIGGER_TYPE_CONDITION == eventRule.getTriggerType()) {
             List<ProductEventExpression> expList = new ArrayList<>();
 
             eventRule.getExpList().forEach(i -> {
@@ -219,22 +226,8 @@ public class MultipleDeviceEventRuleService {
             });
 
             DB.saveAll(expList);
-        }
 
-        //step 3: 保存触发器 调用 本产品方法
-        if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
-            eventRule.getDeviceServices().forEach(i -> {
-                DB.sqlUpdate("insert into product_event_service(event_rule_id, execute_device_id, service_id) " +
-                        "values (:eventRuleId, :executeDeviceId, :serviceId)")
-                        .setParameter("eventRuleId", eventRule.getEventRuleId())
-                        .setParameter("executeDeviceId", i.getExecuteDeviceId())
-                        .setParameter("serviceId", i.getServiceId())
-                        .execute();
-            });
-        }
-
-        //step 4: 保存关联关系
-        if (ToolUtil.isNotEmpty(eventRule.getExpList())) {
+            //step 3: 保存关联关系
             List<String> relationIds = eventRule.getExpList().parallelStream().map(MultipleDeviceEventRule.Expression::getDeviceId).distinct().collect(Collectors.toList());
             if (ToolUtil.isEmpty(relationIds)) {
                 throw new ServiceException(BizExceptionEnum.EVENT_HAS_NOT_DEVICE);
@@ -251,21 +244,35 @@ public class MultipleDeviceEventRuleService {
             });
             DB.saveAll(productEventRelationList);
         }
+
+        //step 4: 保存触发器 调用 本产品方法
+        if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
+            eventRule.getDeviceServices().forEach(i -> {
+                DB.sqlUpdate("insert into product_event_service(event_rule_id, execute_device_id, service_id) " +
+                        "values (:eventRuleId, :executeDeviceId, :serviceId)")
+                        .setParameter("eventRuleId", eventRule.getEventRuleId())
+                        .setParameter("executeDeviceId", i.getExecuteDeviceId())
+                        .setParameter("serviceId", i.getServiceId())
+                        .execute();
+            });
+        }
+
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void updateDeviceEventRule(MultipleDeviceEventRule eventRule) {
 
         //setp 0: 创建任务
-        Integer taskId = null;
-        if (eventRule.getTriggerType() == 1) {
+        if (TRIGGER_TYPE_SCHEDULE == eventRule.getTriggerType()) {
             TaskDto taskDto = new TaskDto();
+            taskDto.setId(eventRule.getTaskId());
             taskDto.setScheduleConf(eventRule.getScheduleConf());
             taskDto.setExecutorParam(generateExecuteParam(eventRule));
-            taskId = taskService.createTask(taskDto);
+            taskDto.setRemark(eventRule.getRemark());
+            taskService.updateTask(taskDto);
         }
 
-        //step 1: 函数表达式
+        //step 1: 删除函数表达式
         DB.sqlUpdate("delete from product_event_expression where event_rule_id = :eventRuleId")
                 .setParameter("eventRuleId", eventRule.getEventRuleId())
                 .execute();
@@ -281,11 +288,11 @@ public class MultipleDeviceEventRuleService {
         // step 3: 保存产品告警规则
         ProductEvent event = initEventRule(eventRule);
         event.setEventRuleId(eventRule.getEventRuleId());
-        event.setTaskId(taskId);
+        event.setTaskId(eventRule.getTaskId());
         event.update();
 
         //step 4: 保存 表达式，方便回显
-        if (ToolUtil.isNotEmpty(eventRule.getExpList())) {
+        if (TRIGGER_TYPE_CONDITION == eventRule.getTriggerType()) {
             List<ProductEventExpression> expList = new ArrayList<>();
 
             eventRule.getExpList().forEach(i -> {
@@ -295,21 +302,8 @@ public class MultipleDeviceEventRuleService {
             });
 
             DB.saveAll(expList);
-        }
 
-        //step 5: 保存触发器 调用 本产品方法
-        if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
-            eventRule.getDeviceServices().forEach(i -> {
-                DB.sqlUpdate("insert into product_event_service(event_rule_id,execute_device_id, service_id) values (:eventRuleId, :executeDeviceId, :serviceId)")
-                        .setParameter("eventRuleId", eventRule.getEventRuleId())
-                        .setParameter("executeDeviceId", i.getExecuteDeviceId())
-                        .setParameter("serviceId", i.getServiceId())
-                        .execute();
-            });
-        }
-
-        // step 6: 保存关联关系
-        if (ToolUtil.isNotEmpty(eventRule.getExpList())) {
+            // step 5: 保存关联关系
             List<String> relationIds = eventRule.getExpList().parallelStream().map(MultipleDeviceEventRule.Expression::getDeviceId).distinct().collect(Collectors.toList());
             if (ToolUtil.isEmpty(relationIds)) {
                 throw new ServiceException(BizExceptionEnum.EVENT_HAS_NOT_DEVICE);
@@ -325,6 +319,18 @@ public class MultipleDeviceEventRuleService {
             });
             DB.saveAll(productEventRelationList);
         }
+
+        //step 6: 保存触发器 调用 本产品方法
+        if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
+            eventRule.getDeviceServices().forEach(i -> {
+                DB.sqlUpdate("insert into product_event_service(event_rule_id,execute_device_id, service_id) values (:eventRuleId, :executeDeviceId, :serviceId)")
+                        .setParameter("eventRuleId", eventRule.getEventRuleId())
+                        .setParameter("executeDeviceId", i.getExecuteDeviceId())
+                        .setParameter("serviceId", i.getServiceId())
+                        .execute();
+            });
+        }
+
     }
 
 
@@ -380,27 +386,32 @@ public class MultipleDeviceEventRuleService {
         ProductEventRuleDto productEventRuleDto = new ProductEventRuleDto();
         ToolUtil.copyProperties(productEvent, productEventRuleDto);
 
-        List<ProductEventExpression> expList = new QProductEventExpression().eventRuleId.eq(eventRuleId).findList();
-
-        productEventRuleDto.setExpList(expList);
         productEventRuleDto.setDeviceServices(new QProductEventService().eventRuleId.eq(eventRuleId).findList());
 
-        ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRuleId).findOne();
-        productEventRuleDto.setStatus(productEventRelation.getStatus());
-        productEventRuleDto.setRemark(productEventRelation.getRemark());
-        productEventRuleDto.setInherit(productEventRelation.getInherit());
-        if (InheritStatus.YES.getCode().equals(productEventRelation.getInherit())) {
-            ProductEventRelation one = new QProductEventRelation().eventRuleId.eq(eventRuleId).inherit.eq(InheritStatus.NO.getCode()).findOne();
-            productEventRuleDto.setInheritProductId(one.getRelationId());
+        if (TRIGGER_TYPE_CONDITION == productEvent.getTriggerType()) {
+            List<ProductEventExpression> expList = new QProductEventExpression().eventRuleId.eq(eventRuleId).findList();
+            productEventRuleDto.setExpList(expList);
+
+            ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRuleId).findOne();
+            productEventRuleDto.setStatus(productEventRelation.getStatus());
+            productEventRuleDto.setRemark(productEventRelation.getRemark());
+            productEventRuleDto.setInherit(productEventRelation.getInherit());
+            if (InheritStatus.YES.getCode().equals(productEventRelation.getInherit())) {
+                ProductEventRelation one = new QProductEventRelation().eventRuleId.eq(eventRuleId).inherit.eq(InheritStatus.NO.getCode()).findOne();
+                productEventRuleDto.setInheritProductId(one.getRelationId());
+            }
+
+            JSONArray triggerInfo = JSONObject.parseArray(zbxTrigger.triggerAndTagsGet(productEventRelation.getZbxId()));
+            List<ProductEventRuleDto.Tag> tagList = JSONObject.parseArray(triggerInfo.getJSONObject(0).getString("tags"), ProductEventRuleDto.Tag.class);
+
+            productEventRuleDto.setZbxId(productEventRelation.getZbxId());
+            productEventRuleDto.setTags(tagList.stream()
+                    .filter(s -> !s.getTag().equals("__execute__") && !s.getTag().equals("__alarm__") && !s.getTag().equals("__event__"))
+                    .collect(Collectors.toList()));
+        } else {
+            Task task = new QTask().id.eq(productEvent.getTaskId()).findOne();
+            productEventRuleDto.setScheduleConf(task.getScheduleConf());
         }
-
-        JSONArray triggerInfo = JSONObject.parseArray(zbxTrigger.triggerAndTagsGet(productEventRelation.getZbxId()));
-        List<ProductEventRuleDto.Tag> tagList = JSONObject.parseArray(triggerInfo.getJSONObject(0).getString("tags"), ProductEventRuleDto.Tag.class);
-
-        productEventRuleDto.setZbxId(productEventRelation.getZbxId());
-        productEventRuleDto.setTags(tagList.stream()
-                .filter(s -> !s.getTag().equals("__execute__") && !s.getTag().equals("__alarm__") && !s.getTag().equals("__event__"))
-                .collect(Collectors.toList()));
 
         return productEventRuleDto;
     }

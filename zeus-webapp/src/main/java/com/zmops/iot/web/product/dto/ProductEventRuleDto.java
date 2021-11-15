@@ -2,11 +2,13 @@ package com.zmops.iot.web.product.dto;
 
 import com.zmops.iot.domain.product.ProductEventExpression;
 import com.zmops.iot.domain.product.ProductEventService;
+import com.zmops.iot.model.cache.filter.CachedValue;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.Max;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -45,6 +47,11 @@ public class ProductEventRuleDto {
     private String inherit;
 
     private String inheritProductId;
+
+    private String scheduleConf;
+
+    @CachedValue(value = "triggerType")
+    private Integer triggerType;
 
     @Data
     public static class Tag {

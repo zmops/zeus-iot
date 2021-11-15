@@ -25,7 +25,6 @@ public class MultipleDeviceEventDto {
     @CachedValue(value = "STATUS")
     private String status;
 
-    @CachedValue(value = "WHETHER")
     private String inherit;
 
     private String remark;
@@ -43,4 +42,7 @@ public class MultipleDeviceEventDto {
     private String executeDevice;
 
     private Integer taskId;
+
+    @CachedValue(value = "triggerType")
+    private String triggerType;
 }

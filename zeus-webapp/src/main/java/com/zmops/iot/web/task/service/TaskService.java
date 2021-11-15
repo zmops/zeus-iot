@@ -35,9 +35,18 @@ public class TaskService {
      * @return
      */
     public TaskDto updateTask(TaskDto taskDto) {
-        Task task = new Task();
-        BeanUtil.copyProperties(taskDto, task);
-        DB.update(task);
+        Task task = new QTask().id.eq(taskDto.getId()).findOne();
+        if (task == null) {
+            task = new Task();
+            BeanUtil.copyProperties(taskDto, task);
+            DB.insert(task);
+        } else {
+            task.setExecutorParam(taskDto.getExecutorParam());
+            task.setScheduleConf(taskDto.getScheduleConf());
+            task.setRemark(taskDto.getRemark());
+            DB.update(task);
+        }
+
         return taskDto;
     }
 

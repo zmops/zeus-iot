@@ -10,6 +10,8 @@ import com.zmops.iot.domain.product.query.QProductEvent;
 import com.zmops.iot.domain.product.query.QProductEventExpression;
 import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEventService;
+import com.zmops.iot.domain.schedule.Task;
+import com.zmops.iot.domain.schedule.query.QTask;
 import com.zmops.iot.enums.CommonStatus;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
@@ -31,6 +33,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
+import static com.zmops.iot.web.device.service.MultipleDeviceEventRuleService.TRIGGER_TYPE_CONDITION;
+import static com.zmops.iot.web.device.service.MultipleDeviceEventRuleService.TRIGGER_TYPE_SCHEDULE;
 
 /**
  * @author yefei
@@ -105,7 +110,7 @@ public class MultipleDeviceEventTriggerController {
         eventRule.setEventRuleId(eventRuleId);
         multipleDeviceEventRuleService.createDeviceEventRule(eventRule);
 
-        if(ToolUtil.isNotEmpty(eventRule.getExpList())) {
+        if (TRIGGER_TYPE_CONDITION == eventRule.getTriggerType()) {
             //step 1: 先创建 zbx 触发器
             String expression = eventRule.getExpList()
                     .stream().map(Object::toString).collect(Collectors.joining(" " + eventRule.getExpLogic() + " "));
@@ -142,13 +147,25 @@ public class MultipleDeviceEventTriggerController {
      */
     @PostMapping("/status")
     public ResponseData updateProductEventStatus(@RequestBody @Validated(value = BaseEntity.Status.class) MultipleDeviceEventRule eventRule) {
-        DB.update(ProductEventRelation.class).where().eq("eventRuleId", eventRule.getEventRuleId()).asUpdate()
-                .set("status", eventRule.getStatus()).update();
 
-        ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId()).findOne();
+        ProductEvent productEvent = new QProductEvent().eventRuleId.eq(eventRule.getEventRuleId()).findOne();
+        if (null == productEvent) {
+            throw new ServiceException(BizExceptionEnum.SCENE_NOT_EXISTS);
+        }
 
-        if (null != productEventRelation && null != productEventRelation.getZbxId()) {
-            zbxTrigger.triggerStatusUpdate(productEventRelation.getZbxId(), eventRule.getStatus().equals(CommonStatus.ENABLE.getCode()) ? "0" : "1");
+        if (TRIGGER_TYPE_SCHEDULE == productEvent.getTriggerType()) {
+            DB.update(Task.class).where().eq("taskId", productEvent.getTaskId()).asUpdate()
+                    .set("triggerStatus", eventRule.getStatus()).update();
+        } else {
+
+            DB.update(ProductEventRelation.class).where().eq("eventRuleId", eventRule.getEventRuleId()).asUpdate()
+                    .set("status", eventRule.getStatus()).update();
+
+            ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId()).findOne();
+
+            if (null != productEventRelation && null != productEventRelation.getZbxId()) {
+                zbxTrigger.triggerStatusUpdate(productEventRelation.getZbxId(), eventRule.getStatus().equals(CommonStatus.ENABLE.getCode()) ? "0" : "1");
+            }
         }
 
         return ResponseData.success();
@@ -163,9 +180,9 @@ public class MultipleDeviceEventTriggerController {
     @Transactional
     @PostMapping("/update")
     public ResponseData updateDeviceEventRule(@RequestBody @Validated(value = BaseEntity.Update.class) MultipleDeviceEventRule eventRule) {
-        ProductEventRelation productEventRelation = new QProductEventRelation().setMaxRows(1).eventRuleId.eq(eventRule.getEventRuleId())
+        ProductEvent productEvent = new QProductEvent().eventRuleId.eq(eventRule.getEventRuleId())
                 .findOne();
-        if (null == productEventRelation) {
+        if (null == productEvent) {
             throw new ServiceException(BizExceptionEnum.EVENT_NOT_EXISTS);
         }
 
@@ -173,9 +190,12 @@ public class MultipleDeviceEventTriggerController {
         multipleDeviceEventRuleService.checkParam(eventRule);
 
         //step 1: 删除原有的 关联关系
+        eventRule.setTaskId(productEvent.getTaskId());
         multipleDeviceEventRuleService.updateDeviceEventRule(eventRule);
 
-        if(ToolUtil.isNotEmpty(eventRule.getExpList())) {
+        if (TRIGGER_TYPE_CONDITION == eventRule.getTriggerType()) {
+            ProductEventRelation productEventRelation = new QProductEventRelation().setMaxRows(1).eventRuleId.eq(eventRule.getEventRuleId())
+                    .findOne();
             //step 1: 先创建 zbx 触发器
             String expression = eventRule.getExpList()
                     .stream().map(Object::toString).collect(Collectors.joining(" " + eventRule.getExpLogic() + " "));
@@ -215,27 +235,37 @@ public class MultipleDeviceEventTriggerController {
     @PostMapping("/delete")
     public ResponseData deleteProductEventRule(@RequestBody @Validated(value = BaseEntity.Delete.class) MultipleDeviceEventRule eventRule) {
 
-        List<ProductEventRelation> productEventRelationList = new QProductEventRelation()
-                .eventRuleId.eq(eventRule.getEventRuleId()).findList();
+        ProductEvent productEvent = new QProductEvent().eventRuleId.eq(eventRule.getEventRuleId()).findOne();
+        if (null == productEvent) {
+            throw new ServiceException(BizExceptionEnum.SCENE_NOT_EXISTS);
+        }
+        if (TRIGGER_TYPE_CONDITION == eventRule.getTriggerType()) {
+            List<ProductEventRelation> productEventRelationList = new QProductEventRelation()
+                    .eventRuleId.eq(eventRule.getEventRuleId()).findList();
 
-        //step 01:删除 zbx触发器
-        if (ToolUtil.isNotEmpty(productEventRelationList) && ToolUtil.isNotEmpty(productEventRelationList.get(0).getZbxId())) {
-            List<MultipleDeviceEventRuleService.Triggers> triggers = JSONObject.parseArray(
-                    zbxTrigger.triggerGet(productEventRelationList.get(0).getZbxId()), MultipleDeviceEventRuleService.Triggers.class);
+            //step 01:删除 zbx触发器
+            if (ToolUtil.isNotEmpty(productEventRelationList) && ToolUtil.isNotEmpty(productEventRelationList.get(0).getZbxId())) {
+                List<MultipleDeviceEventRuleService.Triggers> triggers = JSONObject.parseArray(
+                        zbxTrigger.triggerGet(productEventRelationList.get(0).getZbxId()), MultipleDeviceEventRuleService.Triggers.class);
 
-            if (ToolUtil.isNotEmpty(triggers)) {
-                zbxTrigger.triggerDelete(productEventRelationList.get(0).getZbxId());
+                if (ToolUtil.isNotEmpty(triggers)) {
+                    zbxTrigger.triggerDelete(productEventRelationList.get(0).getZbxId());
+                }
             }
+
+            //step 1:删除 与设备的关联
+            new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId()).delete();
+
+            //step 2:删除 关联的表达式
+            new QProductEventExpression().eventRuleId.eq(eventRule.getEventRuleId()).delete();
+
+        } else {
+            //step 1:删除 定时器
+            new QTask().id.eq(productEvent.getTaskId()).delete();
         }
 
-        //step 1:删除 与设备的关联
-        new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId()).delete();
-
-        //step 2:删除 关联的执行服务
+        //step 3:删除 关联的执行服务
         new QProductEventService().eventRuleId.eq(eventRule.getEventRuleId()).delete();
-
-        //step 3:删除 关联的表达式
-        new QProductEventExpression().eventRuleId.eq(eventRule.getEventRuleId()).delete();
 
         //step 4:删除 触发器
         new QProductEvent().eventRuleId.eq(eventRule.getEventRuleId()).delete();

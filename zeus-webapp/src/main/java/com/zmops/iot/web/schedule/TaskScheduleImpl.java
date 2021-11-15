@@ -30,7 +30,7 @@ public class TaskScheduleImpl {
     private Thread ringThread;
     private volatile boolean scheduleThreadToStop = false;
     private volatile boolean ringThreadToStop = false;
-    private static final Map<Integer, List<Integer>> ringData = new ConcurrentHashMap<>();
+    private static final Map<Integer, List<String>> ringData = new ConcurrentHashMap<>();
 
 
     public void start() {
@@ -71,23 +71,23 @@ public class TaskScheduleImpl {
                                 MisfireStrategyEnum misfireStrategyEnum = MisfireStrategyEnum.match(task.getMisfireStrategy(), MisfireStrategyEnum.DO_NOTHING);
 
                                 if (MisfireStrategyEnum.FIRE_ONCE_NOW == misfireStrategyEnum) {
-                                    TaskTriggerPool.trigger(task.getId(), TriggerTypeEnum.MISFIRE, -1, null, null);
+                                    TaskTriggerPool.trigger(task.getId(), TriggerTypeEnum.MISFIRE, -1, task.getExecutorParam(), null);
                                 }
                                 refreshNextValidTime(task, new Date());
 
                             } else if (nowTime > task.getTriggerNextTime()) {
 
-                                TaskTriggerPool.trigger(task.getId(), TriggerTypeEnum.CRON, -1, null, null);
+                                TaskTriggerPool.trigger(task.getId(), TriggerTypeEnum.CRON, -1, task.getExecutorParam(), null);
                                 refreshNextValidTime(task, new Date());
 
                                 if (CommonStatus.ENABLE.getCode().equals(task.getTriggerStatus()) && nowTime + PRE_READ_MS > task.getTriggerNextTime()) {
                                     int ringSecond = (int) ((task.getTriggerNextTime() / 1000) % 60);
-                                    pushTimeRing(ringSecond, task.getId());
+                                    pushTimeRing(ringSecond, task.getExecutorParam());
                                     refreshNextValidTime(task, new Date(task.getTriggerNextTime()));
                                 }
                             } else {
                                 int ringSecond = (int) ((task.getTriggerNextTime() / 1000) % 60);
-                                pushTimeRing(ringSecond, task.getId());
+                                pushTimeRing(ringSecond, task.getExecutorParam());
                                 refreshNextValidTime(task, new Date(task.getTriggerNextTime()));
                             }
                         }
@@ -136,10 +136,10 @@ public class TaskScheduleImpl {
                 }
 
                 try {
-                    List<Integer> ringItemData = new ArrayList<>();
+                    List<String> ringItemData = new ArrayList<>();
                     int nowSecond = Calendar.getInstance().get(Calendar.SECOND); // 避免处理耗时太长，跨过刻度，向前校验一个刻度；
                     for (int i = 0; i < 2; i++) {
-                        List<Integer> tmpData = ringData.remove((nowSecond + 60 - i) % 60);
+                        List<String> tmpData = ringData.remove((nowSecond + 60 - i) % 60);
                         if (tmpData != null) {
                             ringItemData.addAll(tmpData);
                         }
@@ -148,8 +148,8 @@ public class TaskScheduleImpl {
                     log.debug("time-ring beat : " + nowSecond + " = " + Collections.singletonList(ringItemData));
                     if (ringItemData.size() > 0) {
 
-                        for (int jobId : ringItemData) {
-                            TaskTriggerPool.trigger(jobId, TriggerTypeEnum.CRON, -1, null, null);
+                        for (String param : ringItemData) {
+                            TaskTriggerPool.trigger(0, TriggerTypeEnum.CRON, -1, param, null);
                         }
                         ringItemData.clear();
                     }
@@ -179,9 +179,9 @@ public class TaskScheduleImpl {
         }
     }
 
-    private void pushTimeRing(int ringSecond, int jobId) {
-        List<Integer> ringItemData = ringData.computeIfAbsent(ringSecond, k -> new ArrayList<Integer>());
-        ringItemData.add(jobId);
+    private void pushTimeRing(int ringSecond, String executeParam) {
+        List<String> ringItemData = ringData.computeIfAbsent(ringSecond, k -> new ArrayList<String>());
+        ringItemData.add(executeParam);
     }
 
 
@@ -208,7 +208,7 @@ public class TaskScheduleImpl {
         boolean hasRingData = false;
         if (!ringData.isEmpty()) {
             for (int second : ringData.keySet()) {
-                List<Integer> tmpData = ringData.get(second);
+                List<String> tmpData = ringData.get(second);
                 if (tmpData != null && tmpData.size() > 0) {
                     hasRingData = true;
                     break;
