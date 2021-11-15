@@ -40,9 +40,10 @@ public class LoginUser implements UserDetails, Serializable {
         super();
     }
 
-    public LoginUser(Long id) {
+    public LoginUser(Long id, String token) {
         super();
         this.id = id;
+        this.zbxToken = token;
     }
 
     /**

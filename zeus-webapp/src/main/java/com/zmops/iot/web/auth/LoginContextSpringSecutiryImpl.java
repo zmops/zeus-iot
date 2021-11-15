@@ -6,6 +6,7 @@ import com.zmops.iot.core.auth.exception.AuthException;
 import com.zmops.iot.core.auth.exception.enums.AuthExceptionEnum;
 import com.zmops.iot.core.auth.model.LoginUser;
 import com.zmops.iot.core.auth.util.TokenUtil;
+import com.zmops.iot.web.init.BasicSettingsInit;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,7 +24,8 @@ public class LoginContextSpringSecutiryImpl implements LoginContext {
     public LoginUser getUser() {
 
         if (null == SecurityContextHolder.getContext().getAuthentication()) {
-            return new LoginUser(1L); //默认 Admin
+            //默认 Admin
+            return new LoginUser(1L, BasicSettingsInit.zbxApiToken);
         }
 
         if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof String) {
