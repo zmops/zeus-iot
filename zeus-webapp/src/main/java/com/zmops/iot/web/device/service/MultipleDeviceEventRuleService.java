@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dtflys.forest.Forest;
+import com.zmops.iot.async.callback.ICallback;
 import com.zmops.iot.async.executor.Async;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.*;
@@ -450,10 +451,10 @@ public class MultipleDeviceEventRuleService {
         }
 
         WorkerWrapper<Map<String, Object>, Boolean> deviceServiceLogWork = new WorkerWrapper.Builder<Map<String, Object>, Boolean>().id("deviceServiceLogWorker")
-                .worker(deviceServiceLogWorker).param(alarmInfo)
+                .worker(deviceServiceLogWorker).param(alarmInfo).callback(ICallback.PRINT_EXCEPTION_STACK_TRACE)
                 .build();
         WorkerWrapper<Map<String, Object>, Boolean> scenesLogWork = new WorkerWrapper.Builder<Map<String, Object>, Boolean>().id("scenesLogWorker")
-                .worker(scenesLogWorker).param(alarmInfo)
+                .worker(scenesLogWorker).param(alarmInfo).callback(ICallback.PRINT_EXCEPTION_STACK_TRACE)
                 .build();
 
         try {
