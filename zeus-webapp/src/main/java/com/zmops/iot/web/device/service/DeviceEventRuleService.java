@@ -286,6 +286,21 @@ public class DeviceEventRuleService {
         return JSON.parseObject(res, TriggerIds.class).getTriggerids();
     }
 
+    /**
+     * 检查动作服务是否重复
+     *
+     * @param deviceServices
+     */
+    public void checkService(List<DeviceEventRule.DeviceService> deviceServices) {
+        if (ToolUtil.isEmpty(deviceServices)) {
+            return;
+        }
+        long count = deviceServices.parallelStream().map(DeviceEventRule.DeviceService::getServiceId).distinct().count();
+        if (count > 0) {
+            throw new ServiceException(BizExceptionEnum.SERVICE_HAS_DUPLICATE);
+        }
+    }
+
     @Data
     static class TriggerIds {
         private String[] triggerids;

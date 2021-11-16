@@ -77,6 +77,8 @@ public class DeviceEventTriggerController {
     @PostMapping("/create")
     public ResponseData createDeviceEventRule(@RequestBody @Validated(value = BaseEntity.Create.class)
                                                       DeviceEventRule eventRule) {
+        //检查是否有重复动作服务
+        deviceEventRuleService.checkService(eventRule.getDeviceServices());
 
         Long eventRuleId = IdUtil.getSnowflake().nextId(); // ruleId, trigger name
 
@@ -151,6 +153,9 @@ public class DeviceEventTriggerController {
         if (count == 0) {
             throw new ServiceException(BizExceptionEnum.EVENT_NOT_EXISTS);
         }
+
+        //检查是否有重复动作服务
+        deviceEventRuleService.checkService(eventRule.getDeviceServices());
 
         //来自产品的告警规则 只能修改备注
         count = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId()).inherit.eq(InheritStatus.YES.getCode())

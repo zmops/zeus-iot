@@ -501,6 +501,12 @@ public class MultipleDeviceEventRuleService {
                 throw new ServiceException(BizExceptionEnum.TASK_NOT_SCHEDULE_CONF);
             }
         }
+
+        long count = eventRule.getDeviceServices().parallelStream().map(MultipleDeviceEventRule.DeviceService::getServiceId).distinct().count();
+        if (count < eventRule.getDeviceServices().size()) {
+            throw new ServiceException(BizExceptionEnum.SERVICE_HAS_DUPLICATE);
+        }
+
     }
 
     @Data
