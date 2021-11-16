@@ -266,11 +266,15 @@ public class MultipleDeviceEventRuleService {
         //setp 0: 创建任务
         if (TRIGGER_TYPE_SCHEDULE == eventRule.getTriggerType()) {
             TaskDto taskDto = new TaskDto();
-            taskDto.setId(eventRule.getTaskId());
             taskDto.setScheduleConf(eventRule.getScheduleConf());
             taskDto.setExecutorParam(generateExecuteParam(eventRule));
             taskDto.setRemark(eventRule.getRemark());
-            taskService.updateTask(taskDto);
+            if (ToolUtil.isEmpty(eventRule.getTaskId())) {
+                taskService.createTask(taskDto);
+            } else {
+                taskDto.setId(eventRule.getTaskId());
+                taskService.updateTask(taskDto);
+            }
         }
 
         //setp 1: 删除zbx触发器
