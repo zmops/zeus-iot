@@ -270,7 +270,8 @@ public class MultipleDeviceEventRuleService {
             taskDto.setExecutorParam(generateExecuteParam(eventRule));
             taskDto.setRemark(eventRule.getRemark());
             if (ToolUtil.isEmpty(eventRule.getTaskId())) {
-                taskService.createTask(taskDto);
+                int taskId = taskService.createTask(taskDto);
+                eventRule.setTaskId(taskId);
             } else {
                 taskDto.setId(eventRule.getTaskId());
                 taskService.updateTask(taskDto);
