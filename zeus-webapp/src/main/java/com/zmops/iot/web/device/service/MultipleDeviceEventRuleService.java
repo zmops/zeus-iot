@@ -500,6 +500,10 @@ public class MultipleDeviceEventRuleService {
             if (ToolUtil.isEmpty(eventRule.getScheduleConf())) {
                 throw new ServiceException(BizExceptionEnum.TASK_NOT_SCHEDULE_CONF);
             }
+
+            if (ToolUtil.validCron(eventRule.getScheduleConf())) {
+                throw new ServiceException(BizExceptionEnum.TASK_SCHEDULE_CONF_NOT_MATCH);
+            }
         }
 
         long count = eventRule.getDeviceServices().parallelStream().map(MultipleDeviceEventRule.DeviceService::getServiceId).distinct().count();

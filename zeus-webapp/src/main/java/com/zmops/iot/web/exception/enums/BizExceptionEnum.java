@@ -183,7 +183,7 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
      * @param message
      */
     TASK_NOT_SCHEDULE_CONF(2201,"任务调度配置不能为空"),
-
+    TASK_SCHEDULE_CONF_NOT_MATCH(2202,"任务调度配置不正确"),
     /**
      * 租户相关的异常
      */
