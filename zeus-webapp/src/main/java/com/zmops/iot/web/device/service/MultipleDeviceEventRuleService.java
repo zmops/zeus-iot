@@ -506,7 +506,7 @@ public class MultipleDeviceEventRuleService {
                 throw new ServiceException(BizExceptionEnum.TASK_NOT_SCHEDULE_CONF);
             }
 
-            if (ToolUtil.validCron(eventRule.getScheduleConf())) {
+            if (!ToolUtil.validCron(eventRule.getScheduleConf())) {
                 throw new ServiceException(BizExceptionEnum.TASK_SCHEDULE_CONF_NOT_MATCH);
             }
         }
