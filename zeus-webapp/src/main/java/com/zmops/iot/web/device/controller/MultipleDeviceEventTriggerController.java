@@ -190,8 +190,7 @@ public class MultipleDeviceEventTriggerController {
         multipleDeviceEventRuleService.checkParam(eventRule);
 
         //step 1: 删除原有的 关联关系 并重新建立 关联关系
-        ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId())
-                .findOne();
+        ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId()).setMaxRows(1).findOne();
         eventRule.setTaskId(productEvent.getTaskId());
         if (null != productEventRelation) {
             eventRule.setZbxId(productEventRelation.getZbxId());

@@ -398,14 +398,10 @@ public class MultipleDeviceEventRuleService {
             List<ProductEventExpression> expList = new QProductEventExpression().eventRuleId.eq(eventRuleId).findList();
             productEventRuleDto.setExpList(expList);
 
-            ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRuleId).findOne();
+            ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRuleId).setMaxRows(1).findOne();
             productEventRuleDto.setStatus(productEventRelation.getStatus());
             productEventRuleDto.setRemark(productEventRelation.getRemark());
             productEventRuleDto.setInherit(productEventRelation.getInherit());
-            if (InheritStatus.YES.getCode().equals(productEventRelation.getInherit())) {
-                ProductEventRelation one = new QProductEventRelation().eventRuleId.eq(eventRuleId).inherit.eq(InheritStatus.NO.getCode()).findOne();
-                productEventRuleDto.setInheritProductId(one.getRelationId());
-            }
 
             JSONArray triggerInfo = JSONObject.parseArray(zbxTrigger.triggerAndTagsGet(productEventRelation.getZbxId()));
             List<ProductEventRuleDto.Tag> tagList = JSONObject.parseArray(triggerInfo.getJSONObject(0).getString("tags"), ProductEventRuleDto.Tag.class);
