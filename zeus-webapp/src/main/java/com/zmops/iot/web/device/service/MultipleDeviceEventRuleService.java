@@ -273,12 +273,17 @@ public class MultipleDeviceEventRuleService {
             taskService.updateTask(taskDto);
         }
 
-        //step 1: 删除函数表达式
+        //setp 1: 删除zbx触发器
+        if (ToolUtil.isNotEmpty(eventRule.getZbxId())) {
+            zbxTrigger.triggerDelete(eventRule.getZbxId());
+        }
+
+        //step 2: 删除函数表达式
         DB.sqlUpdate("delete from product_event_expression where event_rule_id = :eventRuleId")
                 .setParameter("eventRuleId", eventRule.getEventRuleId())
                 .execute();
 
-        //step 2: 删除服务方法调用
+        //step 3: 删除服务方法调用
         DB.sqlUpdate("delete from product_event_service where event_rule_id = :eventRuleId")
                 .setParameter("eventRuleId", eventRule.getEventRuleId())
                 .execute();
@@ -286,13 +291,13 @@ public class MultipleDeviceEventRuleService {
         // 删除和所有设备的关联关系
         new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId()).delete();
 
-        // step 3: 保存产品告警规则
+        // step 4: 保存产品告警规则
         ProductEvent event = initEventRule(eventRule);
         event.setEventRuleId(eventRule.getEventRuleId());
         event.setTaskId(eventRule.getTaskId());
         event.update();
 
-        //step 4: 保存 表达式，方便回显
+        //step 5: 保存 表达式，方便回显
         if (TRIGGER_TYPE_CONDITION == eventRule.getTriggerType()) {
             List<ProductEventExpression> expList = new ArrayList<>();
 
@@ -304,7 +309,7 @@ public class MultipleDeviceEventRuleService {
 
             DB.saveAll(expList);
 
-            // step 5: 保存关联关系
+            // step 6: 保存关联关系
             List<String> relationIds = eventRule.getExpList().parallelStream().map(MultipleDeviceEventRule.Expression::getDeviceId).distinct().collect(Collectors.toList());
             if (ToolUtil.isEmpty(relationIds)) {
                 throw new ServiceException(BizExceptionEnum.EVENT_HAS_NOT_DEVICE);
@@ -321,7 +326,7 @@ public class MultipleDeviceEventRuleService {
             DB.saveAll(productEventRelationList);
         }
 
-        //step 6: 保存触发器 调用 本产品方法
+        //step 7: 保存触发器 调用 本产品方法
         if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
             eventRule.getDeviceServices().forEach(i -> {
                 DB.sqlUpdate("insert into product_event_service(event_rule_id,execute_device_id, service_id) values (:eventRuleId, :executeDeviceId, :serviceId)")

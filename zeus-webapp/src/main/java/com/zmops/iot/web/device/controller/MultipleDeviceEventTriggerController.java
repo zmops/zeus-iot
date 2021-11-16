@@ -189,19 +189,23 @@ public class MultipleDeviceEventTriggerController {
         //检查参数
         multipleDeviceEventRuleService.checkParam(eventRule);
 
-        //step 1: 删除原有的 关联关系
+        //step 1: 删除原有的 关联关系 并重新建立 关联关系
+        ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId())
+                .findOne();
         eventRule.setTaskId(productEvent.getTaskId());
+        if (null != productEventRelation) {
+            eventRule.setZbxId(productEventRelation.getZbxId());
+        }
         multipleDeviceEventRuleService.updateDeviceEventRule(eventRule);
 
         if (TRIGGER_TYPE_CONDITION == eventRule.getTriggerType()) {
-            ProductEventRelation productEventRelation = new QProductEventRelation().setMaxRows(1).eventRuleId.eq(eventRule.getEventRuleId())
-                    .findOne();
+
             //step 1: 先创建 zbx 触发器
             String expression = eventRule.getExpList()
                     .stream().map(Object::toString).collect(Collectors.joining(" " + eventRule.getExpLogic() + " "));
 
             //step 2: zbx 保存触发器
-            String[] triggerIds = multipleDeviceEventRuleService.updateZbxTrigger(productEventRelation.getZbxId(), expression, eventRule.getEventLevel());
+            String[] triggerIds = multipleDeviceEventRuleService.createZbxTrigger(eventRule.getEventRuleId() + "", expression, eventRule.getEventLevel());
 
             //step 4: zbx 触发器创建 Tag
             Map<String, String> tags = new ConcurrentHashMap<>(1);

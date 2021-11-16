@@ -315,6 +315,9 @@ public class HomeService {
 
         List<Map<String, Object>> topList = new ArrayList<>();
         tmpMap.forEach((key, value) -> {
+            if (DefinitionsUtil.getDeviceName(key) == null) {
+                return;
+            }
             Map<String, Object> alarmMap = new ConcurrentHashMap<>(2);
             alarmMap.put("name", DefinitionsUtil.getDeviceName(key));
             alarmMap.put("value", value);
