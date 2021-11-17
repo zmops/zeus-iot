@@ -269,7 +269,7 @@ public class DeviceLogService {
         }
 
         if (ToolUtil.isNotEmpty(deviceLogParam.getDeviceId())) {
-            List<Long> executeRuleIds = new QProductEventService().select(QProductEventService.alias().eventRuleId).executeDeviceId.eq(deviceLogParam.getTriggerDeviceId()).findSingleAttributeList();
+            List<Long> executeRuleIds = new QProductEventService().select(QProductEventService.alias().eventRuleId).executeDeviceId.eq(deviceLogParam.getDeviceId()).findSingleAttributeList();
             if (ToolUtil.isEmpty(executeRuleIds)) {
                 return new Pager<>(Collections.emptyList(), 0);
             }
