@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @author yefei
  * <p>
- * 设备物模型
+ * 设备属性
  */
 
 @RestController

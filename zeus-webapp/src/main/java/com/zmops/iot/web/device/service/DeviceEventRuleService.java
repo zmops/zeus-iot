@@ -63,10 +63,9 @@ public class DeviceEventRuleService {
             exp.setEventRuleId(eventRuleId);
             expList.add(exp);
         });
-
         DB.saveAll(expList);
 
-        //step 3: 保存触发器 调用 本产品方法
+        //step 3: 保存触发器 调用 动作服务
         if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
             List<String> deviceIds = eventRule.getExpList().parallelStream().map(DeviceEventRule.Expression::getDeviceId).distinct().collect(Collectors.toList());
             deviceIds.forEach(deviceId -> {

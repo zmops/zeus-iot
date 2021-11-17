@@ -43,6 +43,7 @@ public class TaskService {
         } else {
             task.setExecutorParam(taskDto.getExecutorParam());
             task.setScheduleConf(taskDto.getScheduleConf());
+            task.setTriggerNextTime(0L);
             task.setRemark(taskDto.getRemark());
             DB.update(task);
         }
