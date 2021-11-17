@@ -33,7 +33,7 @@ public class SaveAttributeWorker implements IWorker<DeviceDto, Boolean> {
 
     @Override
     public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper> map) {
-        log.debug("step 3:saveAttributeWorker----DEVICEID:{}…………",deviceDto.getDeviceId());
+        log.debug("step 3:saveAttributeWorker----DEVICEID:{}…………", deviceDto.getDeviceId());
 
         String deviceId = deviceDto.getDeviceId();
 
@@ -45,10 +45,6 @@ public class SaveAttributeWorker implements IWorker<DeviceDto, Boolean> {
             }
             new QProductAttribute().productId.eq(deviceId).templateId.isNotNull().delete();
             new QProductAttributeEvent().productId.eq(deviceId).templateId.isNotNull().delete();
-        } else {
-            //创建
-            Device device = (Device) map.get("saveDvice").getWorkResult().getResult();
-            deviceId = device.getDeviceId();
         }
 
         //属性
@@ -56,6 +52,11 @@ public class SaveAttributeWorker implements IWorker<DeviceDto, Boolean> {
 
         List<ProductAttribute> newProductAttributeList = new ArrayList<>();
 
+        /**
+         * 处理依赖属性用
+         * 遍历属性时 attrKeyMap保存 继承的属性ID 对应的 key
+         * attrIdMap 保存 key 对应的 新的属性ID
+         */
         Map<Long, String> attrKeyMap = new ConcurrentHashMap<>(productAttributeList.size());
         Map<String, Long> attrIdMap = new ConcurrentHashMap<>(productAttributeList.size());
 
@@ -68,13 +69,13 @@ public class SaveAttributeWorker implements IWorker<DeviceDto, Boolean> {
             newProductAttrbute.setAttrId(attrId);
             newProductAttrbute.setProductId(deviceId);
             //处理依赖属性
-            if(ATTR_TYPE_RELY.equals(productAttribute.getSource())){
+            if (ATTR_TYPE_RELY.equals(productAttribute.getSource())) {
                 String key = attrKeyMap.get(productAttribute.getDepAttrId());
-                if(ToolUtil.isNotEmpty(key)) {
+                if (ToolUtil.isNotEmpty(key)) {
                     Long deptAttrId = attrIdMap.get(key);
                     newProductAttrbute.setDepAttrId(deptAttrId);
                 }
-            }else {
+            } else {
                 attrKeyMap.put(productAttribute.getAttrId(), productAttribute.getKey());
                 attrIdMap.put(productAttribute.getKey(), attrId);
             }
@@ -97,7 +98,7 @@ public class SaveAttributeWorker implements IWorker<DeviceDto, Boolean> {
         }
         DB.saveAll(newProductAttributeEventList);
 
-        log.debug("step 3:saveAttributeWorker----DEVICEID:{}…………",deviceDto.getDeviceId());
+        log.debug("step 3:saveAttributeWorker----DEVICEID:{}…………", deviceDto.getDeviceId());
         return true;
     }
 

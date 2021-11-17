@@ -36,12 +36,9 @@ public class SaveTagWorker implements IWorker<DeviceDto, Boolean> {
                 return true;
             }
             new QTag().sid.eq(deviceId).delete();
-        } else {
-            //创建
-            Device device = (Device) allWrappers.get("saveDvice").getWorkResult().getResult();
-            deviceId = device.getDeviceId();
         }
 
+        //继承产品中的标签
         DB.sqlUpdate("insert into tag (sid,tag,value,template_id) SELECT :deviceId,tag,value,id template_id from tag where sid=:sid")
                 .setParameter("deviceId", deviceId).setParameter("sid", deviceDto.getProductId() + "").execute();
         log.debug("step 2:SaveTagWorker----DEVICEID:{} complete",deviceDto.getDeviceId());

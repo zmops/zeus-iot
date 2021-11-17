@@ -23,15 +23,17 @@ public class UpdateDeviceZbxIdWorker implements IWorker<String, Boolean> {
 
 
     @Override
-    public Boolean action(String deviceDto, Map<String, WorkerWrapper> map) {
+    public Boolean action(String deviceId, Map<String, WorkerWrapper> map) {
 
         Object result = map.get("saveZbxHostWork").getWorkResult().getResult();
+
         JSONArray hostid = JSONObject.parseObject(result.toString()).getJSONArray("hostids");
-        Device device = (Device) map.get("saveDvice").getWorkResult().getResult();
-        log.debug("step 7:resolve zbxID async----DEVICEID:{}， HOSTID:{}…………",device.getDeviceId(),hostid.get(0).toString());
-        device.setZbxId(hostid.get(0).toString());
-        DB.update(device);
-        log.debug("step 7:resolve zbxID async----DEVICEID:{}， HOSTID:{} 完成",device.getDeviceId(),hostid.get(0).toString());
+
+        log.debug("step 7:resolve zbxID async----DEVICEID:{}， HOSTID:{}…………",deviceId,hostid.get(0).toString());
+
+        DB.update(Device.class).where().eq("deviceId",deviceId).asUpdate().set("zbxId",hostid.get(0).toString()).update();
+
+        log.debug("step 7:resolve zbxID async----DEVICEID:{}， HOSTID:{} 完成",deviceId,hostid.get(0).toString());
         return true;
     }
 

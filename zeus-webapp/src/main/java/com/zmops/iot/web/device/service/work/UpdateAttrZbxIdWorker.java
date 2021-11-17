@@ -47,10 +47,6 @@ public class UpdateAttrZbxIdWorker implements IWorker<DeviceDto, Boolean> {
             if (deviceDto.getProductId().equals(deviceDto.getOldProductId())) {
                 return true;
             }
-        } else {
-            //创建
-            Device device = (Device) map.get("saveDvice").getWorkResult().getResult();
-            deviceId = device.getDeviceId();
         }
 
         //取出 ZBX hostid

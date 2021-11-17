@@ -35,10 +35,9 @@ public class SaveDeviceGrpWorker implements IWorker<DeviceDto, Boolean> {
         }
 
         //保存设备与设备组关系
-        Device device = (Device) map.get("saveDvice").getWorkResult().getResult();
         List<DevicesGroups> devicesGroupsList = new ArrayList<>();
         for (Long deviceGroupId : deviceDto.getDeviceGroupIds()) {
-            devicesGroupsList.add(DevicesGroups.builder().deviceId(device.getDeviceId()).deviceGroupId(deviceGroupId).build());
+            devicesGroupsList.add(DevicesGroups.builder().deviceId(deviceDto.getDeviceId()).deviceGroupId(deviceGroupId).build());
         }
         DB.saveAll(devicesGroupsList);
         log.debug("step 4:SaveDeviceGrpWorker----DEVICEID:{}…………",deviceDto.getDeviceId());

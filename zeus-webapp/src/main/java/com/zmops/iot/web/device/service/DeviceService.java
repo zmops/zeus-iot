@@ -126,12 +126,16 @@ public class DeviceService implements CommandLineRunner {
      * @return
      */
     public Pager<DeviceDto> devicePageList(DeviceParam deviceParam) {
+        //根据当前用户所属用户组 取出绑定的主机组
         List<Long> devGroupIds = deviceGroupService.getDevGroupIds();
         if (ToolUtil.isEmpty(devGroupIds)) {
             return new Pager<>();
         }
+        //组装查询SQL
         StringBuilder sql = generateBaseSql();
         sql.append(" where 1=1");
+
+        //根据标签过滤
         List<Long> sids = new ArrayList<>();
         if (ToolUtil.isNotEmpty(deviceParam.getTag())) {
             QTag qTag = new QTag().select(QTag.Alias.sid).templateId.isNull();
@@ -144,6 +148,7 @@ public class DeviceService implements CommandLineRunner {
                 sql.append(" and d.device_id in ( :deviceIds )");
             }
         }
+
         if (ToolUtil.isNotEmpty(deviceParam.getProdType())) {
             sql.append(" and d.type = :prodType ");
         }
@@ -153,6 +158,7 @@ public class DeviceService implements CommandLineRunner {
         if (ToolUtil.isNotEmpty(deviceParam.getName())) {
             sql.append(" and d.name like :name ");
         }
+        //用于查询总记录数
         Query<Device> count = DB.findNative(Device.class, sql.toString());
 
         sql.append(" order by d.create_time desc ");
@@ -258,7 +264,7 @@ public class DeviceService implements CommandLineRunner {
                 .build();
 
         WorkerWrapper<String, Boolean> updateDeviceZbxIdWork = new WorkerWrapper.Builder<String, Boolean>().id("updateDeviceZbxIdWork")
-                .worker(updateDeviceZbxIdWorker)
+                .worker(updateDeviceZbxIdWorker).param(deviceDto.getDeviceId())
                 .build();
 
         WorkerWrapper<DeviceDto, Boolean> saveOtherWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("saveOtherWork")
@@ -282,6 +288,7 @@ public class DeviceService implements CommandLineRunner {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
+
         updateDeviceNameCache(deviceDto.getDeviceId(), deviceDto.getName());
         return deviceDto.getDeviceId();
     }
@@ -357,24 +364,28 @@ public class DeviceService implements CommandLineRunner {
             return deviceDto.getDeviceId();
         }
         String zbxId = device.getZbxId();
+        //删除标签
         WorkerWrapper<String, Boolean> delTagWork = new WorkerWrapper.Builder<String, Boolean>().id("delTagWork")
                 .worker((deviceId, allWrappers) -> {
                     new QTag().sid.eq(deviceId).delete();
                     return true;
                 }).param(deviceDto.getDeviceId()).build();
 
+        //删除属性
         WorkerWrapper<String, Boolean> delAttrWork = new WorkerWrapper.Builder<String, Boolean>().id("delAttrWork")
                 .worker((deviceId, allWrappers) -> {
                     new QProductAttribute().productId.eq(deviceId).delete();
                     return true;
                 }).param(deviceDto.getDeviceId()).build();
 
+        //删除设备组关联关系
         WorkerWrapper<String, Boolean> delGropusWork = new WorkerWrapper.Builder<String, Boolean>().id("delGropusWork")
                 .worker((deviceId, allWrappers) -> {
                     new QDevicesGroups().deviceId.eq(deviceId).delete();
                     return true;
                 }).param(deviceDto.getDeviceId()).build();
 
+        //删除Zbx主机
         WorkerWrapper<String, Boolean> delZbxWork = new WorkerWrapper.Builder<String, Boolean>().id("delZbxWork")
                 .worker((zbxid, allWrappers) -> {
                     if (ToolUtil.isNotEmpty(zbxid)) {
@@ -386,6 +397,7 @@ public class DeviceService implements CommandLineRunner {
                     return true;
                 }).param(zbxId).build();
 
+        //删除其它关联信息
         WorkerWrapper<String, Boolean> delOtherWork = new WorkerWrapper.Builder<String, Boolean>().id("delOtherWork")
                 .worker((deviceId, allWrappers) -> {
                     new QProductStatusFunctionRelation().relationId.eq(deviceId).delete();
@@ -396,6 +408,7 @@ public class DeviceService implements CommandLineRunner {
                     return true;
                 }).param(deviceDto.getDeviceId()).build();
 
+        //删除设备
         WorkerWrapper<String, Boolean> delDeviceWork = new WorkerWrapper.Builder<String, Boolean>()
                 .id("delDeviceWork")
                 .worker((deviceId, allWrappers) -> {
@@ -412,6 +425,7 @@ public class DeviceService implements CommandLineRunner {
             e.printStackTrace();
         }
 
+        //更新设备名称缓存
         removeDeviceNameCache(deviceDto.getDeviceId());
 
         return deviceDto.getDeviceId();
@@ -428,7 +442,9 @@ public class DeviceService implements CommandLineRunner {
             return;
         }
 
+        //先删除 之前的标签
         new QTag().sid.eq(productTag.getProductId()).delete();
+
         List<Tag> tags = new ArrayList<>();
 
         for (ProductTag.Tag tag : productTag.getProductTag()) {
@@ -440,7 +456,8 @@ public class DeviceService implements CommandLineRunner {
         if (ToolUtil.isEmpty(zbxId)) {
             return;
         }
-
+        
+        //同步到Zbx
         List<Tag> list = new QTag().sid.eq(productTag.getProductId()).findList();
 
         Map<String, String> tagMap = new HashMap<>(list.size());
@@ -562,12 +579,18 @@ public class DeviceService implements CommandLineRunner {
         DefinitionsUtil.updateDeviceCache(map);
     }
 
+    /**
+     * 更新设备名称缓存
+     */
     private void updateDeviceNameCache(String deviceId, String name) {
         Map<String, String> all = DefinitionsUtil.getDeviceCache().getAll();
         all.put(deviceId, name);
         DefinitionsUtil.updateDeviceCache(all);
     }
 
+    /**
+     * 更新设备名称缓存
+     */
     private void removeDeviceNameCache(String deviceId) {
         Map<String, String> all = DefinitionsUtil.getDeviceCache().getAll();
         all.remove(deviceId);

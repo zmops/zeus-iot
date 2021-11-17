@@ -7,10 +7,7 @@ import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.product.ProductEventRelation;
 import com.zmops.iot.domain.product.ProductStatusFunctionRelation;
-import com.zmops.iot.domain.product.query.QProductEventRelation;
-import com.zmops.iot.domain.product.query.QProductEventService;
-import com.zmops.iot.domain.product.query.QProductServiceRelation;
-import com.zmops.iot.domain.product.query.QProductStatusFunctionRelation;
+import com.zmops.iot.domain.product.query.*;
 import com.zmops.iot.enums.CommonStatus;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.dto.DeviceDto;
@@ -31,7 +28,7 @@ import java.util.stream.Collectors;
 /**
  * @author yefei
  * <p>
- * 设备标签处理步骤
+ * 其它处理步骤
  */
 @Slf4j
 @Component
@@ -55,17 +52,14 @@ public class SaveOtherWorker implements IWorker<DeviceDto, Boolean> {
             }
             //删除服务关联
             new QProductServiceRelation().relationId.eq(deviceId).delete();
+            //删除服务参数
+            new QProductServiceParam().deviceId.eq(deviceId).delete();
             //删除 上下线规则关联
             new QProductStatusFunctionRelation().relationId.eq(deviceId).delete();
             //删除 告警规则关联
             new QProductEventRelation().relationId.eq(deviceId).delete();
             //删除 告警执行动作关联
             new QProductEventService().deviceId.eq(deviceId).delete();
-
-        } else {
-            //创建
-            Device device = (Device) allWrappers.get("saveDvice").getWorkResult().getResult();
-            deviceId = device.getDeviceId();
         }
 
         //服务关联
@@ -115,7 +109,6 @@ public class SaveOtherWorker implements IWorker<DeviceDto, Boolean> {
         }
         DB.saveAll(newRelationList);
 
-        DB.saveAll(productEventRelationList);
         //告警执行动作关联
         DB.sqlUpdate("insert into product_event_service (service_id,device_id,execute_device_id,event_rule_id,inherit) SELECT service_id,:deviceId,:executeDeviceId,event_rule_id,1 from product_event_service where relation_id=:relationId")
                 .setParameter("deviceId", deviceId).setParameter("executeDeviceId", deviceId).setParameter("relationId", deviceDto.getProductId() + "").execute();
