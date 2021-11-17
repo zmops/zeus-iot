@@ -62,6 +62,8 @@ public class MultipleDeviceEventRule {
 
     private Integer taskId;
 
+    private List<TimeInterval> timeIntervals;
+
     @Data
     public static class Tag {
 
@@ -134,6 +136,18 @@ public class MultipleDeviceEventRule {
         @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
         private Long serviceId;
 
+    }
+
+    @Getter
+    @Setter
+    public static class TimeInterval {
+        private Integer startTime;
+        private Integer endTime;
+
+        @Override
+        public String toString() {
+            return "(time()>= " + startTime + " and " + " time()< " + endTime + " )";
+        }
     }
 
 }

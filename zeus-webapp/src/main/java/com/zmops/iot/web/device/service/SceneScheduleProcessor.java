@@ -39,15 +39,20 @@ public class SceneScheduleProcessor {
         Map<String,Object> eventMap = JSONObject.parseObject(event,Map.class);
         Long eventRuleId = Long.parseLong(eventMap.get("eventRuleId").toString());
 
-        Map<String, Object> alarmInfo = new ConcurrentHashMap<>(3);
-        alarmInfo.put("eventRuleId", eventRuleId);
-        alarmInfo.put("triggerType", "定时");
+        Map<String, Object> serviceLogInfo = new ConcurrentHashMap<>(3);
+        serviceLogInfo.put("eventRuleId", eventRuleId);
+        serviceLogInfo.put("triggerType", "场景联动");
 
         WorkerWrapper<Map<String, Object>, Boolean> deviceServiceLogWork = new WorkerWrapper.Builder<Map<String, Object>, Boolean>().id("deviceServiceLogWorker")
-                .worker(deviceServiceLogWorker).param(alarmInfo)
+                .worker(deviceServiceLogWorker).param(serviceLogInfo)
                 .build();
+
+        Map<String, Object> sceneLogInfo = new ConcurrentHashMap<>(3);
+        sceneLogInfo.put("eventRuleId", eventRuleId);
+        sceneLogInfo.put("triggerType", "自动");
+
         WorkerWrapper<Map<String, Object>, Boolean> scenesLogWork = new WorkerWrapper.Builder<Map<String, Object>, Boolean>().id("scenesLogWorker")
-                .worker(scenesLogWorker).param(alarmInfo)
+                .worker(scenesLogWorker).param(sceneLogInfo)
                 .build();
 
         try {

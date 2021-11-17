@@ -1,10 +1,16 @@
 package com.zmops.iot.web.device.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.zmops.iot.domain.product.ProductEventExpression;
+import com.zmops.iot.domain.product.ProductEventService;
+import com.zmops.iot.domain.product.ProductEventTimeInterval;
 import com.zmops.iot.model.cache.filter.CachedValue;
 import com.zmops.iot.model.cache.filter.CachedValueFilter;
 import com.zmops.iot.model.cache.filter.DicType;
+import com.zmops.iot.web.product.dto.ProductEventRuleDto;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * @author yefei
@@ -45,4 +51,14 @@ public class MultipleDeviceEventDto {
 
     @CachedValue(value = "triggerType")
     private String triggerType;
+
+    private String scheduleConf;
+
+    private List<ProductEventExpression> expList;
+
+    private List<ProductEventService> deviceServices;
+
+    private List<MultipleDeviceEventRule.Tag> tags;
+
+    private List<ProductEventTimeInterval> timeExpList;
 }

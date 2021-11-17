@@ -6,10 +6,7 @@ import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.domain.product.ProductEvent;
 import com.zmops.iot.domain.product.ProductEventRelation;
-import com.zmops.iot.domain.product.query.QProductEvent;
-import com.zmops.iot.domain.product.query.QProductEventExpression;
-import com.zmops.iot.domain.product.query.QProductEventRelation;
-import com.zmops.iot.domain.product.query.QProductEventService;
+import com.zmops.iot.domain.product.query.*;
 import com.zmops.iot.domain.schedule.Task;
 import com.zmops.iot.domain.schedule.query.QTask;
 import com.zmops.iot.enums.CommonStatus;
@@ -31,11 +28,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import static com.zmops.iot.web.device.service.MultipleDeviceEventRuleService.TRIGGER_TYPE_CONDITION;
-import static com.zmops.iot.web.device.service.MultipleDeviceEventRuleService.TRIGGER_TYPE_SCHEDULE;
+import static com.zmops.iot.web.device.service.MultipleDeviceEventRuleService.*;
 
 /**
  * @author yefei
@@ -51,8 +48,6 @@ public class MultipleDeviceEventTriggerController {
 
     @Autowired
     private ZbxTrigger zbxTrigger;
-
-    private static final String EXECUTE_TAG_NAME = "__scene__";
 
     /**
      * 场景 分页列表
@@ -114,7 +109,11 @@ public class MultipleDeviceEventTriggerController {
             //step 1: 先创建 zbx 触发器
             String expression = eventRule.getExpList()
                     .stream().map(Object::toString).collect(Collectors.joining(" " + eventRule.getExpLogic() + " "));
-
+            //时间区间表达式
+            if (ToolUtil.isNotEmpty(eventRule.getTimeIntervals())) {
+                String timeExpression = eventRule.getTimeIntervals().parallelStream().map(Objects::toString).collect(Collectors.joining(" or "));
+                expression = "(" + expression + ") and (" + timeExpression + ")";
+            }
             //step 2: zbx 保存触发器
             String[] triggerIds = multipleDeviceEventRuleService.createZbxTrigger(eventRuleId + "", expression, eventRule.getEventLevel());
 
@@ -202,7 +201,11 @@ public class MultipleDeviceEventTriggerController {
             //step 1: 先创建 zbx 触发器
             String expression = eventRule.getExpList()
                     .stream().map(Object::toString).collect(Collectors.joining(" " + eventRule.getExpLogic() + " "));
-
+            //时间区间表达式
+            if (ToolUtil.isNotEmpty(eventRule.getTimeIntervals())) {
+                String timeExpression = eventRule.getTimeIntervals().parallelStream().map(Objects::toString).collect(Collectors.joining(" or "));
+                expression = "(" + expression + ") and (" + timeExpression + ")";
+            }
             //step 2: zbx 保存触发器
             String[] triggerIds = multipleDeviceEventRuleService.createZbxTrigger(eventRule.getEventRuleId() + "", expression, eventRule.getEventLevel());
 
@@ -262,6 +265,8 @@ public class MultipleDeviceEventTriggerController {
             //step 2:删除 关联的表达式
             new QProductEventExpression().eventRuleId.eq(eventRule.getEventRuleId()).delete();
 
+            //step 3:删除 关联的时间表达式
+            new QProductEventTimeInterval().eventRuleId.eq(eventRule.getEventRuleId()).delete();
         } else {
             //step 1:删除 定时器
             new QTask().id.eq(productEvent.getTaskId()).delete();

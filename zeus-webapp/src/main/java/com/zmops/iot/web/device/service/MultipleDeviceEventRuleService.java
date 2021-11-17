@@ -8,10 +8,7 @@ import com.zmops.iot.async.callback.ICallback;
 import com.zmops.iot.async.executor.Async;
 import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.*;
-import com.zmops.iot.domain.product.query.QProductEvent;
-import com.zmops.iot.domain.product.query.QProductEventExpression;
-import com.zmops.iot.domain.product.query.QProductEventRelation;
-import com.zmops.iot.domain.product.query.QProductEventService;
+import com.zmops.iot.domain.product.query.*;
 import com.zmops.iot.domain.schedule.Task;
 import com.zmops.iot.domain.schedule.query.QTask;
 import com.zmops.iot.enums.CommonStatus;
@@ -28,7 +25,6 @@ import com.zmops.iot.web.device.dto.param.MultipleDeviceEventParm;
 import com.zmops.iot.web.device.service.work.DeviceServiceLogWorker;
 import com.zmops.iot.web.device.service.work.ScenesLogWorker;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
-import com.zmops.iot.web.product.dto.ProductEventRuleDto;
 import com.zmops.iot.web.task.dto.TaskDto;
 import com.zmops.iot.web.task.service.TaskService;
 import com.zmops.zeus.driver.service.ZbxTrigger;
@@ -63,6 +59,8 @@ public class MultipleDeviceEventRuleService {
     public static final int TRIGGER_TYPE_SCHEDULE = 1;
 
     public static final int TRIGGER_TYPE_CONDITION = 0;
+
+    public static final String EXECUTE_TAG_NAME = "__scene__";
 
     @Autowired
     TaskService taskService;
@@ -241,9 +239,20 @@ public class MultipleDeviceEventRuleService {
                 productEventRelationList.add(productEventRelation);
             });
             DB.saveAll(productEventRelationList);
+
+            //step 4: 保存时间区间
+            List<ProductEventTimeInterval> timeExpList = new ArrayList<>();
+            eventRule.getTimeIntervals().forEach(i -> {
+                ProductEventTimeInterval timeExp = new ProductEventTimeInterval();
+                timeExp.setEventRuleId(eventRule.getEventRuleId());
+                timeExp.setStartTime(i.getStartTime());
+                timeExp.setEndTime(i.getEndTime());
+                timeExpList.add(timeExp);
+            });
+            DB.insertAll(timeExpList);
         }
 
-        //step 4: 保存触发器 调用 本产品方法
+        //step 5: 保存触发器 调用 本产品方法
         if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
             eventRule.getDeviceServices().forEach(i -> {
                 DB.sqlUpdate("insert into product_event_service(event_rule_id, execute_device_id, service_id) " +
@@ -290,6 +299,11 @@ public class MultipleDeviceEventRuleService {
                 .setParameter("eventRuleId", eventRule.getEventRuleId())
                 .execute();
 
+        //step : 删除时间区间函数表达式
+        DB.sqlUpdate("delete from product_event_time_interval where event_rule_id = :eventRuleId")
+                .setParameter("eventRuleId", eventRule.getEventRuleId())
+                .execute();
+
         // 删除和所有设备的关联关系
         new QProductEventRelation().eventRuleId.eq(eventRule.getEventRuleId()).delete();
 
@@ -326,9 +340,20 @@ public class MultipleDeviceEventRuleService {
                 productEventRelationList.add(productEventRelation);
             });
             DB.saveAll(productEventRelationList);
+
+            //step 7: 保存时间区间
+            List<ProductEventTimeInterval> timeExpList = new ArrayList<>();
+            eventRule.getTimeIntervals().forEach(i -> {
+                ProductEventTimeInterval timeExp = new ProductEventTimeInterval();
+                timeExp.setEventRuleId(eventRule.getEventRuleId());
+                timeExp.setStartTime(i.getStartTime());
+                timeExp.setEndTime(i.getEndTime());
+                timeExpList.add(timeExp);
+            });
+            DB.insertAll(timeExpList);
         }
 
-        //step 7: 保存触发器 调用 本产品方法
+        //step 8: 保存触发器 调用 本产品方法
         if (null != eventRule.getDeviceServices() && !eventRule.getDeviceServices().isEmpty()) {
             eventRule.getDeviceServices().forEach(i -> {
                 DB.sqlUpdate("insert into product_event_service(event_rule_id,execute_device_id, service_id) values (:eventRuleId, :executeDeviceId, :serviceId)")
@@ -390,35 +415,40 @@ public class MultipleDeviceEventRuleService {
      * @param eventRuleId
      * @return
      */
-    public ProductEventRuleDto detail(ProductEvent productEvent, long eventRuleId) {
-        ProductEventRuleDto productEventRuleDto = new ProductEventRuleDto();
-        ToolUtil.copyProperties(productEvent, productEventRuleDto);
+    public MultipleDeviceEventDto detail(ProductEvent productEvent, long eventRuleId) {
+        MultipleDeviceEventDto multipleDeviceEventDto = new MultipleDeviceEventDto();
+        ToolUtil.copyProperties(productEvent, multipleDeviceEventDto);
 
-        productEventRuleDto.setDeviceServices(new QProductEventService().eventRuleId.eq(eventRuleId).findList());
+        multipleDeviceEventDto.setDeviceServices(new QProductEventService().eventRuleId.eq(eventRuleId).findList());
 
         if (TRIGGER_TYPE_CONDITION == productEvent.getTriggerType()) {
             List<ProductEventExpression> expList = new QProductEventExpression().eventRuleId.eq(eventRuleId).findList();
-            productEventRuleDto.setExpList(expList);
+            multipleDeviceEventDto.setExpList(expList);
+
+            List<ProductEventTimeInterval> timeExpList = new QProductEventTimeInterval().eventRuleId.eq(eventRuleId).findList();
+            multipleDeviceEventDto.setTimeExpList(timeExpList);
 
             ProductEventRelation productEventRelation = new QProductEventRelation().eventRuleId.eq(eventRuleId).setMaxRows(1).findOne();
-            productEventRuleDto.setStatus(productEventRelation.getStatus());
-            productEventRuleDto.setRemark(productEventRelation.getRemark());
-            productEventRuleDto.setInherit(productEventRelation.getInherit());
+            if (null == productEventRelation) {
+                return multipleDeviceEventDto;
+            }
+            multipleDeviceEventDto.setStatus(productEventRelation.getStatus());
+            multipleDeviceEventDto.setRemark(productEventRelation.getRemark());
+            multipleDeviceEventDto.setInherit(productEventRelation.getInherit());
 
             JSONArray triggerInfo = JSONObject.parseArray(zbxTrigger.triggerAndTagsGet(productEventRelation.getZbxId()));
-            List<ProductEventRuleDto.Tag> tagList = JSONObject.parseArray(triggerInfo.getJSONObject(0).getString("tags"), ProductEventRuleDto.Tag.class);
+            List<MultipleDeviceEventRule.Tag> tagList = JSONObject.parseArray(triggerInfo.getJSONObject(0).getString("tags"), MultipleDeviceEventRule.Tag.class);
 
-            productEventRuleDto.setZbxId(productEventRelation.getZbxId());
-            productEventRuleDto.setTags(tagList.stream()
-                    .filter(s -> !s.getTag().equals("__execute__") && !s.getTag().equals("__alarm__") && !s.getTag().equals("__event__"))
+            multipleDeviceEventDto.setTags(tagList.stream()
+                    .filter(s -> !s.getTag().equals(EXECUTE_TAG_NAME))
                     .collect(Collectors.toList()));
         } else {
             Task task = new QTask().id.eq(productEvent.getTaskId()).findOne();
-            productEventRuleDto.setScheduleConf(Optional.ofNullable(task).map(Task::getScheduleConf).orElse(""));
-            productEventRuleDto.setExpList(Collections.emptyList());
+            multipleDeviceEventDto.setScheduleConf(Optional.ofNullable(task).map(Task::getScheduleConf).orElse(""));
+            multipleDeviceEventDto.setExpList(Collections.emptyList());
         }
 
-        return productEventRuleDto;
+        return multipleDeviceEventDto;
     }
 
     /**
@@ -447,16 +477,23 @@ public class MultipleDeviceEventRuleService {
     }
 
     public void execute(Long eventRuleId, String type, Long userId) {
+        Map<String, Object> serviceLogInfo = new ConcurrentHashMap<>(3);
+        serviceLogInfo.put("eventRuleId", eventRuleId);
+        serviceLogInfo.put("triggerType", "自动".equals(type) ? "场景联动" : type);
+        if (null != userId) {
+            serviceLogInfo.put("triggerUser", userId);
+        }
+
+        WorkerWrapper<Map<String, Object>, Boolean> deviceServiceLogWork = new WorkerWrapper.Builder<Map<String, Object>, Boolean>().id("deviceServiceLogWorker")
+                .worker(deviceServiceLogWorker).param(serviceLogInfo).callback(ICallback.PRINT_EXCEPTION_STACK_TRACE)
+                .build();
+
         Map<String, Object> alarmInfo = new ConcurrentHashMap<>(3);
         alarmInfo.put("eventRuleId", eventRuleId);
         alarmInfo.put("triggerType", type);
         if (null != userId) {
             alarmInfo.put("triggerUser", userId);
         }
-
-        WorkerWrapper<Map<String, Object>, Boolean> deviceServiceLogWork = new WorkerWrapper.Builder<Map<String, Object>, Boolean>().id("deviceServiceLogWorker")
-                .worker(deviceServiceLogWorker).param(alarmInfo).callback(ICallback.PRINT_EXCEPTION_STACK_TRACE)
-                .build();
         WorkerWrapper<Map<String, Object>, Boolean> scenesLogWork = new WorkerWrapper.Builder<Map<String, Object>, Boolean>().id("scenesLogWorker")
                 .worker(scenesLogWorker).param(alarmInfo).callback(ICallback.PRINT_EXCEPTION_STACK_TRACE)
                 .build();
