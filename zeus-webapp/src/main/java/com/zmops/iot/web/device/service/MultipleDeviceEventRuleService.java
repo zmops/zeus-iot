@@ -38,10 +38,7 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -417,7 +414,8 @@ public class MultipleDeviceEventRuleService {
                     .collect(Collectors.toList()));
         } else {
             Task task = new QTask().id.eq(productEvent.getTaskId()).findOne();
-            productEventRuleDto.setScheduleConf(task.getScheduleConf());
+            productEventRuleDto.setScheduleConf(Optional.ofNullable(task).map(Task::getScheduleConf).orElse(""));
+            productEventRuleDto.setExpList(Collections.emptyList());
         }
 
         return productEventRuleDto;
