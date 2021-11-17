@@ -12,7 +12,7 @@
  Target Server Version : 130004
  File Encoding         : 65001
 
- Date: 15/11/2021 16:48:12
+ Date: 17/11/2021 14:53:58
 */
 
 
@@ -109,6 +109,17 @@ CACHE 1;
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."product_event_tags_id_seq";
 CREATE SEQUENCE "public"."product_event_tags_id_seq" 
+INCREMENT 1
+MINVALUE  1
+MAXVALUE 2147483647
+START 1
+CACHE 1;
+
+-- ----------------------------
+-- Sequence structure for product_event_time_interval_event_time_id_seq
+-- ----------------------------
+DROP SEQUENCE IF EXISTS "public"."product_event_time_interval_event_time_id_seq";
+CREATE SEQUENCE "public"."product_event_time_interval_event_time_id_seq" 
 INCREMENT 1
 MINVALUE  1
 MAXVALUE 2147483647
@@ -777,6 +788,26 @@ COMMENT ON COLUMN "public"."product_event_tags"."tag_zbx_id" IS 'zabbix tag id';
 
 -- ----------------------------
 -- Records of product_event_tags
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for product_event_time_interval
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."product_event_time_interval";
+CREATE TABLE "public"."product_event_time_interval" (
+  "event_time_id" int4 NOT NULL DEFAULT nextval('product_event_time_interval_event_time_id_seq'::regclass),
+  "event_rule_id" int8 NOT NULL,
+  "start_time" int2,
+  "end_time" int2
+)
+;
+COMMENT ON COLUMN "public"."product_event_time_interval"."event_time_id" IS '告警函数ID';
+COMMENT ON COLUMN "public"."product_event_time_interval"."event_rule_id" IS '告警规则ID';
+COMMENT ON COLUMN "public"."product_event_time_interval"."start_time" IS '开始时间';
+COMMENT ON COLUMN "public"."product_event_time_interval"."end_time" IS '结束时间';
+
+-- ----------------------------
+-- Records of product_event_time_interval
 -- ----------------------------
 
 -- ----------------------------
@@ -1735,6 +1766,13 @@ SELECT setval('"public"."product_event_tags_id_seq"', 3, true);
 -- ----------------------------
 -- Alter sequences owned by
 -- ----------------------------
+ALTER SEQUENCE "public"."product_event_time_interval_event_time_id_seq"
+OWNED BY "public"."product_event_time_interval"."event_time_id";
+SELECT setval('"public"."product_event_time_interval_event_time_id_seq"', 9, true);
+
+-- ----------------------------
+-- Alter sequences owned by
+-- ----------------------------
 ALTER SEQUENCE "public"."product_service_relation_id_seq"
 OWNED BY "public"."product_service_relation"."id";
 SELECT setval('"public"."product_service_relation_id_seq"', 24, true);
@@ -1903,6 +1941,11 @@ CREATE INDEX "serviceId" ON "public"."product_event_service" USING btree (
 -- Primary Key structure for table product_event_tags
 -- ----------------------------
 ALTER TABLE "public"."product_event_tags" ADD CONSTRAINT "product_event_tags_pkey" PRIMARY KEY ("id");
+
+-- ----------------------------
+-- Primary Key structure for table product_event_time_interval
+-- ----------------------------
+ALTER TABLE "public"."product_event_time_interval" ADD CONSTRAINT "product_event_time_interval_pkey" PRIMARY KEY ("event_time_id");
 
 -- ----------------------------
 -- Primary Key structure for table product_service
