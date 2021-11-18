@@ -241,15 +241,17 @@ public class MultipleDeviceEventRuleService {
             DB.saveAll(productEventRelationList);
 
             //step 4: 保存时间区间
-            List<ProductEventTimeInterval> timeExpList = new ArrayList<>();
-            eventRule.getTimeIntervals().forEach(i -> {
-                ProductEventTimeInterval timeExp = new ProductEventTimeInterval();
-                timeExp.setEventRuleId(eventRule.getEventRuleId());
-                timeExp.setStartTime(i.getStartTime());
-                timeExp.setEndTime(i.getEndTime());
-                timeExpList.add(timeExp);
-            });
-            DB.insertAll(timeExpList);
+            if(ToolUtil.isNotEmpty(eventRule.getTimeIntervals())) {
+                List<ProductEventTimeInterval> timeExpList = new ArrayList<>();
+                eventRule.getTimeIntervals().forEach(i -> {
+                    ProductEventTimeInterval timeExp = new ProductEventTimeInterval();
+                    timeExp.setEventRuleId(eventRule.getEventRuleId());
+                    timeExp.setStartTime(i.getStartTime());
+                    timeExp.setEndTime(i.getEndTime());
+                    timeExpList.add(timeExp);
+                });
+                DB.insertAll(timeExpList);
+            }
         }
 
         //step 5: 保存触发器 调用 本产品方法
@@ -342,15 +344,17 @@ public class MultipleDeviceEventRuleService {
             DB.saveAll(productEventRelationList);
 
             //step 7: 保存时间区间
-            List<ProductEventTimeInterval> timeExpList = new ArrayList<>();
-            eventRule.getTimeIntervals().forEach(i -> {
-                ProductEventTimeInterval timeExp = new ProductEventTimeInterval();
-                timeExp.setEventRuleId(eventRule.getEventRuleId());
-                timeExp.setStartTime(i.getStartTime());
-                timeExp.setEndTime(i.getEndTime());
-                timeExpList.add(timeExp);
-            });
-            DB.insertAll(timeExpList);
+            if(ToolUtil.isNotEmpty(eventRule.getTimeIntervals())) {
+                List<ProductEventTimeInterval> timeExpList = new ArrayList<>();
+                eventRule.getTimeIntervals().forEach(i -> {
+                    ProductEventTimeInterval timeExp = new ProductEventTimeInterval();
+                    timeExp.setEventRuleId(eventRule.getEventRuleId());
+                    timeExp.setStartTime(i.getStartTime());
+                    timeExp.setEndTime(i.getEndTime());
+                    timeExpList.add(timeExp);
+                });
+                DB.insertAll(timeExpList);
+            }
         }
 
         //step 8: 保存触发器 调用 本产品方法
@@ -446,6 +450,7 @@ public class MultipleDeviceEventRuleService {
             Task task = new QTask().id.eq(productEvent.getTaskId()).findOne();
             multipleDeviceEventDto.setScheduleConf(Optional.ofNullable(task).map(Task::getScheduleConf).orElse(""));
             multipleDeviceEventDto.setExpList(Collections.emptyList());
+            multipleDeviceEventDto.setTimeExpList(Collections.emptyList());
         }
 
         return multipleDeviceEventDto;
