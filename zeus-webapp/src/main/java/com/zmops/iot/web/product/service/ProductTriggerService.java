@@ -7,8 +7,10 @@ import com.zmops.iot.domain.product.ProductStatusFunction;
 import com.zmops.iot.domain.product.ProductStatusFunctionRelation;
 import com.zmops.iot.domain.product.query.QProductStatusFunction;
 import com.zmops.iot.domain.product.query.QProductStatusFunctionRelation;
+import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.dto.DeviceDto;
+import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductStatusFunctionDto;
 import com.zmops.iot.web.product.dto.ProductStatusJudgeRule;
 import com.zmops.iot.web.product.dto.ZbxTriggerInfo;
@@ -70,7 +72,7 @@ public class ProductTriggerService {
 
         long ruleId = IdUtil.getSnowflake().nextId();
         judgeRule.setRuleId(ruleId);
-        //step 1:保存到zbx
+        //step 1:保存到zbx 建立上线及下线规则
         String res = deviceStatusTrigger.createDeviceStatusTrigger(judgeRule.getRuleId() + "", judgeRule.getRelationId(),
                 judgeRule.getProductAttrKey(), judgeRule.getRuleCondition() + judgeRule.getUnit(), judgeRule.getRuleFunction(), judgeRule.getProductAttrKeyRecovery(),
                 judgeRule.getRuleConditionRecovery() + judgeRule.getUnitRecovery(), judgeRule.getRuleFunctionRecovery());
@@ -80,22 +82,30 @@ public class ProductTriggerService {
         //step 2:保存规则
         ProductStatusFunction productStatusFunction = new ProductStatusFunction();
         BeanUtils.copyProperties(judgeRule, productStatusFunction);
-
         productStatusFunction.setRuleId(ruleId);
         DB.save(productStatusFunction);
 
-        //step 3:保存关联关系
+        //step 3:保存规则与产品的关联关系
         ProductStatusFunctionRelation productStatusFunctionRelation = new ProductStatusFunctionRelation();
         productStatusFunctionRelation.setRelationId(judgeRule.getRelationId());
         productStatusFunctionRelation.setRuleId(ruleId);
+        //对应zbx下线规则ID
         productStatusFunctionRelation.setZbxId(triggerIds[0]);
+        //对应zbx上线规则ID
         productStatusFunctionRelation.setZbxIdRecovery(triggerIds[1]);
         DB.save(productStatusFunctionRelation);
 
         //step 4:同步到设备
         String relationId = judgeRule.getRelationId();
         if (ToolUtil.isNum(relationId)) {
+            //查询出继承了此产品的设备
+            String sql = "select device_id from device where product_id = :productId and device_id not in (select relation_id from product_status_function_relation where inherit='0')";
+            List<DeviceDto> deviceDtoList = DB.findDto(DeviceDto.class, sql).setParameter("productId", Long.parseLong(relationId)).findList();
+            if (ToolUtil.isEmpty(deviceDtoList)) {
+                return productStatusFunction.getRuleId();
+            }
 
+            //从Zbx 查询出所有设备的  名称是 judgeRule.getRuleId() 的触发器
             String triggerRes = zbxTrigger.triggerGetByName(judgeRule.getRuleId() + "");
             if (ToolUtil.isEmpty(triggerRes)) {
                 return productStatusFunction.getRuleId();
@@ -106,8 +116,7 @@ public class ProductTriggerService {
             Map<String, String> hostRecoveryTriggerMap = zbxTriggerInfoList.parallelStream().filter(o -> o.getTags().parallelStream().anyMatch(t -> "__online__".equals(t.getTag())))
                     .collect(Collectors.toMap(o -> o.getHosts().get(0).getHost(), ZbxTriggerInfo::getTriggerid));
 
-            String sql = "select device_id from device where product_id = :productId and device_id not in (select relation_id from product_status_function_relation where inherit='0')";
-            List<DeviceDto> deviceDtoList = DB.findDto(DeviceDto.class, sql).setParameter("productId", Long.parseLong(relationId)).findList();
+            //保存 设备与规则的关系
             deviceDtoList.forEach(deviceDto -> {
                 String zbxId = Optional.ofNullable(hostTriggerMap.get(deviceDto.getDeviceId())).orElse("");
                 String zbxIdRecovery = Optional.ofNullable(hostRecoveryTriggerMap.get(deviceDto.getDeviceId())).orElse("");
@@ -124,16 +133,17 @@ public class ProductTriggerService {
     }
 
     /**
-     * 修改 设备状态 触发器
+     * 修改 触发器
      *
      * @param judgeRule 判断规则
      * @return Integer
      */
     public Long updateDeviceStatusJudgeTrigger(ProductStatusJudgeRule judgeRule) {
-//        Map<String, String> rule = new HashMap<>();
-//        buildTriggerCreateMap(rule, judgeRule);
-        ProductStatusFunctionRelation relation = new QProductStatusFunctionRelation().ruleId.eq(judgeRule.getRuleId()).relationId.eq(judgeRule.getRelationId()).findOne();
 
+        ProductStatusFunctionRelation relation = new QProductStatusFunctionRelation().ruleId.eq(judgeRule.getRuleId()).relationId.eq(judgeRule.getRelationId()).findOne();
+        if (null == relation) {
+            return judgeRule.getRuleId();
+        }
         deviceStatusTrigger.updateDeviceStatusTrigger(relation.getZbxId(), judgeRule.getRuleId() + "", judgeRule.getRelationId(),
                 judgeRule.getProductAttrKey(), judgeRule.getRuleCondition() + judgeRule.getUnit(), judgeRule.getRuleFunction(), judgeRule.getProductAttrKeyRecovery(),
                 judgeRule.getRuleConditionRecovery() + judgeRule.getUnitRecovery(), judgeRule.getRuleFunctionRecovery(), relation.getZbxIdRecovery());
@@ -167,10 +177,10 @@ public class ProductTriggerService {
 
     private String[] getTriggerId(String responseStr) {
         TriggerIds ids = JSON.parseObject(responseStr, TriggerIds.class);
-        if (null != ids && ids.getTriggerids().length > 0) {
-            return ids.getTriggerids();
+        if (null == ids || ids.getTriggerids().length != 2) {
+            throw new ServiceException(BizExceptionEnum.ZBX_CALL_ERR);
         }
-        return null;
+        return ids.getTriggerids();
     }
 
     /**

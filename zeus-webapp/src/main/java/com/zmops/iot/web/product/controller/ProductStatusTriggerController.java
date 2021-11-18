@@ -82,7 +82,7 @@ public class ProductStatusTriggerController {
         ProductAttribute prodAttrSecond = new QProductAttribute().attrId.eq(rule.getAttrIdRecovery()).findOne();
 
         if (null == prodAttr || null == prodAttrSecond) {
-            throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
+            throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_KEY_NOT_EXISTS);
         }
 
         // 数据库查询 triggerId 并且赋值

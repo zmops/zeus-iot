@@ -31,17 +31,23 @@ public class SaveProdSvcWorker implements IWorker<ProductServiceDto, Boolean> {
 
         String prodId = productServiceDto.getRelationId();
 
+        //查询出 继承了此产品的设备
         List<String> deviceIds = new QDevice().select(QDevice.Alias.deviceId).productId.eq(Long.parseLong(prodId)).findSingleAttributeList();
+        if (ToolUtil.isEmpty(deviceIds)) {
+            return true;
+        }
 
         List<ProductServiceRelation> productServiceRelationList = new ArrayList<>();
         List<ProductServiceParam> productServiceParamList = new ArrayList<>();
         for (String deviceId : deviceIds) {
+            //保存设备与服务的关联关系
             ProductServiceRelation productServiceRelation = new ProductServiceRelation();
             productServiceRelation.setRelationId(deviceId);
             productServiceRelation.setServiceId(productServiceDto.getId());
             productServiceRelation.setInherit("1");
             productServiceRelationList.add(productServiceRelation);
 
+            //保存设备与服务参数的关联关系
             productServiceDto.getProductServiceParamList().forEach(productServiceParam -> {
                 ProductServiceParam param = new ProductServiceParam();
                 ToolUtil.copyProperties(productServiceParam,param);

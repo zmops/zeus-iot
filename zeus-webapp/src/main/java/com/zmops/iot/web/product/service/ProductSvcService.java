@@ -132,6 +132,7 @@ public class ProductSvcService implements CommandLineRunner {
      */
     @Transactional(rollbackFor = Exception.class)
     public ProductServiceDto create(ProductServiceDto productServiceDto) {
+        //查询 是否已存在同名服务
         List<Long> serviceIds = getServiceIdList(productServiceDto.getRelationId());
         if (ToolUtil.isNotEmpty(serviceIds)) {
             int count = new QProductService().name.eq(productServiceDto.getName()).id.in(serviceIds).findCount();
@@ -139,17 +140,20 @@ public class ProductSvcService implements CommandLineRunner {
                 throw new ServiceException(BizExceptionEnum.SERVICE_EXISTS);
             }
         }
+        //保存服务
         ProductService productService = new ProductService();
         ToolUtil.copyProperties(productServiceDto, productService);
         DB.save(productService);
         Long serviceId = productService.getId();
         productServiceDto.setId(serviceId);
 
+        //保存服务与产品 关联关系
         ProductServiceRelation productServiceRelation = new ProductServiceRelation();
         productServiceRelation.setServiceId(productService.getId());
         productServiceRelation.setRelationId(productServiceDto.getRelationId());
         DB.save(productServiceRelation);
 
+        //保存服务参数
         if (ToolUtil.isNotEmpty(productServiceDto.getProductServiceParamList())) {
             for (ProductServiceParam productServiceParam : productServiceDto.getProductServiceParamList()) {
                 productServiceParam.setServiceId(null);
@@ -160,13 +164,14 @@ public class ProductSvcService implements CommandLineRunner {
         }
 
         //同步到设备
-        WorkerWrapper<ProductServiceDto, Boolean> saveProdAttrWork =
-                new WorkerWrapper.Builder<ProductServiceDto, Boolean>().worker(saveProdSvcWorker).param(productServiceDto).build();
-
-        try {
-            Async.beginWork(100, saveProdAttrWork);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+        if (ToolUtil.isNum(productServiceDto.getRelationId())) {
+            WorkerWrapper<ProductServiceDto, Boolean> saveProdAttrWork =
+                    new WorkerWrapper.Builder<ProductServiceDto, Boolean>().worker(saveProdSvcWorker).param(productServiceDto).build();
+            try {
+                Async.beginWork(100, saveProdAttrWork);
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
         }
         updateService();
         return productServiceDto;
@@ -179,6 +184,7 @@ public class ProductSvcService implements CommandLineRunner {
      * @return
      */
     public ProductServiceDto update(ProductServiceDto productServiceDto) {
+        //查询 是否已存在同名服务
         List<Long> serviceIds = getServiceIdList(productServiceDto.getRelationId());
         if (ToolUtil.isNotEmpty(serviceIds)) {
             int count = new QProductService().name.eq(productServiceDto.getName()).id.in(serviceIds)
@@ -187,10 +193,13 @@ public class ProductSvcService implements CommandLineRunner {
                 throw new ServiceException(BizExceptionEnum.SERVICE_EXISTS);
             }
         }
+
+        //保存服务
         ProductService productService = new ProductService();
         ToolUtil.copyProperties(productServiceDto, productService);
         DB.update(productService);
 
+        //重新保存服务参数
         new QProductServiceParam().serviceId.eq(productServiceDto.getId()).delete();
         if (ToolUtil.isNotEmpty(productServiceDto.getProductServiceParamList())) {
             for (ProductServiceParam productServiceParam : productServiceDto.getProductServiceParamList()) {
@@ -200,13 +209,14 @@ public class ProductSvcService implements CommandLineRunner {
         }
 
         //同步到设备
-        WorkerWrapper<ProductServiceDto, Boolean> updateProdSvcWork =
-                new WorkerWrapper.Builder<ProductServiceDto, Boolean>().worker(updateProdSvcWorker).param(productServiceDto).build();
-
-        try {
-            Async.beginWork(1000, updateProdSvcWork);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+        if (ToolUtil.isNum(productServiceDto.getRelationId())) {
+            WorkerWrapper<ProductServiceDto, Boolean> updateProdSvcWork =
+                    new WorkerWrapper.Builder<ProductServiceDto, Boolean>().worker(updateProdSvcWorker).param(productServiceDto).build();
+            try {
+                Async.beginWork(1000, updateProdSvcWork);
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
         }
         updateService();
         return productServiceDto;
@@ -243,6 +253,10 @@ public class ProductSvcService implements CommandLineRunner {
         return new QProductServiceParam().serviceId.eq(serviceId).findList();
     }
 
+    /**
+     * 更新服务名称 服务参数 缓存
+     *
+     */
     private void updateService() {
         List<ProductService> serviceList = new QProductService().findList();
         Map<Long, String> map = serviceList.parallelStream().collect(Collectors.toMap(ProductService::getId, ProductService::getName));
