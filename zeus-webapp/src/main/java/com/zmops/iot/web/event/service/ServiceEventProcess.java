@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 
 /**
  * @author yefei
+ *
+ * 告警执行服务
  **/
 @Slf4j
 @Component
@@ -40,6 +42,7 @@ public class ServiceEventProcess implements EventProcess {
         log.debug("--------service event----------{}", eventData.getObjectid());
         Map<String, Object> alarmInfo = new ConcurrentHashMap<>(3);
 
+        //查询 告警规则
         List<ProductEventRelation> productEventRelationList = new QProductEventRelation().zbxId.eq(eventData.getObjectid()).findList();
         if (ToolUtil.isEmpty(productEventRelationList)) {
             return;
@@ -49,6 +52,7 @@ public class ServiceEventProcess implements EventProcess {
         alarmInfo.put("relationId", productEventRelationList.get(0).getRelationId());
         alarmInfo.put("triggerType", "自动");
 
+        //记录服务日志
         WorkerWrapper<Map<String, Object>, Boolean> deviceServiceLogWork = new WorkerWrapper.Builder<Map<String, Object>, Boolean>()
                 .id("deviceServiceLogWorker")
                 .worker(deviceServiceLogWorker)
@@ -61,6 +65,7 @@ public class ServiceEventProcess implements EventProcess {
             e.printStackTrace();
         }
 
+        //查询 告警规则 关联的 服务
         List<ProductEventService> productEventServiceList = new QProductEventService()
                 .eventRuleId.eq(productEventRelationList.get(0).getEventRuleId())
                 .or()

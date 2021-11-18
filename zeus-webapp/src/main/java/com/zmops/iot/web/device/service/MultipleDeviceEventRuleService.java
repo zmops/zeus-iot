@@ -4,9 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dtflys.forest.Forest;
-import com.zmops.iot.async.callback.ICallback;
-import com.zmops.iot.async.executor.Async;
-import com.zmops.iot.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.*;
 import com.zmops.iot.domain.product.query.*;
 import com.zmops.iot.domain.schedule.Task;
@@ -22,8 +19,6 @@ import com.zmops.iot.web.device.dto.MultipleDeviceEventDto;
 import com.zmops.iot.web.device.dto.MultipleDeviceEventRule;
 import com.zmops.iot.web.device.dto.MultipleDeviceServiceDto;
 import com.zmops.iot.web.device.dto.param.MultipleDeviceEventParm;
-import com.zmops.iot.web.device.service.work.DeviceServiceLogWorker;
-import com.zmops.iot.web.device.service.work.ScenesLogWorker;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.task.dto.TaskDto;
 import com.zmops.iot.web.task.service.TaskService;
@@ -36,7 +31,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -48,12 +42,6 @@ public class MultipleDeviceEventRuleService {
     @Autowired
     private ZbxTrigger zbxTrigger;
 
-    @Autowired
-    DeviceServiceLogWorker deviceServiceLogWorker;
-
-    @Autowired
-    ScenesLogWorker scenesLogWorker;
-
     private static final String EVENT_CLASSIFY = "1";
 
     public static final int TRIGGER_TYPE_SCHEDULE = 1;
@@ -64,6 +52,9 @@ public class MultipleDeviceEventRuleService {
 
     @Autowired
     TaskService taskService;
+
+    @Autowired
+    DeviceLogService deviceLogService;
 
     /**
      * 场景列表
@@ -241,7 +232,7 @@ public class MultipleDeviceEventRuleService {
             DB.saveAll(productEventRelationList);
 
             //step 4: 保存时间区间
-            if(ToolUtil.isNotEmpty(eventRule.getTimeIntervals())) {
+            if (ToolUtil.isNotEmpty(eventRule.getTimeIntervals())) {
                 List<ProductEventTimeInterval> timeExpList = new ArrayList<>();
                 eventRule.getTimeIntervals().forEach(i -> {
                     ProductEventTimeInterval timeExp = new ProductEventTimeInterval();
@@ -344,7 +335,7 @@ public class MultipleDeviceEventRuleService {
             DB.saveAll(productEventRelationList);
 
             //step 7: 保存时间区间
-            if(ToolUtil.isNotEmpty(eventRule.getTimeIntervals())) {
+            if (ToolUtil.isNotEmpty(eventRule.getTimeIntervals())) {
                 List<ProductEventTimeInterval> timeExpList = new ArrayList<>();
                 eventRule.getTimeIntervals().forEach(i -> {
                     ProductEventTimeInterval timeExp = new ProductEventTimeInterval();
@@ -481,40 +472,27 @@ public class MultipleDeviceEventRuleService {
         return JSON.parseObject(res, TriggerIds.class).getTriggerids();
     }
 
+    /**
+     * 执行动作服务
+     *
+     * @param eventRuleId 场景ID
+     * @param type        执行方式
+     * @param userId      执行人
+     */
     public void execute(Long eventRuleId, String type, Long userId) {
-        Map<String, Object> serviceLogInfo = new ConcurrentHashMap<>(3);
-        serviceLogInfo.put("eventRuleId", eventRuleId);
-        serviceLogInfo.put("triggerType", "自动".equals(type) ? "场景联动" : type);
-        if (null != userId) {
-            serviceLogInfo.put("triggerUser", userId);
-        }
 
-        WorkerWrapper<Map<String, Object>, Boolean> deviceServiceLogWork = new WorkerWrapper.Builder<Map<String, Object>, Boolean>().id("deviceServiceLogWorker")
-                .worker(deviceServiceLogWorker).param(serviceLogInfo).callback(ICallback.PRINT_EXCEPTION_STACK_TRACE)
-                .build();
+        //先异步 执行记录日志
+        deviceLogService.recordSceneLog(eventRuleId, type, userId);
 
-        Map<String, Object> alarmInfo = new ConcurrentHashMap<>(3);
-        alarmInfo.put("eventRuleId", eventRuleId);
-        alarmInfo.put("triggerType", type);
-        if (null != userId) {
-            alarmInfo.put("triggerUser", userId);
-        }
-        WorkerWrapper<Map<String, Object>, Boolean> scenesLogWork = new WorkerWrapper.Builder<Map<String, Object>, Boolean>().id("scenesLogWorker")
-                .worker(scenesLogWorker).param(alarmInfo).callback(ICallback.PRINT_EXCEPTION_STACK_TRACE)
-                .build();
-
-        try {
-            Async.beginWork(1000, deviceServiceLogWork, scenesLogWork);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-
+        //根据场景ID 找出需要执行的服务
         List<ProductEventService> productEventServiceList = new QProductEventService().eventRuleId.eq(eventRuleId)
                 .deviceId.isNull().findList();
-        List<Map<String, Object>> list = new ArrayList<>();
-        Map<String, List<ProductEventService>> collect = productEventServiceList.parallelStream().collect(Collectors.groupingBy(ProductEventService::getExecuteDeviceId));
 
-        collect.forEach((key, value) -> {
+        Map<String, List<ProductEventService>> deviceServiceMap = productEventServiceList.parallelStream().collect(Collectors.groupingBy(ProductEventService::getExecuteDeviceId));
+
+        //封装执行的参数
+        List<Map<String, Object>> body = new ArrayList<>();
+        deviceServiceMap.forEach((key, value) -> {
             Map<String, Object> map = new ConcurrentHashMap<>();
             map.put("device", key);
 
@@ -530,13 +508,18 @@ public class MultipleDeviceEventRuleService {
                 serviceList.add(serviceMap);
             });
             map.put("service", serviceList);
-            list.add(map);
+            body.add(map);
         });
 
-        Forest.post("/device/action/exec").host("127.0.0.1").port(12800).contentTypeJson().addBody(JSON.toJSON(list)).execute();
+        //提交IOT SERVER执行命令下发
+        Forest.post("/device/action/exec").host("127.0.0.1").port(12800).contentTypeJson().addBody(JSON.toJSON(body)).execute();
     }
 
-
+    /**
+     * 场景 参数 检查
+     *
+     * @param eventRule
+     */
     public void checkParam(MultipleDeviceEventRule eventRule) {
         if (eventRule.getTriggerType() == 0) {
             if (ToolUtil.isEmpty(eventRule.getExpList())) {

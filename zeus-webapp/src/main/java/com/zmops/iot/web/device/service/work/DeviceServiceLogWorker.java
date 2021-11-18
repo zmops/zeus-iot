@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 /**
  * @author yefei
  * <p>
- * 更新设备 在线状态
+ * 记录服务执行日志
  */
 @Slf4j
 @Component

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author yefei
+ *
+ * 场景触发
  **/
 @Slf4j
 @Component

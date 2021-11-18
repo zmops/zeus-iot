@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 
 /**
  * @author yefei
+ * <p>
+ * 设备上线处理
  **/
 @Slf4j
 @Component

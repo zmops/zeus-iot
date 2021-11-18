@@ -20,6 +20,8 @@ import java.util.List;
 
 /**
  * @author yefei
+ *
+ * 事件处理
  **/
 @Slf4j
 @Component
@@ -45,6 +47,7 @@ public class IncidentEventProcess implements EventProcess {
         Device device = new QDevice().deviceId.eq(deviceId).findOne();
         ProductAttributeEvent productAttributeEvent = new QProductAttributeEvent().productId.eq(deviceId).key.eq(key).findOne();
 
+        //取事件属性最新值
         List<LatestDto> latestDtos = latestService.queryEventLatest(device.getZbxId(), Collections.singletonList(productAttributeEvent.getZbxId()),
                 Integer.parseInt(productAttributeEvent.getValueType()));
 

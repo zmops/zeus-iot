@@ -15,10 +15,12 @@ import java.time.LocalDateTime;
 
 /**
  * @author yefei
+ * <p>
+ * 设备离线处理
  **/
 @Slf4j
 @Component
-public class OfflineEventProcess implements EventProcess{
+public class OfflineEventProcess implements EventProcess {
 
     @Override
     public void process(EventDataDto eventData) {
