@@ -3,11 +3,13 @@ package com.zmops.iot.web.device.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dtflys.forest.Forest;
-import com.google.common.eventbus.Subscribe;
 import com.zmops.iot.util.ToolUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
@@ -17,13 +19,15 @@ import java.util.Map;
  * 定时 触发场景 处理
  **/
 @Slf4j
-@Service
+@Component
+@EnableAsync
 public class SceneScheduleProcessor {
 
     @Autowired
     DeviceLogService deviceLogService;
 
-    @Subscribe
+    @EventListener
+    @Async
     public void subscribe(String event) {
         log.info("子线程接收异步事件 - {}，String类型", event);
         if (ToolUtil.isEmpty(event)) {

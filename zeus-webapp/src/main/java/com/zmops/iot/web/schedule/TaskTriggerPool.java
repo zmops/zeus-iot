@@ -1,8 +1,8 @@
 package com.zmops.iot.web.schedule;
 
 import com.zmops.iot.web.schedule.config.ScheduleConfig;
-import com.zmops.zeus.iot.server.eventbus.core.EventControllerFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,13 +17,13 @@ public class TaskTriggerPool {
     private ThreadPoolExecutor fastTriggerPool = null;
     private ThreadPoolExecutor slowTriggerPool = null;
 
-    private EventControllerFactory eventControllerFactory;
+    private ApplicationEventPublisher publisher;
 
     private final ScheduleConfig scheduleConfig;
 
-    public TaskTriggerPool(ScheduleConfig scheduleConfig,EventControllerFactory eventControllerFactory) {
+    public TaskTriggerPool(ScheduleConfig scheduleConfig, ApplicationEventPublisher publisher) {
         this.scheduleConfig = scheduleConfig;
-        this.eventControllerFactory = eventControllerFactory;
+        this.publisher = publisher;
         helper = this;
     }
 
@@ -73,7 +73,7 @@ public class TaskTriggerPool {
             try {
                 log.info("jobid : {},executeParam : {}", jobId,executorParam);
 
-                eventControllerFactory.getAsyncController("scene").post(executorParam);
+                publisher.publishEvent(executorParam);
 
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
