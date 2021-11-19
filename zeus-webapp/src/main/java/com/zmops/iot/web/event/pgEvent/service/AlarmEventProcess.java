@@ -1,4 +1,4 @@
-package com.zmops.iot.web.event.service;
+package com.zmops.iot.web.event.pgEvent.service;
 
 import com.zmops.iot.domain.alarm.Problem;
 import com.zmops.iot.domain.messages.MessageBody;
@@ -15,8 +15,8 @@ import com.zmops.iot.util.LocalDateTimeUtils;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.alarm.service.AlarmService;
 import com.zmops.iot.web.alarm.service.MessageService;
-import com.zmops.iot.web.event.EventProcess;
-import com.zmops.iot.web.event.dto.EventDataDto;
+import com.zmops.iot.web.event.pgEvent.EventProcess;
+import com.zmops.iot.web.event.pgEvent.dto.EventDataDto;
 import com.zmops.iot.web.sys.dto.UserGroupDto;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;

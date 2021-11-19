@@ -1,4 +1,4 @@
-package com.zmops.iot.web.event;
+package com.zmops.iot.web.event.pgEvent;
 
 import com.zmops.iot.util.SpringUtils;
 import org.apache.camel.LoggingLevel;

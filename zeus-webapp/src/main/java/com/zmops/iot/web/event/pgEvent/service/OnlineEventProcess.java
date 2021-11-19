@@ -1,12 +1,12 @@
-package com.zmops.iot.web.event.service;
+package com.zmops.iot.web.event.pgEvent.service;
 
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.ProductStatusFunctionRelation;
 import com.zmops.iot.domain.product.query.QProductStatusFunctionRelation;
 import com.zmops.iot.util.ToolUtil;
-import com.zmops.iot.web.event.EventProcess;
-import com.zmops.iot.web.event.dto.EventDataDto;
+import com.zmops.iot.web.event.pgEvent.EventProcess;
+import com.zmops.iot.web.event.pgEvent.dto.EventDataDto;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dtflys.forest.Forest;
 import com.zmops.iot.util.ToolUtil;
+import com.zmops.iot.web.event.applicationEvent.SceneEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -26,14 +27,14 @@ public class SceneScheduleProcessor {
     @Autowired
     DeviceLogService deviceLogService;
 
-    @EventListener
+    @EventListener(classes = {SceneEvent.class})
     @Async
-    public void subscribe(String event) {
-        log.info("子线程接收异步事件 - {}，String类型", event);
-        if (ToolUtil.isEmpty(event)) {
+    public void subscribe(SceneEvent event) {
+        log.info("子线程接收异步事件 - {}，String类型,执行顺序{}", event.getEventData().getExecuteParam(), 2);
+        if (ToolUtil.isEmpty(event.getEventData().getExecuteParam())) {
             return;
         }
-        Map<String, Object> eventMap = JSONObject.parseObject(event, Map.class);
+        Map<String, Object> eventMap = JSONObject.parseObject(event.getEventData().getExecuteParam(), Map.class);
         Long eventRuleId = Long.parseLong(eventMap.get("eventRuleId").toString());
         //记录日志
         deviceLogService.recordSceneLog(eventRuleId, "自动", null);

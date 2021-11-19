@@ -1,4 +1,4 @@
-package com.zmops.iot.web.event.service;
+package com.zmops.iot.web.event.pgEvent.service;
 
 import com.alibaba.fastjson.JSON;
 import com.dtflys.forest.Forest;
@@ -12,8 +12,8 @@ import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.service.work.DeviceServiceLogWorker;
-import com.zmops.iot.web.event.EventProcess;
-import com.zmops.iot.web.event.dto.EventDataDto;
+import com.zmops.iot.web.event.pgEvent.EventProcess;
+import com.zmops.iot.web.event.pgEvent.dto.EventDataDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

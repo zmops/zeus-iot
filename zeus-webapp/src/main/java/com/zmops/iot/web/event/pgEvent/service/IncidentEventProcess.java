@@ -1,4 +1,4 @@
-package com.zmops.iot.web.event.service;
+package com.zmops.iot.web.event.pgEvent.service;
 
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.EventTriggerRecord;
@@ -7,8 +7,8 @@ import com.zmops.iot.domain.product.ProductAttributeEvent;
 import com.zmops.iot.domain.product.query.QProductAttributeEvent;
 import com.zmops.iot.web.analyse.dto.LatestDto;
 import com.zmops.iot.web.analyse.service.LatestService;
-import com.zmops.iot.web.event.EventProcess;
-import com.zmops.iot.web.event.dto.EventDataDto;
+import com.zmops.iot.web.event.pgEvent.EventProcess;
+import com.zmops.iot.web.event.pgEvent.dto.EventDataDto;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

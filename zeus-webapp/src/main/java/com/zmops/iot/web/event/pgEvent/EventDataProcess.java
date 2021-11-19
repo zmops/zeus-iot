@@ -1,7 +1,7 @@
-package com.zmops.iot.web.event;
+package com.zmops.iot.web.event.pgEvent;
 
 import com.alibaba.fastjson.JSONObject;
-import com.zmops.iot.web.event.dto.EventDataDto;
+import com.zmops.iot.web.event.pgEvent.dto.EventDataDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;

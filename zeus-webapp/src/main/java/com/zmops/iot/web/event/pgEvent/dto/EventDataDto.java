@@ -1,4 +1,4 @@
-package com.zmops.iot.web.event.dto;
+package com.zmops.iot.web.event.pgEvent.dto;
 
 import lombok.Data;
 

@@ -1,5 +1,7 @@
 package com.zmops.iot.web.schedule;
 
+import com.zmops.iot.web.event.applicationEvent.SceneEvent;
+import com.zmops.iot.web.event.applicationEvent.dto.SceneEventData;
 import com.zmops.iot.web.schedule.config.ScheduleConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -73,7 +75,7 @@ public class TaskTriggerPool {
             try {
                 log.info("jobid : {},executeParam : {}", jobId,executorParam);
 
-                publisher.publishEvent(executorParam);
+                publisher.publishEvent(new SceneEvent(this,new SceneEventData(executorParam)));
 
             } catch (Exception e) {
                 log.error(e.getMessage(), e);

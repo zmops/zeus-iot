@@ -1,6 +1,6 @@
-package com.zmops.iot.web.event;
+package com.zmops.iot.web.event.pgEvent;
 
-import com.zmops.iot.web.event.dto.EventDataDto;
+import com.zmops.iot.web.event.pgEvent.dto.EventDataDto;
 
 /**
  * @author yefei
