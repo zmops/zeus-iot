@@ -37,7 +37,7 @@ import static com.zmops.iot.web.device.service.MultipleDeviceEventRuleService.*;
 /**
  * @author yefei
  * <p>
- * 设备联动
+ * 设备 场景 联动
  **/
 @RestController
 @RequestMapping("/multiple/device/event/trigger")
@@ -124,8 +124,8 @@ public class MultipleDeviceEventTriggerController {
                         .collect(Collectors.toMap(MultipleDeviceEventRule.Tag::getTag, MultipleDeviceEventRule.Tag::getValue, (k1, k2) -> k2));
             }
 
-            if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
-                tags.put(EXECUTE_TAG_NAME, eventRuleId + "");
+            if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(SCENE_TAG_NAME)) {
+                tags.put(SCENE_TAG_NAME, eventRuleId + "");
             }
 
             for (String triggerId : triggerIds) {
@@ -216,8 +216,8 @@ public class MultipleDeviceEventTriggerController {
                         .collect(Collectors.toMap(MultipleDeviceEventRule.Tag::getTag, MultipleDeviceEventRule.Tag::getValue, (k1, k2) -> k2));
             }
 
-            if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(EXECUTE_TAG_NAME)) {
-                tags.put(EXECUTE_TAG_NAME, eventRule.getEventRuleId() + "");
+            if (ToolUtil.isNotEmpty(eventRule.getDeviceServices()) && !tags.containsKey(SCENE_TAG_NAME)) {
+                tags.put(SCENE_TAG_NAME, eventRule.getEventRuleId() + "");
             }
 
             for (String triggerId : triggerIds) {

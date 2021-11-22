@@ -30,7 +30,7 @@ public class SceneScheduleProcessor {
     @EventListener(classes = {SceneEvent.class})
     @Async
     public void subscribe(SceneEvent event) {
-        log.info("子线程接收异步事件 - {}，String类型,执行顺序{}", event.getEventData().getExecuteParam(), 2);
+        log.info("子线程接收异步事件 - {}，String类型", event.getEventData().getExecuteParam());
         if (ToolUtil.isEmpty(event.getEventData().getExecuteParam())) {
             return;
         }

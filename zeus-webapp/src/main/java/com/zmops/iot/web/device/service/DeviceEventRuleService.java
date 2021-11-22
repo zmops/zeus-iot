@@ -295,7 +295,7 @@ public class DeviceEventRuleService {
             return;
         }
         long count = deviceServices.parallelStream().map(DeviceEventRule.DeviceService::getServiceId).distinct().count();
-        if (count > 0) {
+        if (count < deviceServices.size()) {
             throw new ServiceException(BizExceptionEnum.SERVICE_HAS_DUPLICATE);
         }
     }

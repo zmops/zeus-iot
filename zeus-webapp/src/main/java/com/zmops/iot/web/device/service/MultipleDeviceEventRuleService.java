@@ -35,6 +35,8 @@ import java.util.stream.Collectors;
 
 /**
  * @author yefei
+ *
+ * 设备 场景 联动 服务
  **/
 @Service
 public class MultipleDeviceEventRuleService {
@@ -48,7 +50,7 @@ public class MultipleDeviceEventRuleService {
 
     public static final int TRIGGER_TYPE_CONDITION = 0;
 
-    public static final String EXECUTE_TAG_NAME = "__scene__";
+    public static final String SCENE_TAG_NAME = "__scene__";
 
     @Autowired
     TaskService taskService;
@@ -77,8 +79,8 @@ public class MultipleDeviceEventRuleService {
     /**
      * 设备联动 分页列表
      *
-     * @param eventParm
-     * @return
+     * @param eventParm 查询参数
+     * @return MultipleDeviceEventDto
      */
     public Pager<MultipleDeviceEventDto> getEventByPage(MultipleDeviceEventParm eventParm) {
         QProductEvent query = new QProductEvent();
@@ -157,7 +159,7 @@ public class MultipleDeviceEventRuleService {
         Map<String, List<MultipleDeviceEventRule.DeviceService>> collect = eventRule.getDeviceServices().parallelStream().collect(Collectors.groupingBy(MultipleDeviceEventRule.DeviceService::getExecuteDeviceId));
 
         collect.forEach((key, value) -> {
-            Map<String, Object> map = new ConcurrentHashMap<>();
+            Map<String, Object> map = new ConcurrentHashMap<>(2);
             map.put("device", key);
 
             List<Map<String, Object>> serviceList = new ArrayList<>();
@@ -435,7 +437,7 @@ public class MultipleDeviceEventRuleService {
             List<MultipleDeviceEventRule.Tag> tagList = JSONObject.parseArray(triggerInfo.getJSONObject(0).getString("tags"), MultipleDeviceEventRule.Tag.class);
 
             multipleDeviceEventDto.setTags(tagList.stream()
-                    .filter(s -> !s.getTag().equals(EXECUTE_TAG_NAME))
+                    .filter(s -> !s.getTag().equals(SCENE_TAG_NAME))
                     .collect(Collectors.toList()));
         } else {
             Task task = new QTask().id.eq(productEvent.getTaskId()).findOne();
