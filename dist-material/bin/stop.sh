@@ -7,8 +7,6 @@ while [ $status -ne 0 ]
 do
         for i in `ps -ef | grep zeus-iot-bin | grep java | grep -v grep | awk '{print $2}'`
         do
-                kill $i
+                kill -9 $i
         done
-        sleep 5
-        status=`ps -ef | grep zeus-iot-bin | grep java | grep -v grep | awk '{print $2}' | wc -l`
 done
