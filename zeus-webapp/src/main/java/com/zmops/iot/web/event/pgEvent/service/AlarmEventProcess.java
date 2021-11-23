@@ -81,8 +81,8 @@ public class AlarmEventProcess implements EventProcess {
         params.put("triggerName", triggerName);
 
         String sql = "select user_group_id from sys_usrgrp_devicegrp where device_group_id in (select device_group_id from devices_groups where device_id in (:deviceIds))";
-        List<UserGroupDto> userGroups = DB.findNative(UserGroupDto.class, sql).setParameter("deviceIds", deviceIds).findList();
-
+        List<UserGroupDto> userGroups = DB.findDto(UserGroupDto.class, sql).setParameter("deviceIds", deviceIds).findList();
+        
         QSysUser qSysUser = new QSysUser();
         if (ToolUtil.isNotEmpty(userGroups)) {
             qSysUser.userGroupId.in(userGroups.parallelStream().map(UserGroupDto::getUserGroupId).collect(Collectors.toList()));

@@ -12,7 +12,7 @@
  Target Server Version : 130004
  File Encoding         : 65001
 
- Date: 17/11/2021 14:53:58
+ Date: 23/11/2021 14:28:57
 */
 
 
@@ -387,10 +387,10 @@ CREATE TABLE "public"."mail_setting" (
   "port" int4 NOT NULL,
   "account" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
   "password" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
-  "sender" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+  "sender" varchar(100) COLLATE "pg_catalog"."default",
   "ssl" int4 NOT NULL DEFAULT 0,
   "tls" int4 NOT NULL DEFAULT 0,
-  "severity" varchar(255) COLLATE "pg_catalog"."default" NOT NULL DEFAULT ''::character varying,
+  "severity" varchar(255) COLLATE "pg_catalog"."default" DEFAULT ''::character varying,
   "silent" int2 NOT NULL DEFAULT 3,
   "id" int4 NOT NULL DEFAULT nextval('mail_setting_id_seq'::regclass)
 )
