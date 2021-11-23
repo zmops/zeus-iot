@@ -9,4 +9,5 @@ do
         do
                 kill -9 $i
         done
+        status=`ps -ef | grep zeus-iot-bin | grep java | grep -v grep | awk '{print $2}' | wc -l`
 done
