@@ -19,10 +19,10 @@
 package com.zmops.zeus.iot.server.telemetry.none;
 
 
-import com.zmops.zeus.iot.server.library.module.*;
 import com.zmops.zeus.iot.server.telemetry.TelemetryModule;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsCollector;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsCreator;
+import com.zmops.zeus.server.library.module.*;
 
 /**
  * A nutshell telemetry implementor.

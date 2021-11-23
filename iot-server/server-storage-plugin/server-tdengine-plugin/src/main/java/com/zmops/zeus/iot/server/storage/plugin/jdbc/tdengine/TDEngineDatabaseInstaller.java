@@ -1,10 +1,10 @@
 package com.zmops.zeus.iot.server.storage.plugin.jdbc.tdengine;
 
 import com.zmops.zeus.iot.server.core.storage.StorageException;
-import com.zmops.zeus.iot.server.library.client.Client;
-import com.zmops.zeus.iot.server.library.client.jdbc.JDBCClientException;
-import com.zmops.zeus.iot.server.library.client.jdbc.hikaricp.JDBCHikariCPClient;
-import com.zmops.zeus.iot.server.library.module.ModuleManager;
+import com.zmops.zeus.iot.server.client.Client;
+import com.zmops.zeus.iot.server.client.jdbc.JDBCClientException;
+import com.zmops.zeus.iot.server.client.jdbc.hikaricp.JDBCHikariCPClient;
+import com.zmops.zeus.server.library.module.ModuleManager;
 
 import java.sql.Connection;
 import java.sql.SQLException;

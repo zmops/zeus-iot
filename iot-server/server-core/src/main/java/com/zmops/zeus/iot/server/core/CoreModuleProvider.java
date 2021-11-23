@@ -1,26 +1,13 @@
 package com.zmops.zeus.iot.server.core;
 
-import com.zmops.zeus.iot.server.action.ActionRouteIdentifier;
-import com.zmops.zeus.iot.server.action.HelloWorldAction;
 import com.zmops.zeus.iot.server.core.analysis.StreamAnnotationListener;
 import com.zmops.zeus.iot.server.core.annotation.AnnotationScan;
-import com.zmops.zeus.iot.server.core.eventbus.EventBusService;
-import com.zmops.zeus.iot.server.core.server.JettyHandlerRegister;
-import com.zmops.zeus.iot.server.core.server.JettyHandlerRegisterImpl;
-import com.zmops.zeus.iot.server.core.servlet.CamelReceiverRouteHandler;
-import com.zmops.zeus.iot.server.core.servlet.DataTransferHandler;
-import com.zmops.zeus.iot.server.core.servlet.DeviceTriggerActionHandler;
-import com.zmops.zeus.iot.server.core.servlet.HttpItemTrapperHandler;
 import com.zmops.zeus.iot.server.core.storage.StorageException;
-import com.zmops.zeus.iot.server.eventbus.core.EventControllerFactory;
-import com.zmops.zeus.iot.server.eventbus.thread.ThreadPoolFactory;
-import com.zmops.zeus.iot.server.eventbus.thread.entity.ThreadCustomization;
-import com.zmops.zeus.iot.server.eventbus.thread.entity.ThreadParameter;
-import com.zmops.zeus.iot.server.library.module.*;
-import com.zmops.zeus.iot.server.library.server.jetty.JettyServer;
-import com.zmops.zeus.iot.server.library.server.jetty.JettyServerConfig;
 import com.zmops.zeus.iot.server.receiver.module.CamelReceiverModule;
 import com.zmops.zeus.iot.server.telemetry.TelemetryModule;
+import com.zmops.zeus.server.jetty.JettyServer;
+import com.zmops.zeus.server.jetty.JettyServerConfig;
+import com.zmops.zeus.server.library.module.*;
 
 import java.io.IOException;
 
@@ -31,9 +18,7 @@ public class CoreModuleProvider extends ModuleProvider {
 
     private final CoreModuleConfig moduleConfig;
 
-    private JettyServer            jettyServer;
-    private ThreadPoolFactory      threadPoolFactory;
-    private EventControllerFactory eventControllerFactory;
+    private JettyServer jettyServer;
 
     private final AnnotationScan annotationScan;
 
@@ -63,9 +48,6 @@ public class CoreModuleProvider extends ModuleProvider {
     @Override
     public void prepare() throws ServiceNotProvidedException, ModuleStartException {
 
-        threadPoolFactory = new ThreadPoolFactory(new ThreadCustomization(), new ThreadParameter());
-        eventControllerFactory = new EventControllerFactory(threadPoolFactory);
-
         annotationScan.registerListener(new StreamAnnotationListener(getManager()));
 
         JettyServerConfig jettyServerConfig = JettyServerConfig.builder()
@@ -84,8 +66,8 @@ public class CoreModuleProvider extends ModuleProvider {
         jettyServer = new JettyServer(jettyServerConfig);
         jettyServer.initialize();
 
-        this.registerServiceImplementation(JettyHandlerRegister.class, new JettyHandlerRegisterImpl(jettyServer));
-        this.registerServiceImplementation(EventBusService.class, new EventBusService(eventControllerFactory));
+        jettyServer.setFilterInitParameter("configClass", "com.zmops.zeus.iot.web.config.IoTConfig");
+
     }
 
     @Override
@@ -98,7 +80,7 @@ public class CoreModuleProvider extends ModuleProvider {
     }
 
     public void shutdown() {
-        threadPoolFactory.shutdown();
+
     }
 
     @Override
@@ -109,16 +91,6 @@ public class CoreModuleProvider extends ModuleProvider {
         } catch (Exception e) {
             throw new ModuleStartException(e.getMessage(), e);
         }
-
-        JettyHandlerRegister service = getManager().find(CoreModule.NAME).provider().getService(JettyHandlerRegister.class);
-        service.addHandler(new HttpItemTrapperHandler());
-        service.addHandler(new DeviceTriggerActionHandler(getManager()));
-        service.addHandler(new DataTransferHandler());
-        service.addHandler(new CamelReceiverRouteHandler(getManager()));
-
-
-        // ### 可以自定义添加 Action 的动作异步处理，指定 ID
-        eventControllerFactory.getAsyncController(ActionRouteIdentifier.helloworld).register(new HelloWorldAction());
 
     }
 

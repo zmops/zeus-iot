@@ -19,8 +19,8 @@
 package com.zmops.zeus.iot.server.core.storage;
 
 
-import com.zmops.zeus.iot.server.library.client.request.InsertRequest;
-import com.zmops.zeus.iot.server.library.client.request.PrepareRequest;
+import com.zmops.zeus.iot.server.client.request.InsertRequest;
+import com.zmops.zeus.iot.server.client.request.PrepareRequest;
 
 import java.util.List;
 

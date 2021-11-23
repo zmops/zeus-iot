@@ -2,9 +2,9 @@ package com.zmops.zeus.iot.server.h2.provider;
 
 import com.zmops.zeus.iot.server.h2.module.LocalH2Module;
 import com.zmops.zeus.iot.server.h2.service.InsertDAO;
-import com.zmops.zeus.iot.server.library.client.jdbc.JDBCClientException;
-import com.zmops.zeus.iot.server.library.client.jdbc.hikaricp.JDBCHikariCPClient;
-import com.zmops.zeus.iot.server.library.module.*;
+import com.zmops.zeus.iot.server.client.jdbc.JDBCClientException;
+import com.zmops.zeus.iot.server.client.jdbc.hikaricp.JDBCHikariCPClient;
+import com.zmops.zeus.server.library.module.*;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -15,8 +15,8 @@ import java.util.Properties;
  */
 public class LocalH2Provider extends ModuleProvider {
 
-    private final LocalH2Config      localH2Config;
-    private       JDBCHikariCPClient h2Client;
+    private final LocalH2Config localH2Config;
+    private JDBCHikariCPClient h2Client;
 
     public LocalH2Provider() {
         this.localH2Config = new LocalH2Config();

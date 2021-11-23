@@ -30,9 +30,9 @@ public class TaskDto {
     @CachedValue(value = "STATUS")
     private String triggerStatus = "ENABLE";
 
-    private Long triggerLastTime=0L;
+    private Long triggerLastTime = 0L;
 
-    private Long triggerNextTime=0L;
+    private Long triggerNextTime = 0L;
 
     private String remark;
 

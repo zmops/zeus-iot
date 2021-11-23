@@ -1,9 +1,9 @@
 package com.zmops.zeus.iot.server.sender.service;
 
 import com.google.gson.Gson;
-import com.zmops.zeus.iot.server.library.module.ModuleManager;
-import com.zmops.zeus.iot.server.library.module.Service;
 import com.zmops.zeus.iot.server.sender.provider.ZabbixSenderClient;
+import com.zmops.zeus.server.library.module.ModuleManager;
+import com.zmops.zeus.server.library.module.Service;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;

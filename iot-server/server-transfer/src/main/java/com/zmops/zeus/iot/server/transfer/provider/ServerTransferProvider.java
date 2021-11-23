@@ -1,9 +1,10 @@
 package com.zmops.zeus.iot.server.transfer.provider;
 
+
 import com.zmops.zeus.iot.server.core.CoreModule;
-import com.zmops.zeus.iot.server.library.module.*;
-import com.zmops.zeus.iot.server.transfer.core.TransferManager;
 import com.zmops.zeus.iot.server.transfer.module.ServerTransferModule;
+import com.zmops.zeus.server.library.module.*;
+import com.zmops.zeus.server.transfer.core.TransferManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,14 +60,14 @@ public class ServerTransferProvider extends ModuleProvider {
 
     @Override
     public void start() throws ServiceNotProvidedException, ModuleStartException {
-        TransferManager manager = new TransferManager(config);
-        try {
-            manager.start();
-            stopManagerIfKilled(manager);
-//            manager.join();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        TransferManager manager = new TransferManager(config);
+//        try {
+//            manager.start();
+//            stopManagerIfKilled(manager);
+////            manager.join();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override

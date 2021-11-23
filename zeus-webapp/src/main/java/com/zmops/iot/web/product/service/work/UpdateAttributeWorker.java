@@ -1,8 +1,8 @@
 package com.zmops.iot.web.product.service.work;
 
 
-import com.zmops.iot.async.callback.IWorker;
-import com.zmops.iot.async.wrapper.WorkerWrapper;
+import com.zmops.zeus.server.async.callback.IWorker;
+import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.ProductAttribute;
 import com.zmops.iot.domain.product.query.QProductAttribute;
 import com.zmops.iot.web.product.dto.ProductAttr;

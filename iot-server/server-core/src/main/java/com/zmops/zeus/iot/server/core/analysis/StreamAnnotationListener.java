@@ -4,7 +4,7 @@ import com.zmops.zeus.iot.server.core.UnexpectedException;
 import com.zmops.zeus.iot.server.core.analysis.worker.RecordStreamProcessor;
 import com.zmops.zeus.iot.server.core.annotation.AnnotationListener;
 import com.zmops.zeus.iot.server.core.storage.StorageException;
-import com.zmops.zeus.iot.server.library.module.ModuleDefineHolder;
+import com.zmops.zeus.server.library.module.ModuleDefineHolder;
 
 import java.lang.annotation.Annotation;
 
@@ -25,6 +25,7 @@ public class StreamAnnotationListener implements AnnotationListener {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void notify(Class aClass) throws StorageException {
         if (aClass.isAnnotationPresent(Stream.class)) {
             Stream stream = (Stream) aClass.getAnnotation(Stream.class);

@@ -1,6 +1,6 @@
 package com.zmops.zeus.iot.server.receiver.tozabbix;
 
-import com.zmops.zeus.iot.server.library.module.ModuleManager;
+import com.zmops.zeus.server.library.module.ModuleManager;
 import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
 

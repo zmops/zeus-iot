@@ -10,10 +10,6 @@
     <version>1.0-beta</version>
     <description>Zeus IoT 物联网分布式采集平台</description>
 
-    <modules>
-        <module>iot-common</module>
-    </modules>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -69,7 +65,6 @@
             </activation>
             <modules>
                 <module>zeus-webapp-bom</module>
-                <module>zeus-application-toolkit</module>
             </modules>
         </profile>
 
@@ -92,7 +87,6 @@
                 <module>iot-server</module>
                 <module>iot-server-bom</module>
                 <module>zeus-webapp-bom</module>
-                <module>zeus-application-toolkit</module>
                 <module>zeus-iot-dist</module>
             </modules>
             <build>

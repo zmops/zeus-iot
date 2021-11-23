@@ -1,10 +1,9 @@
 package com.zmops.zeus.iot.server.receiver.tozabbix;
 
 import com.google.gson.Gson;
-
-import com.zmops.zeus.iot.server.library.module.ModuleManager;
 import com.zmops.zeus.iot.server.receiver.tozabbix.worker.ItemDataTransferWorker;
-import com.zmops.zeus.iot.server.util.StringUtil;
+import com.zmops.zeus.server.library.module.ModuleManager;
+import com.zmops.zeus.server.library.util.StringUtil;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
@@ -21,9 +20,9 @@ import java.util.concurrent.Executors;
  */
 public class ZabbixTrapperProducer extends DefaultProducer {
 
-    private final ModuleManager          moduleManager;
+    private final ModuleManager moduleManager;
     private final ItemDataTransferWorker itemDataTransferWorker;
-    private final ExecutorService        itemValueThread = Executors.newFixedThreadPool(20);
+    private final ExecutorService itemValueThread = Executors.newFixedThreadPool(20);
 
 
     public ZabbixTrapperProducer(Endpoint endpoint, ModuleManager moduleManager) {

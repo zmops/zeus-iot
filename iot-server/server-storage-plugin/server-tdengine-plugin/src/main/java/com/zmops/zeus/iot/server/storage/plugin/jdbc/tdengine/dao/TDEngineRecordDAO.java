@@ -3,8 +3,8 @@ package com.zmops.zeus.iot.server.storage.plugin.jdbc.tdengine.dao;
 import com.zmops.zeus.iot.server.core.analysis.record.Record;
 import com.zmops.zeus.iot.server.core.storage.IRecordDAO;
 import com.zmops.zeus.iot.server.core.storage.model.Model;
-import com.zmops.zeus.iot.server.library.client.jdbc.hikaricp.JDBCHikariCPClient;
-import com.zmops.zeus.iot.server.library.client.request.InsertRequest;
+import com.zmops.zeus.iot.server.client.jdbc.hikaricp.JDBCHikariCPClient;
+import com.zmops.zeus.iot.server.client.request.InsertRequest;
 
 import java.io.IOException;
 

@@ -18,7 +18,8 @@
 
 package com.zmops.zeus.iot.server.core.storage;
 
-import com.zmops.zeus.iot.server.library.module.ModuleDefine;
+
+import com.zmops.zeus.server.library.module.ModuleDefine;
 
 /**
  * StorageModule provides the capabilities(services) to interact with the database. With different databases, this

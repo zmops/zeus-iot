@@ -20,18 +20,18 @@
     </properties>
 
     <modules>
-        <module>server-library</module>
         <module>server-core</module>
         <module>server-starter</module>
         <module>server-bootstrap</module>
         <module>server-health-checker</module>
         <module>server-telemetry</module>
         <module>server-sender</module>
-        <module>server-action</module>
         <module>server-storage-plugin</module>
         <module>server-transfer</module>
         <module>server-localdb</module>
         <module>server-camel-receiver</module>
+        <module>server-web</module>
+        <module>server-client</module>
     </modules>
 
     <dependencyManagement>
@@ -87,6 +87,12 @@
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
@@ -96,6 +102,9 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
+
+
+
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-netty4</artifactId>

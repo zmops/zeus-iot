@@ -1,8 +1,6 @@
 package com.zmops.zeus.iot.server.core;
 
-import com.zmops.zeus.iot.server.core.eventbus.EventBusService;
-import com.zmops.zeus.iot.server.core.server.JettyHandlerRegister;
-import com.zmops.zeus.iot.server.library.module.ModuleDefine;
+import com.zmops.zeus.server.library.module.ModuleDefine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +19,6 @@ public class CoreModule extends ModuleDefine {
     @Override
     public Class<?>[] services() {
         List<Class<?>> classes = new ArrayList<>();
-        classes.add(JettyHandlerRegister.class);
-        classes.add(EventBusService.class);
         return classes.toArray(new Class[]{});
     }
 }

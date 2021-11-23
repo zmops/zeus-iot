@@ -7,7 +7,7 @@ import com.zmops.zeus.iot.server.core.storage.IRecordDAO;
 import com.zmops.zeus.iot.server.core.storage.StorageDAO;
 import com.zmops.zeus.iot.server.core.storage.StorageModule;
 import com.zmops.zeus.iot.server.core.storage.model.Model;
-import com.zmops.zeus.iot.server.library.module.ModuleDefineHolder;
+import com.zmops.zeus.server.library.module.ModuleDefineHolder;
 
 import java.util.HashMap;
 import java.util.Map;

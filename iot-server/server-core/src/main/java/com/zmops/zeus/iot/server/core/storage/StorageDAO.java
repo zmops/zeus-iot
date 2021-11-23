@@ -18,7 +18,8 @@
 
 package com.zmops.zeus.iot.server.core.storage;
 
-import com.zmops.zeus.iot.server.library.module.Service;
+
+import com.zmops.zeus.server.library.module.Service;
 
 /**
  * StorageDAO is a DAO factory for storage layer. Provide the implementations of typical DAO interfaces.

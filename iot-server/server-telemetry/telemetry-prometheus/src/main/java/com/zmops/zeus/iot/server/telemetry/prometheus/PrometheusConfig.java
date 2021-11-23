@@ -18,7 +18,7 @@
 
 package com.zmops.zeus.iot.server.telemetry.prometheus;
 
-import com.zmops.zeus.iot.server.library.module.ModuleConfig;
+import com.zmops.zeus.server.library.module.ModuleConfig;
 import lombok.Getter;
 import lombok.Setter;
 

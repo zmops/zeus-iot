@@ -19,7 +19,7 @@
 package com.zmops.zeus.iot.server.telemetry.api;
 
 
-import com.zmops.zeus.iot.server.library.module.Service;
+import com.zmops.zeus.server.library.module.Service;
 
 /**
  * Collect all metrics from telemetry.

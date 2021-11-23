@@ -1,6 +1,6 @@
 package com.zmops.zeus.iot.server.h2.provider;
 
-import com.zmops.zeus.iot.server.library.module.ModuleConfig;
+import com.zmops.zeus.server.library.module.ModuleConfig;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,9 +14,9 @@ import lombok.Setter;
 @Setter
 public class LocalH2Config extends ModuleConfig {
 
-    private String driver   = "org.h2.jdbcx.JdbcDataSource";
-    private String url      = "jdbc:h2:mem:skywalking-oap-db;DB_CLOSE_DELAY=-1";
-    private String user     = "sa";
+    private String driver = "org.h2.jdbcx.JdbcDataSource";
+    private String url = "jdbc:h2:mem:skywalking-oap-db;DB_CLOSE_DELAY=-1";
+    private String user = "sa";
     private String password = "sa";
 
     /**

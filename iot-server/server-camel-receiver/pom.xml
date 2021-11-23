@@ -16,7 +16,7 @@
         <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>library-module</artifactId>
-            <version>1.0-beta</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>
@@ -30,13 +30,23 @@
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>
-            <artifactId>iot-datacarrier</artifactId>
-            <version>1.0-beta</version>
+            <artifactId>toolkit-datacarrier</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-netty4-http</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-pgevent</artifactId>
+            <version>2.25.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.20</version>
         </dependency>
     </dependencies>
 

@@ -1,7 +1,7 @@
 package com.zmops.zeus.iot.server.receiver.tozabbix.process;
 
 import com.google.gson.Gson;
-import com.zmops.zeus.iot.server.receiver.tozabbix.IOTDeviceValue;
+import com.zmops.zeus.iot.server.receiver.tozabbix.IoTDeviceValue;
 import com.zmops.zeus.iot.server.receiver.tozabbix.ItemValue;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
@@ -29,7 +29,7 @@ public class JsonToItemValueProcess implements Processor {
         String inputContext = this.analysisMessage(bodyStream);
 
 
-        IOTDeviceValue iotValue = gson.fromJson(inputContext, IOTDeviceValue.class);
+        IoTDeviceValue iotValue = gson.fromJson(inputContext, IoTDeviceValue.class);
 
         List<ItemValue> itemValueList = new ArrayList<>();
 

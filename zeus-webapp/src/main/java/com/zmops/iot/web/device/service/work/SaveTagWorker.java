@@ -1,9 +1,8 @@
 package com.zmops.iot.web.device.service.work;
 
 
-import com.zmops.iot.async.callback.IWorker;
-import com.zmops.iot.async.wrapper.WorkerWrapper;
-import com.zmops.iot.domain.device.Device;
+import com.zmops.zeus.server.async.callback.IWorker;
+import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.device.query.QTag;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.dto.DeviceDto;

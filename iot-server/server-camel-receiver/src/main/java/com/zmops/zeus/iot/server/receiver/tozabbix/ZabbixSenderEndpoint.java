@@ -1,6 +1,6 @@
 package com.zmops.zeus.iot.server.receiver.tozabbix;
 
-import com.zmops.zeus.iot.server.library.module.ModuleManager;
+import com.zmops.zeus.server.library.module.ModuleManager;
 import org.apache.camel.Component;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
@@ -12,7 +12,7 @@ import org.apache.camel.impl.DefaultEndpoint;
  */
 public class ZabbixSenderEndpoint extends DefaultEndpoint {
 
-    private final ModuleManager         moduleManager;
+    private final ModuleManager moduleManager;
     private final ZabbixTrapperProducer producer;
 
     public ZabbixSenderEndpoint(String endpointUri, Component component, ModuleManager moduleManager) {

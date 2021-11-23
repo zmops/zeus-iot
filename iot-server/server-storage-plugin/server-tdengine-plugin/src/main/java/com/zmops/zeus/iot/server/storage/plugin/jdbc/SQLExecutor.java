@@ -18,7 +18,7 @@
 
 package com.zmops.zeus.iot.server.storage.plugin.jdbc;
 
-import com.zmops.zeus.iot.server.library.client.request.InsertRequest;
+import com.zmops.zeus.iot.server.client.request.InsertRequest;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

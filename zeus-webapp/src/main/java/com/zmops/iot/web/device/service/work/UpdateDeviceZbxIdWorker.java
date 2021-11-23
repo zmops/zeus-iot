@@ -3,8 +3,8 @@ package com.zmops.iot.web.device.service.work;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.zmops.iot.async.callback.IWorker;
-import com.zmops.iot.async.wrapper.WorkerWrapper;
+import com.zmops.zeus.server.async.callback.IWorker;
+import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.device.Device;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;

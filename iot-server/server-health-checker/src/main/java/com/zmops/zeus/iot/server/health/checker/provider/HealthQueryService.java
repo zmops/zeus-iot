@@ -19,7 +19,7 @@
 package com.zmops.zeus.iot.server.health.checker.provider;
 
 import com.google.common.util.concurrent.AtomicDouble;
-import com.zmops.zeus.iot.server.library.module.Service;
+import com.zmops.zeus.server.library.module.Service;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

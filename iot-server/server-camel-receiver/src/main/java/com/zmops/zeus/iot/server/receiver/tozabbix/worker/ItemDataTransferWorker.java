@@ -1,11 +1,6 @@
 package com.zmops.zeus.iot.server.receiver.tozabbix.worker;
 
 import com.google.gson.Gson;
-import com.zmops.zeus.iot.server.datacarrier.DataCarrier;
-import com.zmops.zeus.iot.server.datacarrier.consumer.BulkConsumePool;
-import com.zmops.zeus.iot.server.datacarrier.consumer.ConsumerPoolFactory;
-import com.zmops.zeus.iot.server.datacarrier.consumer.IConsumer;
-import com.zmops.zeus.iot.server.library.module.ModuleManager;
 import com.zmops.zeus.iot.server.receiver.tozabbix.ItemValue;
 import com.zmops.zeus.iot.server.receiver.tozabbix.ZabbixTrapper;
 import com.zmops.zeus.iot.server.sender.module.ZabbixSenderModule;
@@ -14,6 +9,11 @@ import com.zmops.zeus.iot.server.telemetry.TelemetryModule;
 import com.zmops.zeus.iot.server.telemetry.api.CounterMetrics;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsCreator;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsTag;
+import com.zmops.zeus.server.datacarrier.DataCarrier;
+import com.zmops.zeus.server.datacarrier.consumer.BulkConsumePool;
+import com.zmops.zeus.server.datacarrier.consumer.ConsumerPoolFactory;
+import com.zmops.zeus.server.datacarrier.consumer.IConsumer;
+import com.zmops.zeus.server.library.module.ModuleManager;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -31,8 +31,8 @@ public class ItemDataTransferWorker extends TransferWorker<ItemValue> {
 
 
     private final DataCarrier<ItemValue> dataCarrier;
-    private final CounterMetrics         iotDataTransferCounter;
-    private final Gson                   gson = new Gson();
+    private final CounterMetrics iotDataTransferCounter;
+    private final Gson gson = new Gson();
 
     public ItemDataTransferWorker(ModuleManager moduleManager) {
         super(moduleManager);

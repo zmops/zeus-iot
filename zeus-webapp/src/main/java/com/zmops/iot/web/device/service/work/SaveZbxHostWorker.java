@@ -1,10 +1,9 @@
 package com.zmops.iot.web.device.service.work;
 
 
-import com.zmops.iot.async.callback.IWorker;
-import com.zmops.iot.async.wrapper.WorkerWrapper;
+import com.zmops.zeus.server.async.callback.IWorker;
+import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import com.zmops.iot.constant.ConstantsContext;
-import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.query.QDeviceGroup;
 import com.zmops.iot.domain.product.query.QProduct;
 import com.zmops.iot.util.ToolUtil;

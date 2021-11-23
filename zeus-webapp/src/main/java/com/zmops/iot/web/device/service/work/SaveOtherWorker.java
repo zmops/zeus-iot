@@ -2,9 +2,8 @@ package com.zmops.iot.web.device.service.work;
 
 
 import com.alibaba.fastjson.JSONObject;
-import com.zmops.iot.async.callback.IWorker;
-import com.zmops.iot.async.wrapper.WorkerWrapper;
-import com.zmops.iot.domain.device.Device;
+import com.zmops.zeus.server.async.callback.IWorker;
+import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.ProductEventRelation;
 import com.zmops.iot.domain.product.ProductStatusFunctionRelation;
 import com.zmops.iot.domain.product.query.*;

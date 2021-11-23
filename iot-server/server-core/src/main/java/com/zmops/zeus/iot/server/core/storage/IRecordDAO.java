@@ -21,7 +21,7 @@ package com.zmops.zeus.iot.server.core.storage;
 
 import com.zmops.zeus.iot.server.core.analysis.record.Record;
 import com.zmops.zeus.iot.server.core.storage.model.Model;
-import com.zmops.zeus.iot.server.library.client.request.InsertRequest;
+import com.zmops.zeus.iot.server.client.request.InsertRequest;
 
 import java.io.IOException;
 

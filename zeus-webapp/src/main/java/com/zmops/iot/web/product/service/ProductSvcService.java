@@ -1,7 +1,7 @@
 package com.zmops.iot.web.product.service;
 
-import com.zmops.iot.async.executor.Async;
-import com.zmops.iot.async.wrapper.WorkerWrapper;
+import com.zmops.zeus.server.async.executor.Async;
+import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.ProductService;
 import com.zmops.iot.domain.product.ProductServiceParam;
 import com.zmops.iot.domain.product.ProductServiceRelation;

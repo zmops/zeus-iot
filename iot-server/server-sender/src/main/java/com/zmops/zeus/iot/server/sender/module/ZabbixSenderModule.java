@@ -1,7 +1,7 @@
 package com.zmops.zeus.iot.server.sender.module;
 
-import com.zmops.zeus.iot.server.library.module.ModuleDefine;
 import com.zmops.zeus.iot.server.sender.service.ZabbixSenderService;
+import com.zmops.zeus.server.library.module.ModuleDefine;
 
 /**
  * @author nantian created at 2021/8/14 14:35

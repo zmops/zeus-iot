@@ -1,6 +1,6 @@
 package com.zmops.zeus.iot.server.h2.service;
 
-import com.zmops.zeus.iot.server.library.module.Service;
+import com.zmops.zeus.server.library.module.Service;
 
 import java.sql.ResultSet;
 

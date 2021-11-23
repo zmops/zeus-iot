@@ -18,7 +18,7 @@
 
 package com.zmops.zeus.iot.server.health.checker.provider;
 
-import com.zmops.zeus.iot.server.library.module.ModuleConfig;
+import com.zmops.zeus.server.library.module.ModuleConfig;
 import lombok.Getter;
 
 

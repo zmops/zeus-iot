@@ -2,8 +2,8 @@ package com.zmops.iot.web.product.service.work;
 
 
 import cn.hutool.core.util.IdUtil;
-import com.zmops.iot.async.callback.IWorker;
-import com.zmops.iot.async.wrapper.WorkerWrapper;
+import com.zmops.zeus.server.async.callback.IWorker;
+import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.ProductAttributeEvent;
 import com.zmops.iot.util.ToolUtil;

@@ -69,9 +69,10 @@ public class AnnotationScan {
         }
     }
 
-    private class AnnotationListenerCache {
-        private AnnotationListener listener;
-        private List<Class<?>> matchedClass;
+    private static class AnnotationListenerCache {
+
+        private final AnnotationListener listener;
+        private final List<Class<?>> matchedClass;
 
         private AnnotationListenerCache(AnnotationListener listener) {
             this.listener = listener;

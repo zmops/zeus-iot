@@ -1,7 +1,7 @@
 package com.zmops.zeus.iot.server.h2.module;
 
 import com.zmops.zeus.iot.server.h2.service.InsertDAO;
-import com.zmops.zeus.iot.server.library.module.ModuleDefine;
+import com.zmops.zeus.server.library.module.ModuleDefine;
 
 /**
  * @author nantian created at 2021/10/24 16:56

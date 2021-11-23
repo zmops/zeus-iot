@@ -18,9 +18,9 @@
 
 package com.zmops.zeus.iot.server.telemetry;
 
-import com.zmops.zeus.iot.server.library.module.ModuleDefine;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsCollector;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsCreator;
+import com.zmops.zeus.server.library.module.ModuleDefine;
 
 /**
  * Telemetry module definition

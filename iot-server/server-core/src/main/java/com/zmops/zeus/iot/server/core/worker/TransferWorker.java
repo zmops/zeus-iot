@@ -19,7 +19,7 @@
 package com.zmops.zeus.iot.server.core.worker;
 
 import com.zmops.zeus.iot.server.core.worker.data.Item;
-import com.zmops.zeus.iot.server.library.module.ModuleDefineHolder;
+import com.zmops.zeus.server.library.module.ModuleDefineHolder;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;

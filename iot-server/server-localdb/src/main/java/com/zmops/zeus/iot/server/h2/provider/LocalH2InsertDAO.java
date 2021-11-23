@@ -1,8 +1,8 @@
 package com.zmops.zeus.iot.server.h2.provider;
 
 import com.zmops.zeus.iot.server.h2.service.InsertDAO;
-import com.zmops.zeus.iot.server.library.client.jdbc.JDBCClientException;
-import com.zmops.zeus.iot.server.library.client.jdbc.hikaricp.JDBCHikariCPClient;
+import com.zmops.zeus.iot.server.client.jdbc.JDBCClientException;
+import com.zmops.zeus.iot.server.client.jdbc.hikaricp.JDBCHikariCPClient;
 
 import java.sql.ResultSet;
 

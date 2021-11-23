@@ -2,17 +2,17 @@ package com.zmops.zeus.iot.server.storage.plugin.jdbc.tdengine;
 
 import com.zmops.zeus.iot.server.core.UnexpectedException;
 import com.zmops.zeus.iot.server.core.storage.IBatchDAO;
-import com.zmops.zeus.iot.server.datacarrier.DataCarrier;
-import com.zmops.zeus.iot.server.datacarrier.consumer.BulkConsumePool;
-import com.zmops.zeus.iot.server.datacarrier.consumer.ConsumerPoolFactory;
-import com.zmops.zeus.iot.server.datacarrier.consumer.IConsumer;
-import com.zmops.zeus.iot.server.library.client.jdbc.JDBCClientException;
-import com.zmops.zeus.iot.server.library.client.jdbc.hikaricp.JDBCHikariCPClient;
-import com.zmops.zeus.iot.server.library.client.request.InsertRequest;
-import com.zmops.zeus.iot.server.library.client.request.PrepareRequest;
-import com.zmops.zeus.iot.server.library.util.CollectionUtils;
+import com.zmops.zeus.iot.server.client.jdbc.JDBCClientException;
+import com.zmops.zeus.iot.server.client.jdbc.hikaricp.JDBCHikariCPClient;
+import com.zmops.zeus.iot.server.client.request.InsertRequest;
+import com.zmops.zeus.iot.server.client.request.PrepareRequest;
 import com.zmops.zeus.iot.server.storage.plugin.jdbc.SQLBuilder;
 import com.zmops.zeus.iot.server.storage.plugin.jdbc.SQLExecutor;
+import com.zmops.zeus.server.datacarrier.DataCarrier;
+import com.zmops.zeus.server.datacarrier.consumer.BulkConsumePool;
+import com.zmops.zeus.server.datacarrier.consumer.ConsumerPoolFactory;
+import com.zmops.zeus.server.datacarrier.consumer.IConsumer;
+import com.zmops.zeus.server.library.util.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
