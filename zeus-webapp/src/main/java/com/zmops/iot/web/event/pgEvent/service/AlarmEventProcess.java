@@ -82,7 +82,7 @@ public class AlarmEventProcess implements EventProcess {
 
         String sql = "select user_group_id from sys_usrgrp_devicegrp where device_group_id in (select device_group_id from devices_groups where device_id in (:deviceIds))";
         List<UserGroupDto> userGroups = DB.findDto(UserGroupDto.class, sql).setParameter("deviceIds", deviceIds).findList();
-        
+
         QSysUser qSysUser = new QSysUser();
         if (ToolUtil.isNotEmpty(userGroups)) {
             qSysUser.userGroupId.in(userGroups.parallelStream().map(UserGroupDto::getUserGroupId).collect(Collectors.toList()));
@@ -90,12 +90,13 @@ public class AlarmEventProcess implements EventProcess {
         List<SysUser> sysUserList = qSysUser.findList();
         List<Long> userIds = sysUserList.parallelStream().map(SysUser::getUserId).collect(Collectors.toList());
 
-        messageService.push(buildMessage(params, userIds));
+
         alarmService.alarm(params);
 
         //发送Email消息
         ProductEvent productEvent = new QProductEvent().eventRuleId.eq(Long.parseLong(triggerName)).findOne();
         Map<String, String> macros = createMacroMap(triggerId, eventData.getRClock() + "", eventData.getAcknowledged() + "", productEvent);
+        messageService.push(buildMessage(macros, userIds));
 
         List<NoticeRecord> noticeRecords = new ArrayList<>();
         sysUserList.forEach(sysUser -> {
@@ -131,9 +132,9 @@ public class AlarmEventProcess implements EventProcess {
         return macroMap;
     }
 
-    private MessageBody buildMessage(Map<String, Object> alarmInfo, List<Long> userIds) {
-
-        return MessageBody.builder().msg("告警消息").persist(true).to(userIds).body(alarmInfo).build();
+    private MessageBody buildMessage(Map<String, String> alarmInfo, List<Long> userIds) {
+        Map<String, Object> params = new HashMap<>(alarmInfo);
+        return MessageBody.builder().msg("发生告警:" + alarmInfo.get("${metricName}")).persist(true).to(userIds).body(params).build();
     }
 
 
