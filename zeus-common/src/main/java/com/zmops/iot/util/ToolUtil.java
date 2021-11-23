@@ -444,4 +444,8 @@ public class ToolUtil {
         //String tests = "0 0 0 L * ?";
         return CronExpression.isValidExpression(cron);
     }
+
+    public static boolean validDeviceName(String content){
+        return content.contains("\\") || content.contains("/");
+    }
 }
