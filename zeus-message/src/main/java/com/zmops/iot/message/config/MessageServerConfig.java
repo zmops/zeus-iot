@@ -1,6 +1,7 @@
 package com.zmops.iot.message.config;
 
 import cn.hutool.core.util.StrUtil;
+import com.corundumstudio.socketio.SocketConfig;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.annotation.SpringAnnotationScanner;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -19,6 +20,9 @@ public class MessageServerConfig {
     public SocketIOServer server(SocketIoConfig socketIoConfig) {
         com.corundumstudio.socketio.Configuration config = new com.corundumstudio.socketio.Configuration();
 
+        SocketConfig socketConfig = new SocketConfig();
+        socketConfig.setReuseAddress(true);
+        config.setSocketConfig(socketConfig);
         config.setHostname(socketIoConfig.getHost());
         config.setPort(socketIoConfig.getPort());
 
