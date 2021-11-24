@@ -19,14 +19,12 @@
 package com.zmops.zeus.iot.server.starter.config;
 
 
-
-import com.zmops.zeus.server.util.PropertyPlaceholderHelper;
 import com.zmops.zeus.server.library.module.ApplicationConfiguration;
 import com.zmops.zeus.server.library.module.ProviderNotFoundException;
 import com.zmops.zeus.server.library.util.CollectionUtils;
 import com.zmops.zeus.server.library.util.ResourceUtils;
+import com.zmops.zeus.server.util.PropertyPlaceholderHelper;
 import lombok.extern.slf4j.Slf4j;
-
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileNotFoundException;
@@ -62,7 +60,6 @@ public class ApplicationConfigLoader implements ConfigLoader<ApplicationConfigur
     private void loadConfig(ApplicationConfiguration configuration) throws ConfigFileNotFoundException {
         try {
             Reader applicationReader = ResourceUtils.read("application.yml");
-
             Map<String, Map<String, Object>> moduleConfig = yaml.loadAs(applicationReader, Map.class);
 
             if (CollectionUtils.isNotEmpty(moduleConfig)) {
