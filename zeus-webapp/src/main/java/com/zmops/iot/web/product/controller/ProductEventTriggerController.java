@@ -2,8 +2,6 @@ package com.zmops.iot.web.product.controller;
 
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.zmops.zeus.server.async.executor.Async;
-import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.domain.product.ProductEvent;
 import com.zmops.iot.domain.product.ProductEventRelation;
@@ -25,6 +23,8 @@ import com.zmops.iot.web.product.service.ProductEventRuleService;
 import com.zmops.iot.web.product.service.work.SaveProductEventTriggerWorker;
 import com.zmops.iot.web.product.service.work.UpdateProductEventTriggerWorker;
 import com.zmops.zeus.driver.service.ZbxTrigger;
+import com.zmops.zeus.server.async.executor.Async;
+import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import io.ebean.DB;
 import io.ebean.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +55,7 @@ public class ProductEventTriggerController {
     @Autowired
     private ZbxTrigger zbxTrigger;
 
-    private static final String ALARM_TAG_NAME = "__alarm__";
+    private static final String ALARM_TAG_NAME   = "__alarm__";
     private static final String EXECUTE_TAG_NAME = "__execute__";
 
     @Autowired

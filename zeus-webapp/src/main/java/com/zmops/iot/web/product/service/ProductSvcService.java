@@ -1,7 +1,5 @@
 package com.zmops.iot.web.product.service;
 
-import com.zmops.zeus.server.async.executor.Async;
-import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.ProductService;
 import com.zmops.iot.domain.product.ProductServiceParam;
 import com.zmops.iot.domain.product.ProductServiceRelation;
@@ -18,6 +16,8 @@ import com.zmops.iot.web.product.dto.ProductServiceDto;
 import com.zmops.iot.web.product.dto.param.ProductSvcParam;
 import com.zmops.iot.web.product.service.work.SaveProdSvcWorker;
 import com.zmops.iot.web.product.service.work.UpdateProdSvcWorker;
+import com.zmops.zeus.server.async.executor.Async;
+import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import io.ebean.DB;
 import io.ebean.DtoQuery;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -255,7 +255,6 @@ public class ProductSvcService implements CommandLineRunner {
 
     /**
      * 更新服务名称 服务参数 缓存
-     *
      */
     private void updateService() {
         List<ProductService> serviceList = new QProductService().findList();

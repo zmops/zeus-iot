@@ -2,8 +2,6 @@ package com.zmops.iot.web.product.service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.zmops.zeus.server.async.executor.Async;
-import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.Product;
@@ -26,6 +24,8 @@ import com.zmops.iot.web.product.service.work.UpdateAttributeEventWorker;
 import com.zmops.zeus.driver.entity.ZbxItemInfo;
 import com.zmops.zeus.driver.entity.ZbxProcessingStep;
 import com.zmops.zeus.driver.service.ZbxItem;
+import com.zmops.zeus.server.async.executor.Async;
+import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import io.ebean.DB;
 import io.ebean.DtoQuery;
 import org.springframework.beans.factory.annotation.Autowired;

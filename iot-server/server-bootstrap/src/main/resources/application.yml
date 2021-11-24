@@ -8,7 +8,7 @@ camel-receiver:
 zabbix-sender:
   selector: ${ZS_RECEIVER_ZABBIX_SENDER:default}
   default:
-    port: ${ZS_RECEIVER_ZABBIX_POST:10051}
+    port: ${ZS_RECEIVER_ZABBIX_PORT:10051}
     host: ${ZS_RECEIVER_ZABBIX_HOST:127.0.0.1}
 
 # core module config

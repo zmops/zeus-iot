@@ -48,7 +48,7 @@ forest:
     zbxServerIp: ${ZEUS_ZABBIX_HOST:127.0.0.1}
     zbxServerPort: ${ZEUS_ZABBIX_PORT:80}
     zbxApiUrl: ${ZEUS_ZABBIX_API_URL:/zabbix/api_jsonrpc.php}
-    zbxApiToken: da839aa4f6ce3c45e331a92571d9c2a0d435f4b8f7aa5f5edff92ccf633ee568
+    zbxApiToken: 479bcb20ab773c8b85f78a710fd56eca80aaec03c2337ad59263d568b0e9f938
 
     ## tdengine http request address
     taosUrl: http://${ZEUS_TAOS_HOST:127.0.0.1}:${ZEUS_TAOS_REST_PORT:6041}/rest/sql/zeus_data

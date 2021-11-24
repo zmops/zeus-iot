@@ -47,6 +47,7 @@ public class ProductEventRuleService implements CommandLineRunner {
     private ZbxTrigger zbxTrigger;
 
     private static final String TRIGGER_CLASSIFY = "0";
+
     /**
      * 保存触发器
      *
@@ -313,8 +314,8 @@ public class ProductEventRuleService implements CommandLineRunner {
 
     @Data
     public static class Triggers {
-        private String triggerid;
-        private String description;
+        private String      triggerid;
+        private String      description;
         private List<Hosts> hosts;
     }
 

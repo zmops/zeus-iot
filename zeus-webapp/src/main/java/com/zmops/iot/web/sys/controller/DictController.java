@@ -73,7 +73,6 @@ public class DictController {
      * 获取某个字典类型下的所有字典
      */
     @ResponseBody
-    @Permission(code = "dict")
     @RequestMapping("/listDictByCode")
     public ResponseData listDictByCode(@RequestParam("dictTypeCode") String dictTypeCode) {
         return ResponseData.success(dictService.listDicts(dictTypeCode));
@@ -83,7 +82,6 @@ public class DictController {
      * 获取某个字典类型下的所有字典
      */
     @ResponseBody
-    @Permission(code = "dict")
     @RequestMapping("/groupDictByCode")
     public ResponseData groupDictByCode(@RequestParam("dictTypeCode") String dictTypeCode) {
         return ResponseData.success(dictService.groupDictByCode(dictTypeCode));
