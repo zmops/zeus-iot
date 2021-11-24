@@ -123,9 +123,7 @@ public class SysUserGroupService {
         BeanUtils.copyProperties(userGroup, newUserGroup);
         DB.update(newUserGroup);
 
-        if (ToolUtil.isNotEmpty(userGroup.getDeviceGroupIds())) {
-            bindHostGrp(UserGroupParam.builder().userGroupId(userGroup.getUserGroupId()).deviceGroupIds(userGroup.getDeviceGroupIds()).build());
-        }
+        bindHostGrp(UserGroupParam.builder().userGroupId(userGroup.getUserGroupId()).deviceGroupIds(userGroup.getDeviceGroupIds()).build());
 
         return newUserGroup;
     }
@@ -195,11 +193,12 @@ public class SysUserGroupService {
      * @param userGroup
      */
     public void bindHostGrp(UserGroupParam userGroup) {
-        //修改ZBX 用户组绑定主机组
-        String usrGrpZbxId = getZabUsrGrpId(userGroup.getUserGroupId());
-        List<DeviceGroup> list = new QDeviceGroup().deviceGroupId.in(userGroup.getDeviceGroupIds()).findList();
-        List<String> hostGrpZbxIds = list.parallelStream().map(DeviceGroup::getZbxId).collect(Collectors.toList());
-        zbxUserGroup.userGrpBindHostGroup(hostGrpZbxIds, usrGrpZbxId);
+        new QSysUserGrpDevGrp().userGroupId.eq(userGroup.getUserGroupId()).delete();
+
+        if (ToolUtil.isNotEmpty(userGroup.getDeviceGroupIds())) {
+            return;
+        }
+
         List<SysUserGrpDevGrp> lists = new ArrayList<>();
         for (Long deviceGroupId : userGroup.getDeviceGroupIds()) {
             SysUserGrpDevGrp devicesGroups = new SysUserGrpDevGrp();
