@@ -124,7 +124,6 @@ public class SysUserGroupService {
         DB.update(newUserGroup);
 
         bindHostGrp(UserGroupParam.builder().userGroupId(userGroup.getUserGroupId()).deviceGroupIds(userGroup.getDeviceGroupIds()).build());
-
         return newUserGroup;
     }
 
@@ -198,7 +197,6 @@ public class SysUserGroupService {
         if (ToolUtil.isNotEmpty(userGroup.getDeviceGroupIds())) {
             return;
         }
-
         List<SysUserGrpDevGrp> lists = new ArrayList<>();
         for (Long deviceGroupId : userGroup.getDeviceGroupIds()) {
             SysUserGrpDevGrp devicesGroups = new SysUserGrpDevGrp();
