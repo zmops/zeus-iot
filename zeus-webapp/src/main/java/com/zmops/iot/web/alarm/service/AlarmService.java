@@ -48,6 +48,7 @@ public class AlarmService {
     public void alarm(Map<String, Object> alarmInfo) {
         List<String> deviceIds = (List) alarmInfo.get("hostname");
         String eventRuleId = (String) alarmInfo.get("triggerName");
+        String title = (String) alarmInfo.get("title");
 
         if (ToolUtil.isEmpty(deviceIds) || ToolUtil.isEmpty(eventRuleId)) {
             return;
@@ -60,7 +61,7 @@ public class AlarmService {
 
         if (ToolUtil.isNotEmpty(deviceList) && null != productEvent) {
             String deviceName = deviceList.parallelStream().map(Device::getName).collect(Collectors.joining(","));
-            String alarmmessage = "设备:" + deviceName + "发生告警，告警内容：" + productEvent.getEventRuleName();
+            String alarmmessage = "设备:" + deviceName +"  "+ title + "，告警内容：" + productEvent.getEventRuleName();
             alarmMessages.add(AlarmMessage.builder().alarmMessage(alarmmessage).build());
             alarmCallbacks.forEach(alarmCallback -> {
                 alarmCallback.doAlarm(alarmMessages);
