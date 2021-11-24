@@ -102,3 +102,8 @@ EXECUTE PROCEDURE "public"."events_trace"();
 CREATE TRIGGER "events_problem_trigger" AFTER INSERT OR UPDATE OF "r_clock", "acknowledged" ON "public"."problem"
 FOR EACH ROW
 EXECUTE PROCEDURE "public"."events_problem_trace"();
+
+
+CREATE TRIGGER "tag_trigger" AFTER INSERT ON "public"."event_tag"
+FOR EACH ROW
+EXECUTE PROCEDURE "public"."events_tag_trace"();
