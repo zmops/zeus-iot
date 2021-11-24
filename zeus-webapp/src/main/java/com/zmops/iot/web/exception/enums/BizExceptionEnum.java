@@ -153,7 +153,7 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     DEVICE_EXISTS(1501, "设备名称已存在"),
     DEVICE_ID_EXISTS(1503, "设备ID已存在"),
     DEVICE_NOT_EXISTS(1502, "设备不存在"),
-    DEVICE_NAME_HAS_INCOREECT_CHARACTER(1504,"设备名称不能包含\\或\\/字符"),
+    DEVICE_ID_HAS_INCORRECT_CHARACTER(1504,"设备ID不能包含\\或\\/字符"),
 
     /**
      * 服务相关
