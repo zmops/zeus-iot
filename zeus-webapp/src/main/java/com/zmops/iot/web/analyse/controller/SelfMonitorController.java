@@ -3,7 +3,9 @@ package com.zmops.iot.web.analyse.controller;
 import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.web.analyse.service.SelfMonitorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -17,14 +19,19 @@ public class SelfMonitorController {
     @Autowired
     SelfMonitorService selfMonitorService;
 
-    @RequestMapping("memory")
+    @GetMapping("memory")
     public ResponseData getMemInfo(){
         return ResponseData.success(selfMonitorService.getMemInfo());
     }
 
-    @RequestMapping("cpu")
+    @GetMapping("cpuLoad")
     public ResponseData getCpuInfo(){
-        return ResponseData.success(selfMonitorService.getCpuInfo());
+        return ResponseData.success(selfMonitorService.getCpuLoadInfo());
+    }
+
+    @GetMapping("cpuUtilization")
+    public ResponseData getCpuUtilization(){
+        return ResponseData.success(selfMonitorService.getCpuUtilization());
     }
 
     @RequestMapping("process")
