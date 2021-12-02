@@ -2,7 +2,6 @@ package com.zmops.zeus.iot.server.receiver.provider;
 
 import com.zmops.zeus.iot.server.receiver.Const;
 import com.zmops.zeus.iot.server.receiver.module.CamelReceiverModule;
-import com.zmops.zeus.iot.server.receiver.routes.PgEventRouteBuilder;
 import com.zmops.zeus.iot.server.receiver.service.CamelContextHolderService;
 import com.zmops.zeus.iot.server.receiver.tozabbix.ZabbixSenderComponent;
 import com.zmops.zeus.iot.server.sender.module.ZabbixSenderModule;
@@ -50,7 +49,7 @@ public class CamelReceiverProvider extends ModuleProvider {
         camelContext.addComponent(Const.CAMEL_ZABBIX_COMPONENT_NAME, new ZabbixSenderComponent(getManager()));
 
         try {
-            camelContext.addRoutes(new PgEventRouteBuilder());
+//            camelContext.addRoutes(new PgEventRouteBuilder());
         } catch (Exception e) {
             e.printStackTrace();
         }
