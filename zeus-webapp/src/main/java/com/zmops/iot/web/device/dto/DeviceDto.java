@@ -21,7 +21,7 @@ import java.util.List;
 @JsonSerialize(using = CachedValueFilter.class)
 public class DeviceDto {
 
-    @NotBlank(groups = {BaseEntity.Update.class, BaseEntity.Delete.class,BaseEntity.Status.class})
+    @NotBlank(groups = {BaseEntity.Update.class, BaseEntity.Delete.class, BaseEntity.Status.class})
     private String deviceId;
 
     private String edit;
@@ -37,11 +37,11 @@ public class DeviceDto {
     @NotEmpty(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
     private List<Long> deviceGroupIds;
 
-    @CachedValue(value = "STATUS")
+    @CachedValue(value = "STATUS", fieldName = "statusName")
     @NotBlank(groups = {BaseEntity.Status.class})
     private String status;
 
-    @CachedValue(value = "DEVICE_TYPE")
+    @CachedValue(value = "DEVICE_TYPE", fieldName = "typeName")
     private String type;
 
     private String remark;
@@ -50,10 +50,10 @@ public class DeviceDto {
 
     private LocalDateTime updateTime;
 
-    @CachedValue(type = DicType.SysUserName)
+    @CachedValue(type = DicType.SysUserName, fieldName = "createUserName")
     private Long createUser;
 
-    @CachedValue(type = DicType.SysUserName)
+    @CachedValue(type = DicType.SysUserName, fieldName = "updateUserName")
     private Long updateUser;
 
     private Long oldProductId;

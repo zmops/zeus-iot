@@ -19,14 +19,14 @@ public class ProductDto {
 
     private Long productId;
 
-    @CachedValue(type = DicType.ProdType)
+    @CachedValue(type = DicType.ProdType, fieldName = "groupName")
     private Long groupId;
 
     @JsonProperty("prodName")
     private String name;
 
     @JsonProperty("prodType")
-    @CachedValue(value = "DEVICE_TYPE")
+    @CachedValue(value = "DEVICE_TYPE", fieldName = "typeName")
     private String type;
 
     private String manufacturer;
@@ -42,9 +42,9 @@ public class ProductDto {
 
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
-    @CachedValue(type = DicType.SysUserName)
+    @CachedValue(type = DicType.SysUserName, fieldName = "createUserName")
     private Long          createUser;
-    @CachedValue(type = DicType.SysUserName)
+    @CachedValue(type = DicType.SysUserName, fieldName = "updateUserName")
     private Long          updateUser;
 
     private Long deviceNum;

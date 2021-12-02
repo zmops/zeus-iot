@@ -31,10 +31,10 @@ public class ProductServiceDto {
     @NotNull(groups = BaseEntity.Create.class)
     private String relationId;
 
-    @CachedValue(value = "EXECUTE_TYPE")
+    @CachedValue(value = "EXECUTE_TYPE", fieldName = "asyncName")
     private String async;
 
-    @CachedValue(value = "WHETHER")
+    @CachedValue(value = "WHETHER", fieldName = "inheritName")
     private String inherit;
 
     private List<ProductServiceParam> productServiceParamList;

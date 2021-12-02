@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * 字典翻译注解 @Repeatable
+ * @author yefei
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
@@ -21,11 +22,11 @@ public @interface CachedValue {
 
 
     /**
-     * 添加的后缀名
+     * 翻译后的字段名
      *
      * @return
      */
-    String suffix() default "Name";
+    String fieldName();
 
 
     /**

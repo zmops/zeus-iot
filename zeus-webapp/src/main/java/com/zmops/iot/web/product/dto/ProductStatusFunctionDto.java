@@ -29,13 +29,13 @@ public class ProductStatusFunctionDto {
 
     private String ruleCondition;
 
-    @CachedValue(value = "UNITS")
+    @CachedValue(value = "UNITS", fieldName = "unitName")
     private String unit;
 
-    @CachedValue(value = "UNITS")
+    @CachedValue(value = "UNITS", fieldName = "unitsName")
     private String units;
 
-    @CachedValue(value = "UNITS")
+    @CachedValue(value = "UNITS", fieldName = "unitsRecoveryName")
     private String unitsRecovery;
 
     private String productAttrKey;
@@ -48,17 +48,17 @@ public class ProductStatusFunctionDto {
 
     private String productAttrKeyRecovery;
 
-    @CachedValue(value = "UNITS")
+    @CachedValue(value = "UNITS", fieldName = "unitRecoveryName")
     private String unitRecovery;
 
     private String attrName;
 
     private String attrNameRecovery;
 
-    @CachedValue(type = DicType.SysUserName)
+    @CachedValue(type = DicType.SysUserName, fieldName = "createUserName")
     private Long createUser;
     private String createTime;
-    @CachedValue(type = DicType.SysUserName)
+    @CachedValue(type = DicType.SysUserName, fieldName = "updateUserName")
     private Long updateUser;
     private String updateTime;
 }
