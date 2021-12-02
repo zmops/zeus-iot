@@ -42,4 +42,6 @@ public class SysUser extends BaseEntity {
     String zbxToken;
 
     String zbxId;
+
+    String remark;
 }

@@ -12,7 +12,7 @@
  Target Server Version : 130004
  File Encoding         : 65001
 
- Date: 23/11/2021 14:28:57
+ Date: 02/12/2021 16:03:24
 */
 
 
@@ -1571,7 +1571,8 @@ CREATE TABLE "public"."sys_user" (
   "update_time" timestamp(6),
   "user_id" int8 NOT NULL DEFAULT nextval('sys_user_user_id_seq'::regclass),
   "zbx_token" varchar(255) COLLATE "pg_catalog"."default",
-  "zbx_id" varchar(64) COLLATE "pg_catalog"."default"
+  "zbx_id" varchar(64) COLLATE "pg_catalog"."default",
+  "remark" varchar(255) COLLATE "pg_catalog"."default"
 )
 ;
 COMMENT ON COLUMN "public"."sys_user"."account" IS '登陆账号名';
@@ -1590,12 +1591,13 @@ COMMENT ON COLUMN "public"."sys_user"."update_time" IS '更新时间';
 COMMENT ON COLUMN "public"."sys_user"."user_id" IS '用户ID';
 COMMENT ON COLUMN "public"."sys_user"."zbx_token" IS 'zabbix 登陆 token';
 COMMENT ON COLUMN "public"."sys_user"."zbx_id" IS 'zabbix 用户ID';
+COMMENT ON COLUMN "public"."sys_user"."remark" IS '备注';
 
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
-INSERT INTO "public"."sys_user" VALUES ('root', '17db03c22596b7609c7c9704f16663e0', 'abcdef', '超级管理员', '888888@qq.com', '13812345678', 1, 1437232484602372096, 'ENABLE', 1, 1, '2021-07-30 21:43:02.686', '2021-07-30 21:43:02.686', 1, '5859e004e8d2a23e6c330c3f9cd277e2', '4');
-INSERT INTO "public"."sys_user" VALUES ('Admin', 'cbde417443393372dbac9c185a6ec159', 'gt3zs', '超级管理员', '', '', 1, 1437232484602372096, 'ENABLE', 1, 1, '2021-09-28 09:38:33.668', '2021-09-28 09:38:33.668', 122, 'f6ce31c5f70bf40fae2067087254202c', '1');
+INSERT INTO "public"."sys_user" VALUES ('root', '17db03c22596b7609c7c9704f16663e0', 'abcdef', '超级管理员', '888888@qq.com', '13812345678', 1, 1437232484602372096, 'ENABLE', 1, 1, '2021-07-30 21:43:02.686', '2021-07-30 21:43:02.686', 1, '5859e004e8d2a23e6c330c3f9cd277e2', '4', NULL);
+INSERT INTO "public"."sys_user" VALUES ('Admin', 'cbde417443393372dbac9c185a6ec159', 'gt3zs', '超级管理员', '', '', 1, 1437232484602372096, 'ENABLE', 1, 1, '2021-09-28 09:38:33.668', '2021-09-28 09:38:33.668', 122, 'f6ce31c5f70bf40fae2067087254202c', '1', NULL);
 
 -- ----------------------------
 -- Table structure for sys_user_group

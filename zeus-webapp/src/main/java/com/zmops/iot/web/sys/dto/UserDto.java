@@ -67,4 +67,5 @@ public class UserDto {
     @CachedValue(type = DicType.SysUserName, fieldName = "updateUserName")
     private Long updateUser;
     private String updateTime;
+    private String remark;
 }
