@@ -22,6 +22,46 @@
             <artifactId>library-web</artifactId>
             <version>1.0.1-RELEASE</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>runtime-server</artifactId>
+            <version>1.0.1-RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>zeus-commons</artifactId>
+            <version>1.0.1-RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>library-module</artifactId>
+            <version>1.0.1-RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>server-camel-receiver</artifactId>
+            <version>1.0-beta</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.7.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

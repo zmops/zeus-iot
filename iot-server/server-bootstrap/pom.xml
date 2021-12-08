@@ -85,6 +85,14 @@
             <artifactId>server-localdb</artifactId>
             <version>1.0-beta</version>
         </dependency>
+
+
+        <dependency>
+            <groupId>com.zmops.hello</groupId>
+            <artifactId>zeus-ark-hello</artifactId>
+            <version>1.0-beta</version>
+            <classifier>ark-biz</classifier>
+        </dependency>
         <!--
         <dependency>
             <groupId>org.apache.camel</groupId>
@@ -114,7 +122,6 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <excludes>
-                        <exclude>application.yml</exclude>
                         <exclude>log4j2.xml</exclude>
                     </excludes>
                 </configuration>

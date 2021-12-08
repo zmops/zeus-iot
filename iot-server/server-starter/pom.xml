@@ -23,23 +23,16 @@
             <version>1.0-beta</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>com.zmops</groupId>-->
-<!--            <artifactId>runtime-server-plugin</artifactId>-->
-<!--            <version>1.0-SNAPSHOT</version>-->
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>ch.qos.logback</groupId>-->
-<!--                    <artifactId>logback-classic</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-<!--        </dependency>-->
-
-        <!--<dependency>
-            <groupId>com.zmops.hello</groupId>
-            <artifactId>zeus-ark-hello</artifactId>
-            <classifier>ark-biz</classifier>
-            <version>1.0-beta</version>
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>runtime-server-plugin</artifactId>
+            <version>1.0.1-RELEASE</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -60,7 +53,7 @@
                     <artifactId>log-sofa-boot-starter</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>-->
+        </dependency>
 
     </dependencies>
 
@@ -85,7 +78,18 @@
                     </execution>
                 </executions>
             </plugin>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <resources>
+                        <resource>
+                            <targetPath>D:\\666</targetPath>
+                            <directory>src/main/webapp</directory>
+                        </resource>
+                    </resources>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>com.alipay.sofa</groupId>
                 <artifactId>sofa-ark-maven-plugin</artifactId>
