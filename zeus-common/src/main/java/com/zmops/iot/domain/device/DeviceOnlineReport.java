@@ -29,4 +29,5 @@ public class DeviceOnlineReport {
 
     private Integer type;
 
+    private Long tenantId;
 }

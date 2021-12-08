@@ -4,6 +4,7 @@ import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.core.auth.context.LoginContextHolder;
+import com.zmops.iot.core.auth.model.LoginUser;
 import com.zmops.iot.domain.device.DeviceGroup;
 import com.zmops.iot.domain.device.query.QDeviceGroup;
 import com.zmops.iot.domain.device.query.QDevicesGroups;
@@ -60,7 +61,9 @@ public class DeviceGroupService {
         qDeviceGroup.order().createTime.desc()
                 .setFirstRow((devGroupParam.getPage() - 1) * devGroupParam.getMaxRow())
                 .setMaxRows(devGroupParam.getMaxRow());
+
         PagedList<DeviceGroup> pagedList = qDeviceGroup.orderBy(" create_time desc").findPagedList();
+
         List<DeviceGroupDto> deviceGroupDtos = ToolUtil.convertBean(pagedList.getList(), DeviceGroupDto.class);
         return new Pager<>(deviceGroupDtos, pagedList.getTotalCount());
     }
@@ -91,7 +94,9 @@ public class DeviceGroupService {
      * @return
      */
     public List<Long> getDevGroupIds() {
-        Long curUserGrpId = LoginContextHolder.getContext().getUser().getUserGroupId();
+        LoginUser user         = LoginContextHolder.getContext().getUser();
+        Long      curUserGrpId = user.getUserGroupId();
+        Long      tenantId     = user.getTenantId();
 
         List<Long> devGroupIds = new ArrayList<>();
         if (null != curUserGrpId) {
@@ -100,6 +105,9 @@ public class DeviceGroupService {
 
         if (ToolUtil.isEmpty(devGroupIds) && null != curUserGrpId) {
             QDeviceGroup qDeviceGroup = new QDeviceGroup().select(QDeviceGroup.alias().deviceGroupId);
+            if (null != tenantId) {
+                qDeviceGroup.tenantId.eq(tenantId);
+            }
             devGroupIds = qDeviceGroup.findSingleAttributeList();
         }
         return devGroupIds;
@@ -110,7 +118,7 @@ public class DeviceGroupService {
      */
     public DeviceGroup createDeviceGroup(DeviceGroupParam deviceGroup) {
         // 判断设备组是否重复
-        checkByGroupName(deviceGroup.getName(), -1L);
+        checkByGroupName(deviceGroup.getName(), -1L, deviceGroup.getTenantId());
         //获取ID
         long devGrpId = IdUtil.getSnowflake().nextId();
         // 先在ZBX 添加主机组
@@ -134,7 +142,7 @@ public class DeviceGroupService {
      */
     public DeviceGroup updateDeviceGroup(DeviceGroupParam deviceGroup) {
         // 判断设备组是否重复
-        checkByGroupName(deviceGroup.getName(), deviceGroup.getDeviceGroupId());
+        checkByGroupName(deviceGroup.getName(), deviceGroup.getDeviceGroupId(), deviceGroup.getTenantId());
 
         DeviceGroup newDeviceGroup = new DeviceGroup();
         BeanUtils.copyProperties(deviceGroup, newDeviceGroup);
@@ -148,12 +156,12 @@ public class DeviceGroupService {
      *
      * @param groupName
      */
-    private void checkByGroupName(String groupName, long deviceGroupId) {
+    private void checkByGroupName(String groupName, long deviceGroupId, Long tenantId) {
         int count;
         if (deviceGroupId >= 0) {
-            count = new QDeviceGroup().name.equalTo(groupName).deviceGroupId.ne(deviceGroupId).findCount();
+            count = new QDeviceGroup().name.equalTo(groupName).tenantId.eq(tenantId).deviceGroupId.ne(deviceGroupId).findCount();
         } else {
-            count = new QDeviceGroup().name.equalTo(groupName).findCount();
+            count = new QDeviceGroup().name.equalTo(groupName).tenantId.eq(tenantId).findCount();
         }
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.DEVICEGROUP_HAS_EXIST);

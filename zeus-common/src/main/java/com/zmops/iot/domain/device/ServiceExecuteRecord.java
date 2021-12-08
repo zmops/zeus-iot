@@ -28,9 +28,12 @@ public class ServiceExecuteRecord {
 
     private String param;
 
+    private Long tenantId;
+
     private String executeType;
 
     private Long executeUser;
 
     private Long executeRuleId;
+
 }

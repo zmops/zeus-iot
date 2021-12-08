@@ -56,7 +56,9 @@ public class IncidentEventProcess implements EventProcess {
         eventTriggerRecord.setDeviceId(deviceId);
         eventTriggerRecord.setEventName(productAttributeEvent.getName());
         eventTriggerRecord.setEventValue(latestDtos.get(0).getOriginalValue());
+        eventTriggerRecord.setTenantId(device.getTenantId());
         eventTriggerRecord.setKey(productAttributeEvent.getKey());
+
         DB.insert(eventTriggerRecord);
     }
 

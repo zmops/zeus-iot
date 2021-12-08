@@ -67,8 +67,8 @@ public class WeLinkHookCallback implements AlarmCallback {
      * Send alarm message if the settings not empty
      */
     @Override
-    public void doAlarm(List<AlarmMessage> alarmMessages) {
-//        WeLinkSettings weLinkSettings = weLinkSettingService.get();
+    public void doAlarm(List<AlarmMessage> alarmMessages,Long tenantId) {
+//        WeLinkSettings weLinkSettings = weLinkSettingService.get(tenantId);
 //        if (weLinkSettings == null || weLinkSettings.getWebhooks().isEmpty()) {
 //            return;
 //        }

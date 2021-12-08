@@ -3,8 +3,6 @@ package com.zmops.iot.web.device.service.work;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.zmops.zeus.server.async.callback.IWorker;
-import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.product.ProductAttribute;
 import com.zmops.iot.domain.product.ProductAttributeEvent;
 import com.zmops.iot.domain.product.query.QProductAttribute;
@@ -13,6 +11,8 @@ import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.dto.DeviceDto;
 import com.zmops.zeus.driver.entity.ZbxItemInfo;
 import com.zmops.zeus.driver.service.ZbxItem;
+import com.zmops.zeus.server.async.callback.IWorker;
+import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ public class UpdateAttrZbxIdWorker implements IWorker<DeviceDto, Boolean> {
 
     @Override
     public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper> map) {
-        log.debug("step 6:resolve Attr zbxID async----deviceid: {} …………",deviceDto.getDeviceId());
+        log.debug("step 6:resolve Attr zbxID async----deviceid: {} …………", deviceDto.getDeviceId());
         String deviceId = deviceDto.getDeviceId();
 
         if (ToolUtil.isNotEmpty(deviceDto.getEdit()) && "true".equals(deviceDto.getEdit())) {
@@ -75,7 +75,7 @@ public class UpdateAttrZbxIdWorker implements IWorker<DeviceDto, Boolean> {
         }
 
         DB.updateAll(productAttributeEventList);
-        log.debug("step 6:resolve Attr zbxID async----deviceid: {} complete",deviceDto.getDeviceId());
+        log.debug("step 6:resolve Attr zbxID async----deviceid: {} complete", deviceDto.getDeviceId());
         return true;
     }
 

@@ -6,7 +6,13 @@
         "key_": "${itemKey}",
         "hostid": "${hostId}",
         "type": ${source},
+        <#if interfaceid??>
+        "interfaceid": "${interfaceid}",
+        </#if>
         "trends":"0",
+        <#if delay??>
+        "delay":"${delay}",
+        </#if>
         "history":"30d",
         <#if source == '18'>
             "master_itemid":${masterItemid},

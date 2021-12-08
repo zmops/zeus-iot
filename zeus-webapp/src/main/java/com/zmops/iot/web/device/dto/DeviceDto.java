@@ -5,6 +5,7 @@ import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.model.cache.filter.CachedValue;
 import com.zmops.iot.model.cache.filter.CachedValueFilter;
 import com.zmops.iot.model.cache.filter.DicType;
+import com.zmops.zeus.driver.entity.Interface;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -46,6 +47,9 @@ public class DeviceDto {
 
     private String remark;
 
+    @CachedValue(type = DicType.Tenant, fieldName = "tenantName")
+    private Long tenantId;
+
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;
@@ -70,6 +74,9 @@ public class DeviceDto {
 
     private Integer online;
 
-    private LocalDateTime latestOnline;
+    private Long proxyId;
 
+    private Interface deviceInterface;
+
+    private LocalDateTime latestOnline;
 }

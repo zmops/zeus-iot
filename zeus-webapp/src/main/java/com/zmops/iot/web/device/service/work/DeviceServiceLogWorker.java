@@ -2,9 +2,9 @@ package com.zmops.iot.web.device.service.work;
 
 
 import com.alibaba.fastjson.JSONObject;
-import com.zmops.zeus.server.async.callback.IWorker;
-import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
+import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.ServiceExecuteRecord;
+import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.ProductEventService;
 import com.zmops.iot.domain.product.ProductService;
 import com.zmops.iot.domain.product.ProductServiceParam;
@@ -12,6 +12,8 @@ import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.domain.product.query.QProductService;
 import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.ToolUtil;
+import com.zmops.zeus.server.async.callback.IWorker;
+import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -46,6 +48,10 @@ public class DeviceServiceLogWorker implements IWorker<Map<String, Object>, Bool
         List<ProductService> productServiceList = new QProductService().id.in(serviceIds).findList();
         Map<Long, ProductService> productServiceMap = productServiceList.parallelStream().collect(Collectors.toMap(ProductService::getId, o -> o));
 
+        List<String> deviceIds = productEventServiceList.parallelStream().map(ProductEventService::getExecuteDeviceId).collect(Collectors.toList());
+        List<Device> deviceList = new QDevice().deviceId.in(deviceIds).tenantId.isNotNull().findList();
+        Map<String, Long> deviceIdMap = deviceList.parallelStream().collect(Collectors.toMap(Device::getDeviceId, Device::getTenantId));
+
         List<ServiceExecuteRecord> serviceExecuteRecordList = new ArrayList<>();
         productEventServiceList.forEach(productEventService -> {
             ServiceExecuteRecord serviceExecuteRecord = new ServiceExecuteRecord();
@@ -55,6 +61,9 @@ public class DeviceServiceLogWorker implements IWorker<Map<String, Object>, Bool
                 serviceExecuteRecord.setParam(JSONObject.toJSONString(paramList.parallelStream().collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue))));
             }
             serviceExecuteRecord.setServiceName(Optional.ofNullable(productServiceMap.get(productEventService.getServiceId())).map(ProductService::getName).orElse(""));
+            if (deviceIdMap.get(productEventService.getExecuteDeviceId()) != null) {
+                serviceExecuteRecord.setTenantId(deviceIdMap.get(productEventService.getExecuteDeviceId()));
+            }
             serviceExecuteRecord.setCreateTime(LocalDateTime.now());
             serviceExecuteRecord.setExecuteRuleId(eventRuleId);
             serviceExecuteRecord.setExecuteType(executeType);

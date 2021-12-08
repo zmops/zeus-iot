@@ -40,6 +40,8 @@ public class ProductBasicInfo extends BaseQueryParam {
 
     private String tagVal;
 
+    private Long tenantId;
+
     private String icon;
 
 }

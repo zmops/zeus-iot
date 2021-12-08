@@ -3,9 +3,9 @@ package com.zmops.iot.web.device.service.work;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.zmops.iot.domain.device.Device;
 import com.zmops.zeus.server.async.callback.IWorker;
 import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
-import com.zmops.iot.domain.device.Device;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -29,11 +29,11 @@ public class UpdateDeviceZbxIdWorker implements IWorker<String, Boolean> {
 
         JSONArray hostid = JSONObject.parseObject(result.toString()).getJSONArray("hostids");
 
-        log.debug("step 7:resolve zbxID async----DEVICEID:{}， HOSTID:{}…………",deviceId,hostid.get(0).toString());
+        log.debug("step 7:resolve zbxID async----DEVICEID:{}， HOSTID:{}…………", deviceId, hostid.get(0).toString());
 
-        DB.update(Device.class).where().eq("deviceId",deviceId).asUpdate().set("zbxId",hostid.get(0).toString()).update();
+        DB.update(Device.class).where().eq("deviceId", deviceId).asUpdate().set("zbxId", hostid.get(0).toString()).update();
 
-        log.debug("step 7:resolve zbxID async----DEVICEID:{}， HOSTID:{} 完成",deviceId,hostid.get(0).toString());
+        log.debug("step 7:resolve zbxID async----DEVICEID:{}， HOSTID:{} 完成", deviceId, hostid.get(0).toString());
         return true;
     }
 

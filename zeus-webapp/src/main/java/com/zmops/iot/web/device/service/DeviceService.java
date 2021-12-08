@@ -2,9 +2,6 @@ package com.zmops.iot.web.device.service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.zmops.zeus.server.async.callback.ICallback;
-import com.zmops.zeus.server.async.executor.Async;
-import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.Tag;
 import com.zmops.iot.domain.device.query.QDevice;
@@ -22,8 +19,13 @@ import com.zmops.iot.web.device.dto.param.DeviceParams;
 import com.zmops.iot.web.device.service.work.*;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductTag;
+import com.zmops.zeus.driver.entity.Interface;
 import com.zmops.zeus.driver.service.ZbxHost;
+import com.zmops.zeus.driver.service.ZbxInterface;
 import com.zmops.zeus.driver.service.ZbxValueMap;
+import com.zmops.zeus.server.async.callback.ICallback;
+import com.zmops.zeus.server.async.executor.Async;
+import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import io.ebean.DB;
 import io.ebean.DtoQuery;
 import io.ebean.Query;
@@ -73,6 +75,9 @@ public class DeviceService implements CommandLineRunner {
 
     @Autowired
     DeviceGroupService deviceGroupService;
+
+    @Autowired
+    ZbxInterface zbxInterface;
 
     /**
      * 设备列表
@@ -221,13 +226,15 @@ public class DeviceService implements CommandLineRunner {
                 " d.online," +
                 " d.zbx_id," +
                 " d.latest_online," +
+                " d.tenant_id," +
+                " d.proxy_id," +
                 " P.NAME product_name, " +
                 " ds.group_name, " +
                 " ds.groupIds  " +
                 "FROM " +
                 " device d ")
                 .append(" LEFT JOIN product P ON P.product_id = d.product_id ")
-                .append(" LEFT JOIN ( " +
+                .append(" INNER JOIN ( " +
                         " SELECT  " +
                         "  d.device_id,  " +
                         "  array_to_string( ARRAY_AGG ( dg.NAME ), ',' ) group_name,  " +
@@ -522,6 +529,17 @@ public class DeviceService implements CommandLineRunner {
         if (deviceDto == null) {
             throw new ServiceException(BizExceptionEnum.DEVICE_NOT_EXISTS);
         }
+
+        if (ToolUtil.isEmpty(deviceDto.getZbxId())) {
+            return deviceDto;
+        }
+
+        String interfaceInfo = zbxInterface.hostinterfaceGet(deviceDto.getZbxId());
+        List<Interface> interfaces = JSONObject.parseArray(interfaceInfo, Interface.class);
+        if (ToolUtil.isNotEmpty(interfaces)) {
+            deviceDto.setDeviceInterface(interfaces.get(0));
+        }
+
         return deviceDto;
     }
 

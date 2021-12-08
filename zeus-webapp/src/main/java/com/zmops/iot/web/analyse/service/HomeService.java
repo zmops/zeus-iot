@@ -3,6 +3,7 @@ package com.zmops.iot.web.analyse.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dtflys.forest.http.ForestResponse;
+import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.domain.alarm.Problem;
 import com.zmops.iot.domain.alarm.query.QProblem;
 import com.zmops.iot.domain.device.Device;
@@ -175,16 +176,26 @@ public class HomeService {
      */
     public Map<String, Object> getDeviceNum(Integer timeFrom, Integer timeTill) {
         Map<String, Object> deviceNumMap = new HashMap<>(4);
+        Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
 
         List<Device> list = deviceService.deviceList(new DeviceParams());
+
         deviceNumMap.put("total", list.size());
         deviceNumMap.put("disable", (int) list.parallelStream().filter(o -> "DISABLE".equals(o.getStatus())).count());
         deviceNumMap.put("online", (int) list.parallelStream().filter(o -> null != o.getOnline() && 1 == o.getOnline()).count());
-        deviceNumMap.put("product", new QProduct().findCount());
+        QProduct qProduct = new QProduct();
+        if (tenantId != null) {
+            qProduct.tenantId.eq(tenantId);
+        }
+        deviceNumMap.put("product", qProduct.findCount());
 
-        List<DeviceOnlineReport> onLineList = new QDeviceOnlineReport()
+        QDeviceOnlineReport qDeviceOnlineReport = new QDeviceOnlineReport()
                 .createTime.ge(LocalDateTimeUtils.convertTimeToString(timeFrom, "yyyy-MM-dd"))
-                .createTime.lt(LocalDateTimeUtils.convertTimeToString(timeTill, "yyyy-MM-dd")).findList();
+                .createTime.lt(LocalDateTimeUtils.convertTimeToString(timeTill, "yyyy-MM-dd"));
+        if (tenantId != null) {
+            qDeviceOnlineReport.tenantId.eq(tenantId);
+        }
+        List<DeviceOnlineReport> onLineList = qDeviceOnlineReport.findList();
 
         Map<String, Long> collect = onLineList.parallelStream()
                 .collect(Collectors.groupingBy(DeviceOnlineReport::getCreateTime, Collectors.summingLong(DeviceOnlineReport::getOnline)));
@@ -294,6 +305,7 @@ public class HomeService {
 
         eventMap.put("today", todayNum);
 
+
         return eventMap;
     }
 
@@ -312,7 +324,6 @@ public class HomeService {
         if (ToolUtil.isNotEmpty(alarmList)) {
             tmpMap = alarmList.parallelStream().collect(Collectors.groupingBy(AlarmDto::getDeviceId, Collectors.counting()));
         }
-
         List<Map<String, Object>> topList = new ArrayList<>();
         tmpMap.forEach((key, value) -> {
             if (DefinitionsUtil.getDeviceName(key) == null) {
@@ -323,10 +334,8 @@ public class HomeService {
             alarmMap.put("value", value);
             topList.add(alarmMap);
         });
-
         topList.sort(Comparator.comparing(o -> Integer.parseInt(o.get("value").toString())));
         topList.subList(0, Math.min(topList.size(), 5));
-
         return topList;
     }
 
@@ -334,15 +343,22 @@ public class HomeService {
      * 服务调用统计
      */
     public Map<String, Object> serviceExecuteNum(long timeFrom, long timeTill) {
-        List<ServiceExecuteRecord> list = new QServiceExecuteRecord().createTime.ge(LocalDateTimeUtils.getLDTBySeconds((int) timeFrom))
-                .createTime.lt(LocalDateTimeUtils.getLDTBySeconds((int) timeTill)).orderBy().createTime.asc().findList();
+        QServiceExecuteRecord query = new QServiceExecuteRecord().createTime.ge(LocalDateTimeUtils.getLDTBySeconds((int) timeFrom))
+                .createTime.lt(LocalDateTimeUtils.getLDTBySeconds((int) timeTill));
 
+        Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
+        if (null != tenantId) {
+            query.tenantId.eq(tenantId);
+        }
+
+        List<ServiceExecuteRecord> list = query.orderBy().createTime.asc().findList();
         Map<String, Object> executeMap = new ConcurrentHashMap<>(3);
         if (ToolUtil.isNotEmpty(list)) {
             executeMap.put("total", list.size());
+
             Map<String, Long> initMap = initMap(timeFrom, timeTill);
-            Map<String, Long> tmpMap = list.parallelStream().collect(
-                    Collectors.groupingBy(o -> LocalDateTimeUtils.formatTime(o.getCreateTime(), "yyyy-MM-dd"), Collectors.counting()));
+            Map<String, Long> tmpMap = list.parallelStream().collect(Collectors.groupingBy(o -> LocalDateTimeUtils.formatTime(o.getCreateTime(),
+                    "yyyy-MM-dd"), Collectors.counting()));
 
             List<Map<String, Object>> trendsList = new ArrayList<>();
             initMap.forEach((key, value) -> {
@@ -354,10 +370,14 @@ public class HomeService {
             trendsList.sort(Comparator.comparing(o -> o.get("date").toString()));
             executeMap.put("trends", trendsList);
         }
-
         //今日开始时间
         long timeStart = LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.getDayStart(LocalDateTime.now()));
-        long todayNum = new QServiceExecuteRecord().createTime.ge(LocalDateTimeUtils.getLDTBySeconds((int) timeStart)).findCount();
+
+        query = new QServiceExecuteRecord().createTime.ge(LocalDateTimeUtils.getLDTBySeconds((int) timeStart));
+        if (null != tenantId) {
+            query.tenantId.eq(tenantId);
+        }
+        long todayNum = query.findCount();
 
         executeMap.put("today", todayNum);
 
@@ -375,10 +395,20 @@ public class HomeService {
         dataMap.put("todayRecordNum", ParseUtil.getCommaFormat(getTodayRecordNum(
                 LocalDateTimeUtils.formatTime(LocalDateTimeUtils.getDayStart(LocalDateTime.now()))) + ""));
 
-        int serviceExecuteNum = new QServiceExecuteRecord().findCount();
+        QServiceExecuteRecord qServiceExecuteRecord = new QServiceExecuteRecord();
+        Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
+        if (null != tenantId) {
+            qServiceExecuteRecord.tenantId.eq(tenantId);
+        }
+
+        int serviceExecuteNum = qServiceExecuteRecord.findCount();
         dataMap.put("serviceExecuteNum", ParseUtil.getCommaFormat(serviceExecuteNum + ""));
 
-        int sceneTriggerNum = new QScenesTriggerRecord().findCount();
+        QScenesTriggerRecord qScenesTriggerRecord = new QScenesTriggerRecord();
+        if (null != tenantId) {
+            qScenesTriggerRecord.tenantId.eq(tenantId);
+        }
+        int sceneTriggerNum = qScenesTriggerRecord.findCount();
         dataMap.put("sceneTriggerNum", ParseUtil.getCommaFormat(sceneTriggerNum + ""));
 
         return dataMap;

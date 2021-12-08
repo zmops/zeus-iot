@@ -3,6 +3,7 @@ package com.zmops.iot.web.product.service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.constant.ConstantsContext;
+import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.Tag;
 import com.zmops.iot.domain.device.query.QDevice;
@@ -65,6 +66,10 @@ public class ProductService {
         if (ToolUtil.isNotEmpty(prodBasicInfo.getProdName())) {
             qProduct.name.contains(prodBasicInfo.getProdName());
         }
+        Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
+        if (null != tenantId) {
+            qProduct.tenantId.eq(tenantId);
+        }
         return qProduct.orderBy(" create_time desc").findList();
     }
 
@@ -83,7 +88,10 @@ public class ProductService {
         if (ToolUtil.isNotEmpty(prodBasicInfo.getProdName())) {
             qProduct.name.contains(prodBasicInfo.getProdName());
         }
-
+        Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
+        if (null != tenantId) {
+            qProduct.tenantId.eq(tenantId);
+        }
         List<ProductDto> list = qProduct.setFirstRow((prodBasicInfo.getPage() - 1) * prodBasicInfo.getMaxRow())
                 .setMaxRows(prodBasicInfo.getMaxRow()).orderBy(" create_time desc").asDto(ProductDto.class).findList();
 
@@ -223,6 +231,7 @@ public class ProductService {
         product.setRemark(prodBasicInfo.getRemark());
         product.setType(prodBasicInfo.getProdType());
         product.setGroupId(prodBasicInfo.getGroupId());
+        product.setTenantId(prodBasicInfo.getTenantId());
         product.setIcon(prodBasicInfo.getIcon());
         return product;
     }

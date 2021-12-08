@@ -35,6 +35,10 @@ public class DefinitionsUtil {
 
     @Getter
     @Setter
+    private static TenantNameCache tenantNameCache = new TenantNameCache();
+
+    @Getter
+    @Setter
     private static ProductServiceCache productServiceCache = new ProductServiceCache();
 
     @Getter
@@ -76,6 +80,14 @@ public class DefinitionsUtil {
 
     public static String getTypeName(long value) {
         return productTypeCache.getTypeName(value);
+    }
+
+    public static void updateTenantName(Map<Long, String> map) {
+        tenantNameCache.updateTenantName(map);
+    }
+
+    public static String getTenantName(long value) {
+        return tenantNameCache.getTenantName(value);
     }
 
     public static void updateServiceCache(Map<Long, String> map) {

@@ -1,8 +1,7 @@
 package com.zmops.iot.web.device.service;
 
-import com.zmops.zeus.server.async.callback.ICallback;
-import com.zmops.zeus.server.async.executor.Async;
-import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
+
+import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.domain.device.EventTriggerRecord;
 import com.zmops.iot.domain.device.ScenesTriggerRecord;
 import com.zmops.iot.domain.device.ServiceExecuteRecord;
@@ -23,6 +22,9 @@ import com.zmops.iot.web.device.dto.DeviceRelationDto;
 import com.zmops.iot.web.device.dto.param.DeviceLogParam;
 import com.zmops.iot.web.device.service.work.DeviceServiceLogWorker;
 import com.zmops.iot.web.device.service.work.ScenesLogWorker;
+import com.zmops.zeus.server.async.callback.ICallback;
+import com.zmops.zeus.server.async.executor.Async;
+import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import io.ebean.DB;
 import io.ebean.PagedList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -169,6 +171,11 @@ public class DeviceLogService {
         List<DeviceLogDto> deviceLogDtoList = new ArrayList<>();
 
         QEventTriggerRecord query = new QEventTriggerRecord();
+
+        Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
+        if (null != tenantId) {
+            query.tenantId.eq(tenantId);
+        }
         if (ToolUtil.isNotEmpty(deviceLogParam.getDeviceId())) {
             query.deviceId.eq(deviceLogParam.getDeviceId());
         }
@@ -207,6 +214,11 @@ public class DeviceLogService {
         List<DeviceLogDto> deviceLogDtoList = new ArrayList<>();
 
         QServiceExecuteRecord query = new QServiceExecuteRecord();
+
+        Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
+        if (null != tenantId) {
+            query.tenantId.eq(tenantId);
+        }
         if (ToolUtil.isNotEmpty(deviceLogParam.getDeviceId())) {
             query.deviceId.eq(deviceLogParam.getDeviceId());
         }
@@ -257,6 +269,10 @@ public class DeviceLogService {
         List<DeviceLogDto> deviceLogDtoList = new ArrayList<>();
 
         QScenesTriggerRecord query = new QScenesTriggerRecord();
+        Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
+        if (null != tenantId) {
+            query.tenantId.eq(tenantId);
+        }
         if (null != deviceLogParam.getEventRuleId()) {
             query.ruleId.eq(deviceLogParam.getEventRuleId());
         }

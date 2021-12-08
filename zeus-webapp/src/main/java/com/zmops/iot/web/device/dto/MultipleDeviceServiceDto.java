@@ -2,6 +2,7 @@ package com.zmops.iot.web.device.dto;
 
 import lombok.Data;
 
+
 /**
  * @author yefei
  **/

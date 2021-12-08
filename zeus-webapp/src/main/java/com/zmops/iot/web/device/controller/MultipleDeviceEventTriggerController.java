@@ -98,6 +98,11 @@ public class MultipleDeviceEventTriggerController {
     public ResponseData createDeviceEventRule(@RequestBody @Validated(value = BaseEntity.Create.class)
                                                       MultipleDeviceEventRule eventRule) {
 
+        int count = new QProductEvent().eventRuleName.eq(eventRule.getEventRuleName()).classify.eq("1").findCount();
+        if (count > 0) {
+            throw new ServiceException(BizExceptionEnum.SCENE_EXISTED);
+        }
+
         multipleDeviceEventRuleService.checkParam(eventRule);
 
         Long eventRuleId = IdUtil.getSnowflake().nextId();
@@ -183,6 +188,10 @@ public class MultipleDeviceEventTriggerController {
                 .findOne();
         if (null == productEvent) {
             throw new ServiceException(BizExceptionEnum.EVENT_NOT_EXISTS);
+        }
+        int count = new QProductEvent().eventRuleName.eq(eventRule.getEventRuleName()).eventRuleId.ne(eventRule.getEventRuleId()).classify.eq("1").findCount();
+        if (count > 0) {
+            throw new ServiceException(BizExceptionEnum.SCENE_EXISTED);
         }
 
         //检查参数

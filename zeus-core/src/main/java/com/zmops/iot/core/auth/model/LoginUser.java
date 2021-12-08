@@ -97,6 +97,11 @@ public class LoginUser implements UserDetails, Serializable {
     private Set<String> permissions;
 
     /**
+     * 租户ID
+     */
+    private Long tenantId;
+
+    /**
      * zabbix token
      *
      * @return

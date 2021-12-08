@@ -61,4 +61,5 @@ public class ProductStatusFunctionDto {
     @CachedValue(type = DicType.SysUserName, fieldName = "updateUserName")
     private Long updateUser;
     private String updateTime;
+    private String zbxIdRecovery;
 }

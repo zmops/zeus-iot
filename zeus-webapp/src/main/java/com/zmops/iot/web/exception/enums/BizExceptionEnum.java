@@ -153,7 +153,7 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     DEVICE_EXISTS(1501, "设备名称已存在"),
     DEVICE_ID_EXISTS(1503, "设备ID已存在"),
     DEVICE_NOT_EXISTS(1502, "设备不存在"),
-    DEVICE_ID_HAS_INCORRECT_CHARACTER(1504,"设备ID不能包含\\或\\/字符"),
+    DEVICE_NAME_HAS_INCOREECT_CHARACTER(1504,"设备名称不能包含\\或\\/字符"),
 
     /**
      * 服务相关
@@ -185,9 +185,36 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
      */
     TASK_NOT_SCHEDULE_CONF(2201,"任务调度配置不能为空"),
     TASK_SCHEDULE_CONF_NOT_MATCH(2202,"任务调度配置不正确"),
+
     /**
      * 租户相关的异常
      */
+    TENANT_NAME_EXISTS(1801, "租户名称已存在"),
+
+    TENANT_ACCOUNT_EXISTS(1802, "租户账号已存在"),
+    TENANT_NOT_EXISTS(1803, "租户不存在"),
+    TENANT_HAS_RELATION_INFO(1804, "租户已关联用户组、设备组、产品类型"),
+
+    /**
+     * 设备调试相关
+     */
+    ZBX_DEVICE_API_HASNOT_KEY(1901,"属性KEY和值不能为空"),
+
+    /**
+     * 代理服务相关
+     */
+    PROXY_EXISTS(2001, "代理服务已存在"),
+    PROXY_NOT_EXISTS(2002, "代理服务不存在"),
+
+
+    /**
+     * 数据转换相关
+     *
+     */
+    ZBX_SERBER_NOT_CONFIG(2101,"Zabbix配置信息获取失败"),
+    ZBX_SERBER_EXPORT_PATH_NOT_CONFIG(2102,"Zabbix日志输出路径未配置"),
+
+
     AUTH_REQUEST_ERROR(400, "账号密码错误");
 
 

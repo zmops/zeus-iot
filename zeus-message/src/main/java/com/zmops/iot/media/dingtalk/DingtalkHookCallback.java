@@ -72,8 +72,8 @@ public class DingtalkHookCallback implements AlarmCallback {
      * Send alarm message if the settings not empty
      */
     @Override
-    public void doAlarm(List<AlarmMessage> alarmMessages) {
-        DingtalkSettings dingtalkSettings = dingtalkSettingService.get();
+    public void doAlarm(List<AlarmMessage> alarmMessages,Long tenantId) {
+        DingtalkSettings dingtalkSettings = dingtalkSettingService.get(tenantId);
         if (dingtalkSettings == null || dingtalkSettings.getWebhooks().isEmpty()) {
             return;
         }

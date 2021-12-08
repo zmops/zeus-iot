@@ -40,12 +40,14 @@ public interface ZbxItem {
                              @ParamName("itemKey") String itemKey,
                              @ParamName("hostId") String hostId,
                              @ParamName("source") String source,
+                             @ParamName("delay") String delay,
                              @ParamName("masterItemid") String masterItemid,
                              @ParamName("valueType") String valueType,
                              @ParamName("units") String units,
                              @ParamName("processList") List<ZbxProcessingStep> processingStepList,
                              @ParamName("valuemapid") String valuemapid,
-                             @ParamName("tagMap") Map<String, String> tagMap);
+                             @ParamName("tagMap") Map<String, String> tagMap,
+                             @ParamName("interfaceid") String interfaceid);
 
     /**
      * 修改 Zabbix Trapper ITEM
@@ -68,12 +70,14 @@ public interface ZbxItem {
                              @ParamName("itemKey") String itemKey,
                              @ParamName("hostId") String hostId,
                              @ParamName("source") String source,
+                             @ParamName("delay") String delay,
                              @ParamName("masterItemid") String masterItemid,
                              @ParamName("valueType") String valueType,
                              @ParamName("units") String units,
                              @ParamName("processList") List<ZbxProcessingStep> processingStepList,
                              @ParamName("valuemapid") String valuemapid,
-                             @ParamName("tagMap") Map<String, String> tagMap);
+                             @ParamName("tagMap") Map<String, String> tagMap,
+                             @ParamName("interfaceid") String interfaceid);
 
     /**
      * 删称 Zabbix Trapper ITEM

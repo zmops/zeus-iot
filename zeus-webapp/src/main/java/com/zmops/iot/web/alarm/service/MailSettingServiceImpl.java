@@ -1,6 +1,7 @@
 package com.zmops.iot.web.alarm.service;
 
 
+import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.domain.messages.MailParam;
 import com.zmops.iot.domain.messages.MailSetting;
 import com.zmops.iot.domain.messages.NoticeResult;
@@ -12,9 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author yefei
@@ -26,7 +25,7 @@ public class MailSettingServiceImpl implements MailSettingService {
     @Autowired
     MailNotice mailNotice;
 
-    private volatile MailSetting instance;
+    private volatile Map<Long, MailSetting> instanceMap = new HashMap<>();
 
     @Override
     public MailSetting get() {
@@ -34,13 +33,19 @@ public class MailSettingServiceImpl implements MailSettingService {
     }
 
     private MailSetting getOne() {
-        if (instance != null) {
-            return instance;
+        Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
+        tenantId = Optional.ofNullable(tenantId).orElse(-1L);
+        if (instanceMap.get(tenantId) != null) {
+            return instanceMap.get(tenantId);
         }
-        return instance = Optional.of(new QMailSetting().findList())
+        MailSetting mailSetting = Optional.of(new QMailSetting().findList())
                 .map(Collection::iterator)
                 .filter(Iterator::hasNext)
                 .map(Iterator::next).orElse(null);
+        if (mailSetting != null) {
+            instanceMap.put(tenantId, mailSetting);
+        }
+        return mailSetting;
     }
 
 
@@ -67,7 +72,8 @@ public class MailSettingServiceImpl implements MailSettingService {
             mailSetting.setId(dbSetting.getId());
             DB.update(mailSetting);
         }
-        instance = mailSetting;
+        Long tenantId = Optional.ofNullable(mailSetting.getTenantId()).orElse(-1L);
+        instanceMap.put(tenantId, mailSetting);
         return mailSetting.getId();
     }
 

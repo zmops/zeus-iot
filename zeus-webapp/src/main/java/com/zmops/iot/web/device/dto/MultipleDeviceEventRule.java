@@ -55,6 +55,8 @@ public class MultipleDeviceEventRule {
 
     private String classify = "1";
 
+    private Long tenantId;
+
     private String scheduleConf;
 
     @NotNull

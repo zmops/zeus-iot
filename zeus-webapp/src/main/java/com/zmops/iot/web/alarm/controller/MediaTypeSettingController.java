@@ -1,5 +1,6 @@
 package com.zmops.iot.web.alarm.controller;
 
+import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.domain.alarm.MediaTypeSetting;
 import com.zmops.iot.domain.alarm.query.QMediaTypeSetting;
 import com.zmops.iot.model.response.ResponseData;
@@ -23,7 +24,13 @@ public class MediaTypeSettingController {
 
     @GetMapping("/list")
     public ResponseData list(@RequestParam(value = "type", required = false) String type) {
+        Long              tenantId          = LoginContextHolder.getContext().getUser().getTenantId();
         QMediaTypeSetting qMediaTypeSetting = new QMediaTypeSetting();
+        if (null != tenantId) {
+            qMediaTypeSetting.tenantId.eq(tenantId);
+        } else {
+            qMediaTypeSetting.tenantId.isNull();
+        }
         if (ToolUtil.isNotEmpty(type)) {
             qMediaTypeSetting.type.eq(type);
         }

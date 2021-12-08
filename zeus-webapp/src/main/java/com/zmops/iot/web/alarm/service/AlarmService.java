@@ -1,6 +1,5 @@
 package com.zmops.iot.web.alarm.service;
 
-import com.google.common.base.Joiner;
 import com.zmops.iot.domain.alarm.AlarmMessage;
 import com.zmops.iot.domain.alarm.Problem;
 import com.zmops.iot.domain.alarm.query.QProblem;
@@ -48,7 +47,6 @@ public class AlarmService {
     public void alarm(Map<String, Object> alarmInfo) {
         List<String> deviceIds = (List) alarmInfo.get("hostname");
         String eventRuleId = (String) alarmInfo.get("triggerName");
-        String title = (String) alarmInfo.get("title");
 
         if (ToolUtil.isEmpty(deviceIds) || ToolUtil.isEmpty(eventRuleId)) {
             return;
@@ -61,37 +59,37 @@ public class AlarmService {
 
         if (ToolUtil.isNotEmpty(deviceList) && null != productEvent) {
             String deviceName = deviceList.parallelStream().map(Device::getName).collect(Collectors.joining(","));
-            String alarmmessage = "设备:" + deviceName +"  "+ title + "，告警内容：" + productEvent.getEventRuleName();
+            String alarmmessage = "设备:" + deviceName + "发生告警，告警内容：" + productEvent.getEventRuleName();
             alarmMessages.add(AlarmMessage.builder().alarmMessage(alarmmessage).build());
             alarmCallbacks.forEach(alarmCallback -> {
-                alarmCallback.doAlarm(alarmMessages);
+                alarmCallback.doAlarm(alarmMessages, deviceList.get(0).getTenantId());
             });
         }
     }
 
-    public void action(Map<String, Object> alarmInfo) {
-        List<String> deviceIds = (List) alarmInfo.get("hostname");
-        String serviceName = (String) alarmInfo.get("serviceName");
+    public void action(Map<String, String> alarmInfo) {
+        String deviceId = alarmInfo.get("hostname");
+        String serviceName = alarmInfo.get("serviceName");
 
-        if (ToolUtil.isEmpty(deviceIds) || ToolUtil.isEmpty(serviceName)) {
+        if (ToolUtil.isEmpty(deviceId) || ToolUtil.isEmpty(serviceName)) {
             return;
         }
 
-        List<Device> deviceList = new QDevice().deviceId.in(deviceIds).findList();
-        List<String> deviceName = deviceList.parallelStream().map(Device::getName).collect(Collectors.toList());
+        Device device = new QDevice().deviceId.eq(deviceId).findOne();
 
         List<AlarmMessage> alarmMessages = new ArrayList<>();
 
-        if (ToolUtil.isNotEmpty(deviceList)) {
-            String alarmmessage = "设备:" + Joiner.on(",").join(deviceName) + "触发联动服务，服务名称：" + serviceName;
+        if (null != device) {
+            String alarmmessage = "设备:" + device.getName() + "触发联动服务，服务名称：" + serviceName;
             alarmMessages.add(AlarmMessage.builder().alarmMessage(alarmmessage).build());
             alarmCallbacks.forEach(alarmCallback -> {
 //            if (alarmCallback.getType().equals("welink")) {
-                alarmCallback.doAlarm(alarmMessages);
+                alarmCallback.doAlarm(alarmMessages, device.getTenantId());
 //            }
             });
         }
     }
+
 
     public Pager<AlarmDto> getAlarmByPage(AlarmParam alarmParam) {
 

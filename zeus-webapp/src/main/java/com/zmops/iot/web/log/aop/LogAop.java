@@ -109,6 +109,6 @@ public class LogAop {
 //            msg = Contrast.parseMutiKey(dictMap, key, parameters);
 //        }
 
-        LogManager.me().executeLog(LogTaskFactory.bussinessLog(user.getId(), bussinessName, className, methodName, msg));
+        LogManager.me().executeLog(LogTaskFactory.bussinessLog(user.getId(), bussinessName, className, methodName, msg,user.getTenantId()));
     }
 }

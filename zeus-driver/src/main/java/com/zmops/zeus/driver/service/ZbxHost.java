@@ -4,6 +4,7 @@ import com.dtflys.forest.annotation.BaseRequest;
 import com.dtflys.forest.annotation.Post;
 import com.zmops.zeus.driver.annotation.JsonPath;
 import com.zmops.zeus.driver.annotation.ParamName;
+import com.zmops.zeus.driver.entity.Interface;
 import com.zmops.zeus.driver.inteceptor.JsonBodyBuildInterceptor;
 import lombok.Data;
 
@@ -33,7 +34,9 @@ public interface ZbxHost {
     @JsonPath("/host/host.create")
     String hostCreate(@ParamName("hostName") String hostName,
                       @ParamName("groupids") List<String> groupids,
-                      @ParamName("templateid") String templateid);
+                      @ParamName("templateid") String templateid,
+                      @ParamName("proxyid") String proxyid,
+                      @ParamName("interfaces") Interface interfaces);
 
     /**
      * 修改主机
@@ -47,7 +50,10 @@ public interface ZbxHost {
     @JsonPath("/host/host.update")
     String hostUpdate(@ParamName("hostid") String hostid,
                       @ParamName("groupids") List<String> groupids,
-                      @ParamName("templateid") String templateid);
+                      @ParamName("templateid") String templateid,
+                      @ParamName("proxyid") String proxyid,
+                      @ParamName("interfaces") Interface interfaces);
+
     /**
      * 修改主机状态
      *
@@ -59,6 +65,7 @@ public interface ZbxHost {
     @JsonPath("/host/host.status.update")
     String hostStatusUpdate(@ParamName("hostid") String hostid,
                       @ParamName("status") String status);
+
 
     /**
      * 删除主机

@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dtflys.forest.Forest;
 import com.zmops.iot.core.auth.context.LoginContextHolder;
+import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.ServiceExecuteRecord;
+import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.ProductService;
 import com.zmops.iot.domain.product.ProductServiceParam;
 import com.zmops.iot.domain.product.query.QProductService;
@@ -72,6 +74,12 @@ public class DeviceSvrService {
             serviceExecuteRecord.setParam(JSONObject.toJSONString(paramList.parallelStream().collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue))));
         }
         serviceExecuteRecord.setServiceName(DefinitionsUtil.getServiceName(serviceId));
+
+        Device device = new QDevice().deviceId.eq(deviceId).findOne();
+        if (null != device) {
+            serviceExecuteRecord.setTenantId(device.getTenantId());
+        }
+
         serviceExecuteRecord.setCreateTime(LocalDateTime.now());
         serviceExecuteRecord.setExecuteType("手动");
         serviceExecuteRecord.setExecuteUser(LoginContextHolder.getContext().getUserId());

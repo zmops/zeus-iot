@@ -1,11 +1,11 @@
 package com.zmops.iot.web.device.service.work;
 
 
-import com.zmops.zeus.server.async.callback.IWorker;
-import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.device.DevicesGroups;
 import com.zmops.iot.domain.device.query.QDevicesGroups;
 import com.zmops.iot.web.device.dto.DeviceDto;
+import com.zmops.zeus.server.async.callback.IWorker;
+import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -26,7 +26,7 @@ public class SaveDeviceGrpWorker implements IWorker<DeviceDto, Boolean> {
 
     @Override
     public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper> map) {
-        log.debug("step 4:SaveDeviceGrpWorker----DEVICEID:{}…………",deviceDto.getDeviceId());
+        log.debug("step 4:SaveDeviceGrpWorker----DEVICEID:{}…………", deviceDto.getDeviceId());
 
         //修改模式 先清空关联关系
         if (null != deviceDto.getDeviceId()) {
@@ -39,7 +39,7 @@ public class SaveDeviceGrpWorker implements IWorker<DeviceDto, Boolean> {
             devicesGroupsList.add(DevicesGroups.builder().deviceId(deviceDto.getDeviceId()).deviceGroupId(deviceGroupId).build());
         }
         DB.saveAll(devicesGroupsList);
-        log.debug("step 4:SaveDeviceGrpWorker----DEVICEID:{}…………",deviceDto.getDeviceId());
+        log.debug("step 4:SaveDeviceGrpWorker----DEVICEID:{}…………", deviceDto.getDeviceId());
         return true;
     }
 

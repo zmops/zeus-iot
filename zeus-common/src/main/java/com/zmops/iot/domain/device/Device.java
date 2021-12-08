@@ -2,6 +2,8 @@ package com.zmops.iot.domain.device;
 
 import com.zmops.iot.domain.BaseEntity;
 import io.ebean.annotation.Aggregation;
+import io.ebean.annotation.TenantId;
+import io.ebean.annotation.WhoCreated;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -39,6 +41,10 @@ public class Device extends BaseEntity {
     private String position;
 
     private Integer online;
+
+    private Long tenantId;
+
+    private Long proxyId;
 
     private LocalDateTime latestOnline;
 

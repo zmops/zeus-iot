@@ -25,5 +25,8 @@ public class EventTriggerRecord {
 
     private String deviceId;
 
+    private Long tenantId;
+
     private String key;
+
 }

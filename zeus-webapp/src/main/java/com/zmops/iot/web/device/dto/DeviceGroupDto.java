@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.zmops.iot.model.cache.filter.CachedValue;
 import com.zmops.iot.model.cache.filter.CachedValueFilter;
 import com.zmops.iot.model.cache.filter.DicType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +17,9 @@ import java.time.LocalDateTime;
  * @author yefei
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonSerialize(using = CachedValueFilter.class)
 public class DeviceGroupDto {
 
@@ -22,6 +28,9 @@ public class DeviceGroupDto {
     private String name;
 
     private String remark;
+
+    @CachedValue(type = DicType.Tenant, fieldName = "tenantName")
+    private Long tenantId;
 
     @CachedValue(type = DicType.SysUserName, fieldName = "createUserName")
     private Long          createUser;

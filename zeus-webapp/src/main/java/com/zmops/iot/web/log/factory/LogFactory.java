@@ -34,7 +34,7 @@ public class LogFactory {
      * 创建操作日志
      */
     public static SysOperationLog createOperationLog(LogType logType, Long userId, String bussinessName,
-                                                     String clazzName, String methodName, String msg, LogSucceed succeed) {
+                                                     String clazzName, String methodName, String msg, LogSucceed succeed,Long tenantId) {
         SysOperationLog operationLog = new SysOperationLog();
         operationLog.setLogType(logType.getMessage());
         operationLog.setLogName(bussinessName);
@@ -44,13 +44,14 @@ public class LogFactory {
         operationLog.setCreateTime(LocalDateTime.now());
         operationLog.setSucceed(succeed.getMessage());
         operationLog.setMessage(msg);
+        operationLog.setTenantId(tenantId);
         return operationLog;
     }
 
     /**
      * 创建登录日志
      */
-    public static SysLoginLog createLoginLog(LogType logType, Long userId, String msg, String ip) {
+    public static SysLoginLog createLoginLog(LogType logType, Long userId, String msg, String ip,Long tenantId) {
         SysLoginLog loginLog = new SysLoginLog();
         loginLog.setLogName(logType.getMessage());
         loginLog.setUserId(userId);
@@ -58,6 +59,7 @@ public class LogFactory {
         loginLog.setSucceed(LogSucceed.SUCCESS.getMessage());
         loginLog.setIpAddress(ip);
         loginLog.setMessage(msg);
+        loginLog.setTenantId(tenantId);
         return loginLog;
     }
 }

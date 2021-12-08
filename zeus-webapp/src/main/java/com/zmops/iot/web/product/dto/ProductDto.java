@@ -40,6 +40,7 @@ public class ProductDto {
 
     private String zbxId;
 
+
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
     @CachedValue(type = DicType.SysUserName, fieldName = "createUserName")
@@ -49,9 +50,9 @@ public class ProductDto {
 
     private Long deviceNum;
 
-    private String icon;
+    @CachedValue(type = DicType.Tenant, fieldName = "tenantName")
+    private Long tenantId;
 
-//    private List<ProductTag.Tag> productTag;
-//    private JSONArray            valueMaps;
+    private String icon;
 
 }

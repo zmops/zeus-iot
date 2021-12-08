@@ -79,21 +79,30 @@ public class SysUserService implements CommandLineRunner {
         StringBuilder sql = new StringBuilder(
                 "select u.account, u.name, u.email, u.phone, u.role_id,r.name role_name," +
                         "u.user_group_id,g.group_name user_group_name, u.status, u.create_user, " +
-                        "u.update_user, u.create_time, u.update_time, u.user_id,u.remark FROM sys_user u");
+                        "u.update_user, u.create_time, u.update_time, u.user_id,u.tenant_id,u.remark FROM sys_user u");
 
         sql.append(" LEFT JOIN sys_role r ON r.role_id = u.role_id ");
         sql.append(" LEFT JOIN sys_user_group g ON g.user_group_id = u.user_group_id ");
-
+        sql.append(" where 1=1 ");
         if (ToolUtil.isNotEmpty(userParam.getName())) {
-            sql.append(" where u.name like ?");
+            sql.append(" and u.name like :name");
             qSysUser.name.contains(userParam.getName());
         }
+        Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
+        if (tenantId != null) {
+            sql.append(" and u.tenant_id = :tenantId");
+            qSysUser.tenantId.eq(tenantId);
+        }
+
         sql.append(" order by u.create_time desc ");
 
         DtoQuery<UserDto> dto = DB.findDto(UserDto.class, sql.toString());
 
         if (ToolUtil.isNotEmpty(userParam.getName())) {
-            dto.setParameter("%" + userParam.getName() + "%");
+            dto.setParameter("name", "%" + userParam.getName() + "%");
+        }
+        if (tenantId != null) {
+            dto.setParameter("tenantId", tenantId);
         }
         List<UserDto> pagedList = dto.setFirstRow((userParam.getPage() - 1) * userParam.getMaxRow()).setMaxRows(userParam.getMaxRow()).findList();
 

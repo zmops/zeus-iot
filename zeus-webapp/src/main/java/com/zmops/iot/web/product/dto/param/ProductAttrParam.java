@@ -21,6 +21,7 @@ public class ProductAttrParam extends BaseQueryParam {
 
     private String key;
 
+    private String source;
 
     @NotEmpty(groups = BaseEntity.Delete.class)
     private List<Long> ids;

@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface AlarmCallback {
 
-    void doAlarm(List<AlarmMessage> alarmMessage);
+    void doAlarm(List<AlarmMessage> alarmMessage,Long tenantId);
 
     String getType();
 }

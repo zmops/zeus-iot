@@ -62,8 +62,8 @@ public class WechatHookCallback implements AlarmCallback {
     }
 
     @Override
-    public void doAlarm(List<AlarmMessage> alarmMessages) {
-//        WechatSettings wechatSettings = wechatSettingService.get();
+    public void doAlarm(List<AlarmMessage> alarmMessages,Long tenantId) {
+//        WechatSettings wechatSettings = wechatSettingService.get(tenantId);
 //        if (wechatSettings == null || wechatSettings.getWebhooks().isEmpty()) {
 //            return;
 //        }

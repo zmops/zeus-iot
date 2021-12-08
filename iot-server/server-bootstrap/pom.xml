@@ -87,12 +87,12 @@
         </dependency>
 
 
-        <dependency>
-            <groupId>com.zmops.hello</groupId>
-            <artifactId>zeus-ark-hello</artifactId>
-            <version>1.0-beta</version>
-            <classifier>ark-biz</classifier>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.zmops.hello</groupId>-->
+<!--            <artifactId>zeus-ark-hello</artifactId>-->
+<!--            <version>1.0-beta</version>-->
+<!--            <classifier>ark-biz</classifier>-->
+<!--        </dependency>-->
         <!--
         <dependency>
             <groupId>org.apache.camel</groupId>

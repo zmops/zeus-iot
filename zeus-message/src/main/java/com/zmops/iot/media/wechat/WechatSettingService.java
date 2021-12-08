@@ -6,6 +6,8 @@ import com.zmops.iot.domain.alarm.query.QMediaTypeSetting;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author yefei
@@ -15,8 +17,24 @@ public class WechatSettingService {
 
     private volatile WechatSettings instance;
 
-    public WechatSettings get() {
-        return getOne();
+    private volatile Map<Long, WechatSettings> instanceMap = new ConcurrentHashMap<>();
+
+    public WechatSettings get(Long tenantId) {
+        if (null == tenantId) {
+            return getOne();
+        } else {
+            return getFromMap(tenantId);
+        }
+    }
+
+    private WechatSettings getFromMap(Long tenantId) {
+        if (instanceMap.get(tenantId) != null) {
+            return instanceMap.get(tenantId);
+        }
+        MediaTypeSetting setting  = new QMediaTypeSetting().type.eq("wechat").tenantId.eq(tenantId).findOne();
+        WechatSettings   instance = buildWechatSetting(setting);
+        instanceMap.put(tenantId, instance);
+        return instance;
     }
 
     private WechatSettings getOne() {

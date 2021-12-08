@@ -8,11 +8,11 @@ import lombok.EqualsAndHashCode;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Objects;
 
 /**
  * @author nantian created at 2021/8/5 13:03
  */
-
 @EqualsAndHashCode(callSuper = false)
 @Data
 @Entity

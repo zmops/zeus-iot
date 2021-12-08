@@ -13,7 +13,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>server-tdengine-plugin</module>
-        <module>server-none-storage</module>
+        <module>server-influxdb-plugin</module>
+		<module>server-none-storage</module>
     </modules>
 
     <properties>

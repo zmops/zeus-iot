@@ -3,6 +3,7 @@ package com.zmops.iot.web.sys.service;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.domain.device.DeviceGroup;
 import com.zmops.iot.domain.device.SysUserGrpDevGrp;
 import com.zmops.iot.domain.device.query.QDeviceGroup;
@@ -49,20 +50,30 @@ public class SysUserGroupService {
     public Pager<UserGroupDto> userGroupPageList(UserGroupParam userGroupParam) {
         QSysUserGroup qSysUserGroup = new QSysUserGroup();
         StringBuilder sql = new StringBuilder("SELECT " +
-                " sug.group_name, sug.remark, sug.create_time, sug.create_user, sug.update_time, sug.update_user, sug.status, sug.user_group_id, " +
+                " sug.group_name, sug.remark, sug.create_time, sug.create_user, sug.update_time, sug.update_user, sug.status, sug.user_group_id, sug.tenant_id," +
                 " dg.groupIds  " +
                 "FROM " +
                 " sys_user_group sug " +
                 " LEFT JOIN ( SELECT user_group_id, array_to_string( ARRAY_AGG ( device_group_id ), ',' ) groupIds FROM sys_usrgrp_devicegrp GROUP BY user_group_id ) dg " +
                 " ON dg.user_group_id = sug.user_group_id");
+        sql.append(" where 1=1 ");
         if (ToolUtil.isNotEmpty(userGroupParam.getGroupName())) {
-            sql.append(" where sug.group_name like  :groupName");
+            sql.append(" and sug.group_name like  :groupName");
+        }
+        Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
+        if (null != tenantId) {
+            sql.append(" and sug.tenant_id =  :tenantId");
         }
         sql.append(" order by sug.create_time desc ");
+
         DtoQuery<UserGroupDto> dto = DB.findDto(UserGroupDto.class, sql.toString());
         if (ToolUtil.isNotEmpty(userGroupParam.getGroupName())) {
             dto.setParameter("groupName", "%" + userGroupParam.getGroupName() + "%");
             qSysUserGroup.groupName.contains(userGroupParam.getGroupName());
+        }
+        if (null != tenantId) {
+            dto.setParameter("tenantId", tenantId);
+            qSysUserGroup.tenantId.eq(tenantId);
         }
         List<UserGroupDto> list = dto.setFirstRow((userGroupParam.getPage() - 1) * userGroupParam.getMaxRow())
                 .setMaxRows(userGroupParam.getMaxRow()).findList();
@@ -79,8 +90,13 @@ public class SysUserGroupService {
 //        if (ToolUtil.isNotEmpty(userGroupParam.getGroupName())) {
 //            qSysUserGroup.groupName.contains(userGroupParam.getGroupName());
 //        }
+        QSysUserGroup qSysUserGroup = new QSysUserGroup();
 
-        return new QSysUserGroup().findList();
+        Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
+        if (null != tenantId) {
+            qSysUserGroup.tenantId.eq(tenantId);
+        }
+        return qSysUserGroup.findList();
     }
 
     /**
@@ -89,7 +105,7 @@ public class SysUserGroupService {
     @Transactional(rollbackFor = Exception.class)
     public SysUserGroup createUserGroup(UserGroupDto userGroup) {
         // 判断用户组是否重复
-        checkByGroupName(userGroup.getGroupName(), -1L);
+        checkByGroupName(userGroup.getGroupName(), -1L, userGroup.getTenantId());
         long usrGrpId = IdUtil.getSnowflake().nextId();
 
         SysUserGroup newUserGroup = new SysUserGroup();
@@ -117,13 +133,14 @@ public class SysUserGroupService {
      */
     public SysUserGroup updateUserGroup(UserGroupDto userGroup) {
         // 判断用户组是否重复
-        checkByGroupName(userGroup.getGroupName(), userGroup.getUserGroupId());
+        checkByGroupName(userGroup.getGroupName(), userGroup.getUserGroupId(), userGroup.getTenantId());
 
         SysUserGroup newUserGroup = new SysUserGroup();
         BeanUtils.copyProperties(userGroup, newUserGroup);
         DB.update(newUserGroup);
-
+        
         bindHostGrp(UserGroupParam.builder().userGroupId(userGroup.getUserGroupId()).deviceGroupIds(userGroup.getDeviceGroupIds()).build());
+
         return newUserGroup;
     }
 
@@ -133,12 +150,12 @@ public class SysUserGroupService {
      *
      * @param groupName
      */
-    private void checkByGroupName(String groupName, Long userGroupId) {
+    private void checkByGroupName(String groupName, Long userGroupId, Long tenantId) {
         int count;
         if (userGroupId > 0) {
-            count = new QSysUserGroup().groupName.eq(groupName).userGroupId.ne(userGroupId).findCount();
+            count = new QSysUserGroup().groupName.eq(groupName).tenantId.eq(tenantId).userGroupId.ne(userGroupId).findCount();
         } else {
-            count = new QSysUserGroup().groupName.eq(groupName).findCount();
+            count = new QSysUserGroup().groupName.eq(groupName).tenantId.eq(tenantId).findCount();
         }
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.USERGROUP_HAS_EXIST);
@@ -197,6 +214,7 @@ public class SysUserGroupService {
         if (ToolUtil.isNotEmpty(userGroup.getDeviceGroupIds())) {
             return;
         }
+
         List<SysUserGrpDevGrp> lists = new ArrayList<>();
         for (Long deviceGroupId : userGroup.getDeviceGroupIds()) {
             SysUserGrpDevGrp devicesGroups = new SysUserGrpDevGrp();

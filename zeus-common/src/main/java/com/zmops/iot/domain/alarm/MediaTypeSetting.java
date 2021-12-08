@@ -23,4 +23,6 @@ public class MediaTypeSetting {
     private String template;
 
     private String webhooks;
+
+    private Long tenantId;
 }

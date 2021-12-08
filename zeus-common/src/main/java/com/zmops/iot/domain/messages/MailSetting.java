@@ -28,6 +28,7 @@ public class MailSetting {
     private Integer tls;
     private String  severity;
     private Integer silent;
+    private Long    tenantId;
 
 
     public boolean sslAvailable() {

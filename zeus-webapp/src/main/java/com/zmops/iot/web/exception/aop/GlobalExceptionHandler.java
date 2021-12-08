@@ -20,6 +20,7 @@ import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.core.auth.exception.AuthException;
 import com.zmops.iot.core.auth.exception.PermissionException;
 import com.zmops.iot.core.auth.exception.enums.AuthExceptionEnum;
+import com.zmops.iot.core.auth.model.LoginUser;
 import com.zmops.iot.model.exception.InvalidKaptchaException;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.exception.ZbxApiException;
@@ -109,7 +110,7 @@ public class GlobalExceptionHandler {
     public ErrorResponseData handleError(BindException e) {
         log.warn("Bind Exception", e);
         FieldError error = e.getFieldError();
-        String message = String.format("%s:%s", error.getField(), error.getDefaultMessage());
+        String message = String.format("%s:不能为空", error.getField(), error.getDefaultMessage());
         return new ErrorResponseData(400, message);
     }
 
@@ -157,7 +158,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData permissionExpection(PermissionException e) {
-        LogManager.me().executeLog(LogTaskFactory.loginLog("username", "验证码错误", getIp()));
+        LogManager.me().executeLog(LogTaskFactory.loginLog("username", "验证码错误", getIp(), null));
         return new ErrorResponseData(e.getCode(), e.getMessage());
     }
 
@@ -169,7 +170,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ErrorResponseData credentials(InvalidKaptchaException e) {
         String username = getRequest().getParameter("username");
-        LogManager.me().executeLog(LogTaskFactory.loginLog(username, "验证码错误", getIp()));
+        LogManager.me().executeLog(LogTaskFactory.loginLog(username, "验证码错误", getIp(), null));
         return new ErrorResponseData(AuthExceptionEnum.VALID_CODE_ERROR.getCode(), AuthExceptionEnum.VALID_CODE_ERROR.getMessage());
     }
 
@@ -182,7 +183,8 @@ public class GlobalExceptionHandler {
     public ErrorResponseData bussiness(ServiceException e) {
         log.error("业务异常:", e);
         if (LoginContextHolder.getContext().hasLogin()) {
-            LogManager.me().executeLog(LogTaskFactory.exceptionLog(LoginContextHolder.getContext().getUserId(), e));
+            LoginUser user = LoginContextHolder.getContext().getUser();
+            LogManager.me().executeLog(LogTaskFactory.exceptionLog(user.getId(), e, user.getTenantId()));
         }
         getRequest().setAttribute("tip", e.getMessage());
         return new ErrorResponseData(e.getCode(), e.getMessage());
@@ -198,7 +200,8 @@ public class GlobalExceptionHandler {
     public ErrorResponseData bussiness(ZbxApiException e) {
         log.error("Zabbix接口调用出错:", e);
         if (LoginContextHolder.getContext().hasLogin()) {
-            LogManager.me().executeLog(LogTaskFactory.exceptionLog(LoginContextHolder.getContext().getUserId(), e));
+            LoginUser user = LoginContextHolder.getContext().getUser();
+            LogManager.me().executeLog(LogTaskFactory.exceptionLog(user.getId(), e, user.getTenantId()));
         }
         getRequest().setAttribute("tip", e.getMessage());
         return new ErrorResponseData(e.getCode(), e.getMessage());
@@ -213,7 +216,8 @@ public class GlobalExceptionHandler {
     public ErrorResponseData notFount(Throwable e) {
         log.error("运行时异常:", e);
         if (LoginContextHolder.getContext().hasLogin()) {
-            LogManager.me().executeLog(LogTaskFactory.exceptionLog(LoginContextHolder.getContext().getUserId(), e));
+            LoginUser user = LoginContextHolder.getContext().getUser();
+            LogManager.me().executeLog(LogTaskFactory.exceptionLog(user.getId(), e, user.getTenantId()));
         }
         String message = String.format("服务器未知运行时异常: %s", e.getMessage());
         getRequest().setAttribute("tip", message);
@@ -229,7 +233,8 @@ public class GlobalExceptionHandler {
     public ErrorResponseData runtime(RuntimeException e) {
         log.error("运行时异常:", e);
         if (LoginContextHolder.getContext().hasLogin()) {
-            LogManager.me().executeLog(LogTaskFactory.exceptionLog(LoginContextHolder.getContext().getUserId(), e));
+            LoginUser user = LoginContextHolder.getContext().getUser();
+            LogManager.me().executeLog(LogTaskFactory.exceptionLog(user.getId(), e, user.getTenantId()));
         }
         String message = String.format("服务器运行异常请联系管理员");
         getRequest().setAttribute("tip", message);

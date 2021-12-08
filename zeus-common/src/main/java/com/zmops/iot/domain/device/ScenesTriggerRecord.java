@@ -23,7 +23,10 @@ public class ScenesTriggerRecord {
 
     private Long ruleId;
 
+    private Long tenantId;
+
     private String triggerType;
 
     private Long triggerUser;
+
 }

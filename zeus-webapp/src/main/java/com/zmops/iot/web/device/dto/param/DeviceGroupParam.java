@@ -26,4 +26,6 @@ public class DeviceGroupParam extends BaseQueryParam {
 
     @NotNull(groups = BaseEntity.Delete.class)
     private List<Long> deviceGroupIds;
+
+    private Long tenantId;
 }

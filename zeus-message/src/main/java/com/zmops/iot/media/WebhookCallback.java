@@ -33,7 +33,7 @@ public class WebhookCallback implements AlarmCallback {
     private RequestConfig requestConfig;
 
     @Override
-    public void doAlarm(List<AlarmMessage> alarmMessage) {
+    public void doAlarm(List<AlarmMessage> alarmMessage,Long tenantId) {
 
     }
 

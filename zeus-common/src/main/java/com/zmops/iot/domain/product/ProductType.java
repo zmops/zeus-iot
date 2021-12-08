@@ -26,4 +26,6 @@ public class ProductType extends BaseEntity {
     private String name;
 
     private String remark;
+
+    private Long tenantId;
 }

@@ -61,4 +61,7 @@ public class UserGroupDto {
 
     @CachedValue(type = DicType.SysUserName, fieldName = "updateUserName")
     Long updateUser;
+
+    @CachedValue(type = DicType.Tenant, fieldName = "tenantName")
+    private Long tenantId;
 }

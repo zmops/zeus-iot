@@ -7,7 +7,6 @@ import com.zmops.iot.domain.product.ProductEventTimeInterval;
 import com.zmops.iot.model.cache.filter.CachedValue;
 import com.zmops.iot.model.cache.filter.CachedValueFilter;
 import com.zmops.iot.model.cache.filter.DicType;
-import com.zmops.iot.web.product.dto.ProductEventRuleDto;
 import lombok.Data;
 
 import java.util.List;
@@ -36,16 +35,21 @@ public class MultipleDeviceEventDto {
     private String remark;
     private String classify;
     private String expLogic;
+
     @CachedValue(type = DicType.SysUserName, fieldName = "createUserName")
     private Long createUser;
     private String createTime;
     @CachedValue(type = DicType.SysUserName, fieldName = "updateUserName")
     private Long updateUser;
+
     private String updateTime;
 
     private String triggerDevice;
 
     private String executeDevice;
+
+    @CachedValue(type = DicType.Tenant, fieldName = "tenantName")
+    private Long tenantId;
 
     private Integer taskId;
 
@@ -61,4 +65,5 @@ public class MultipleDeviceEventDto {
     private List<MultipleDeviceEventRule.Tag> tags;
 
     private List<ProductEventTimeInterval> timeExpList;
+
 }

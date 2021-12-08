@@ -95,7 +95,6 @@ public class ProductModelService {
 //        if (ToolUtil.isNotEmpty(productAttr.getKey())) {
 //            qProductAttribute.key.contains(productAttr.getKey());
 //        }
-//        return qProductAttribute.orderBy(" create_time desc").asDto(ProductAttrDto.class).findList();
         StringBuilder sql = new StringBuilder("select * from product_attribute where 1=1");
         if (null != productAttr.getProdId()) {
             sql.append(" and product_id = :productId");
@@ -106,7 +105,11 @@ public class ProductModelService {
         if (ToolUtil.isNotEmpty(productAttr.getKey())) {
             sql.append(" and key like :key");
         }
+        if (ToolUtil.isNotEmpty(productAttr.getSource())) {
+            sql.append(" and source = :source");
+        }
         sql.append(" order by create_time desc");
+
         DtoQuery<ProductAttrDto> dto = DB.findDto(ProductAttrDto.class, sql.toString());
 
         if (null != productAttr.getProdId()) {
@@ -118,7 +121,9 @@ public class ProductModelService {
         if (ToolUtil.isNotEmpty(productAttr.getKey())) {
             dto.setParameter("key", "%" + productAttr.getKey() + "%");
         }
-
+        if (ToolUtil.isNotEmpty(productAttr.getSource())) {
+            dto.setParameter("source", productAttr.getSource());
+        }
         return dto.findList();
     }
 
@@ -129,7 +134,7 @@ public class ProductModelService {
      * @return
      */
     public ProductAttrDto detail(Long attrId) {
-//        ProductAttrDto attr = new QProductAttribute().attrId.eq(attrId).asDto(ProductAttrDto.class).findOne();
+        //ProductAttrDto attr = new QProductAttribute().attrId.eq(attrId).asDto(ProductAttrDto.class).findOne();
         ProductAttrDto attr = DB.findDto(ProductAttrDto.class, "select * from product_attribute where attr_id=:attrId").setParameter("attrId", attrId).findOne();
 
         if (attr == null || ToolUtil.isEmpty(attr.getZbxId())) {
@@ -138,11 +143,11 @@ public class ProductModelService {
         JSONArray itemInfo = JSONObject.parseArray(zbxItem.getItemInfo(attr.getZbxId(), null));
         attr.setTags(JSONObject.parseArray(itemInfo.getJSONObject(0).getString("tags"), ProductTag.Tag.class));
         attr.setProcessStepList(formatProcessStep(itemInfo.getJSONObject(0).getString("preprocessing")));
-        String valuemap = itemInfo.getJSONObject(0).getString("valuemap");
-
-        if (ToolUtil.isNotEmpty(valuemap) && !"[]".equals(valuemap)) {
-            attr.setValuemapid(JSONObject.parseObject(valuemap).getString("valuemapid"));
-        }
+//        String valuemap = itemInfo.getJSONObject(0).getString("valuemap");
+//
+//        if (ToolUtil.isNotEmpty(valuemap) && !"[]".equals(valuemap)) {
+//            attr.setValuemapid(JSONObject.parseObject(valuemap).getString("valuemapid"));
+//        }
 
         return attr;
     }
@@ -236,9 +241,12 @@ public class ProductModelService {
             tagMap = productAttr.getTags().stream()
                     .collect(Collectors.toMap(ProductTag.Tag::getTag, ProductTag.Tag::getValue, (k1, k2) -> k2));
         }
-
+        String delay = "";
+        if (null != productAttr.getDelay()) {
+            delay = productAttr.getDelay() + productAttr.getUnit();
+        }
         return zbxItem.createTrapperItem(itemName, productAttr.getKey(),
-                hostId, productAttr.getSource(), productAttr.getMasterItemId(), productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap);
+                hostId, productAttr.getSource(), delay, productAttr.getMasterItemId(), productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap,null);
     }
 
     /**
@@ -273,9 +281,12 @@ public class ProductModelService {
                     .collect(Collectors.toMap(ProductTag.Tag::getTag, ProductTag.Tag::getValue, (k1, k2) -> k2));
         }
 
-
+        String delay = "";
+        if (null != productAttr.getDelay()) {
+            delay = productAttr.getDelay() + productAttr.getUnit();
+        }
         zbxItem.updateTrapperItem(productAttribute.getZbxId(), productAttr.getAttrId() + "", productAttr.getKey(),
-                hostId, productAttr.getSource(), productAttr.getMasterItemId(), productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap);
+                hostId, productAttr.getSource(), delay, productAttr.getMasterItemId(), productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap,null);
 
         DB.update(productAttribute);
 

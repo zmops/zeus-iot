@@ -114,7 +114,7 @@ public class AuthService {
     public String login(SysUser user) {
 
         //记录登录日志
-        LogManager.me().executeLog(LogTaskFactory.loginLog(user.getUserId(), getIp()));
+        LogManager.me().executeLog(LogTaskFactory.loginLog(user.getUserId(), getIp(), user.getTenantId()));
 
         //TODO key的作用
         JwtPayLoad payLoad = new JwtPayLoad(user.getUserId(), user.getAccount(), "xxxx");
@@ -156,7 +156,8 @@ public class AuthService {
     public void logout(String token) {
 
         //记录退出日志
-        LogManager.me().executeLog(LogTaskFactory.exitLog(LoginContextHolder.getContext().getUser().getId(), getIp()));
+        LoginUser loginUser = LoginContextHolder.getContext().getUser();
+        LogManager.me().executeLog(LogTaskFactory.exitLog(loginUser.getId(), getIp(), loginUser.getTenantId()));
 
         //删除Auth相关cookies
         Cookie[] cookies = HttpContext.getRequest().getCookies();

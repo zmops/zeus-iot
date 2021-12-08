@@ -27,7 +27,6 @@ import com.zmops.zeus.driver.service.ZbxItem;
 import com.zmops.zeus.server.async.executor.Async;
 import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import io.ebean.DB;
-import io.ebean.DtoQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -86,41 +85,42 @@ public class ProductAttributeEventService {
      * @return
      */
     public List<ProductAttrDto> list(ProductAttrParam productAttr) {
-//        QProductAttributeEvent qProductAttribute = new QProductAttributeEvent();
+        QProductAttributeEvent qProductAttribute = new QProductAttributeEvent();
+        if (null != productAttr.getProdId()) {
+            qProductAttribute.productId.eq(productAttr.getProdId());
+        }
+        if (ToolUtil.isNotEmpty(productAttr.getAttrName())) {
+            qProductAttribute.name.contains(productAttr.getAttrName());
+        }
+        if (ToolUtil.isNotEmpty(productAttr.getKey())) {
+            qProductAttribute.key.contains(productAttr.getKey());
+        }
+        List<ProductAttributeEvent> list = qProductAttribute.orderBy(" create_time desc").findList();
+        return ToolUtil.convertBean(list, ProductAttrDto.class);
+//        StringBuilder sql = new StringBuilder("select * from product_attribute_event where 1=1");
 //        if (null != productAttr.getProdId()) {
-//            qProductAttribute.productId.eq(productAttr.getProdId());
+//            sql.append(" and product_id = :productId");
 //        }
 //        if (ToolUtil.isNotEmpty(productAttr.getAttrName())) {
-//            qProductAttribute.name.contains(productAttr.getAttrName());
+//            sql.append(" and name like :attrName");
 //        }
 //        if (ToolUtil.isNotEmpty(productAttr.getKey())) {
-//            qProductAttribute.key.contains(productAttr.getKey());
+//            sql.append(" and key like :key");
 //        }
-//        return qProductAttribute.orderBy(" create_time desc").asDto(ProductAttrDto.class).findList();
-        StringBuilder sql = new StringBuilder("select * from product_attribute_event where 1=1");
-        if (null != productAttr.getProdId()) {
-            sql.append(" and product_id = :productId");
-        }
-        if (ToolUtil.isNotEmpty(productAttr.getAttrName())) {
-            sql.append(" and name like :attrName");
-        }
-        if (ToolUtil.isNotEmpty(productAttr.getKey())) {
-            sql.append(" and key like :key");
-        }
-        sql.append(" order by create_time desc");
-        DtoQuery<ProductAttrDto> dto = DB.findDto(ProductAttrDto.class, sql.toString());
+//        sql.append(" order by create_time desc");
+//        DtoQuery<ProductAttrDto> dto = DB.findDto(ProductAttrDto.class, sql.toString());
+//
+//        if (null != productAttr.getProdId()) {
+//            dto.setParameter("productId", productAttr.getProdId());
+//        }
+//        if (ToolUtil.isNotEmpty(productAttr.getAttrName())) {
+//            dto.setParameter("attrName", "%" + productAttr.getAttrName() + "%");
+//        }
+//        if (ToolUtil.isNotEmpty(productAttr.getKey())) {
+//            dto.setParameter("key", "%" + productAttr.getKey() + "%");
+//        }
 
-        if (null != productAttr.getProdId()) {
-            dto.setParameter("productId", productAttr.getProdId());
-        }
-        if (ToolUtil.isNotEmpty(productAttr.getAttrName())) {
-            dto.setParameter("attrName", "%" + productAttr.getAttrName() + "%");
-        }
-        if (ToolUtil.isNotEmpty(productAttr.getKey())) {
-            dto.setParameter("key", "%" + productAttr.getKey() + "%");
-        }
-
-        return dto.findList();
+//        return dto.findList();
     }
 
     /**
@@ -244,7 +244,7 @@ public class ProductAttributeEventService {
         }
 
         return zbxItem.createTrapperItem(itemName, productAttr.getKey(),
-                hostId, productAttr.getSource(), productAttr.getMasterItemId(), productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap);
+                hostId, productAttr.getSource(), productAttr.getDelay() + "", productAttr.getMasterItemId(), productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap, null);
     }
 
     /**
@@ -287,7 +287,7 @@ public class ProductAttributeEventService {
 
 
         zbxItem.updateTrapperItem(productAttributeEvent.getZbxId(), productAttr.getAttrId() + "", productAttr.getKey(),
-                hostId, productAttr.getSource(), productAttr.getMasterItemId(), productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap);
+                hostId, productAttr.getSource(), productAttr.getDelay() + "", productAttr.getMasterItemId(), productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap, null);
 
         DB.update(productAttributeEvent);
 

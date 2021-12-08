@@ -34,4 +34,6 @@ public class SysOperationLogDto {
     private String message;
 
     private LocalDateTime createTime;
+
+    private Long tenantId;
 }

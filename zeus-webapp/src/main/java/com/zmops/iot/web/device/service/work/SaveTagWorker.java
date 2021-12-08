@@ -1,11 +1,11 @@
 package com.zmops.iot.web.device.service.work;
 
 
-import com.zmops.zeus.server.async.callback.IWorker;
-import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.device.query.QTag;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.dto.DeviceDto;
+import com.zmops.zeus.server.async.callback.IWorker;
+import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,7 @@ public class SaveTagWorker implements IWorker<DeviceDto, Boolean> {
 
     @Override
     public Boolean action(DeviceDto deviceDto, Map<String, WorkerWrapper> allWrappers) {
-        log.debug("step 2:SaveTagWorker----DEVICEID:{}…………",deviceDto.getDeviceId());
+        log.debug("step 2:SaveTagWorker----DEVICEID:{}…………", deviceDto.getDeviceId());
 
         String deviceId = deviceDto.getDeviceId();
 
@@ -40,7 +40,7 @@ public class SaveTagWorker implements IWorker<DeviceDto, Boolean> {
         //继承产品中的标签
         DB.sqlUpdate("insert into tag (sid,tag,value,template_id) SELECT :deviceId,tag,value,id template_id from tag where sid=:sid")
                 .setParameter("deviceId", deviceId).setParameter("sid", deviceDto.getProductId() + "").execute();
-        log.debug("step 2:SaveTagWorker----DEVICEID:{} complete",deviceDto.getDeviceId());
+        log.debug("step 2:SaveTagWorker----DEVICEID:{} complete", deviceDto.getDeviceId());
         return true;
     }
 

@@ -81,8 +81,8 @@ public class FeishuHookCallback implements AlarmCallback {
      * Send alarm message if the settings not empty
      */
     @Override
-    public void doAlarm(List<AlarmMessage> alarmMessages) {
-        FeishuSettings feishuSettings = feishuSettingService.get();
+    public void doAlarm(List<AlarmMessage> alarmMessages,Long tenantId) {
+        FeishuSettings feishuSettings = feishuSettingService.get(tenantId);
         if (feishuSettings == null || feishuSettings.getWebhooks().isEmpty()) {
             return;
         }

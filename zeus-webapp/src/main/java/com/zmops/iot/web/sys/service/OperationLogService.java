@@ -1,5 +1,6 @@
 package com.zmops.iot.web.sys.service;
 
+import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.domain.sys.query.QSysOperationLog;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.LocalDateTimeUtils;
@@ -28,6 +29,10 @@ public class OperationLogService {
         }
         if (ToolUtil.isNotEmpty(logType)) {
             qSysOperationLog.logType.eq(logType);
+        }
+        Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
+        if (null != tenantId) {
+            qSysOperationLog.tenantId.eq(tenantId);
         }
         qSysOperationLog.setFirstRow((page - 1) * maxRow).setMaxRows(maxRow);
         List<SysOperationLogDto> pagedList = qSysOperationLog.orderBy("create_time desc").asDto(SysOperationLogDto.class).findList();

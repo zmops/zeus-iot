@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dtflys.forest.Forest;
+import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.domain.product.*;
 import com.zmops.iot.domain.product.query.*;
 import com.zmops.iot.domain.schedule.Task;
@@ -71,6 +72,10 @@ public class MultipleDeviceEventRuleService {
             query.eventRuleName.contains(eventParm.getEventRuleName());
         }
 
+        if (LoginContextHolder.getContext().getUser().getTenantId() != null) {
+            query.tenantId.eq(LoginContextHolder.getContext().getUser().getTenantId());
+        }
+
         query.classify.eq(EVENT_CLASSIFY);
 
         return query.orderBy(" create_time desc").asDto(MultipleDeviceEventDto.class).findList();
@@ -84,7 +89,10 @@ public class MultipleDeviceEventRuleService {
      */
     public Pager<MultipleDeviceEventDto> getEventByPage(MultipleDeviceEventParm eventParm) {
         QProductEvent query = new QProductEvent();
-
+        Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
+        if (null != tenantId) {
+            query.tenantId.eq(tenantId);
+        }
         if (ToolUtil.isNotEmpty(eventParm.getEventRuleName())) {
             query.eventRuleName.contains(eventParm.getEventRuleName());
         }
@@ -371,6 +379,7 @@ public class MultipleDeviceEventRuleService {
         event.setEventNotify(eventRule.getEventNotify().toString());
         event.setClassify(eventRule.getClassify());
         event.setEventRuleName(eventRule.getEventRuleName());
+        event.setTenantId(eventRule.getTenantId());
         event.setStatus(CommonStatus.ENABLE.getCode());
         event.setRemark(eventRule.getRemark());
         event.setTriggerType(eventRule.getTriggerType());

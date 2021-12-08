@@ -40,8 +40,8 @@ public interface ZbxTrigger {
     @Post
     @JsonPath("/trigger/trigger.execute.create")
     String executeTriggerCreate(@ParamName("triggerName") String triggerName,
-                                @ParamName("expression") String expression,
-                                @ParamName("ruleLevel") Byte ruleLevel);
+                         @ParamName("expression") String expression,
+                         @ParamName("ruleLevel") Byte ruleLevel);
 
     /**
      * 更新告警触发器

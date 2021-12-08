@@ -25,6 +25,8 @@ public class ProductTypeParam {
 
     private String remark;
 
+    private Long tenantId;
+
     @NotNull(groups = BaseEntity.Delete.class)
     private List<Long> ids;
 }

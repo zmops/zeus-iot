@@ -34,12 +34,12 @@ import java.util.TimerTask;
 @Slf4j
 public class LogTaskFactory {
 
-    public static TimerTask loginLog(final Long userId, final String ip) {
+    public static TimerTask loginLog(final Long userId, final String ip,Long tenantId) {
         return new TimerTask() {
             @Override
             public void run() {
                 try {
-                    SysLoginLog loginLog = LogFactory.createLoginLog(LogType.LOGIN, userId, null, ip);
+                    SysLoginLog loginLog = LogFactory.createLoginLog(LogType.LOGIN, userId, null, ip,tenantId);
                     DB.insert(loginLog);
                 } catch (Exception e) {
                     log.error("创建登录日志异常!", e);
@@ -48,12 +48,12 @@ public class LogTaskFactory {
         };
     }
 
-    public static TimerTask loginLog(final String username, final String msg, final String ip) {
+    public static TimerTask loginLog(final String username, final String msg, final String ip,Long tenantId) {
         return new TimerTask() {
             @Override
             public void run() {
                 SysLoginLog loginLog = LogFactory.createLoginLog(
-                        LogType.LOGIN_FAIL, null, "账号:" + username + "," + msg, ip);
+                        LogType.LOGIN_FAIL, null, "账号:" + username + "," + msg, ip,tenantId);
                 try {
                     DB.insert(loginLog);
                 } catch (Exception e) {
@@ -63,11 +63,11 @@ public class LogTaskFactory {
         };
     }
 
-    public static TimerTask exitLog(final Long userId, final String ip) {
+    public static TimerTask exitLog(final Long userId, final String ip,Long tenantId) {
         return new TimerTask() {
             @Override
             public void run() {
-                SysLoginLog loginLog = LogFactory.createLoginLog(LogType.EXIT, userId, null, ip);
+                SysLoginLog loginLog = LogFactory.createLoginLog(LogType.EXIT, userId, null, ip,tenantId);
                 try {
                     DB.insert(loginLog);
                 } catch (Exception e) {
@@ -77,12 +77,12 @@ public class LogTaskFactory {
         };
     }
 
-    public static TimerTask bussinessLog(final Long userId, final String bussinessName, final String clazzName, final String methodName, final String msg) {
+    public static TimerTask bussinessLog(final Long userId, final String bussinessName, final String clazzName, final String methodName, final String msg,Long tenantId) {
         return new TimerTask() {
             @Override
             public void run() {
                 SysOperationLog operationLog = LogFactory.createOperationLog(
-                        LogType.BUSSINESS, userId, bussinessName, clazzName, methodName, msg, LogSucceed.SUCCESS);
+                        LogType.BUSSINESS, userId, bussinessName, clazzName, methodName, msg, LogSucceed.SUCCESS,tenantId);
                 try {
                     DB.insert(operationLog);
                 } catch (Exception e) {
@@ -92,13 +92,13 @@ public class LogTaskFactory {
         };
     }
 
-    public static TimerTask exceptionLog(final Long userId, final Throwable exception) {
+    public static TimerTask exceptionLog(final Long userId, final Throwable exception,Long tenantId) {
         return new TimerTask() {
             @Override
             public void run() {
                 String msg = ToolUtil.getExceptionMsg(exception);
                 SysOperationLog operationLog = LogFactory.createOperationLog(
-                        LogType.EXCEPTION, userId, "", null, null, msg, LogSucceed.FAIL);
+                        LogType.EXCEPTION, userId, "", null, null, msg, LogSucceed.FAIL,tenantId);
                 try {
                     DB.insert(operationLog);
                 } catch (Exception e) {

@@ -37,7 +37,14 @@ public class ProductEventDto {
     @CachedValue(type = DicType.SysUserName, fieldName = "updateUserName")
     private Long updateUser;
     private String updateTime;
+
+    @CachedValue(type= DicType.Tenant, fieldName = "tenantName")
+    private Long tenantId;
+
     private Integer taskId;
+
     @CachedValue(value = "triggerType", fieldName = "triggerTypeName")
+
     private String triggerType;
+
 }

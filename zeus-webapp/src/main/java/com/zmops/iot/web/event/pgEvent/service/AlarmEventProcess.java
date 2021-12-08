@@ -1,6 +1,7 @@
 package com.zmops.iot.web.event.pgEvent.service;
 
 import com.zmops.iot.domain.alarm.Problem;
+import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.messages.MessageBody;
 import com.zmops.iot.domain.messages.NoticeRecord;
 import com.zmops.iot.domain.messages.NoticeResult;
@@ -22,6 +23,7 @@ import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -56,7 +58,7 @@ public class AlarmEventProcess implements EventProcess {
         log.debug("--------alarm event----------{}", triggerId);
 
         //step 1:插入problem
-        String title = "告警触发:";
+        boolean isNew = true;
         Problem problem = new Problem();
         problem.setEventId(Long.parseLong(eventData.getEventid()));
         problem.setObjectId(Long.parseLong(eventData.getObjectid()));
@@ -70,10 +72,7 @@ public class AlarmEventProcess implements EventProcess {
             DB.insert(problem);
         } else {
             DB.update(problem);
-            if (problem.getRClock() == null) {
-                return;
-            }
-            title = "告警恢复:";
+            isNew = false;
         }
 
         //step 2:找出需要通知的用户ID 推送通知
@@ -83,8 +82,9 @@ public class AlarmEventProcess implements EventProcess {
         }
         Map<String, Object> params = new ConcurrentHashMap<>(2);
         params.put("hostname", deviceIds);
-        params.put("title", title);
         params.put("triggerName", triggerName);
+
+        List<Long> tenantIds = new QDevice().select(QDevice.alias().tenantId).deviceId.in(deviceIds).tenantId.isNotNull().findSingleAttributeList();
 
         String sql = "select user_group_id from sys_usrgrp_devicegrp where device_group_id in (select device_group_id from devices_groups where device_id in (:deviceIds))";
         List<UserGroupDto> userGroups = DB.findDto(UserGroupDto.class, sql).setParameter("deviceIds", deviceIds).findList();
@@ -92,6 +92,9 @@ public class AlarmEventProcess implements EventProcess {
         QSysUser qSysUser = new QSysUser();
         if (ToolUtil.isNotEmpty(userGroups)) {
             qSysUser.userGroupId.in(userGroups.parallelStream().map(UserGroupDto::getUserGroupId).collect(Collectors.toList()));
+        }
+        if (!CollectionUtils.isEmpty(tenantIds)) {
+            qSysUser.tenantId.in(tenantIds);
         }
         List<SysUser> sysUserList = qSysUser.findList();
         List<Long> userIds = sysUserList.parallelStream().map(SysUser::getUserId).collect(Collectors.toList());
@@ -101,8 +104,9 @@ public class AlarmEventProcess implements EventProcess {
 
         //发送Email消息
         ProductEvent productEvent = new QProductEvent().eventRuleId.eq(Long.parseLong(triggerName)).findOne();
+
         Map<String, String> macros = createMacroMap(triggerId, eventData.getRClock() + "", eventData.getAcknowledged() + "", productEvent);
-        messageService.push(buildMessage(macros, userIds, title));
+        messageService.push(buildMessage(macros, userIds, isNew));
 
         List<NoticeRecord> noticeRecords = new ArrayList<>();
         sysUserList.forEach(sysUser -> {
@@ -132,14 +136,15 @@ public class AlarmEventProcess implements EventProcess {
         macroMap.put("${severity}", productEvent.getEventLevel());
         macroMap.put("${metricName}", productEvent.getEventRuleName());
         macroMap.put("${context}", productEvent.getEventRuleName());
-        macroMap.put("${alarmStatus}", isnew ? "告警触发" : "告警恢复");
+        macroMap.put("${alarmStatus}", isnew ? "告警触发" : "撤销告警");
         macroMap.put("${confirmStatus}", "1".equals(acknowledged) ? "已确认" : "未确认");
         macroMap.put("${problemId}", triggerId);
         return macroMap;
     }
 
-    private MessageBody buildMessage(Map<String, String> alarmInfo, List<Long> userIds, String title) {
+    private MessageBody buildMessage(Map<String, String> alarmInfo, List<Long> userIds, boolean isNew) {
         Map<String, Object> params = new HashMap<>(alarmInfo);
+        String title = isNew ? "告警触发:" : "告警恢复:";
         return MessageBody.builder().msg(title + alarmInfo.get("${metricName}")).persist(true).to(userIds).body(params).build();
     }
 

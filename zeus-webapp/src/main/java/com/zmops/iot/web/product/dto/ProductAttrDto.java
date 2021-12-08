@@ -58,8 +58,8 @@ public class ProductAttrDto {
 
     private Long templateId;
 
-    LocalDateTime createTime;
-    LocalDateTime updateTime;
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 
     @CachedValue(type = DicType.SysUserName, fieldName = "createUserName")
     private Long createUser;

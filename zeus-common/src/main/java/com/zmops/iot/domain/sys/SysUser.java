@@ -43,5 +43,8 @@ public class SysUser extends BaseEntity {
 
     String zbxId;
 
+    private Long tenantId;
+
     String remark;
+
 }

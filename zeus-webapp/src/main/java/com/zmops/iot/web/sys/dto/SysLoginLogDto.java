@@ -30,4 +30,6 @@ public class SysLoginLogDto {
     String message;
 
     String ipAddress;
+
+    private Long tenantId;
 }

@@ -25,9 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -139,7 +137,8 @@ public class DeviceEventRuleService {
             List<String> deviceIds = eventRule.getExpList().parallelStream().map(DeviceEventRule.Expression::getDeviceId).distinct().collect(Collectors.toList());
             deviceIds.forEach(deviceId -> {
                 eventRule.getDeviceServices().forEach(i -> {
-                    DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id,execute_device_id, service_id) values (:eventRuleId, :deviceId,:executeDeviceId, :serviceId)").setParameter("eventRuleId", eventRuleId)
+                    DB.sqlUpdate("insert into product_event_service(event_rule_id, device_id,execute_device_id, service_id) values (:eventRuleId, :deviceId,:executeDeviceId, :serviceId)")
+                            .setParameter("eventRuleId", eventRuleId)
                             .setParameter("deviceId", deviceId)
                             .setParameter("executeDeviceId", i.getExecuteDeviceId())
                             .setParameter("serviceId", i.getServiceId())
@@ -204,18 +203,18 @@ public class DeviceEventRuleService {
      */
     public void updateProductEventRuleZbxId(Long triggerId, String[] zbxId) {
 
-        List<Triggers> triggers = JSONObject.parseArray(zbxTrigger.triggerGet(Arrays.toString(zbxId)), Triggers.class);
+//        List<Triggers> triggers = JSONObject.parseArray(zbxTrigger.triggerGet(Arrays.toString(zbxId)), Triggers.class);
+//
+//        Map<String, String> map = triggers.parallelStream().collect(Collectors.toMap(o -> o.hosts.get(0).host, Triggers::getTriggerid));
+//
+//        List<ProductEventRelation> productEventRelationList = new QProductEventRelation().eventRuleId.eq(triggerId).findList();
 
-        Map<String, String> map = triggers.parallelStream().collect(Collectors.toMap(o -> o.hosts.get(0).host, Triggers::getTriggerid));
-
-        List<ProductEventRelation> productEventRelationList = new QProductEventRelation().eventRuleId.eq(triggerId).findList();
-
-        productEventRelationList.forEach(productEventRelation -> {
-            if (null != map.get(productEventRelation.getRelationId())) {
-                DB.update(ProductEventRelation.class).where().eq("eventRuleId", triggerId).eq("relationId", productEventRelation.getRelationId())
-                        .asUpdate().set("zbxId", map.get(productEventRelation.getRelationId())).update();
-            }
-        });
+//        productEventRelationList.forEach(productEventRelation -> {
+//            if (null != map.get(productEventRelation.getRelationId())) {
+        DB.update(ProductEventRelation.class).where().eq("eventRuleId", triggerId)
+                .asUpdate().set("zbxId", zbxId[0]).update();
+//            }
+//        });
     }
 
     /**
@@ -248,14 +247,16 @@ public class DeviceEventRuleService {
             productEventRuleDto.setInheritProductId(one.getRelationId());
         }
 
-        JSONArray triggerInfo = JSONObject.parseArray(zbxTrigger.triggerAndTagsGet(productEventRelation.getZbxId()));
-        List<ProductEventRuleDto.Tag> tagList = JSONObject.parseArray(triggerInfo.getJSONObject(0).getString("tags"), ProductEventRuleDto.Tag.class);
 
-        productEventRuleDto.setZbxId(productEventRelation.getZbxId());
-        productEventRuleDto.setTags(tagList.stream()
-                .filter(s -> !s.getTag().equals("__execute__") && !s.getTag().equals("__alarm__") && !s.getTag().equals("__event__"))
-                .collect(Collectors.toList()));
+        if (null != productEventRelation) {
+            JSONArray triggerInfo = JSONObject.parseArray(zbxTrigger.triggerAndTagsGet(productEventRelation.getZbxId()));
+            List<ProductEventRuleDto.Tag> tagList = JSONObject.parseArray(triggerInfo.getJSONObject(0).getString("tags"), ProductEventRuleDto.Tag.class);
 
+            productEventRuleDto.setZbxId(productEventRelation.getZbxId());
+            productEventRuleDto.setTags(tagList.stream()
+                    .filter(s -> !s.getTag().equals("__execute__") && !s.getTag().equals("__alarm__") && !s.getTag().equals("__event__"))
+                    .collect(Collectors.toList()));
+        }
         return productEventRuleDto;
     }
 
@@ -313,7 +314,7 @@ public class DeviceEventRuleService {
     }
 
     @Data
-    static class Hosts {
+    public static class Hosts {
         private String hostid;
         private String host;
     }

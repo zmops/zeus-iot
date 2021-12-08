@@ -1,5 +1,6 @@
 package com.zmops.iot.web.product.service;
 
+import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.core.tree.DefaultTreeBuildFactory;
 import com.zmops.iot.domain.product.ProductType;
 import com.zmops.iot.domain.product.query.QProduct;
@@ -29,7 +30,15 @@ public class ProductTypeService implements CommandLineRunner {
      * 产品分类树
      */
     public List<TreeNode> tree() {
-        String sql = "select p.id,p.pid pId,p.name,p.pids,p.create_time,u.name createUserName from product_type p LEFT JOIN sys_user u on u.user_id = p.create_user";
+
+        String sql = "select p.id,p.pid pId,p.name,p.pids,t.name tenantName,p.create_time,u.name createUserName from product_type p " +
+                " LEFT JOIN tenant_info t on t.tenant_id = p.tenant_id " +
+                " LEFT JOIN sys_user u on u.user_id = p.create_user";
+        Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
+        if (null != tenantId) {
+            sql += " where p.tenant_id = " + tenantId;
+        }
+
         List<TreeNode> list = DB.findDto(TreeNode.class, sql).findList();
         DefaultTreeBuildFactory<TreeNode> treeBuildFactory = new DefaultTreeBuildFactory<>();
         treeBuildFactory.setRootParentId("0");
@@ -44,7 +53,7 @@ public class ProductTypeService implements CommandLineRunner {
      */
     public ProductType create(ProductTypeParam productTypeParam) {
 
-        int count = new QProductType().name.eq(productTypeParam.getName())
+        int count = new QProductType().name.eq(productTypeParam.getName()).tenantId.eq(productTypeParam.getTenantId())
                 .pid.eq(productTypeParam.getPid())
                 .findCount();
         if (count > 0) {
@@ -69,7 +78,7 @@ public class ProductTypeService implements CommandLineRunner {
         if (oldProTypeCount <= 0) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_TYPE_NOT_EXIST);
         }
-        int count = new QProductType().name.eq(productTypeParam.getName())
+        int count = new QProductType().name.eq(productTypeParam.getName()).tenantId.eq(productTypeParam.getTenantId())
                 .pid.eq(productTypeParam.getPid())
                 .id.ne(productTypeParam.getId())
                 .findCount();

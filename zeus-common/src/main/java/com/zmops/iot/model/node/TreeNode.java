@@ -32,6 +32,8 @@ public class TreeNode implements Tree {
      */
     private String name;
 
+    private String tenantName;
+
     /**
      * URL
      */

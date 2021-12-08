@@ -16,7 +16,7 @@ public class WeLinkSettingService {
 
     private volatile WeLinkSettings instance;
 
-    public WeLinkSettings get() {
+    public WeLinkSettings get(Long tenantId) {
         return getOne();
     }
 

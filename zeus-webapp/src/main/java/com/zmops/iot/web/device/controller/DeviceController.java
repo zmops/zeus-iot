@@ -63,8 +63,8 @@ public class DeviceController {
     @Permission(code = "dev_add")
     @RequestMapping("/create")
     public ResponseData create(@Validated(BaseEntity.Create.class) @RequestBody DeviceDto deviceDto) {
-        if (ToolUtil.validDeviceId(deviceDto.getDeviceId())) {
-            throw new ServiceException(BizExceptionEnum.DEVICE_ID_HAS_INCORRECT_CHARACTER);
+        if (ToolUtil.validDeviceName(deviceDto.getName())) {
+            throw new ServiceException(BizExceptionEnum.DEVICE_NAME_HAS_INCOREECT_CHARACTER);
         }
         int count = new QDevice().name.eq(deviceDto.getName()).findCount();
         if (count > 0) {
@@ -92,8 +92,8 @@ public class DeviceController {
     @Permission(code = "dev_update")
     @RequestMapping("/update")
     public ResponseData update(@Validated(BaseEntity.Update.class) @RequestBody DeviceDto deviceDto) {
-        if (ToolUtil.validDeviceId(deviceDto.getName())) {
-            throw new ServiceException(BizExceptionEnum.DEVICE_ID_HAS_INCORRECT_CHARACTER);
+        if (ToolUtil.validDeviceName(deviceDto.getName())) {
+            throw new ServiceException(BizExceptionEnum.DEVICE_NAME_HAS_INCOREECT_CHARACTER);
         }
         int count = new QDevice().deviceId.ne(deviceDto.getDeviceId()).name.eq(deviceDto.getName()).findCount();
         if (count > 0) {

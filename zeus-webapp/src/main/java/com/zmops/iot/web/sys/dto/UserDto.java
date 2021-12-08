@@ -59,6 +59,8 @@ public class UserDto {
     @NotNull(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
     private Long roleId;
 
+    @CachedValue(type = DicType.Tenant, fieldName = "tenantName")
+    private Long tenantId;
     private String roleName;
     private String userGroupName;
     @CachedValue(type = DicType.SysUserName, fieldName = "createUserName")

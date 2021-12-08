@@ -1,11 +1,11 @@
 package com.zmops.iot.web.device.service.work;
 
 
-import com.zmops.zeus.server.async.callback.IWorker;
-import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import com.zmops.iot.domain.device.ScenesTriggerRecord;
 import com.zmops.iot.domain.product.ProductEvent;
 import com.zmops.iot.domain.product.query.QProductEvent;
+import com.zmops.zeus.server.async.callback.IWorker;
+import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import io.ebean.DB;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -35,13 +35,14 @@ public class ScenesLogWorker implements IWorker<Map<String, Object>, Boolean> {
         if (productEvent == null) {
             return true;
         }
+
         ScenesTriggerRecord scenesTriggerRecord = new ScenesTriggerRecord();
         scenesTriggerRecord.setRuleId(eventRuleId);
         scenesTriggerRecord.setRuleName(productEvent.getEventRuleName());
         scenesTriggerRecord.setCreateTime(LocalDateTime.now());
+        scenesTriggerRecord.setTenantId(productEvent.getTenantId());
         scenesTriggerRecord.setTriggerType(triggerType);
         scenesTriggerRecord.setTriggerUser(triggerUser);
-
 
         DB.save(scenesTriggerRecord);
 

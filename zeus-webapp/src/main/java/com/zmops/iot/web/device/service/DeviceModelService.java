@@ -18,11 +18,12 @@ import com.zmops.iot.web.product.dto.ProductAttr;
 import com.zmops.iot.web.product.dto.ProductAttrDto;
 import com.zmops.iot.web.product.dto.ProductTag;
 import com.zmops.iot.web.product.dto.param.ProductAttrParam;
+import com.zmops.zeus.driver.entity.Interface;
 import com.zmops.zeus.driver.entity.ZbxItemInfo;
 import com.zmops.zeus.driver.entity.ZbxProcessingStep;
+import com.zmops.zeus.driver.service.ZbxInterface;
 import com.zmops.zeus.driver.service.ZbxItem;
 import io.ebean.DB;
-import io.ebean.DtoQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +43,11 @@ public class DeviceModelService {
 
     @Autowired
     LatestService latestService;
+
+    @Autowired
+    ZbxInterface zbxInterface;
+
+    private static final String ATTR_SOURCE_AGENT = "0";
 
     /**
      * 设备属性分页列表
@@ -83,8 +89,13 @@ public class DeviceModelService {
             if (null != map.get(productAttrDto.getAttrId())) {
                 productAttrDto.setClock(map.get(productAttrDto.getAttrId()).getClock());
                 productAttrDto.setValue(map.get(productAttrDto.getAttrId()).getValue());
+
+                String delayName = "";
+                if (null != productAttrDto.getDelay()) {
+                    delayName = productAttrDto.getDelay() + CommonTimeUnit.getDescription(productAttrDto.getUnit());
+                }
                 productAttrDto.setOriginalValue(map.get(productAttrDto.getAttrId()).getOriginalValue());
-                productAttrDto.setDelayName(productAttrDto.getDelay() + CommonTimeUnit.getDescription(productAttrDto.getUnit()));
+                productAttrDto.setDelayName(delayName);
             }
             if (null != errorMap.get(productAttrDto.getZbxId())) {
                 productAttrDto.setError(errorMap.get(productAttrDto.getZbxId()));
@@ -102,41 +113,42 @@ public class DeviceModelService {
      * @return
      */
     public List<ProductAttrDto> list(ProductAttrParam productAttr) {
-//        QProductAttribute qProductAttribute = new QProductAttribute();
+        QProductAttribute qProductAttribute = new QProductAttribute();
+        if (null != productAttr.getProdId()) {
+            qProductAttribute.productId.eq(productAttr.getProdId());
+        }
+        if (ToolUtil.isNotEmpty(productAttr.getAttrName())) {
+            qProductAttribute.name.contains(productAttr.getAttrName());
+        }
+        if (ToolUtil.isNotEmpty(productAttr.getKey())) {
+            qProductAttribute.key.contains(productAttr.getKey());
+        }
+        List<ProductAttribute> list = qProductAttribute.findList();
+        return ToolUtil.convertBean(list, ProductAttrDto.class);
+//        StringBuilder sql = new StringBuilder("select * from product_attribute where 1=1");
 //        if (null != productAttr.getProdId()) {
-//            qProductAttribute.productId.eq(productAttr.getProdId());
+//            sql.append(" and product_id = :productId");
 //        }
 //        if (ToolUtil.isNotEmpty(productAttr.getAttrName())) {
-//            qProductAttribute.name.contains(productAttr.getAttrName());
+//            sql.append(" and name like :attrName");
 //        }
 //        if (ToolUtil.isNotEmpty(productAttr.getKey())) {
-//            qProductAttribute.key.contains(productAttr.getKey());
+//            sql.append(" and key like :key");
 //        }
-//        return qProductAttribute.asDto(ProductAttrDto.class).findList();
-        StringBuilder sql = new StringBuilder("select * from product_attribute where 1=1");
-        if (null != productAttr.getProdId()) {
-            sql.append(" and product_id = :productId");
-        }
-        if (ToolUtil.isNotEmpty(productAttr.getAttrName())) {
-            sql.append(" and name like :attrName");
-        }
-        if (ToolUtil.isNotEmpty(productAttr.getKey())) {
-            sql.append(" and key like :key");
-        }
-        sql.append(" order by create_time desc");
-        DtoQuery<ProductAttrDto> dto = DB.findDto(ProductAttrDto.class, sql.toString());
-
-        if (null != productAttr.getProdId()) {
-            dto.setParameter("productId", productAttr.getProdId());
-        }
-        if (ToolUtil.isNotEmpty(productAttr.getAttrName())) {
-            dto.setParameter("attrName", "%" + productAttr.getAttrName() + "%");
-        }
-        if (ToolUtil.isNotEmpty(productAttr.getKey())) {
-            dto.setParameter("key", "%" + productAttr.getKey() + "%");
-        }
-
-        return dto.findList();
+//        sql.append(" order by create_time desc");
+//        DtoQuery<ProductAttrDto> dto = DB.findDto(ProductAttrDto.class, sql.toString());
+//
+//        if (null != productAttr.getProdId()) {
+//            dto.setParameter("productId", productAttr.getProdId());
+//        }
+//        if (ToolUtil.isNotEmpty(productAttr.getAttrName())) {
+//            dto.setParameter("attrName", "%" + productAttr.getAttrName() + "%");
+//        }
+//        if (ToolUtil.isNotEmpty(productAttr.getKey())) {
+//            dto.setParameter("key", "%" + productAttr.getKey() + "%");
+//        }
+//
+//        return dto.findList();
     }
 
     /**
@@ -157,10 +169,10 @@ public class DeviceModelService {
         }
         attr.setTags(JSONObject.parseArray(itemInfo.getJSONObject(0).getString("tags"), ProductTag.Tag.class));
         attr.setProcessStepList(formatProcessStep(itemInfo.getJSONObject(0).getString("preprocessing")));
-        String valuemap = itemInfo.getJSONObject(0).getString("valuemap");
-        if (ToolUtil.isNotEmpty(valuemap) && !"[]".equals(valuemap)) {
-            attr.setValuemapid(JSONObject.parseObject(valuemap).getString("valuemapid"));
-        }
+//        String valuemap = itemInfo.getJSONObject(0).getString("valuemap");
+//        if (ToolUtil.isNotEmpty(valuemap) && !"[]".equals(valuemap)) {
+//            attr.setValuemapid(JSONObject.parseObject(valuemap).getString("valuemapid"));
+//        }
         return attr;
     }
 
@@ -243,9 +255,20 @@ public class DeviceModelService {
             tagMap = productAttr.getTags().stream()
                     .collect(Collectors.toMap(ProductTag.Tag::getTag, ProductTag.Tag::getValue, (k1, k2) -> k2));
         }
-
+        String delay = "";
+        if (null != productAttr.getDelay()) {
+            delay = productAttr.getDelay() + productAttr.getUnit();
+        }
+        String interfaceid = null;
+        if (ATTR_SOURCE_AGENT.equals(productAttr.getSource())) {
+            String interfaceInfo = zbxInterface.hostinterfaceGet(device.getZbxId());
+            List<Interface> interfaces = JSONObject.parseArray(interfaceInfo, Interface.class);
+            if (ToolUtil.isNotEmpty(interfaces)) {
+                interfaceid = interfaces.get(0).getInterfaceid();
+            }
+        }
         return zbxItem.createTrapperItem(itemName, productAttr.getKey(),
-                hostId, productAttr.getSource(), productAttr.getMasterItemId(), productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap);
+                hostId, productAttr.getSource(), delay, productAttr.getMasterItemId(), productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap, interfaceid);
     }
 
     /**
@@ -279,9 +302,20 @@ public class DeviceModelService {
             tagMap = productAttr.getTags().stream()
                     .collect(Collectors.toMap(ProductTag.Tag::getTag, ProductTag.Tag::getValue, (k1, k2) -> k2));
         }
-
+        String delay = "";
+        if (null != productAttr.getDelay()) {
+            delay = productAttr.getDelay() + productAttr.getUnit();
+        }
+        String interfaceid = null;
+        if (ATTR_SOURCE_AGENT.equals(productAttr.getSource())) {
+            String interfaceInfo = zbxInterface.hostinterfaceGet(device.getZbxId());
+            List<Interface> interfaces = JSONObject.parseArray(interfaceInfo, Interface.class);
+            if (ToolUtil.isNotEmpty(interfaces)) {
+                interfaceid = interfaces.get(0).getInterfaceid();
+            }
+        }
         zbxItem.updateTrapperItem(productAttribute.getZbxId(), productAttr.getAttrId() + "", productAttr.getKey(),
-                hostId, productAttr.getSource(), productAttr.getMasterItemId(), productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap);
+                hostId, productAttr.getSource(), delay, productAttr.getMasterItemId(), productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap, interfaceid);
 
         DB.update(productAttribute);
 
