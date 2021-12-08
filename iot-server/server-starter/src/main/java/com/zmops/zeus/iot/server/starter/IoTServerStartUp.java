@@ -1,5 +1,6 @@
 package com.zmops.zeus.iot.server.starter;
 
+import com.alipay.sofa.ark.support.startup.SofaArkBootstrap;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -11,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 public class IoTServerStartUp {
 
     public static void main(String[] args) {
-//        SofaArkBootstrap.launch(args);
+        SofaArkBootstrap.launch(args);
         IoTServerBootstrap.start();
 
         log.info("IoT Server Platform start successfully ...");
