@@ -1,10 +1,10 @@
 package com.zmops.zeus.iot.server.receiver.provider;
 
 import com.zmops.zeus.iot.server.receiver.Const;
+import com.zmops.zeus.iot.server.receiver.handler.ark.ArkBizComponent;
+import com.zmops.zeus.iot.server.receiver.handler.zabbix.ZabbixSenderComponent;
 import com.zmops.zeus.iot.server.receiver.module.CamelReceiverModule;
-import com.zmops.zeus.iot.server.receiver.routes.PgEventRouteBuilder;
 import com.zmops.zeus.iot.server.receiver.service.CamelContextHolderService;
-import com.zmops.zeus.iot.server.receiver.tozabbix.ZabbixSenderComponent;
 import com.zmops.zeus.iot.server.sender.module.ZabbixSenderModule;
 import com.zmops.zeus.server.library.module.*;
 import org.apache.camel.impl.DefaultCamelContext;
@@ -46,25 +46,17 @@ public class CamelReceiverProvider extends ModuleProvider {
 
     @Override
     public void start() throws ServiceNotProvidedException, ModuleStartException {
-
         camelContext.addComponent(Const.CAMEL_ZABBIX_COMPONENT_NAME, new ZabbixSenderComponent(getManager()));
+        camelContext.addComponent(Const.CAMEL_ARK_COMPONENT_NAME, new ArkBizComponent(getManager()));
+    }
 
-        try {
-            camelContext.addRoutes(new PgEventRouteBuilder());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+    @Override
+    public void notifyAfterCompleted() throws ServiceNotProvidedException, ModuleStartException {
         try {
             camelContext.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void notifyAfterCompleted() throws ServiceNotProvidedException, ModuleStartException {
-
     }
 
     @Override
