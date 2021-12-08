@@ -1,4 +1,4 @@
-package com.zmops.zeus.iot.server.receiver.tozabbix;
+package com.zmops.zeus.iot.server.receiver.handler.zabbix;
 
 import org.apache.camel.Endpoint;
 import org.apache.camel.Processor;

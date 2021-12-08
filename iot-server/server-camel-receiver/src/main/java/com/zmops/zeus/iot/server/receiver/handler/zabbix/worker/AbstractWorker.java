@@ -16,7 +16,7 @@
  *
  */
 
-package com.zmops.zeus.iot.server.receiver.tozabbix.worker;
+package com.zmops.zeus.iot.server.receiver.handler.zabbix.worker;
 
 import com.zmops.zeus.server.library.module.ModuleDefineHolder;
 import lombok.Getter;

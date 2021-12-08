@@ -21,7 +21,8 @@ public class HttpRouteBuilder extends ReceiverServerRoute {
     @Override
     public void configure() throws Exception {
         fromF("netty4-http:http://0.0.0.0:%s/data?sync=true", options.get("port"))
-                .routeId(routeId).log(LoggingLevel.DEBUG, log, ">>> Message received from Netty4 Http Server : ${body}");
+                .routeId(routeId)
+                .log(LoggingLevel.DEBUG, log, ">>> Message received from Netty4 Http Server : ${body}");
     }
 
 

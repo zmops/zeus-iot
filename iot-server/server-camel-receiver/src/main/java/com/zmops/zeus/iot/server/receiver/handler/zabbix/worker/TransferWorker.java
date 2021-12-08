@@ -16,10 +16,10 @@
  *
  */
 
-package com.zmops.zeus.iot.server.receiver.tozabbix.worker;
+package com.zmops.zeus.iot.server.receiver.handler.zabbix.worker;
 
 
-import com.zmops.zeus.iot.server.receiver.tozabbix.Item;
+import com.zmops.zeus.dto.Item;
 import com.zmops.zeus.server.library.module.ModuleDefineHolder;
 import lombok.extern.slf4j.Slf4j;
 

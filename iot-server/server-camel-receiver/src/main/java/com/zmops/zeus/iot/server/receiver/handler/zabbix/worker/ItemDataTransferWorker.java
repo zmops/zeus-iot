@@ -1,8 +1,8 @@
-package com.zmops.zeus.iot.server.receiver.tozabbix.worker;
+package com.zmops.zeus.iot.server.receiver.handler.zabbix.worker;
 
 import com.google.gson.Gson;
-import com.zmops.zeus.iot.server.receiver.tozabbix.ItemValue;
-import com.zmops.zeus.iot.server.receiver.tozabbix.ZabbixTrapper;
+import com.zmops.zeus.dto.ItemValue;
+import com.zmops.zeus.iot.server.receiver.handler.zabbix.ZabbixTrapper;
 import com.zmops.zeus.iot.server.sender.module.ZabbixSenderModule;
 import com.zmops.zeus.iot.server.sender.service.ZabbixSenderService;
 import com.zmops.zeus.iot.server.telemetry.TelemetryModule;

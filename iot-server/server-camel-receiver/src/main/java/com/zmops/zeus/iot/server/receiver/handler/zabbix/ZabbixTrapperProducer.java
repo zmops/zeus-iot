@@ -1,7 +1,8 @@
-package com.zmops.zeus.iot.server.receiver.tozabbix;
+package com.zmops.zeus.iot.server.receiver.handler.zabbix;
 
 import com.google.gson.Gson;
-import com.zmops.zeus.iot.server.receiver.tozabbix.worker.ItemDataTransferWorker;
+import com.zmops.zeus.dto.ItemValue;
+import com.zmops.zeus.iot.server.receiver.handler.zabbix.worker.ItemDataTransferWorker;
 import com.zmops.zeus.server.library.module.ModuleManager;
 import com.zmops.zeus.server.library.util.StringUtil;
 import org.apache.camel.Endpoint;
@@ -39,7 +40,12 @@ public class ZabbixTrapperProducer extends DefaultProducer {
     @Override
     public void process(Exchange exchange) {
         Message message = exchange.getIn();
-        List<ItemValue> values = (List<ItemValue>) message.getBody(); //TODO 类型检查
+
+        if (message.getBody() == null && !(message.getBody() instanceof List)) {
+            return;
+        }
+
+        List<ItemValue> values = (List<ItemValue>) message.getBody();
 
         for (ItemValue itemValue : values) {
             if (StringUtil.isEmpty(itemValue.getHost())
