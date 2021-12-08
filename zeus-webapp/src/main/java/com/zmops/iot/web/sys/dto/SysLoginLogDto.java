@@ -20,7 +20,7 @@ public class SysLoginLogDto {
 
     String logName;
 
-    @CachedValue(type = DicType.SysUserName)
+    @CachedValue(type = DicType.SysUserName, fieldName = "userName")
     Long userId;
 
     LocalDateTime createTime;

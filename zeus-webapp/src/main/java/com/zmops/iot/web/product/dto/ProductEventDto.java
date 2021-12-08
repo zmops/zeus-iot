@@ -19,25 +19,25 @@ public class ProductEventDto {
 
     private String eventRuleName;
 
-    @CachedValue(value = "EVENT_LEVEL")
+    @CachedValue(value = "EVENT_LEVEL", fieldName = "eventLevelName")
     private String eventLevel;
 
-    @CachedValue(value = "STATUS")
+    @CachedValue(value = "STATUS", fieldName = "statusName")
     private String status;
 
-    @CachedValue(value = "WHETHER")
+    @CachedValue(value = "WHETHER", fieldName = "inheritName")
     private String inherit;
 
     private String remark;
     private String classify;
     private String expLogic;
-    @CachedValue(type = DicType.SysUserName)
+    @CachedValue(type = DicType.SysUserName, fieldName = "createUserName")
     private Long createUser;
     private String createTime;
-    @CachedValue(type = DicType.SysUserName)
+    @CachedValue(type = DicType.SysUserName, fieldName = "updateUserName")
     private Long updateUser;
     private String updateTime;
     private Integer taskId;
-    @CachedValue(value = "triggerType")
+    @CachedValue(value = "triggerType", fieldName = "triggerTypeName")
     private String triggerType;
 }

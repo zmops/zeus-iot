@@ -20,8 +20,6 @@ import java.util.Optional;
  */
 public class CachedValueFilter extends JsonSerializer<Object> {
 
-    public final static String SUFFIX = "Name";
-
     @Override
     public void serialize(Object object, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         jsonGenerator.writeStartObject();
@@ -62,7 +60,7 @@ public class CachedValueFilter extends JsonSerializer<Object> {
                 String res = getCachedValue(cachedValue, value);
                 if (res != null) {
                     exists = true;
-                    jsonGenerator.writeStringField(fieldName + Optional.of(cachedValue.suffix()).orElse(SUFFIX), res);
+                    jsonGenerator.writeStringField(cachedValue.fieldName(), res);
                 } else {
                     exists = exists || cachedValue.type().isNullable();
                 }

@@ -30,7 +30,7 @@ public class LatestDto {
 
     private String tags;
 
-    @CachedValue(value = "UNITS")
+    @CachedValue(value = "UNITS",fieldName = "unitsName")
     private String units;
 
 }

@@ -41,8 +41,10 @@ spring:
     template-loader-path: classpath:/public/
 
 forest:
-  log-enabled: false
+  log-enabled: true
   timeout: 5000
+  max-retry-count: 3     # 最大请求重试次数，默认为 0 次
+  max-retry-interval: 10 # 为最大重试时间间隔, 单位为毫秒，默认为 0 毫秒
   variables:
     ## Zabbix API IP And ServerIp and ServerPort
     zbxServerIp: ${ZEUS_ZABBIX_HOST:127.0.0.1}

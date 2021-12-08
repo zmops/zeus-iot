@@ -23,9 +23,9 @@ public class DeviceGroupDto {
 
     private String remark;
 
-    @CachedValue(type = DicType.SysUserName)
+    @CachedValue(type = DicType.SysUserName, fieldName = "createUserName")
     private Long          createUser;
-    @CachedValue(type = DicType.SysUserName)
+    @CachedValue(type = DicType.SysUserName, fieldName = "updateUserName")
     private Long          updateUser;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

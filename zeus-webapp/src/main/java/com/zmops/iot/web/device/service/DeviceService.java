@@ -519,6 +519,9 @@ public class DeviceService implements CommandLineRunner {
         StringBuilder sql = generateBaseSql();
         sql.append(" where d.device_id=:deviceId");
         DeviceDto deviceDto = DB.findDto(DeviceDto.class, sql.toString()).setParameter("deviceId", deviceId).setParameter("deviceGroupIds", devGroupIds).findOne();
+        if (deviceDto == null) {
+            throw new ServiceException(BizExceptionEnum.DEVICE_NOT_EXISTS);
+        }
         return deviceDto;
     }
 

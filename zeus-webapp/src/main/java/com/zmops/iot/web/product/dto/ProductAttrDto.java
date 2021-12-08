@@ -28,17 +28,17 @@ public class ProductAttrDto {
 
     private String key;
 
-    @CachedValue(value = "UNITS")
+    @CachedValue(value = "UNITS", fieldName = "unitsName")
     private String units;
 
-    @CachedValue(value = "ATTR_TYPE")
+    @CachedValue(value = "ATTR_TYPE", fieldName = "sourceName")
     private String source;
 
     private String remark;
 
     private Long depAttrId;
 
-    @CachedValue(value = "EVENT_LEVEL")
+    @CachedValue(value = "EVENT_LEVEL", fieldName = "eventLevelName")
     private String eventLevel;
 
     @JsonIgnore
@@ -46,7 +46,7 @@ public class ProductAttrDto {
 
     private String productId;
 
-    @CachedValue(value = "DATA_TYPE")
+    @CachedValue(value = "DATA_TYPE", fieldName = "valueTypeName")
     private String valueType;
 
     private String valuemapid;
@@ -61,9 +61,9 @@ public class ProductAttrDto {
     LocalDateTime createTime;
     LocalDateTime updateTime;
 
-    @CachedValue(type = DicType.SysUserName)
+    @CachedValue(type = DicType.SysUserName, fieldName = "createUserName")
     private Long createUser;
-    @CachedValue(type = DicType.SysUserName)
+    @CachedValue(type = DicType.SysUserName, fieldName = "updateUserName")
     private Long updateUser;
 
     private String clock;

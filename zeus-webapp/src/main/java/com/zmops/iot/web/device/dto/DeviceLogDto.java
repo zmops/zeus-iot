@@ -27,10 +27,10 @@ public class DeviceLogDto {
 
     private String content;
 
-    @CachedValue(type = DicType.Device)
+    @CachedValue(type = DicType.Device, fieldName = "deviceName")
     private String deviceId;
 
-    @CachedValue(value = "EVENT_LEVEL")
+    @CachedValue(value = "EVENT_LEVEL", fieldName = "severityName")
     private String severity;
 
     private String param;

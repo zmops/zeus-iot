@@ -27,7 +27,7 @@ public class TaskDto {
 
     private Integer taskFailRetryCount = 0;
 
-    @CachedValue(value = "STATUS")
+    @CachedValue(value = "STATUS", fieldName = "triggerStatusName")
     private String triggerStatus = "ENABLE";
 
     private Long triggerLastTime = 0L;
@@ -42,9 +42,9 @@ public class TaskDto {
 
     LocalDateTime updateTime;
 
-    @CachedValue(type = DicType.SysUserName)
+    @CachedValue(type = DicType.SysUserName, fieldName = "createUserName")
     private Long createUser;
 
-    @CachedValue(type = DicType.SysUserName)
+    @CachedValue(type = DicType.SysUserName, fieldName = "updateUserName")
     private Long updateUser;
 }

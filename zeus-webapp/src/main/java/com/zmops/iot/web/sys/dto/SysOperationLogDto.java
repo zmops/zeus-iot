@@ -22,7 +22,7 @@ public class SysOperationLogDto {
 
     private String logName;
 
-    @CachedValue(type = DicType.SysUserName)
+    @CachedValue(type = DicType.SysUserName, fieldName = "userName")
     private Long userId;
 
     private String className;

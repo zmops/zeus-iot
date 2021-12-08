@@ -44,7 +44,7 @@ public class SysDictTypeDto {
     /**
      * 状态
      */
-    @CachedValue(value = "STATUS")
+    @CachedValue(value = "STATUS", fieldName = "statusName")
     private String status;
 
     /**

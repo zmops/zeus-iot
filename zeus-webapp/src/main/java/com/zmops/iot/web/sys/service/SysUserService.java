@@ -79,7 +79,7 @@ public class SysUserService implements CommandLineRunner {
         StringBuilder sql = new StringBuilder(
                 "select u.account, u.name, u.email, u.phone, u.role_id,r.name role_name," +
                         "u.user_group_id,g.group_name user_group_name, u.status, u.create_user, " +
-                        "u.update_user, u.create_time, u.update_time, u.user_id FROM sys_user u");
+                        "u.update_user, u.create_time, u.update_time, u.user_id,u.remark FROM sys_user u");
 
         sql.append(" LEFT JOIN sys_role r ON r.role_id = u.role_id ");
         sql.append(" LEFT JOIN sys_user_group g ON g.user_group_id = u.user_group_id ");

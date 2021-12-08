@@ -53,7 +53,7 @@ public class UserDto {
     @NotNull(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
     private Long userGroupId;
 
-    @CachedValue(value = "STATUS")
+    @CachedValue(value = "STATUS", fieldName = "statusName")
     private String status;
 
     @NotNull(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
@@ -61,10 +61,11 @@ public class UserDto {
 
     private String roleName;
     private String userGroupName;
-    @CachedValue(type = DicType.SysUserName)
+    @CachedValue(type = DicType.SysUserName, fieldName = "createUserName")
     private Long createUser;
     private String createTime;
-    @CachedValue(type = DicType.SysUserName)
+    @CachedValue(type = DicType.SysUserName, fieldName = "updateUserName")
     private Long updateUser;
     private String updateTime;
+    private String remark;
 }

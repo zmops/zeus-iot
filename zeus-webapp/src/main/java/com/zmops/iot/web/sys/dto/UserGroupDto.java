@@ -42,7 +42,7 @@ public class UserGroupDto {
     @NotBlank
     private String groupName;
 
-    @CachedValue(value = "STATUS")
+    @CachedValue(value = "STATUS", fieldName = "statusName")
     private String status;
 
     private String remark;
@@ -56,9 +56,9 @@ public class UserGroupDto {
 
     LocalDateTime updateTime;
 
-    @CachedValue(type = DicType.SysUserName)
+    @CachedValue(type = DicType.SysUserName, fieldName = "createUserName")
     Long createUser;
 
-    @CachedValue(type = DicType.SysUserName)
+    @CachedValue(type = DicType.SysUserName, fieldName = "updateUserName")
     Long updateUser;
 }

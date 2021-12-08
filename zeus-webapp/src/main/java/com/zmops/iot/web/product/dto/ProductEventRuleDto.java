@@ -50,7 +50,7 @@ public class ProductEventRuleDto {
 
     private String scheduleConf;
 
-    @CachedValue(value = "triggerType")
+    @CachedValue(value = "triggerType", fieldName = "triggerTypeName")
     private Integer triggerType;
 
     private Integer taskId;
