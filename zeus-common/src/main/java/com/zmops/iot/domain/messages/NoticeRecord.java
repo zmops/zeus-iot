@@ -22,13 +22,13 @@ import java.time.LocalDateTime;
 @Table(name = "notice_record")
 public class NoticeRecord {
     @Id
-    private Integer       recordId;
-    private Long          userId;
-    private String       problemId;
-    private Integer       noticeType;
-    private String        noticeStatus;
-    private String        noticeMsg;
+    private Integer recordId;
+    private Long userId;
+    private String problemId;
+    private Integer noticeType;
+    private String noticeStatus;
+    private String noticeMsg;
     private LocalDateTime creatTime;
-    private String        alarmInfo;
-    private String        receiveAccount;
+    private String alarmInfo;
+    private String receiveAccount;
 }

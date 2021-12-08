@@ -4,6 +4,6 @@
 **/target/*
 .vscode
 **/node_modules/*
-dist/
+**/dist/*
 zeus-starter/src/main/resources/public/
 .bdb/

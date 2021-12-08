@@ -10,6 +10,8 @@ public class IoTConfig extends WebConfig {
     @Override
     public void configConstant(Constants constants) {
         constants.setDevMode(true);
+        constants.setMaxPostSize(1024 * 1024 * 100);
+        constants.setBaseUploadPath("D:\\666\\upload");
     }
 
     @Override
