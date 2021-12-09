@@ -3,6 +3,7 @@ package com.zmops.iot.web.analyse.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.util.LocalDateTimeUtils;
+import com.zmops.iot.util.ObjectUtils;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.analyse.dto.LatestDto;
 import com.zmops.iot.web.analyse.enums.CpuLoadEnum;
@@ -50,33 +51,33 @@ public class SelfMonitorService {
     public Map<String, Object> getMemInfo() {
         Map<String, Object> resMap = new HashMap<>(3);
 
-        getItemValue(getHostId("Zabbix server"), MemoryUtilizationEnum.utilization.getCode(), MemoryUtilizationEnum.utilization.getMessage(), 0, resMap);
-        getItemValue(getHostId("Zabbix server"), MemoryUtilizationEnum.total.getCode(), MemoryUtilizationEnum.total.getMessage(), 3, resMap);
-        getItemValue(getHostId("Zabbix server"), MemoryUtilizationEnum.available.getCode(), MemoryUtilizationEnum.available.getMessage(), 3, resMap);
+        getItemValue(getHostId("Zabbix server"), MemoryUtilizationEnum.utilization.getCode(), MemoryUtilizationEnum.utilization.getMessage(), 0, "%", resMap);
+        getItemValue(getHostId("Zabbix server"), MemoryUtilizationEnum.total.getCode(), MemoryUtilizationEnum.total.getMessage(), 3, "B", resMap);
+        getItemValue(getHostId("Zabbix server"), MemoryUtilizationEnum.available.getCode(), MemoryUtilizationEnum.available.getMessage(), 3, "B", resMap);
 
-        resMap.put("trends", getTrendsData(getHostId("Zabbix server"), itemMap.get(MemoryUtilizationEnum.utilization.getMessage()), 0));
+        resMap.put("trends", getTrendsData(getHostId("Zabbix server"), itemMap.get(MemoryUtilizationEnum.utilization.getMessage()), 0, "%"));
         return resMap;
     }
 
     public Map<String, Object> getCpuLoadInfo() {
         Map<String, Object> resMap = new HashMap<>(3);
 
-        getItemValue(getHostId("Zabbix server"), CpuLoadEnum.avg1.getCode(), CpuLoadEnum.avg1.getMessage(), 0, resMap);
-        getItemValue(getHostId("Zabbix server"), CpuLoadEnum.avg5.getCode(), CpuLoadEnum.avg5.getMessage(), 0, resMap);
-        getItemValue(getHostId("Zabbix server"), CpuLoadEnum.avg15.getCode(), CpuLoadEnum.avg15.getMessage(), 0, resMap);
+        getItemValue(getHostId("Zabbix server"), CpuLoadEnum.avg1.getCode(), CpuLoadEnum.avg1.getMessage(), 0, "%", resMap);
+        getItemValue(getHostId("Zabbix server"), CpuLoadEnum.avg5.getCode(), CpuLoadEnum.avg5.getMessage(), 0, "%", resMap);
+        getItemValue(getHostId("Zabbix server"), CpuLoadEnum.avg15.getCode(), CpuLoadEnum.avg15.getMessage(), 0, "%", resMap);
 
-        resMap.put("trends", getTrendsData(getHostId("Zabbix server"), itemMap.get(CpuLoadEnum.avg1.getMessage()), 0));
+        resMap.put("trends", getTrendsData(getHostId("Zabbix server"), itemMap.get(CpuLoadEnum.avg1.getMessage()), 0, "%"));
         return resMap;
     }
 
     public Map<String, Object> getProcessInfo() {
         Map<String, Object> resMap = new HashMap<>(3);
 
-        getItemValue(getHostId("Zabbix server"), ProcessEnum.num.getCode(), ProcessEnum.num.getMessage(), 3, resMap);
-        getItemValue(getHostId("Zabbix server"), ProcessEnum.run.getCode(), ProcessEnum.run.getMessage(), 3, resMap);
-        getItemValue(getHostId("Zabbix server"), ProcessEnum.max.getCode(), ProcessEnum.max.getMessage(), 3, resMap);
+        getItemValue(getHostId("Zabbix server"), ProcessEnum.num.getCode(), ProcessEnum.num.getMessage(), 3, "个", resMap);
+        getItemValue(getHostId("Zabbix server"), ProcessEnum.run.getCode(), ProcessEnum.run.getMessage(), 3, "个", resMap);
+        getItemValue(getHostId("Zabbix server"), ProcessEnum.max.getCode(), ProcessEnum.max.getMessage(), 3, "个", resMap);
 
-        resMap.put("trends", getTrendsData(getHostId("Zabbix server"), itemMap.get(ProcessEnum.run.getMessage()), 3));
+        resMap.put("trends", getTrendsData(getHostId("Zabbix server"), itemMap.get(ProcessEnum.run.getMessage()), 3, "个"));
         return resMap;
     }
 
@@ -86,7 +87,7 @@ public class SelfMonitorService {
         if (ToolUtil.isEmpty(itemId)) {
             return Collections.emptyList();
         }
-        return getTrendsData(getHostId("Zabbix server"), itemId, 0);
+        return getTrendsData(getHostId("Zabbix server"), itemId, 0, "%");
     }
 
 
@@ -98,7 +99,7 @@ public class SelfMonitorService {
      * @param itemValueType 监控项值类型
      * @return
      */
-    private List<Map<String, String>> getTrendsData(String hostId, String itemId, int itemValueType) {
+    private List<Map<String, String>> getTrendsData(String hostId, String itemId, int itemValueType, String unit) {
         long timeTill = LocalDateTimeUtils.getSecondsByTime(LocalDateTime.now());
         long timeFrom = LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.minu(LocalDateTime.now(), 1L, ChronoUnit.HOURS));
 
@@ -107,7 +108,8 @@ public class SelfMonitorService {
         return latestDtos.stream().map(o -> {
             Map<String, String> tmpMap = new HashMap<>(2);
             tmpMap.put("date", LocalDateTimeUtils.convertTimeToString(Integer.parseInt(o.getClock()), "yyyy-MM-dd HH:mm:ss"));
-            tmpMap.put("val", o.getValue());
+            String value = ObjectUtils.convertUnits(o.getValue(), unit);
+            tmpMap.put("val", value);
             return tmpMap;
         }).collect(Collectors.toList());
     }
@@ -121,7 +123,7 @@ public class SelfMonitorService {
      * @param itemValueType 监控项值类型
      * @param resMap        map
      */
-    private void getItemValue(String hostId, String key, String name, int itemValueType, Map<String, Object> resMap) {
+    private void getItemValue(String hostId, String key, String name, int itemValueType, String unit, Map<String, Object> resMap) {
         String itemId = getItemId(hostId, name, key);
 
         if (ToolUtil.isEmpty(itemId)) {
@@ -131,7 +133,8 @@ public class SelfMonitorService {
         List<LatestDto> latestDtos = JSONObject.parseArray(res, LatestDto.class);
 
         if (ToolUtil.isNotEmpty(latestDtos)) {
-            resMap.put(name, latestDtos.get(0).getValue());
+            String value = ObjectUtils.convertUnits(latestDtos.get(0).getValue(), unit);
+            resMap.put(name, value);
         }
     }
 
