@@ -20,24 +20,24 @@
         <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>library-web</artifactId>
-            <version>1.0.2-RELEASE</version>
+            <version>1.0.3-RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>runtime-server</artifactId>
-            <version>1.0.2-RELEASE</version>
+            <version>1.0.3-RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>zeus-commons</artifactId>
-            <version>1.0.2-RELEASE</version>
+            <version>1.0.3-RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>library-module</artifactId>
-            <version>1.0.2-RELEASE</version>
+            <version>1.0.3-RELEASE</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
