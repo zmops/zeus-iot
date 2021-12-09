@@ -19,6 +19,9 @@ import java.net.*;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * @author nantian created at 2021/7/29 17:03
@@ -446,5 +449,16 @@ public class ToolUtil {
 
     public static boolean validDeviceName(String content){
         return content.contains("\\") || content.contains("/");
+    }
+
+    /**
+     * List<Map<String,Object>> 根据相同key的值去重
+     * @param keyExtractor
+     * @param <T>
+     * @return
+     */
+    public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
+        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 }
