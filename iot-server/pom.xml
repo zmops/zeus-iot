@@ -107,7 +107,7 @@
 
         <dependency>
             <groupId>org.apache.camel</groupId>
-            <artifactId>camel-netty4</artifactId>
+            <artifactId>camel-netty</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>io.netty</groupId>
@@ -121,7 +121,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
-            <artifactId>camel-mqtt</artifactId>
+            <artifactId>camel-paho-mqtt5</artifactId>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>

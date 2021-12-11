@@ -5,10 +5,11 @@ import com.zmops.zeus.dto.ItemValue;
 import com.zmops.zeus.iot.server.receiver.handler.zabbix.worker.ItemDataTransferWorker;
 import com.zmops.zeus.server.library.module.ModuleManager;
 import com.zmops.zeus.server.library.util.StringUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
-import org.apache.camel.impl.DefaultProducer;
+import org.apache.camel.support.DefaultProducer;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -19,6 +20,7 @@ import java.util.concurrent.Executors;
  * <p>
  * to("Zabbix")
  */
+@Slf4j
 public class ZabbixTrapperProducer extends DefaultProducer {
 
     private final ModuleManager moduleManager;

@@ -9,7 +9,7 @@ import com.zmops.zeus.server.runtime.api.client.ReferenceClient;
 import com.zmops.zeus.server.runtime.api.client.param.ReferenceParam;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
-import org.apache.camel.impl.DefaultProducer;
+import org.apache.camel.support.DefaultProducer;
 
 import java.util.Collections;
 import java.util.List;

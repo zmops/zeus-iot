@@ -2,7 +2,7 @@ package com.zmops.zeus.iot.server.receiver.handler.zabbix;
 
 import com.zmops.zeus.server.library.module.ModuleManager;
 import org.apache.camel.Endpoint;
-import org.apache.camel.impl.DefaultComponent;
+import org.apache.camel.support.DefaultComponent;
 
 import java.util.Map;
 

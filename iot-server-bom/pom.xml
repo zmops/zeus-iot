@@ -16,7 +16,7 @@
     <description>IoT Server 协议解析层</description>
 
     <properties>
-        <camel.version>2.25.4</camel.version>
+        <camel.version>3.11.4</camel.version>
         <lombok.version>1.18.20</lombok.version>
         <log4j.version>2.13.3</log4j.version>
         <guava.version>25.1-jre</guava.version>
@@ -83,12 +83,12 @@
             -->
             <dependency>
                 <groupId>org.apache.camel</groupId>
-                <artifactId>camel-netty4-http</artifactId>
+                <artifactId>camel-netty-http</artifactId>
                 <version>${camel.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.camel</groupId>
-                <artifactId>camel-netty4</artifactId>
+                <artifactId>camel-netty</artifactId>
                 <version>${camel.version}</version>
                 <exclusions>
                     <exclusion>
@@ -99,7 +99,7 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.camel</groupId>
-                <artifactId>camel-mqtt</artifactId>
+                <artifactId>camel-paho-mqtt5</artifactId>
                 <version>${camel.version}</version>
             </dependency>
             <dependency>
