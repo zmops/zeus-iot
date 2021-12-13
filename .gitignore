@@ -8,3 +8,4 @@
 zeus-starter/src/main/resources/public/
 .bdb/
 zeus-webapp/src/main/java/com/zmops/iot/web/analyse/service/Test.java
+logs/

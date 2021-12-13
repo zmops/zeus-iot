@@ -25,7 +25,7 @@ import java.util.Map;
  * @author nantian created at 2021/11/23 23:24
  */
 
-@Path(value = "/123", viewPath = "/")
+@Path(value = "/protocol", viewPath = "/")
 public class IndexController extends Controller {
 
 
@@ -46,10 +46,14 @@ public class IndexController extends Controller {
 
     public void installArk() {
 
-        try {
-            ClientResponse response = ArkClient.installBiz(new File("D:\\666\\zeus-ark-hello2-1.0-beta-ark-biz.jar"));
+        String fileName = getPara("fileName");
 
+        try {
+//            ClientResponse response = ArkClient.installBiz(new File("D:\\666\\zeus-ark-hello2-1.0-beta-ark-biz.jar"));
 //            ClientResponse response1 = ArkClient.checkBiz("zeus-ark-hello", "1.0-beta");
+
+//            ClientResponse response = ArkClient.installBiz(new File("D:\\666\\upload\\" + fileName));
+            ClientResponse response = ArkClient.installBiz(new File("//opt//zeus//zeus-iot-bin//upload//" + fileName));
 
             renderJson(response);
 

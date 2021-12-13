@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Route;
 import org.apache.camel.RoutesBuilder;
-import org.apache.camel.impl.EventDrivenConsumerRoute;
 import org.apache.camel.model.FromDefinition;
 
 import java.util.List;
@@ -47,17 +46,17 @@ public class CamelContextHolderService implements Service {
      * @param routeId 路由ID
      */
     public void routeShutDown(String routeId) {
-        EventDrivenConsumerRoute route = (EventDrivenConsumerRoute) camelContext.getRoute(routeId);
-        List<FromDefinition> fromDefinitions = camelContext.getRouteDefinition(routeId).getInputs();
-
-
-        try {
-            camelContext.stopRoute(routeId);
-            camelContext.removeRoute(routeId);
-//            camelContext.removeRouteDefinition(camelContext.getRouteDefinition(routeId));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        EventDrivenConsumerRoute route = (EventDrivenConsumerRoute) camelContext.getRoute(routeId);
+//        List<FromDefinition> fromDefinitions = camelContext.getRouteDefinition(routeId).getInputs();
+//
+//
+//        try {
+//            camelContext.stopRoute(routeId);
+//            camelContext.removeRoute(routeId);
+////            camelContext.removeRouteDefinition(camelContext.getRouteDefinition(routeId));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
 
 //        if (route == null) {
