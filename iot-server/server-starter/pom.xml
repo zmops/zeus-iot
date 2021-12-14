@@ -108,6 +108,15 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>npm install gulp</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>install --global gulp-cli</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>build</id>
                         <goals>
                             <goal>gulp</goal>
@@ -123,7 +132,7 @@
                     <resources>
                         <resource>
 <!--                            <targetPath>D:\\666</targetPath>-->
-                            <targetPath>/opt/zeus/zeus-iot-bin</targetPath>
+                            <targetPath>/opt/zeus/zeus-iot-bin/</targetPath>
                             <directory>src/main/webapp</directory>
                         </resource>
                     </resources>
