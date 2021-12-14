@@ -18,16 +18,17 @@ import java.util.List;
 @Data
 @JsonSerialize(using = CachedValueFilter.class)
 public class ProtocolGatewayDto {
-    private Long   protocolGatewayId;
+    private Long    protocolGatewayId;
     @NotBlank(groups = {BaseEntity.Create.class})
-    private String name;
-    private String protocolType;
-    //    @CachedValue(type = DicType.PROTOCOL_SERVICE, fieldName = "protocolServiceName")
-    private Long   protocolServiceId;
+    private String  name;
+    @CachedValue(value = "PROTOCOL_SERVICE_TYPE", fieldName = "protocolTypeName")
+    private String  protocolType;
+    @CachedValue(type = DicType.ProtocolService, fieldName = "protocolServiceName")
+    private Long    protocolServiceId;
     @CachedValue(value = "PROTOCOL_GATEWAY_STATUS", fieldName = "statusName")
-    private String status;
-    private Long   protocolComponentId;
-    private String remark;
+    private String  status;
+    private Long    protocolComponentId;
+    private String  remark;
     private Integer qos;
 
     LocalDateTime createTime;

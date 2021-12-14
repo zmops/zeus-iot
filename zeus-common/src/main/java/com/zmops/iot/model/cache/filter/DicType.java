@@ -12,6 +12,7 @@ public enum DicType {
     ProdType,
     Tenant,
     Device,
+    ProtocolService,
     Dictionary;
 
 

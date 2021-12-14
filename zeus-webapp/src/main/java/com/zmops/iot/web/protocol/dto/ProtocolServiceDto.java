@@ -24,6 +24,7 @@ public class ProtocolServiceDto {
     private String  ip;
     private Integer port;
     private Integer msgLength;
+    private String  clientId;
     LocalDateTime createTime;
 
     LocalDateTime updateTime;

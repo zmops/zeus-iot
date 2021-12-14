@@ -53,6 +53,10 @@ public class DefinitionsUtil {
     @Setter
     private static ProductEventCache productEventCache = new ProductEventCache();
 
+    @Getter
+    @Setter
+    private static ProtocolServiceCache protocolServiceCache = new ProtocolServiceCache();
+
     public static void updateDictionaries(Table<String, String, String> dictionarys) {
         dictionaryCache.updateDictionaries(dictionarys);
     }
@@ -120,5 +124,13 @@ public class DefinitionsUtil {
 
     public static String getTriggerName(Long value) {
         return productEventCache.getTriggerName(value);
+    }
+
+    public static void updateProtocolServiceCache(Map<Long, String> map) {
+        protocolServiceCache.updateName(map);
+    }
+
+    public static String getProtocolServiceName(Long value) {
+        return protocolServiceCache.getName(value);
     }
 }

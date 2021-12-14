@@ -2,7 +2,6 @@ package com.zmops.iot.web.protocol.service;
 
 import com.alibaba.fastjson.JSON;
 import com.dtflys.forest.Forest;
-import com.zmops.iot.domain.protocol.ProtocolComponent;
 import com.zmops.iot.domain.protocol.ProtocolGateway;
 import com.zmops.iot.domain.protocol.ProtocolGatewayMqtt;
 import com.zmops.iot.domain.protocol.ProtocolService;
@@ -81,7 +80,7 @@ public class ProtocolGatewayService {
         ProtocolGateway.setStatus("0");
         DB.insert(ProtocolGateway);
 
-        saveMqtt(protocolGatewayParam.getProtocolGatewayMqttList(), protocolGatewayParam.getProtocolGatewayId());
+        saveMqtt(protocolGatewayParam.getProtocolGatewayMqttList(), ProtocolGateway.getProtocolGatewayId());
 
         Map<String, Object> option = initOptionMap(protocolGatewayParam);
 
@@ -111,15 +110,15 @@ public class ProtocolGatewayService {
     }
 
     @Transactional
-    public ProtocolComponent update(ProtocolGatewayParam protocolGatewayParam) {
-        ProtocolComponent protocolComponent = new ProtocolComponent();
-        ToolUtil.copyProperties(protocolGatewayParam, protocolComponent);
-        DB.update(protocolComponent);
+    public ProtocolGateway update(ProtocolGatewayParam protocolGatewayParam) {
+        ProtocolGateway protocolGateway = new ProtocolGateway();
+        ToolUtil.copyProperties(protocolGatewayParam, protocolGateway);
+        DB.update(protocolGateway);
 
         new QProtocolGatewayMqtt().protocolGatewayId.eq(protocolGatewayParam.getProtocolGatewayId()).delete();
         saveMqtt(protocolGatewayParam.getProtocolGatewayMqttList(), protocolGatewayParam.getProtocolGatewayId());
 
-        return protocolComponent;
+        return protocolGateway;
     }
 
     private void saveMqtt(List<ProtocolGatewayMqtt> protocolGatewayMqtts, Long protocolGatewayId) {

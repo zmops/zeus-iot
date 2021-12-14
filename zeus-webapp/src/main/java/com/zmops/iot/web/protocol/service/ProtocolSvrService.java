@@ -1,26 +1,29 @@
 package com.zmops.iot.web.protocol.service;
 
-import com.zmops.iot.domain.protocol.ProtocolComponent;
 import com.zmops.iot.domain.protocol.ProtocolService;
 import com.zmops.iot.domain.protocol.query.QProtocolGateway;
 import com.zmops.iot.domain.protocol.query.QProtocolService;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
+import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.protocol.dto.ProtocolServiceDto;
 import com.zmops.iot.web.protocol.dto.param.ProtocolServiceParam;
 import io.ebean.DB;
 import io.ebean.PagedList;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author yefei
  **/
 @Service
-public class ProtocolSvrService {
+public class ProtocolSvrService implements CommandLineRunner {
 
     public Pager<ProtocolServiceDto> getProtocolServiceByPage(ProtocolServiceParam protocolServiceParam) {
         QProtocolService qProtocolService = new QProtocolService();
@@ -57,13 +60,17 @@ public class ProtocolSvrService {
         ProtocolService ProtocolService = new ProtocolService();
         ToolUtil.copyProperties(protocolServiceParam, ProtocolService);
         DB.insert(ProtocolService);
+
+        updateProtocolServiceEvent();
         return ProtocolService;
     }
 
     public ProtocolService update(ProtocolServiceParam protocolServiceParam) {
         ProtocolService ProtocolService = new ProtocolService();
         ToolUtil.copyProperties(protocolServiceParam, ProtocolService);
-        DB.insert(ProtocolService);
+        DB.update(ProtocolService);
+
+        updateProtocolServiceEvent();
         return ProtocolService;
     }
 
@@ -74,7 +81,18 @@ public class ProtocolSvrService {
         }
 
         new QProtocolService().protocolServiceId.in(protocolServiceIds).delete();
+        updateProtocolServiceEvent();
     }
 
+    public void updateProtocolServiceEvent() {
+        List<ProtocolService> serviceList = new QProtocolService().findList();
+        Map<Long, String> map = serviceList.parallelStream().collect(Collectors.toMap(ProtocolService::getProtocolServiceId, ProtocolService::getName));
+        DefinitionsUtil.updateProtocolServiceCache(map);
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        updateProtocolServiceEvent();
+    }
 
 }
