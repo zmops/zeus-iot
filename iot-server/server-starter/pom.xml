@@ -9,6 +9,11 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <properties>
+        <frontend-maven-plugin.version>1.11.0</frontend-maven-plugin.version>
+        <ui.path>./src/main/webapp/assets</ui.path>
+    </properties>
+
     <artifactId>server-starter</artifactId>
     <dependencies>
         <dependency>
@@ -79,13 +84,46 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>${frontend-maven-plugin.version}</version>
+                <configuration>
+                    <workingDirectory>${ui.path}</workingDirectory>
+                    <nodeVersion>v8.17.0</nodeVersion>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>install --registry=https://registry.npm.taobao.org/ --unsafe-perm</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>build</id>
+                        <goals>
+                            <goal>gulp</goal>
+                        </goals>
+
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <configuration>
                     <resources>
                         <resource>
 <!--                            <targetPath>D:\\666</targetPath>-->
-                            <targetPath>//opt//zeus//zeus-iot-bin</targetPath>
+                            <targetPath>/opt/zeus/zeus-iot-bin</targetPath>
                             <directory>src/main/webapp</directory>
                         </resource>
                     </resources>
