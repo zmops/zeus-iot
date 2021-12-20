@@ -218,7 +218,7 @@ public class DeviceEventTriggerController {
         ProductEventRelation productEventRelation = new QProductEventRelation().relationId.eq(eventRule.getDeviceId())
                 .eventRuleId.eq(eventRule.getEventRuleId()).findOne();
 
-        if (productEventRelation != null && productEventRelation.getInherit().equals(InheritStatus.YES.getCode())) {
+        if (productEventRelation != null && InheritStatus.YES.getCode().equals(productEventRelation.getInherit())) {
             throw new ServiceException(BizExceptionEnum.EVENT_PRODUCT_CANNOT_DELETE);
         }
 
