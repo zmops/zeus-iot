@@ -41,7 +41,7 @@ public class AlarmService {
     @Autowired
     DeviceService deviceService;
 
-    private static final String PROBLEM_RESOLVE = "已解決";
+    private static final String PROBLEM_RESOLVE = "已解决";
 
 
     public void alarm(Map<String, Object> alarmInfo) {
