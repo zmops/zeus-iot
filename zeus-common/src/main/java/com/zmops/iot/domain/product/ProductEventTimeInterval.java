@@ -25,4 +25,6 @@ public class ProductEventTimeInterval {
     private Integer startTime;
 
     private Integer endTime;
+
+    private String  dayOfWeeks;
 }

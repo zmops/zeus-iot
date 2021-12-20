@@ -249,6 +249,7 @@ public class MultipleDeviceEventRuleService {
                     timeExp.setEventRuleId(eventRule.getEventRuleId());
                     timeExp.setStartTime(i.getStartTime());
                     timeExp.setEndTime(i.getEndTime());
+                    timeExp.setDayOfWeeks(i.getDayOfWeeks());
                     timeExpList.add(timeExp);
                 });
                 DB.insertAll(timeExpList);
@@ -352,6 +353,7 @@ public class MultipleDeviceEventRuleService {
                     timeExp.setEventRuleId(eventRule.getEventRuleId());
                     timeExp.setStartTime(i.getStartTime());
                     timeExp.setEndTime(i.getEndTime());
+                    timeExp.setDayOfWeeks(i.getDayOfWeeks());
                     timeExpList.add(timeExp);
                 });
                 DB.insertAll(timeExpList);

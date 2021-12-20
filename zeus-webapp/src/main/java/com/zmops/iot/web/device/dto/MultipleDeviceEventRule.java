@@ -11,7 +11,9 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author nantian created at 2021/9/14 14:47
@@ -143,11 +145,19 @@ public class MultipleDeviceEventRule {
     @Getter
     @Setter
     public static class TimeInterval {
+        private String  dayOfWeeks;
         private Integer startTime;
         private Integer endTime;
 
         @Override
         public String toString() {
+            String weekExpression = "";
+            if (ToolUtil.isNotEmpty(dayOfWeeks)) {
+                weekExpression = Arrays.asList(dayOfWeeks.split(",")).parallelStream().map(day -> "dayofweek()=" + day).collect(Collectors.joining(" or "));
+            }
+            if (ToolUtil.isNotEmpty(weekExpression)) {
+                return "((" + weekExpression + ") and time()>= " + startTime + " and " + " time()< " + endTime + " )";
+            }
             return "(time()>= " + startTime + " and " + " time()< " + endTime + " )";
         }
     }

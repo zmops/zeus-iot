@@ -224,7 +224,7 @@ public class HomeService {
 
     public Map<String, Object> getAlarmNum(long timeFrom, long timeTill) {
         List<Problem> alarmList = new QProblem().clock.ge(LocalDateTimeUtils.getLDTBySeconds((int) timeFrom))
-                .clock.lt(LocalDateTimeUtils.getLDTBySeconds((int) timeTill)).orderBy().clock.asc().findList();
+                .clock.lt(LocalDateTimeUtils.getLDTBySeconds((int) timeTill)).rClock.isNull().orderBy().clock.asc().findList();
         Map<String, Object> alarmMap = new ConcurrentHashMap<>(3);
 
         Map<String, Map<String, Long>> initMap = new ConcurrentHashMap<>(5);
