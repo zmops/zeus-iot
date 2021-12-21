@@ -1,12 +1,11 @@
 package com.zmops.zeus.iot.server.storage.plugin.jdbc.tdengine;
 
+import com.zmops.zeus.iot.server.client.jdbc.hikaricp.JDBCHikariCPClient;
 import com.zmops.zeus.iot.server.core.CoreModule;
 import com.zmops.zeus.iot.server.core.storage.IBatchDAO;
 import com.zmops.zeus.iot.server.core.storage.StorageDAO;
 import com.zmops.zeus.iot.server.core.storage.StorageException;
 import com.zmops.zeus.iot.server.core.storage.StorageModule;
-import com.zmops.zeus.iot.server.client.jdbc.hikaricp.JDBCHikariCPClient;
-
 import com.zmops.zeus.iot.server.storage.plugin.jdbc.tdengine.dao.TDEngineStorageDAO;
 import com.zmops.zeus.iot.server.telemetry.TelemetryModule;
 import com.zmops.zeus.iot.server.telemetry.api.HealthCheckMetrics;
@@ -45,10 +44,8 @@ public class TDEngineStorageProvider extends ModuleProvider {
 
     @Override
     public void prepare() throws ServiceNotProvidedException, ModuleStartException {
-
         Properties settings = new Properties();
-        settings.setProperty("dataSourceClassName", config.getDriver());
-        settings.setProperty("dataSource.url", config.getUrl());
+        settings.setProperty("jdbcUrl", config.getUrl());
         settings.setProperty("dataSource.user", config.getUser());
         settings.setProperty("dataSource.password", config.getPassword());
         client = new JDBCHikariCPClient(settings);
