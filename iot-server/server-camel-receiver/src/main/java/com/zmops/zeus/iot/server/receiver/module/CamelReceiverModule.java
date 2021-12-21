@@ -1,6 +1,7 @@
 package com.zmops.zeus.iot.server.receiver.module;
 
 import com.zmops.zeus.iot.server.receiver.service.CamelContextHolderService;
+import com.zmops.zeus.iot.server.receiver.service.ReferenceClientService;
 import com.zmops.zeus.server.library.module.ModuleDefine;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class CamelReceiverModule extends ModuleDefine {
     public Class<?>[] services() {
         List<Class<?>> classes = new ArrayList<>();
         classes.add(CamelContextHolderService.class);
+        classes.add(ReferenceClientService.class);
         return classes.toArray(new Class[]{});
     }
 }

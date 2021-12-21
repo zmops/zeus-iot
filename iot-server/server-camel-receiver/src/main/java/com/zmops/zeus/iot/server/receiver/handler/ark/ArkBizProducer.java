@@ -3,10 +3,9 @@ package com.zmops.zeus.iot.server.receiver.handler.ark;
 import com.zmops.zeus.dto.DataMessage;
 import com.zmops.zeus.dto.ItemValue;
 import com.zmops.zeus.facade.DynamicProcotol;
+import com.zmops.zeus.iot.server.receiver.module.CamelReceiverModule;
+import com.zmops.zeus.iot.server.receiver.service.ReferenceClientService;
 import com.zmops.zeus.server.library.module.ModuleManager;
-import com.zmops.zeus.server.runtime.SofaStarter;
-import com.zmops.zeus.server.runtime.api.client.ReferenceClient;
-import com.zmops.zeus.server.runtime.api.client.param.ReferenceParam;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.support.DefaultProducer;
@@ -20,25 +19,17 @@ import java.util.List;
 @SuppressWarnings("all")
 public class ArkBizProducer extends DefaultProducer {
 
-    private final SofaStarter sofaStarter;
-    private final ReferenceClient referenceClient;
-
-    private final String methodName;
     private final ModuleManager moduleManager;
 
-    private final DynamicProcotol dynamicClient;
+    private final DynamicProcotol dynamicProcotol;
 
     public ArkBizProducer(Endpoint endpoint, ModuleManager moduleManager, String uniqueId, String methodName) {
         super(endpoint);
         this.moduleManager = moduleManager;
-        this.sofaStarter = new SofaStarter();
-        this.referenceClient = this.sofaStarter.getSofaRuntimeContext().getClientFactory().getClient(ReferenceClient.class);
-        this.methodName = methodName;
 
-        ReferenceParam<DynamicProcotol> referenceParam = new ReferenceParam<>();
-        referenceParam.setInterfaceType(DynamicProcotol.class);
-        referenceParam.setUniqueId(uniqueId);
-        dynamicClient = referenceClient.reference(referenceParam);
+        ReferenceClientService referenceClientService = moduleManager.find(CamelReceiverModule.NAME)
+                .provider().getService(ReferenceClientService.class);
+        dynamicProcotol = referenceClientService.getDynamicProtocolClient(uniqueId);
     }
 
     @Override
@@ -48,7 +39,7 @@ public class ArkBizProducer extends DefaultProducer {
         message.setBody(exchange.getMessage().getBody());
         message.setHeaders(exchange.getMessage().getHeaders());
 
-        List<ItemValue> itemValueList = dynamicClient.protocolHandler(message);
+        List<ItemValue> itemValueList = dynamicProcotol.protocolHandler(message);
 
         if (itemValueList == null) {
             itemValueList = Collections.emptyList();
