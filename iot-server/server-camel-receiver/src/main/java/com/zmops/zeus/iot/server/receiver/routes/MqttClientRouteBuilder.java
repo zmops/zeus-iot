@@ -21,10 +21,10 @@ public class MqttClientRouteBuilder extends ReceiverServerRoute {
 
     @Override
     public void configure() throws Exception {
-        fromF("mqtt:zeus-iot-mqtt?host=tcp://%s:%s&subscribeTopicNames=%s", options.get("hostIp"), options.get("port"), options.get("topicNames"))
+        fromF("paho-mqtt5:%s?brokerUrl=tcp://%s:%s", options.get("topicNames"), options.get("hostIp"), options.get("port"))
                 .routeId(routeId)
                 .log(LoggingLevel.DEBUG, log, ">>> Message received from Mqtt Client : \n${body}")
-                .dynamicRouter(method(RouteJudge.class, "slip")).to("Zabbix");
+                .dynamicRouter(method(RouteJudge.class, "slip")).to("Zabbix:mqtt");
     }
 
 
@@ -36,12 +36,12 @@ public class MqttClientRouteBuilder extends ReceiverServerRoute {
                 return null;
             }
 
-            String topicName = exchange.getIn().getHeader("CamelMQTTSubscribeTopic").toString();
+            String topicName = exchange.getIn().getHeader("CamelMqttTopic").toString();
 
             //TODO 这里需要动态加载规则
 
             if (topicName.equals("zeusiot/123")) {
-                return "ArkBiz?uniqueId=198909118";
+                return "ArkBiz:mqtt?uniqueId=19890918";
             }
 
             if (topicName.equals("zeusiot/1234")) {

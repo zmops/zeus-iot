@@ -6,9 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Route;
 import org.apache.camel.RoutesBuilder;
-import org.apache.camel.model.FromDefinition;
-
-import java.util.List;
 
 /**
  * @author nantian created at 2021/8/17 0:24
@@ -46,37 +43,18 @@ public class CamelContextHolderService implements Service {
      * @param routeId 路由ID
      */
     public void routeShutDown(String routeId) {
-//        EventDrivenConsumerRoute route = (EventDrivenConsumerRoute) camelContext.getRoute(routeId);
-//        List<FromDefinition> fromDefinitions = camelContext.getRouteDefinition(routeId).getInputs();
-//
-//
-//        try {
-//            camelContext.stopRoute(routeId);
-//            camelContext.removeRoute(routeId);
-////            camelContext.removeRouteDefinition(camelContext.getRouteDefinition(routeId));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
 
+        Route route = camelContext.getRoute(routeId);
+        if (route == null) {
+            return;
+        }
 
-//        if (route == null) {
-//            log.error("当前 routeId : {} 对应的路由不存在", routeId);
-//            return;
-//        }
-//        try {
-//            route.getEndpoint().stop();
-//            route.getConsumer().stop();
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//
-//        try {
-//            camelContext.removeRoute(routeId);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        try {
+            camelContext.getRouteController().stopRoute(routeId);
+            camelContext.removeRoute(routeId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
