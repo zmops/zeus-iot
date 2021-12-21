@@ -21,12 +21,12 @@ public class TDEngineSqlExecutor {
 
     protected <T extends StorageData> SQLExecutor getInsertExecutor(String modelName, T metrics) {
 
-        SQLBuilder sqlBuilder = new SQLBuilder().append("h_").append(metrics.itemid() + " USING ");
+        SQLBuilder sqlBuilder = new SQLBuilder();
 
         if (modelName.equals("history")) {
 
             History history = (History) metrics;
-            sqlBuilder.append("history (deviceid, itemid) TAGS")
+            sqlBuilder.append("h_").append(metrics.itemid() + " USING ").append("history (deviceid, itemid) TAGS")
                     .append("('").append(history.getDeviceId()).append("'")
                     .append(",").append(history.getItemid() + " )")
                     .append(" VALUES (")
@@ -35,7 +35,7 @@ public class TDEngineSqlExecutor {
         } else if (modelName.equals("history_uint")) {
 
             UIntHistory uihistory = (UIntHistory) metrics;
-            sqlBuilder.append("history_uint (deviceid, itemid) TAGS")
+            sqlBuilder.append("huint_").append(metrics.itemid() + " USING ").append("history_uint (deviceid, itemid) TAGS")
                     .append(" ('").append(uihistory.getDeviceId()).append("'")
                     .append(",").append(uihistory.getItemid() + " )")
                     .append(" VALUES (")
@@ -45,7 +45,7 @@ public class TDEngineSqlExecutor {
             TextHistory textHistory = (TextHistory) metrics;
             String value = textHistory.getValue().replaceAll(",", "\\,");
 
-            sqlBuilder.append("history_text (deviceid, itemid) TAGS")
+            sqlBuilder.append("htxt_").append(metrics.itemid() + " USING ").append("history_text (deviceid, itemid) TAGS")
                     .append(" ('").append(textHistory.getDeviceId()).append("'")
                     .append(",").append(textHistory.getItemid() + " )")
                     .append(" VALUES (")
@@ -54,7 +54,7 @@ public class TDEngineSqlExecutor {
 
             StrHistory strHistory = (StrHistory) metrics;
             String value = strHistory.getValue().replaceAll(",", "\\,");
-            sqlBuilder.append("history_str (deviceid, itemid) TAGS")
+            sqlBuilder.append("hstr_").append(metrics.itemid() + " USING ").append("history_str (deviceid, itemid) TAGS")
                     .append(" ('").append(strHistory.getDeviceId()).append("'")
                     .append(",").append(strHistory.getItemid() + " )")
                     .append(" VALUES (")
