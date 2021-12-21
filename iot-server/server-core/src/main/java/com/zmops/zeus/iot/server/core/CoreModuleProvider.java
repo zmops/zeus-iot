@@ -62,12 +62,9 @@ public class CoreModuleProvider extends ModuleProvider {
                 .jettyHttpMaxRequestHeaderSize(moduleConfig.getHttpMaxRequestHeaderSize())
                 .build();
 
-
         jettyServer = new JettyServer(jettyServerConfig);
         jettyServer.initialize();
-
         jettyServer.setFilterInitParameter("configClass", "com.zmops.zeus.iot.web.config.IoTConfig");
-
     }
 
     @Override
