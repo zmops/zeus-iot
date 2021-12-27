@@ -14,6 +14,7 @@ import com.zmops.iot.web.protocol.dto.param.ProtocolGatewayParam;
 import com.zmops.iot.web.protocol.service.ProtocolGatewayService;
 import com.zmops.zeus.driver.service.ZeusServer;
 import io.ebean.DB;
+import io.ebean.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -93,17 +94,18 @@ public class ProtocolGatewayController {
      * 协议网关启动
      */
     @RequestMapping("/start")
+    @Transactional
     public ResponseData start(@RequestParam("protocolGatewayId") Long protocolGatewayId) {
         ProtocolGateway protocolGateway = new QProtocolGateway().protocolGatewayId.eq(protocolGatewayId).findOne();
         if (protocolGateway == null) {
             throw new ServiceException(BizExceptionEnum.PROTOCOL_GATEWAY_NOT_EXISTS);
         }
-        protocolGateway.setStatus("1");
+        protocolGateway.setStatus("0");
         DB.update(protocolGateway);
 
         Map<String, String> params = new HashMap<>(1);
         params.put("routeId", protocolGatewayId + "");
-        Forest.post("/protocol/startRoute").host("127.0.0.1").port(12800).addBody(params,"text/html;charset=utf-8").execute();
+        Forest.post("/protocol/gateway/startRoute").host("127.0.0.1").port(12800).addBody(params,"text/html;charset=utf-8").execute();
 
         return ResponseData.success();
     }
@@ -112,18 +114,19 @@ public class ProtocolGatewayController {
      * 协议网关停止
      */
     @RequestMapping("/stop")
+    @Transactional
     public ResponseData stop(@RequestParam("protocolGatewayId") Long protocolGatewayId) {
         ProtocolGateway protocolGateway = new QProtocolGateway().protocolGatewayId.eq(protocolGatewayId).findOne();
         if (protocolGateway == null) {
             throw new ServiceException(BizExceptionEnum.PROTOCOL_GATEWAY_NOT_EXISTS);
         }
-        protocolGateway.setStatus("0");
+        protocolGateway.setStatus("1");
         DB.update(protocolGateway);
 
 
         Map<String, String> params = new HashMap<>(1);
         params.put("routeId", protocolGatewayId + "");
-        Forest.post("/protocol/stopRoute").host("127.0.0.1").port(12800).addBody(params,"text/html;charset=utf-8").execute();
+        Forest.post("/protocol/gateway/stopRoute").host("127.0.0.1").port(12800).addBody(params,"text/html;charset=utf-8").execute();
 
         return ResponseData.success();
     }

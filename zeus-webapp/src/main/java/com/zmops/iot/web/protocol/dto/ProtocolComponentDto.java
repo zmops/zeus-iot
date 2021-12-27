@@ -33,4 +33,6 @@ public class ProtocolComponentDto {
 
     @CachedValue(type = DicType.Tenant, fieldName = "tenantName")
     Long tenantId;
+
+    private String uniqueId;
 }

@@ -1,5 +1,6 @@
 package com.zmops.iot.web.protocol.service;
 
+import com.dtflys.forest.Forest;
 import com.zmops.iot.domain.protocol.ProtocolService;
 import com.zmops.iot.domain.protocol.query.QProtocolGateway;
 import com.zmops.iot.domain.protocol.query.QProtocolService;
@@ -10,11 +11,14 @@ import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.protocol.dto.ProtocolServiceDto;
 import com.zmops.iot.web.protocol.dto.param.ProtocolServiceParam;
+import com.zmops.iot.web.protocol.enums.ProtocolEnum;
 import io.ebean.DB;
 import io.ebean.PagedList;
+import io.ebean.annotation.Transactional;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -56,19 +60,46 @@ public class ProtocolSvrService implements CommandLineRunner {
         return qProtocolService.findList();
     }
 
+    @Transactional
     public ProtocolService create(ProtocolServiceParam protocolServiceParam) {
         ProtocolService ProtocolService = new ProtocolService();
         ToolUtil.copyProperties(protocolServiceParam, ProtocolService);
         DB.insert(ProtocolService);
 
+        Map<String, String> params = new HashMap<>(1);
+        params.put("protocolServiceId", ProtocolService.getProtocolServiceId() + "");
+        params.put("name", ProtocolService.getName());
+        params.put("url", ProtocolService.getUrl());
+        params.put("ip", ProtocolService.getIp());
+        params.put("port", ProtocolService.getPort() + "");
+        params.put("msgLength", ProtocolService.getMsgLength() + "");
+        params.put("clientId", ProtocolService.getClientId());
+        params.put("protocol", ProtocolEnum.getDescription(ProtocolService.getProtocolType()));
+        params.put("remark", ProtocolService.getRemark());
+        Forest.post("/protocol/service/saveProtocolService").host("127.0.0.1").port(12800).addBody(params, "text/html;charset=utf-8").execute();
+
         updateProtocolServiceEvent();
         return ProtocolService;
     }
 
+    @Transactional
     public ProtocolService update(ProtocolServiceParam protocolServiceParam) {
         ProtocolService ProtocolService = new ProtocolService();
         ToolUtil.copyProperties(protocolServiceParam, ProtocolService);
         DB.update(ProtocolService);
+
+        Map<String, String> params = new HashMap<>(1);
+        params.put("protocolServiceId", ProtocolService.getProtocolServiceId() + "");
+        params.put("name", ProtocolService.getName());
+        params.put("url", ProtocolService.getUrl());
+        params.put("ip", ProtocolService.getIp());
+        params.put("port", ProtocolService.getPort() + "");
+        params.put("msgLength", ProtocolService.getMsgLength() + "");
+        params.put("clientId", ProtocolService.getClientId());
+        params.put("protocol", ProtocolEnum.getDescription(ProtocolService.getProtocolType()));
+        params.put("remark", ProtocolService.getRemark());
+        Forest.post("/protocol/service/updateProtocolService").host("127.0.0.1").port(12800).addBody(params, "text/html;charset=utf-8").execute();
+
 
         updateProtocolServiceEvent();
         return ProtocolService;

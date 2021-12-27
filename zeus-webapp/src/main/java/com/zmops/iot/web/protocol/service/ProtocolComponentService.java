@@ -1,5 +1,7 @@
 package com.zmops.iot.web.protocol.service;
 
+import cn.hutool.core.util.IdUtil;
+import com.dtflys.forest.Forest;
 import com.zmops.iot.domain.protocol.ProtocolComponent;
 import com.zmops.iot.domain.protocol.query.QProtocolComponent;
 import com.zmops.iot.domain.protocol.query.QProtocolGateway;
@@ -12,9 +14,12 @@ import com.zmops.iot.web.protocol.dto.ProtocolComponentDto;
 import com.zmops.iot.web.protocol.dto.param.ProtocolComponentParam;
 import io.ebean.DB;
 import io.ebean.PagedList;
+import io.ebean.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author yefei
@@ -54,11 +59,18 @@ public class ProtocolComponentService {
         return qProtocolComponent.findList();
     }
 
+    @Transactional
     public ProtocolComponent create(ProtocolComponentParam protocolComponentParam) {
         ProtocolComponent protocolComponent = new ProtocolComponent();
         ToolUtil.copyProperties(protocolComponentParam, protocolComponent);
         protocolComponent.setStatus("0");
+        protocolComponent.setUniqueId(IdUtil.getSnowflake().nextId() + "");
         DB.insert(protocolComponent);
+
+        Map<String, String> params = new HashMap<>(1);
+        params.put("protocolComponentId", protocolComponent.getProtocolComponentId() + "");
+        params.put("uniqueId", protocolComponent.getUniqueId());
+        Forest.post("/protocol/component/saveProtocolComponent").host("127.0.0.1").port(12800).addBody(params, "text/html;charset=utf-8").execute();
         return protocolComponent;
     }
 

@@ -17,7 +17,6 @@ public class ProtocolComponentParam extends BaseQueryParam {
     private Long   protocolComponentId;
     @NotBlank(groups = {BaseEntity.Create.class})
     private String name;
-    @NotBlank(groups = {BaseEntity.Update.class})
     private String effectProxy;
     private String source;
     private String status;

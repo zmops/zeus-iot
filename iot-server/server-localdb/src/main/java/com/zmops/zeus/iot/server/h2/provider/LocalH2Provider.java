@@ -1,9 +1,9 @@
 package com.zmops.zeus.iot.server.h2.provider;
 
-import com.zmops.zeus.iot.server.h2.module.LocalH2Module;
-import com.zmops.zeus.iot.server.h2.service.InsertDAO;
 import com.zmops.zeus.iot.server.client.jdbc.JDBCClientException;
 import com.zmops.zeus.iot.server.client.jdbc.hikaricp.JDBCHikariCPClient;
+import com.zmops.zeus.iot.server.h2.module.LocalH2Module;
+import com.zmops.zeus.iot.server.h2.service.InsertDAO;
 import com.zmops.zeus.server.library.module.*;
 
 import java.sql.Connection;
@@ -15,8 +15,8 @@ import java.util.Properties;
  */
 public class LocalH2Provider extends ModuleProvider {
 
-    private final LocalH2Config localH2Config;
-    private JDBCHikariCPClient h2Client;
+    private final LocalH2Config      localH2Config;
+    private       JDBCHikariCPClient h2Client;
 
     public LocalH2Provider() {
         this.localH2Config = new LocalH2Config();
@@ -53,14 +53,49 @@ public class LocalH2Provider extends ModuleProvider {
 
         try {
             Connection connection = h2Client.getConnection();
-            int rs = h2Client.executeUpdate(
-                    connection, "DROP TABLE IF EXISTS ZEUS_CONFIG;\n" +
-                            "CREATE TABLE ZEUS_CONFIG(ID INT PRIMARY KEY,\n" +
-                            "   NAME VARCHAR(64),CONFIG VARCHAR(255));");
+            h2Client.execute(
+                    connection, "CREATE TABLE if not exists PROTOCOL_COMPONENT(" +
+                            "   ID INT PRIMARY KEY," +
+                            "   NAME VARCHAR(64)," +
+                            "   UNIQUE_ID VARCHAR(32)," +
+                            "   FILE_NAME  VARCHAR(64)," +
+                            "   STATUS  VARCHAR(8)," +
+                            "   REMARK  VARCHAR(255)," +
+                            "  BIZ_NAME  VARCHAR(64)," +
+                            "  BIZ_VERSION  VARCHAR(32)" +
+                            ");");
 
-            h2Client.execute(connection, "INSERT INTO ZEUS_CONFIG VALUES(3, 'Hello h2','配置信息');");
+            h2Client.execute(
+                    connection, "CREATE TABLE if not exists PROTOCOL_GATEWAY(" +
+                            "   ID INT PRIMARY KEY," +
+                            "   NAME VARCHAR(64)," +
+                            "   PROTOCOL_COMPONENT_ID  INT," +
+                            "   PROTOCOL_SERVICE_ID  INT," +
+                            "   REMARK  VARCHAR(255)," +
+                            "  STATUS  VARCHAR(8)" +
+                            ");");
 
-            ResultSet rs2 = h2Client.executeQuery(connection, "select * from ZEUS_CONFIG;");
+            h2Client.execute(
+                    connection, "CREATE TABLE if not exists PROTOCOL_SERVICE(" +
+                            "   ID INT PRIMARY KEY," +
+                            "   NAME VARCHAR(64)," +
+                            "   REMARK  VARCHAR(255)," +
+                            "  URL  VARCHAR(128)," +
+                            "  IP  VARCHAR(16)," +
+                            "  PORT  INT," +
+                            "  MSG_LENGTH  INT," +
+                            "  CLIENT_ID  VARCHAR(32)," +
+                            "  PROTOCOL  VARCHAR(16)" +
+                            ");");
+
+            h2Client.execute(
+                    connection, "CREATE TABLE if not exists PROTOCOL_GATEWAY_MQTT(" +
+                            "   TOPIC VARCHAR(64)," +
+                            "   PROTOCOL_COMPONENT_ID  INT," +
+                            "   PROTOCOL_GATEWAY_ID  INT" +
+                            ");");
+
+            ResultSet rs2 = h2Client.executeQuery(connection, "select * from PROTOCOL_COMPONENT;");
 
             System.out.println(rs2);
 

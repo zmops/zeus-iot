@@ -30,7 +30,7 @@ public class ProtocolServiceController {
     ProtocolSvrService protocolSvrService;
 
     /**
-     * 协议组件分页列表
+     * 协议服务分页列表
      */
     @RequestMapping("/getProtocolServiceByPage")
     public Pager<ProtocolServiceDto> getProtocolComponentByPage(@RequestBody ProtocolServiceParam protocolServiceParam) {
@@ -38,7 +38,7 @@ public class ProtocolServiceController {
     }
 
     /**
-     * 协议组件列表
+     * 协议服务列表
      */
     @RequestMapping("/list")
     public ResponseData list(@RequestBody ProtocolServiceParam protocolServiceParam) {
@@ -47,7 +47,7 @@ public class ProtocolServiceController {
 
 
     /**
-     * 协议组件创建
+     * 协议服务创建
      */
     @RequestMapping("/create")
     public ResponseData create(@Validated(BaseEntity.Create.class) @RequestBody ProtocolServiceParam protocolServiceParam) {
@@ -59,7 +59,7 @@ public class ProtocolServiceController {
     }
 
     /**
-     * 协议组件修改
+     * 协议服务修改
      */
     @RequestMapping("/update")
     public ResponseData update(@Validated(BaseEntity.Update.class) @RequestBody ProtocolServiceParam protocolServiceParam) {
@@ -72,7 +72,7 @@ public class ProtocolServiceController {
 
 
     /**
-     * 协议组件删除
+     * 协议服务删除
      */
     @RequestMapping("/delete")
     public ResponseData delete(@Validated(BaseEntity.Delete.class) @RequestBody ProtocolServiceParam protocolServiceParam) {

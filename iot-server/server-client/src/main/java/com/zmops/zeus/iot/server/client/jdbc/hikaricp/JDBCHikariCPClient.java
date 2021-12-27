@@ -38,9 +38,9 @@ import java.util.Properties;
 public class JDBCHikariCPClient implements Client, HealthCheckable {
     private static final Logger LOGGER = LoggerFactory.getLogger(JDBCHikariCPClient.class);
 
-    private final HikariConfig hikariConfig;
+    private final HikariConfig           hikariConfig;
     private final DelegatedHealthChecker healthChecker;
-    private HikariDataSource dataSource;
+    private       HikariDataSource       dataSource;
 
     public JDBCHikariCPClient(Properties properties) {
         hikariConfig = new HikariConfig(properties);
@@ -139,16 +139,21 @@ public class JDBCHikariCPClient implements Client, HealthCheckable {
     private void setStatementParam(PreparedStatement statement,
                                    Object[] params) throws SQLException, JDBCClientException {
         if (params != null) {
+            int p = 0;
             for (int i = 0; i < params.length; i++) {
                 Object param = params[i];
+                if (param == null) {
+                    continue;
+                }
+                ++p;
                 if (param instanceof String) {
-                    statement.setString(i + 1, (String) param);
+                    statement.setString(p, (String) param);
                 } else if (param instanceof Integer) {
-                    statement.setInt(i + 1, (int) param);
+                    statement.setInt(p, (int) param);
                 } else if (param instanceof Double) {
-                    statement.setDouble(i + 1, (double) param);
+                    statement.setDouble(p, (double) param);
                 } else if (param instanceof Long) {
-                    statement.setLong(i + 1, (long) param);
+                    statement.setLong(p, (long) param);
                 } else {
                     throw new JDBCClientException("Unsupported data type, type=" + param.getClass().getName());
                 }

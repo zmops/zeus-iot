@@ -13,6 +13,7 @@ import com.zmops.iot.web.protocol.dto.param.ProtocolComponentParam;
 import com.zmops.iot.web.protocol.service.ProtocolComponentService;
 import com.zmops.zeus.driver.service.ZeusServer;
 import io.ebean.DB;
+import io.ebean.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -123,6 +124,7 @@ public class ProtocolComponentController {
      * 协议组件发布
      */
     @RequestMapping("/publish")
+    @Transactional
     public ResponseData publish(@RequestParam("protocolComponentId") Long protocolComponentId) {
         ProtocolComponent protocolComponent = new QProtocolComponent().protocolComponentId.eq(protocolComponentId).findOne();
         if (protocolComponent == null) {
@@ -133,8 +135,9 @@ public class ProtocolComponentController {
         //TODO 调用服务发布
 
         Map<String, String> params = new HashMap<>(1);
+        params.put("protocolComponentId", protocolComponent.getProtocolComponentId() + "");
         params.put("fileName", protocolComponent.getFileName());
-        Forest.post("/protocol/installArk").host("127.0.0.1").port(12800).addBody(params, "text/html;charset=utf-8").execute();
+        Forest.post("/protocol/component/installArk").host("127.0.0.1").port(12800).addBody(params, "text/html;charset=utf-8").execute();
 
         return ResponseData.success();
     }
@@ -143,6 +146,7 @@ public class ProtocolComponentController {
      * 协议组件取消发布
      */
     @RequestMapping("/unPublish")
+    @Transactional
     public ResponseData unPublish(@RequestParam("protocolComponentId") Long protocolComponentId) {
         ProtocolComponent protocolComponent = new QProtocolComponent().protocolComponentId.eq(protocolComponentId).findOne();
         if (protocolComponent == null) {
@@ -152,8 +156,8 @@ public class ProtocolComponentController {
         DB.update(protocolComponent);
 
         Map<String, String> params = new HashMap<>(1);
-        params.put("fileName", protocolComponent.getFileName());
-        Forest.post("/protocol/uninstallArk").host("127.0.0.1").port(12800).addBody(params, "text/html;charset=utf-8").execute();
+        params.put("protocolComponentId", protocolComponent.getProtocolComponentId() + "");
+        Forest.post("/protocol/component/uninstallArk").host("127.0.0.1").port(12800).addBody(params, "text/html;charset=utf-8").execute();
 
         return ResponseData.success();
     }

@@ -40,12 +40,12 @@ public class MqttClientRouteBuilder extends ReceiverServerRoute {
 
             //TODO 这里需要动态加载规则
 
-            if (topicName.equals("zeusiot/123")) {
+            if ("zeus11".equals(topicName)) {
                 return "ArkBiz:mqtt?uniqueId=19890918";
             }
 
-            if (topicName.equals("zeusiot/1234")) {
-                return "ArkBiz?uniqueId=19890918";
+            if ("zeus22".equals(topicName)) {
+                return "ArkBiz:mqtt?uniqueId=20211225";
             }
 
             return null;

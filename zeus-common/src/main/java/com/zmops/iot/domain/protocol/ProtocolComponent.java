@@ -26,4 +26,5 @@ public class ProtocolComponent extends BaseEntity {
     private String remark;
     private Long   tenantId;
     private String fileName;
+    private String uniqueId;
 }

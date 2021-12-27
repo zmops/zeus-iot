@@ -84,12 +84,22 @@ public class ProtocolGatewayService {
 
         Map<String, Object> option = initOptionMap(protocolGatewayParam);
 
-        ProtocolOption protocolOption = new ProtocolOption();
-        protocolOption.setRouteId(ProtocolGateway.getProtocolGatewayId() + "");
-        protocolOption.setProtocol(ProtocolEnum.getDescription(protocolGatewayParam.getProtocolType()));
-        protocolOption.setOptions(option);
+//        ProtocolOption protocolOption = new ProtocolOption();
+//        protocolOption.setRouteId(ProtocolGateway.getProtocolGatewayId() + "");
+//        protocolOption.setProtocol(ProtocolEnum.getDescription(protocolGatewayParam.getProtocolType()));
+//        protocolOption.setOptions(option);
 
-        Forest.post("/protocol/createRoute").host("127.0.0.1").port(12800).contentTypeJson().addBody(JSON.toJSON(protocolOption)).execute();
+        Map<String, Object> params = new HashMap<>(7);
+        params.put("routeId", ProtocolGateway.getProtocolGatewayId() + "");
+        params.put("name", ProtocolGateway.getName());
+        params.put("protocolServiceId", protocolGatewayParam.getProtocolServiceId()+"");
+        params.put("protocolComponentId", protocolGatewayParam.getProtocolComponentId()+"");
+        params.put("status", ProtocolGateway.getStatus());
+        params.put("protocol", ProtocolEnum.getDescription(protocolGatewayParam.getProtocolType()));
+        params.put("option", JSON.toJSONString(option));
+        params.put("mqttList", JSON.toJSONString(protocolGatewayParam.getProtocolGatewayMqttList()));
+
+        Forest.post("/protocol/gateway/createProtocolGateway").host("127.0.0.1").port(12800).addBody(params,"text/html;charset=utf-8").execute();
         return ProtocolGateway;
     }
 
@@ -99,12 +109,12 @@ public class ProtocolGatewayService {
         option.put("hostIp", protocolService.getIp());
         option.put("port", protocolService.getPort());
         if (ToolUtil.isNotEmpty(protocolGatewayParam.getProtocolGatewayMqttList())) {
-            String topics = protocolGatewayParam.getProtocolGatewayMqttList().parallelStream().map(ProtocolGatewayMqtt::getTopic).collect(Collectors.joining(";"));
+            String topics = protocolGatewayParam.getProtocolGatewayMqttList().parallelStream().map(ProtocolGatewayMqtt::getTopic).collect(Collectors.joining(","));
             option.put("topicNames", topics);
         }
 
         option.put("port", protocolService.getPort());
-
+        option.put("mqttList", protocolGatewayParam.getProtocolGatewayMqttList());
 
         return option;
     }

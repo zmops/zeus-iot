@@ -15,7 +15,7 @@ import lombok.Setter;
 public class LocalH2Config extends ModuleConfig {
 
     private String driver = "org.h2.jdbcx.JdbcDataSource";
-    private String url = "jdbc:h2:mem:skywalking-oap-db;DB_CLOSE_DELAY=-1";
+    private String url = "jdbc:h2:~/zeus_iot_db;DB_CLOSE_DELAY=-1";
     private String user = "sa";
     private String password = "sa";
 

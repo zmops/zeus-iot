@@ -17,7 +17,6 @@ public class ProtocolServiceParam extends BaseQueryParam {
     private Long   protocolServiceId;
     @NotBlank(groups = {BaseEntity.Create.class})
     private String name;
-    @NotBlank(groups = {BaseEntity.Update.class})
     private String effectProxy;
     private String protocolType;
     private String remark;

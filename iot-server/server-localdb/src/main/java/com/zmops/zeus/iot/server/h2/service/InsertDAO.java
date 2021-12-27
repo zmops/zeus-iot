@@ -11,5 +11,9 @@ public interface InsertDAO extends Service {
 
     void insert(String sql);
 
-    ResultSet queryRes(String sql);
+    int update(String sql, Object... params);
+
+    ResultSet queryRes(String sql, Object... params);
+
+    void delete(String sql);
 }

@@ -19,6 +19,6 @@ public interface ZeusServer {
      * @param onProgress 进度处理
      * @return map
      */
-    @Post(url = "http://${ip}:12800/protocol/upload")
+    @Post(url = "http://${ip}:12800/protocol/component/upload")
     void upload(@Var("ip") String ip, @DataFile("file") MultipartFile file, OnProgress onProgress);
 }
