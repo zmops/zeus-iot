@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dtflys.forest.Forest;
 import com.zmops.iot.core.auth.context.LoginContextHolder;
+import com.zmops.iot.domain.device.query.QDevicesGroups;
 import com.zmops.iot.domain.product.*;
 import com.zmops.iot.domain.product.query.*;
 import com.zmops.iot.domain.schedule.Task;
@@ -62,14 +63,14 @@ public class MultipleDeviceEventRuleService {
     /**
      * 场景列表
      *
-     * @param eventParm
+     * @param eventParam
      * @return
      */
-    public List<MultipleDeviceEventDto> list(MultipleDeviceEventParm eventParm) {
+    public List<MultipleDeviceEventDto> list(MultipleDeviceEventParm eventParam) {
         QProductEvent query = new QProductEvent();
 
-        if (ToolUtil.isNotEmpty(eventParm.getEventRuleName())) {
-            query.eventRuleName.contains(eventParm.getEventRuleName());
+        if (ToolUtil.isNotEmpty(eventParam.getEventRuleName())) {
+            query.eventRuleName.contains(eventParam.getEventRuleName());
         }
 
         if (LoginContextHolder.getContext().getUser().getTenantId() != null) {
@@ -84,22 +85,30 @@ public class MultipleDeviceEventRuleService {
     /**
      * 设备联动 分页列表
      *
-     * @param eventParm 查询参数
+     * @param eventParam 查询参数
      * @return MultipleDeviceEventDto
      */
-    public Pager<MultipleDeviceEventDto> getEventByPage(MultipleDeviceEventParm eventParm) {
+    public Pager<MultipleDeviceEventDto> getEventByPage(MultipleDeviceEventParm eventParam) {
         QProductEvent query = new QProductEvent();
         Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
         if (null != tenantId) {
             query.tenantId.eq(tenantId);
         }
-        if (ToolUtil.isNotEmpty(eventParm.getEventRuleName())) {
-            query.eventRuleName.contains(eventParm.getEventRuleName());
+        if (ToolUtil.isNotEmpty(eventParam.getEventRuleName())) {
+            query.eventRuleName.contains(eventParam.getEventRuleName());
+        }
+        if (ToolUtil.isNotEmpty(eventParam.getDeviceIds())) {
+            List<Long> eventIds = new QProductEventService().select(QProductEventService.alias().eventRuleId).executeDeviceId.isNotNull().executeDeviceId.in(eventParam.getDeviceIds()).findSingleAttributeList();
+            query.eventRuleId.in(eventIds);
+        } else if (ToolUtil.isNotEmpty(eventParam.getDeviceGrpIds())) {
+            List<String> deviceIds = new QDevicesGroups().select(QDevicesGroups.alias().deviceId).deviceId.isNotNull().deviceGroupId.in(eventParam.getDeviceGrpIds()).findSingleAttributeList();
+            List<Long> eventIds = new QProductEventService().select(QProductEventService.alias().eventRuleId).executeDeviceId.isNotNull().executeDeviceId.in(deviceIds).findSingleAttributeList();
+            query.eventRuleId.in(eventIds);
         }
         query.classify.eq(EVENT_CLASSIFY);
 
-        List<MultipleDeviceEventDto> list = query.setFirstRow((eventParm.getPage() - 1) * eventParm.getMaxRow())
-                .setMaxRows(eventParm.getMaxRow()).orderBy(" create_time desc").asDto(MultipleDeviceEventDto.class).findList();
+        List<MultipleDeviceEventDto> list = query.setFirstRow((eventParam.getPage() - 1) * eventParam.getMaxRow())
+                .setMaxRows(eventParam.getMaxRow()).orderBy(" create_time desc").asDto(MultipleDeviceEventDto.class).findList();
 
         if (ToolUtil.isEmpty(list)) {
             return new Pager<>(list, 0);
