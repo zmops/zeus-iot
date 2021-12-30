@@ -211,7 +211,7 @@ public class SysUserGroupService {
     public void bindHostGrp(UserGroupParam userGroup) {
         new QSysUserGrpDevGrp().userGroupId.eq(userGroup.getUserGroupId()).delete();
 
-        if (ToolUtil.isNotEmpty(userGroup.getDeviceGroupIds())) {
+        if (ToolUtil.isEmpty(userGroup.getDeviceGroupIds())) {
             return;
         }
 
