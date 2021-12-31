@@ -11,8 +11,11 @@ public class IoTConfig extends WebConfig {
     public void configConstant(Constants constants) {
         constants.setDevMode(true);
         constants.setMaxPostSize(1024 * 1024 * 100);
-        constants.setBaseUploadPath("D:\\666\\upload");
-//        constants.setBaseUploadPath("//opt//zeus//zeus-iot-bin//upload");
+        if (!System.getProperty("os.name").toLowerCase().startsWith("win")) {
+            constants.setBaseUploadPath("D:\\protocol\\upload");
+        } else {
+            constants.setBaseUploadPath("//opt//zeus//zeus-iot-bin//upload");
+        }
     }
 
     @Override

@@ -48,10 +48,13 @@ public class ProtocolComponentController extends Controller {
         String fileName = getPara("fileName");
         InsertDAO localH2InsertDAO = ModuleManager.getInstance()
                 .find(LocalH2Module.NAME).provider().getService(InsertDAO.class);
-
+        ClientResponse response;
         try {
-            ClientResponse response = ArkClient.installBiz(new File("D:\\666\\upload\\" + fileName));
-//            ClientResponse response = ArkClient.installBiz(new File("//opt//zeus//zeus-iot-bin//upload//" + fileName));
+            if (!System.getProperty("os.name").toLowerCase().startsWith("win")) {
+                response = ArkClient.installBiz(new File("D:\\protocol\\upload\\" + fileName));
+            } else {
+                response = ArkClient.installBiz(new File("//opt//zeus//zeus-iot-bin//upload//" + fileName));
+            }
             String bizName = response.getBizInfos().iterator().next().getBizName();
             String bizVersion = response.getBizInfos().iterator().next().getBizVersion();
             int r = localH2InsertDAO.update("update protocol_component set file_name=?, biz_name=?,biz_version = ? where id=?", fileName, bizName, bizVersion, id);
