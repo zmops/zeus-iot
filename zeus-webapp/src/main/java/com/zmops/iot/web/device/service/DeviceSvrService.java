@@ -13,12 +13,14 @@ import com.zmops.iot.domain.product.query.QProductService;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.ToolUtil;
+import com.zmops.iot.web.device.dto.ServiceExecuteDto.ServiceParam;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import io.ebean.DB;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,7 +40,7 @@ public class DeviceSvrService {
      * @param deviceId  设备ID
      * @param serviceId 服务ID
      */
-    public void execute(String deviceId, Long serviceId) {
+    public void execute(String deviceId, Long serviceId, List<ServiceParam> serviceParams) {
 
         //封装执行参数
         List<Map<String, Object>> body = new ArrayList<>();
@@ -54,14 +56,20 @@ public class DeviceSvrService {
             throw new ServiceException(BizExceptionEnum.SERVICE_NOT_EXISTS);
         }
         serviceMap.put("name", productService.getName());
-
-        List<ProductServiceParam> paramList = DefinitionsUtil.getServiceParam(serviceId);
-        if (ToolUtil.isNotEmpty(paramList)) {
-            serviceMap.put("param", paramList.parallelStream().collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue)));
+        Map<String,String> paramStr = new HashMap<>(2);
+        if (ToolUtil.isNotEmpty(serviceParams)) {
+             paramStr = serviceParams.parallelStream().collect(Collectors.toMap(ServiceParam::getKey, ServiceParam::getValue));
+            serviceMap.put("param", paramStr);
+        } else {
+            List<ProductServiceParam> paramList = DefinitionsUtil.getServiceParam(serviceId);
+            if (ToolUtil.isNotEmpty(paramList)) {
+                paramStr = paramList.parallelStream().collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue));
+                serviceMap.put("param", paramStr);
+            }
         }
         serviceList.add(serviceMap);
-
         map.put("service", serviceList);
+
         body.add(map);
 
         //下发命令 执行
@@ -70,8 +78,8 @@ public class DeviceSvrService {
         //记录服务日志
         ServiceExecuteRecord serviceExecuteRecord = new ServiceExecuteRecord();
         serviceExecuteRecord.setDeviceId(deviceId);
-        if (ToolUtil.isNotEmpty(paramList)) {
-            serviceExecuteRecord.setParam(JSONObject.toJSONString(paramList.parallelStream().collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue))));
+        if (ToolUtil.isNotEmpty(paramStr)) {
+            serviceExecuteRecord.setParam(JSONObject.toJSONString(paramStr));
         }
         serviceExecuteRecord.setServiceName(DefinitionsUtil.getServiceName(serviceId));
 
