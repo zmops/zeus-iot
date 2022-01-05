@@ -56,20 +56,26 @@ public class DeviceSvrService {
             throw new ServiceException(BizExceptionEnum.SERVICE_NOT_EXISTS);
         }
         serviceMap.put("name", productService.getName());
-        Map<String,String> paramStr = new HashMap<>(2);
-        if (ToolUtil.isNotEmpty(serviceParams)) {
-             paramStr = serviceParams.parallelStream().collect(Collectors.toMap(ServiceParam::getKey, ServiceParam::getValue));
-            serviceMap.put("param", paramStr);
-        } else {
-            List<ProductServiceParam> paramList = DefinitionsUtil.getServiceParam(serviceId);
-            if (ToolUtil.isNotEmpty(paramList)) {
-                paramStr = paramList.parallelStream().collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue));
-                serviceMap.put("param", paramStr);
+
+        Map<String, String> paramStr = new HashMap<>(2);
+        List<ProductServiceParam> paramList = DefinitionsUtil.getServiceParam(serviceId);
+        if (ToolUtil.isNotEmpty(paramList)) {
+            paramStr = paramList.parallelStream().collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue));
+
+            if (ToolUtil.isNotEmpty(serviceParams)) {
+                Map<String, String> userParam = serviceParams.parallelStream().collect(Collectors.toMap(ServiceParam::getKey, ServiceParam::getValue));
+                for (Map.Entry<String, String> param : paramStr.entrySet()) {
+                    if (userParam.get(param.getKey()) != null) {
+                        param.setValue(userParam.get(param.getKey()));
+                    }
+                }
             }
+
+            serviceMap.put("param", paramStr);
         }
+
         serviceList.add(serviceMap);
         map.put("service", serviceList);
-
         body.add(map);
 
         //下发命令 执行
