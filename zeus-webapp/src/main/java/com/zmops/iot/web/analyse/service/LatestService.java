@@ -1,19 +1,23 @@
 package com.zmops.iot.web.analyse.service;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.dtflys.forest.http.ForestResponse;
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.ProductAttribute;
-import com.zmops.iot.domain.product.ProductAttributeEvent;
 import com.zmops.iot.domain.product.query.QProductAttribute;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.LocalDateTimeUtils;
+import com.zmops.iot.util.ParseUtil;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.analyse.dto.LatestDto;
 import com.zmops.iot.web.analyse.dto.Mapping;
 import com.zmops.iot.web.analyse.dto.ValueMap;
 import com.zmops.iot.web.analyse.dto.param.LatestParam;
+import com.zmops.iot.web.device.dto.TaosResponseData;
 import com.zmops.iot.web.init.BasicSettingsInit;
+import com.zmops.zeus.driver.service.TDEngineRest;
 import com.zmops.zeus.driver.service.ZbxHistoryGet;
 import com.zmops.zeus.driver.service.ZbxValueMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +41,9 @@ public class LatestService {
 
     @Autowired
     ZbxValueMap zbxValueMap;
+
+    @Autowired
+    TDEngineRest tdEngineRest;
 
     /**
      * 查询最新数据
@@ -74,21 +81,13 @@ public class LatestService {
         List<String> zbxIds = list.parallelStream().map(ProductAttribute::getZbxId).collect(Collectors.toList());
         Map<String, List<ProductAttribute>> valueTypeMap = list.parallelStream().collect(Collectors.groupingBy(ProductAttribute::getValueType));
         Map<String, ProductAttribute> itemIdMap = list.parallelStream().collect(Collectors.toMap(ProductAttribute::getZbxId, o -> o));
-
-        List<LatestDto> latestDtos = new ArrayList<>();
-
-        //根据属性值类型 分组查询最新数据
-        for (Map.Entry<String, List<ProductAttribute>> map : valueTypeMap.entrySet()) {
-            String res = zbxHistoryGet.historyGet(one.getZbxId(), zbxIds, map.getValue().size(), Integer.parseInt(map.getKey()), null, null);
-            latestDtos.addAll(JSONObject.parseArray(res, LatestDto.class));
+        List<LatestDto> latestDtos;
+        if (checkTDengine()) {
+            latestDtos = queryLatestFromTD(deviceId, zbxIds, valueTypeMap);
+        } else {
+            latestDtos = queryLatestFromZbx(one.getZbxId(), zbxIds, valueTypeMap);
         }
 
-        //根据itemid去重
-        latestDtos = latestDtos.parallelStream().collect(
-                Collectors.collectingAndThen(
-                        Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(LatestDto::getItemid))),
-                        ArrayList::new)
-        );
 
         //处理值映射
         List<String> valuemapids = list.parallelStream().filter(o -> null != o.getValuemapid()).map(ProductAttribute::getValuemapid).collect(Collectors.toList());
@@ -103,7 +102,7 @@ public class LatestService {
 
         Map<String, List<Mapping>> finalMappings = mappings;
         latestDtos.forEach(latestDto -> {
-            latestDto.setClock(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(latestDto.getClock()), "yyyy-MM-dd HH:mm:ss"));
+//            latestDto.setClock(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(latestDto.getClock()), "yyyy-MM-dd HH:mm:ss"));
             latestDto.setOriginalValue(latestDto.getValue());
             if (null != itemIdMap.get(latestDto.getItemid())) {
                 latestDto.setName(itemIdMap.get(latestDto.getItemid()).getName());
@@ -125,11 +124,100 @@ public class LatestService {
         return latestDtos;
     }
 
+    private boolean checkTDengine() {
+        String sql = String.format("select LAST_ROW(*) from history_uint where deviceid = 'Zabbix server';");
+
+        try {
+            ForestResponse<String> resHistory = tdEngineRest.executeSql(sql);
+
+            if (resHistory.isError()) {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    //从TDengine取数
+    public List<LatestDto> queryLatestFromTD(String deviceId, List<String> itemIds, Map<String, List<ProductAttribute>> valueTypeMap) {
+
+        List<LatestDto> latestDtos = new ArrayList<>();
+        //根据属性值类型 分组查询最新数据
+        for (Map.Entry<String, List<ProductAttribute>> map : valueTypeMap.entrySet()) {
+            latestDtos.addAll(queryLatestFromTD(deviceId, itemIds, Integer.parseInt(map.getKey())));
+        }
+        return latestDtos;
+    }
+
+    private List<LatestDto> queryLatestFromTD(String deviceId, List<String> itemIds, int unitType) {
+        String itemids = "'" + itemIds.parallelStream().collect(Collectors.joining("','")) + "'";
+        String sql = String.format("select LAST_ROW(*) from %s where deviceid = '%s' and itemid in (%s) group by itemid;", getHistoryTableName(unitType), deviceId, itemids);
+
+        ForestResponse<String> resHistory = tdEngineRest.executeSql(sql);
+
+        if (resHistory.isError()) {
+            return Collections.emptyList();
+        }
+
+        String res = resHistory.getContent();
+        TaosResponseData taosResponseData = JSON.parseObject(res, TaosResponseData.class);
+        String[][] dataHistory = taosResponseData.getData();
+
+        List<LatestDto> latestDtos = new ArrayList<>();
+        if (dataHistory.length > 0) {
+            for (String[] data : dataHistory) {
+                LatestDto latestDto = new LatestDto();
+                latestDto.setClock(LocalDateTimeUtils.formatTime(LocalDateTimeUtils.dateToStamp(data[0])));
+                latestDto.setValue(ParseUtil.getFormatFloat(data[1]));
+                latestDto.setItemid(data[2]);
+                latestDtos.add(latestDto);
+            }
+        }
+        return latestDtos;
+    }
+
+    private static String getHistoryTableName(int unitType) {
+        switch (unitType) {
+            case 0:
+                return "history";
+            case 1:
+                return "history_str";
+            case 3:
+                return "history_uint";
+            case 4:
+                return "history_text";
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+
+    //从Zbx接口取数
+    private List<LatestDto> queryLatestFromZbx(String zbxId, List<String> itemIds, Map<String, List<ProductAttribute>> valueTypeMap) {
+        List<LatestDto> latestDtos = new ArrayList<>();
+        //根据属性值类型 分组查询最新数据
+        for (Map.Entry<String, List<ProductAttribute>> map : valueTypeMap.entrySet()) {
+            String res = zbxHistoryGet.historyGet(zbxId, itemIds, map.getValue().size(), Integer.parseInt(map.getKey()), null, null);
+            latestDtos.addAll(JSONObject.parseArray(res, LatestDto.class));
+        }
+
+        //根据itemid去重
+        latestDtos = latestDtos.parallelStream().collect(
+                Collectors.collectingAndThen(
+                        Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(LatestDto::getItemid))),
+                        ArrayList::new)
+        );
+        latestDtos.forEach(latestDto -> latestDto.setClock(LocalDateTimeUtils.convertTimeToString(Integer.parseInt(latestDto.getClock()), "yyyy-MM-dd HH:mm:ss")));
+
+        return latestDtos;
+    }
+
     /**
      * 取事件属性 最新数据
-     * @return
+     *
+     * @return List
      */
-    public List<LatestDto> queryEventLatest(String hostid,List<String> zbxIds, int valueType) {
+    public List<LatestDto> queryEventLatest(String hostid, List<String> zbxIds, int valueType) {
 
         //根据属性值类型 查询最新数据
 

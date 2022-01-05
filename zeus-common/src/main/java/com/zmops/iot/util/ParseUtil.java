@@ -30,6 +30,21 @@ public class ParseUtil {
         return df.format(value.doubleValue());
     }
 
+    public static String getFormatFloat(String value) {
+        if (!isFloat(value)) {
+            return value;
+        }
+        return String.format("%1.2f", Float.parseFloat(value));
+    }
+
+    public static boolean isFloat(String value) {
+        try {
+            Float.parseFloat(value);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
 
     public static String formatLagSize(String size) {
         if (ToolUtil.isEmpty(size)) {
