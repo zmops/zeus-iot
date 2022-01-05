@@ -8,6 +8,7 @@ import com.zmops.iot.domain.protocol.query.QProtocolGateway;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
+import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.protocol.dto.ProtocolGatewayDto;
 import com.zmops.iot.web.protocol.dto.param.ProtocolGatewayParam;
@@ -61,9 +62,16 @@ public class ProtocolGatewayController {
      */
     @RequestMapping("/create")
     public ResponseData create(@Validated(BaseEntity.Create.class) @RequestBody ProtocolGatewayParam protocolGatewayParam) {
-        int count = new QProtocolComponent().name.eq(protocolGatewayParam.getName()).findCount();
+        int count = new QProtocolGateway().name.eq(protocolGatewayParam.getName()).findCount();
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.PROTOCOL_COMPONENT_EXISTS);
+        }
+        count = new QProtocolGateway().protocolServiceId.eq(protocolGatewayParam.getProtocolServiceId()).findCount();
+        if (count > 0) {
+            throw new ServiceException(BizExceptionEnum.PROTOCOL_SERVICE_HAS_BIND_COMPONENT);
+        }
+        if(ToolUtil.isEmpty(protocolGatewayParam.getProtocolGatewayMqttList()) && ToolUtil.isEmpty(protocolGatewayParam.getProtocolComponentId())){
+            throw new ServiceException(BizExceptionEnum.PROTOCOL_GATEWAY_HAS_NOT_COMPONENT);
         }
         return ResponseData.success(protocolGatewayService.create(protocolGatewayParam));
     }
@@ -73,9 +81,16 @@ public class ProtocolGatewayController {
      */
     @RequestMapping("/update")
     public ResponseData update(@Validated(BaseEntity.Update.class) @RequestBody ProtocolGatewayParam protocolGatewayParam) {
-        int count = new QProtocolComponent().name.eq(protocolGatewayParam.getName()).protocolComponentId.ne(protocolGatewayParam.getProtocolComponentId()).findCount();
+        int count = new QProtocolGateway().name.eq(protocolGatewayParam.getName()).protocolGatewayId.ne(protocolGatewayParam.getProtocolGatewayId()).findCount();
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.PROTOCOL_COMPONENT_EXISTS);
+        }
+        count = new QProtocolGateway().protocolServiceId.eq(protocolGatewayParam.getProtocolServiceId()).protocolGatewayId.ne(protocolGatewayParam.getProtocolGatewayId()).findCount();
+        if (count > 0) {
+            throw new ServiceException(BizExceptionEnum.PROTOCOL_SERVICE_HAS_BIND_COMPONENT);
+        }
+        if(ToolUtil.isEmpty(protocolGatewayParam.getProtocolGatewayMqttList()) && ToolUtil.isEmpty(protocolGatewayParam.getProtocolComponentId())){
+            throw new ServiceException(BizExceptionEnum.PROTOCOL_GATEWAY_HAS_NOT_COMPONENT);
         }
         return ResponseData.success(protocolGatewayService.update(protocolGatewayParam));
     }

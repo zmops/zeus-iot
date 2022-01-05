@@ -145,7 +145,7 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     PRODUCT_ATTR_DEPTED_NULL(1402, "依赖的属性不能为空"),
     PRODUCT_ATTR_DEPTED_NOT_EXIST(1403, "依赖的属性不能为空"),
     PRODUCT_ATTR_DEPTED(1404, "属性被依赖不能删除"),
-    PRODUCT_EVENT_HASDEPTED(1405,"属性已用于告警规则,不能删除"),
+    PRODUCT_EVENT_HASDEPTED(1405, "属性已用于告警规则,不能删除"),
 
     /**
      * 设备相关
@@ -153,15 +153,15 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     DEVICE_EXISTS(1501, "设备名称已存在"),
     DEVICE_ID_EXISTS(1503, "设备ID已存在"),
     DEVICE_NOT_EXISTS(1502, "设备不存在"),
-    DEVICE_NAME_HAS_INCOREECT_CHARACTER(1504,"设备名称不能包含\\或\\/字符"),
+    DEVICE_NAME_HAS_INCOREECT_CHARACTER(1504, "设备名称不能包含\\或\\/字符"),
 
     /**
      * 服务相关
      */
     SERVICE_EXISTS(1601, "服务已存在"),
     SERVICE_NOT_EXISTS(1602, "服务不存在"),
-    PRODUCT_EVENT_HAS_DEPTED(1605,"服务已用于告警规则或场景联动,不能删除"),
-    SERVICE_HAS_DUPLICATE(1606,"存在相同的动作服务"),
+    PRODUCT_EVENT_HAS_DEPTED(1605, "服务已用于告警规则或场景联动,不能删除"),
+    SERVICE_HAS_DUPLICATE(1606, "存在相同的动作服务"),
 
     /**
      * 触发规则相关
@@ -180,11 +180,12 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
 
     /**
      * 任务相关
+     *
      * @param code
      * @param message
      */
-    TASK_NOT_SCHEDULE_CONF(2201,"任务调度配置不能为空"),
-    TASK_SCHEDULE_CONF_NOT_MATCH(2202,"任务调度配置不正确"),
+    TASK_NOT_SCHEDULE_CONF(2201, "任务调度配置不能为空"),
+    TASK_SCHEDULE_CONF_NOT_MATCH(2202, "任务调度配置不正确"),
 
     /**
      * 租户相关的异常
@@ -198,7 +199,7 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     /**
      * 设备调试相关
      */
-    ZBX_DEVICE_API_HASNOT_KEY(1901,"属性KEY和值不能为空"),
+    ZBX_DEVICE_API_HASNOT_KEY(1901, "属性KEY和值不能为空"),
 
     /**
      * 代理服务相关
@@ -209,23 +210,24 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     /**
      * 协议相关
      */
-    PROTOCOL_COMPONENT_EXISTS(2301,"协议组件名称已存在"),
-    PROTOCOL_COMPONENT_NOT_EXISTS(2302,"协议组件不存在"),
-    PROTOCOL_COMPONENT_HAS_BIND_GATEWAY(2303,"协议组件已绑定协议网关,不能删除"),
-    PROTOCOL_SERVICE_EXISTS(2304,"通信服务名称已存在"),
-    PROTOCOL_SERVICE_NOT_EXISTS(2305,"通信服务不存在"),
-    PROTOCOL_SERVICE_HAS_BIND_GATEWAY(2306,"通信服务已绑定协议网关,不能删除"),
-    PROTOCOL_GATEWAY_NOT_EXISTS(2307,"协议网关不存在"),
+    PROTOCOL_COMPONENT_EXISTS(2301, "协议组件名称已存在"),
+    PROTOCOL_COMPONENT_NOT_EXISTS(2302, "协议组件不存在"),
+    PROTOCOL_COMPONENT_HAS_BIND_GATEWAY(2303, "协议组件已绑定协议网关,不能删除"),
+    PROTOCOL_SERVICE_EXISTS(2304, "通信服务名称已存在"),
+    PROTOCOL_SERVICE_NOT_EXISTS(2305, "通信服务不存在"),
+    PROTOCOL_SERVICE_HAS_BIND_GATEWAY(2306, "通信服务已绑定协议网关,不能删除"),
+    PROTOCOL_GATEWAY_NOT_EXISTS(2307, "协议网关不存在"),
+    PROTOCOL_SERVICE_HAS_BIND_COMPONENT(2308, "通信服务已绑定协议协议组件"),
+    PROTOCOL_GATEWAY_HAS_NOT_COMPONENT(2309, "未选择协议组件"),
+
     /**
      * 数据转换相关
-     *
      */
-    ZBX_SERBER_NOT_CONFIG(2101,"Zabbix配置信息获取失败"),
-    ZBX_SERBER_EXPORT_PATH_NOT_CONFIG(2102,"Zabbix日志输出路径未配置"),
+    ZBX_SERBER_NOT_CONFIG(2101, "Zabbix配置信息获取失败"),
+    ZBX_SERBER_EXPORT_PATH_NOT_CONFIG(2102, "Zabbix日志输出路径未配置"),
 
 
     AUTH_REQUEST_ERROR(400, "账号密码错误");
-
 
 
     BizExceptionEnum(int code, String message) {

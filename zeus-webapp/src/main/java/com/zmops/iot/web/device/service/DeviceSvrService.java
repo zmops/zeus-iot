@@ -50,15 +50,15 @@ public class DeviceSvrService {
         map.put("device", deviceId);
 
         List<Map<String, Object>> serviceList = new ArrayList<>();
-        Map<String, Object> serviceMap = new ConcurrentHashMap<>();
+        Map<String, Object> serviceMap = new ConcurrentHashMap<>(2);
         ProductService productService = new QProductService().id.eq(serviceId).findOne();
         if (null == productService) {
             throw new ServiceException(BizExceptionEnum.SERVICE_NOT_EXISTS);
         }
         serviceMap.put("name", productService.getName());
 
-        Map<String, String> paramStr = new HashMap<>(2);
         List<ProductServiceParam> paramList = DefinitionsUtil.getServiceParam(serviceId);
+        Map<String, String> paramStr = new HashMap<>(paramList.size());
         if (ToolUtil.isNotEmpty(paramList)) {
             paramStr = paramList.parallelStream().collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue));
 

@@ -19,6 +19,7 @@ public class ProtocolGatewayParam extends BaseQueryParam {
     @NotBlank(groups = {BaseEntity.Create.class})
     private String name;
     private String protocolType;
+    @NotNull(groups = BaseEntity.Create.class)
     private Long   protocolServiceId;
     private Long   protocolComponentId;
     private List<ProtocolGatewayMqtt> protocolGatewayMqttList;

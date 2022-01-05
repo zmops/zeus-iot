@@ -1,16 +1,14 @@
 package com.zmops.iot.web.protocol.controller;
 
 import com.zmops.iot.domain.BaseEntity;
-import com.zmops.iot.domain.protocol.query.QProtocolComponent;
+import com.zmops.iot.domain.protocol.query.QProtocolService;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.protocol.dto.ProtocolServiceDto;
-import com.zmops.iot.web.protocol.dto.param.ProtocolComponentParam;
 import com.zmops.iot.web.protocol.dto.param.ProtocolServiceParam;
 import com.zmops.iot.web.protocol.service.ProtocolSvrService;
-import com.zmops.zeus.driver.service.ZeusServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,7 +49,7 @@ public class ProtocolServiceController {
      */
     @RequestMapping("/create")
     public ResponseData create(@Validated(BaseEntity.Create.class) @RequestBody ProtocolServiceParam protocolServiceParam) {
-        int count = new QProtocolComponent().name.eq(protocolServiceParam.getName()).findCount();
+        int count = new QProtocolService().name.eq(protocolServiceParam.getName()).findCount();
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.PROTOCOL_SERVICE_EXISTS);
         }
@@ -63,7 +61,7 @@ public class ProtocolServiceController {
      */
     @RequestMapping("/update")
     public ResponseData update(@Validated(BaseEntity.Update.class) @RequestBody ProtocolServiceParam protocolServiceParam) {
-        int count = new QProtocolComponent().name.eq(protocolServiceParam.getName()).protocolComponentId.ne(protocolServiceParam.getProtocolServiceId()).findCount();
+        int count = new QProtocolService().name.eq(protocolServiceParam.getName()).protocolServiceId.ne(protocolServiceParam.getProtocolServiceId()).findCount();
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.PROTOCOL_SERVICE_EXISTS);
         }

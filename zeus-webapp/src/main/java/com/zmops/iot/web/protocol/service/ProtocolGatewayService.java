@@ -11,7 +11,6 @@ import com.zmops.iot.domain.protocol.query.QProtocolService;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.protocol.dto.ProtocolGatewayDto;
-import com.zmops.iot.web.protocol.dto.ProtocolOption;
 import com.zmops.iot.web.protocol.dto.param.ProtocolGatewayParam;
 import com.zmops.iot.web.protocol.enums.ProtocolEnum;
 import io.ebean.DB;
@@ -92,14 +91,14 @@ public class ProtocolGatewayService {
         Map<String, Object> params = new HashMap<>(7);
         params.put("routeId", ProtocolGateway.getProtocolGatewayId() + "");
         params.put("name", ProtocolGateway.getName());
-        params.put("protocolServiceId", protocolGatewayParam.getProtocolServiceId()+"");
-        params.put("protocolComponentId", protocolGatewayParam.getProtocolComponentId()+"");
+        params.put("protocolServiceId", protocolGatewayParam.getProtocolServiceId() + "");
+        params.put("protocolComponentId", protocolGatewayParam.getProtocolComponentId() + "");
         params.put("status", ProtocolGateway.getStatus());
         params.put("protocol", ProtocolEnum.getDescription(protocolGatewayParam.getProtocolType()));
         params.put("option", JSON.toJSONString(option));
         params.put("mqttList", JSON.toJSONString(protocolGatewayParam.getProtocolGatewayMqttList()));
 
-        Forest.post("/protocol/gateway/createProtocolGateway").host("127.0.0.1").port(12800).addBody(params,"text/html;charset=utf-8").execute();
+        Forest.post("/protocol/gateway/createProtocolGateway").host("127.0.0.1").port(12800).addBody(params, "text/html;charset=utf-8").execute();
         return ProtocolGateway;
     }
 
