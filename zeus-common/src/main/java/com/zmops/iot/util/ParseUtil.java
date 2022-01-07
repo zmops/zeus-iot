@@ -40,6 +40,10 @@ public class ParseUtil {
     public static boolean isFloat(String value) {
         try {
             Float.parseFloat(value);
+
+            if (!value.contains(".")) {
+                return false;
+            }
         } catch (Exception e) {
             return false;
         }
