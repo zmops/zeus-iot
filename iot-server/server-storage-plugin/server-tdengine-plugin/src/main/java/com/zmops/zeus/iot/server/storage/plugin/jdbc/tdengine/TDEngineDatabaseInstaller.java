@@ -20,7 +20,7 @@ public class TDEngineDatabaseInstaller {
 
     private static final String CREATE_ZEUS_STABLE_HISTORY = "create stable if not exists history(clock TIMESTAMP, value DOUBLE) tags (deviceid BINARY(64), itemid BINARY(20))";
     private static final String CREATE_ZEUS_STABLE_HISTORY_UINT = "create stable if not exists history_uint(clock TIMESTAMP, value BIGINT) tags (deviceid BINARY(64), itemid BINARY(20))";
-    private static final String CREATE_ZEUS_STABLE_HISTORY_TEXT = "create stable if not exists history_text(clock TIMESTAMP, value NCHAR(255)) tags (deviceid BINARY(64), itemid BINARY(20))";
+    private static final String CREATE_ZEUS_STABLE_HISTORY_TEXT = "create stable if not exists history_text(clock TIMESTAMP, value NCHAR(2048)) tags (deviceid BINARY(64), itemid BINARY(20))";
     private static final String CREATE_ZEUS_STABLE_HISTORY_STR = "create stable if not exists history_str(clock TIMESTAMP, value NCHAR(255)) tags (deviceid BINARY(64), itemid BINARY(20))";
 
 

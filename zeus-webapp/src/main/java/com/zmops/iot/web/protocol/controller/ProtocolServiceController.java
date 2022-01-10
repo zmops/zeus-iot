@@ -53,6 +53,10 @@ public class ProtocolServiceController {
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.PROTOCOL_SERVICE_EXISTS);
         }
+        count = new QProtocolService().ip.eq(protocolServiceParam.getIp()).port.eq(protocolServiceParam.getPort()).findCount();
+        if (count > 0) {
+            throw new ServiceException(BizExceptionEnum.PROTOCOL_SERVICE_PORT_EXISTS);
+        }
         return ResponseData.success(protocolSvrService.create(protocolServiceParam));
     }
 
@@ -64,6 +68,10 @@ public class ProtocolServiceController {
         int count = new QProtocolService().name.eq(protocolServiceParam.getName()).protocolServiceId.ne(protocolServiceParam.getProtocolServiceId()).findCount();
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.PROTOCOL_SERVICE_EXISTS);
+        }
+        count = new QProtocolService().ip.eq(protocolServiceParam.getIp()).port.eq(protocolServiceParam.getPort()).protocolServiceId.ne(protocolServiceParam.getProtocolServiceId()).findCount();
+        if (count > 0) {
+            throw new ServiceException(BizExceptionEnum.PROTOCOL_SERVICE_PORT_EXISTS);
         }
         return ResponseData.success(protocolSvrService.update(protocolServiceParam));
     }

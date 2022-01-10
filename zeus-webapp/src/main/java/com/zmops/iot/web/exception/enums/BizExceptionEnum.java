@@ -215,6 +215,7 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     PROTOCOL_COMPONENT_HAS_BIND_GATEWAY(2303, "协议组件已绑定协议网关,不能删除"),
     PROTOCOL_SERVICE_EXISTS(2304, "通信服务名称已存在"),
     PROTOCOL_SERVICE_NOT_EXISTS(2305, "通信服务不存在"),
+    PROTOCOL_SERVICE_PORT_EXISTS(2310, "端口已存在"),
     PROTOCOL_SERVICE_HAS_BIND_GATEWAY(2306, "通信服务已绑定协议网关,不能删除"),
     PROTOCOL_GATEWAY_NOT_EXISTS(2307, "协议网关不存在"),
     PROTOCOL_SERVICE_HAS_BIND_COMPONENT(2308, "通信服务已绑定协议协议组件"),
