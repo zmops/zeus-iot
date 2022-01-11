@@ -77,15 +77,13 @@ public class LatestService {
             return Collections.emptyList();
         }
 
-        //取出属性对应的ItemID
-        List<String> zbxIds = list.parallelStream().map(ProductAttribute::getZbxId).collect(Collectors.toList());
         Map<String, List<ProductAttribute>> valueTypeMap = list.parallelStream().collect(Collectors.groupingBy(ProductAttribute::getValueType));
         Map<String, ProductAttribute> itemIdMap = list.parallelStream().collect(Collectors.toMap(ProductAttribute::getZbxId, o -> o));
         List<LatestDto> latestDtos;
         if (checkTDengine()) {
-            latestDtos = queryLatestFromTD(deviceId, zbxIds, valueTypeMap);
+            latestDtos = queryLatestFromTD(deviceId, valueTypeMap);
         } else {
-            latestDtos = queryLatestFromZbx(one.getZbxId(), zbxIds, valueTypeMap);
+            latestDtos = queryLatestFromZbx(one.getZbxId(), valueTypeMap);
         }
 
 
@@ -140,11 +138,13 @@ public class LatestService {
     }
 
     //从TDengine取数
-    public List<LatestDto> queryLatestFromTD(String deviceId, List<String> itemIds, Map<String, List<ProductAttribute>> valueTypeMap) {
+    public List<LatestDto> queryLatestFromTD(String deviceId, Map<String, List<ProductAttribute>> valueTypeMap) {
 
         List<LatestDto> latestDtos = new ArrayList<>();
         //根据属性值类型 分组查询最新数据
         for (Map.Entry<String, List<ProductAttribute>> map : valueTypeMap.entrySet()) {
+            //取出属性对应的ItemID
+            List<String> itemIds = map.getValue().parallelStream().map(ProductAttribute::getZbxId).collect(Collectors.toList());
             latestDtos.addAll(queryLatestFromTD(deviceId, itemIds, Integer.parseInt(map.getKey())));
         }
         return latestDtos;
@@ -193,10 +193,12 @@ public class LatestService {
     }
 
     //从Zbx接口取数
-    private List<LatestDto> queryLatestFromZbx(String zbxId, List<String> itemIds, Map<String, List<ProductAttribute>> valueTypeMap) {
+    private List<LatestDto> queryLatestFromZbx(String zbxId, Map<String, List<ProductAttribute>> valueTypeMap) {
         List<LatestDto> latestDtos = new ArrayList<>();
         //根据属性值类型 分组查询最新数据
         for (Map.Entry<String, List<ProductAttribute>> map : valueTypeMap.entrySet()) {
+            //取出属性对应的ItemID
+            List<String> itemIds = map.getValue().parallelStream().map(ProductAttribute::getZbxId).collect(Collectors.toList());
             String res = zbxHistoryGet.historyGet(zbxId, itemIds, map.getValue().size(), Integer.parseInt(map.getKey()), null, null);
             latestDtos.addAll(JSONObject.parseArray(res, LatestDto.class));
         }
