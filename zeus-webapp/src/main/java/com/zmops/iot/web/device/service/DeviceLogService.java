@@ -183,10 +183,10 @@ public class DeviceLogService {
             query.eventName.eq(deviceLogParam.getContent());
         }
         if (null != deviceLogParam.getTimeFrom()) {
-            query.createTime.ge(LocalDateTimeUtils.getLDTByMilliSeconds(deviceLogParam.getTimeFrom() * 1000));
+            query.createTime.ge(LocalDateTimeUtils.getLDTByMilliSeconds(deviceLogParam.getTimeFrom()));
         }
         if (null != deviceLogParam.getTimeTill()) {
-            query.createTime.lt(LocalDateTimeUtils.getLDTByMilliSeconds(deviceLogParam.getTimeTill() * 1000));
+            query.createTime.lt(LocalDateTimeUtils.getLDTByMilliSeconds(deviceLogParam.getTimeTill()));
         }
         query.orderBy().createTime.desc();
 
@@ -235,10 +235,10 @@ public class DeviceLogService {
             query.executeRuleId.eq(deviceLogParam.getEventRuleId());
         }
         if (null != deviceLogParam.getTimeFrom()) {
-            query.createTime.ge(LocalDateTimeUtils.getLDTByMilliSeconds(deviceLogParam.getTimeFrom() * 1000));
+            query.createTime.ge(LocalDateTimeUtils.getLDTByMilliSeconds(deviceLogParam.getTimeFrom()));
         }
         if (null != deviceLogParam.getTimeTill()) {
-            query.createTime.lt(LocalDateTimeUtils.getLDTByMilliSeconds(deviceLogParam.getTimeTill() * 1000));
+            query.createTime.lt(LocalDateTimeUtils.getLDTByMilliSeconds(deviceLogParam.getTimeTill()));
         }
         query.orderBy().createTime.desc();
 
@@ -283,10 +283,10 @@ public class DeviceLogService {
             query.triggerUser.eq(deviceLogParam.getTriggerUser());
         }
         if (null != deviceLogParam.getTimeFrom()) {
-            query.createTime.ge(LocalDateTimeUtils.getLDTByMilliSeconds(deviceLogParam.getTimeFrom() * 1000));
+            query.createTime.ge(LocalDateTimeUtils.getLDTByMilliSeconds(deviceLogParam.getTimeFrom()));
         }
         if (null != deviceLogParam.getTimeTill()) {
-            query.createTime.lt(LocalDateTimeUtils.getLDTByMilliSeconds(deviceLogParam.getTimeTill() * 1000));
+            query.createTime.lt(LocalDateTimeUtils.getLDTByMilliSeconds(deviceLogParam.getTimeTill()));
         }
 
         if (ToolUtil.isNotEmpty(deviceLogParam.getTriggerDeviceId())) {
