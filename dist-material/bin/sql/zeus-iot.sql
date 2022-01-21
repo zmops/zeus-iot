@@ -12,7 +12,7 @@
  Target Server Version : 130004
  File Encoding         : 65001
 
- Date: 24/12/2021 11:53:37
+ Date: 21/01/2022 13:56:30
 */
 
 
@@ -320,8 +320,10 @@ CREATE TABLE "public"."device" (
   "zbx_id" varchar(32) COLLATE "pg_catalog"."default",
   "addr" varchar(255) COLLATE "pg_catalog"."default",
   "position" varchar(64) COLLATE "pg_catalog"."default",
-  "online" int2,
-  "latest_online" timestamp(6)
+  "online" int2 DEFAULT 1,
+  "latest_online" timestamp(6),
+  "proxy_id" int8,
+  "tenant_id" int8
 )
 ;
 COMMENT ON COLUMN "public"."device"."device_id" IS '设备ID';
@@ -339,6 +341,8 @@ COMMENT ON COLUMN "public"."device"."addr" IS '设备地址';
 COMMENT ON COLUMN "public"."device"."position" IS '地址坐标';
 COMMENT ON COLUMN "public"."device"."online" IS '是否在线 1是 0否';
 COMMENT ON COLUMN "public"."device"."latest_online" IS '最近在线时间';
+COMMENT ON COLUMN "public"."device"."proxy_id" IS '代理ID';
+COMMENT ON COLUMN "public"."device"."tenant_id" IS '租户ID';
 
 -- ----------------------------
 -- Records of device
@@ -1502,11 +1506,11 @@ INSERT INTO "public"."sys_dict" VALUES (1423897784372199551, 1440492220332449795
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199552, 1440492220332449795, '8', 'WEBSOKCET 客户端', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199553, 1440492220332449795, '9', 'CoAP 服务端', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO "public"."sys_dict" VALUES (1423897784372199554, 1440492220332449795, '10', 'CoAP 客户端', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199555, 1440492220332449796, '1', '已启动', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO "public"."sys_dict" VALUES (1423897784372199556, 1440492220332449796, '0', '已停止', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO "public"."sys_dict" VALUES (1428599180229115912, 1428599180229115904, '1', '是', 'ENABLE', 1, NULL, NULL, '2021-11-09 10:13:24.229', NULL, 1, NULL);
 INSERT INTO "public"."sys_dict" VALUES (1429987619034984449, 1142859918022911591, '1', '异步', 'ENABLE', NULL, NULL, NULL, '2021-11-09 10:19:22.483', NULL, 1, NULL);
 INSERT INTO "public"."sys_dict" VALUES (1429987619034984450, 1142859918022911591, '0', '同步', 'ENABLE', NULL, NULL, NULL, '2021-11-09 10:19:45.177', NULL, 1, NULL);
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199555, 1440492220332449796, '1', '已停止', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "public"."sys_dict" VALUES (1423897784372199556, 1440492220332449796, '0', '已启动', 'ENABLE', 1, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for sys_dict_type
