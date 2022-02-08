@@ -170,6 +170,7 @@ function PGInstall() {
         #sed -i 's/\(^User\=\).*/\1zeus/g' $startfile
         #sed -i 's/\(^Group\=\).*/\1zeus/g' $startfile
         sed -i "s#\(^Environment\=PGDATA\=\).*#\1$INSTALLDIR\/pgdata#g" $startfile
+        systemctl daemon-reload
         ### 初始化数据库
         /usr/pgsql-13/bin/postgresql-13-setup initdb 1>/dev/null
         logprint "初始化PG错误"
