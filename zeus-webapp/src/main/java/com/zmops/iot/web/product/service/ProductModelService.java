@@ -231,7 +231,7 @@ public class ProductModelService {
                 ZbxProcessingStep step = new ZbxProcessingStep();
 
                 step.setType(i.getType());
-                step.setParams(i.getParams().replaceAll("\n",""));
+                step.setParams(i.getParams().replaceAll("\n","").replaceAll("\"", "\\\\\\\\\""));
 
                 processingSteps.add(step);
             });
@@ -269,7 +269,7 @@ public class ProductModelService {
                 ZbxProcessingStep step = new ZbxProcessingStep();
 
                 step.setType(i.getType());
-                step.setParams(i.getParams().replaceAll("\n",""));
+                step.setParams(i.getParams().replaceAll("\n","").replaceAll("\"", "\\\\\\\\\""));
 
                 processingSteps.add(step);
             });

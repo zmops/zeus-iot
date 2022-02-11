@@ -245,7 +245,7 @@ public class DeviceModelService {
                 ZbxProcessingStep step = new ZbxProcessingStep();
 
                 step.setType(i.getType());
-                step.setParams(i.getParams().replaceAll("\n",""));
+                step.setParams(i.getParams().replaceAll("\n","").replaceAll("\"", "\\\\\\\\\""));
 
                 processingSteps.add(step);
             });
@@ -292,7 +292,7 @@ public class DeviceModelService {
             productAttr.getProcessStepList().forEach(i -> {
                 ZbxProcessingStep step = new ZbxProcessingStep();
                 step.setType(i.getType());
-                step.setParams(i.getParams().replaceAll("\n",""));
+                step.setParams(i.getParams().replaceAll("\n","").replaceAll("\"", "\\\\\\\\\""));
                 processingSteps.add(step);
             });
         }

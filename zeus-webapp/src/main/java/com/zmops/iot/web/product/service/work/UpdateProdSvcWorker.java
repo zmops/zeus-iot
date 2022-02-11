@@ -3,6 +3,7 @@ package com.zmops.iot.web.product.service.work;
 
 import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.product.ProductServiceParam;
+import com.zmops.iot.domain.product.query.QProductServiceParam;
 import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.product.dto.ProductServiceDto;
 import com.zmops.zeus.server.async.callback.IWorker;
@@ -37,12 +38,14 @@ public class UpdateProdSvcWorker implements IWorker<ProductServiceDto, Boolean> 
             return true;
         }
 
+        new QProductServiceParam().serviceId.eq(productServiceDto.getId()).deviceId.in(deviceIds).delete();
         //保存设备与服务参数的 关联关系
         List<ProductServiceParam> productServiceParamList = new ArrayList<>();
         for (String deviceId : deviceIds) {
             productServiceDto.getProductServiceParamList().forEach(productServiceParam -> {
                 ProductServiceParam param = new ProductServiceParam();
                 ToolUtil.copyProperties(productServiceParam, param);
+                param.setId(null);
                 param.setDeviceId(deviceId);
                 param.setServiceId(productServiceDto.getId());
                 productServiceParamList.add(param);

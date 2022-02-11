@@ -51,6 +51,7 @@ public class SaveProdSvcWorker implements IWorker<ProductServiceDto, Boolean> {
             productServiceDto.getProductServiceParamList().forEach(productServiceParam -> {
                 ProductServiceParam param = new ProductServiceParam();
                 ToolUtil.copyProperties(productServiceParam, param);
+                param.setId(null);
                 param.setDeviceId(deviceId);
                 param.setServiceId(productServiceDto.getId());
                 productServiceParamList.add(param);

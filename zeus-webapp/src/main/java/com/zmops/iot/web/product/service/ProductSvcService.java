@@ -89,7 +89,7 @@ public class ProductSvcService implements CommandLineRunner {
         }
         //查询关联的参数
         List<Long> sids = productServiceDtoList.parallelStream().map(ProductServiceDto::getId).collect(Collectors.toList());
-        List<ProductServiceParam> serviceParamList = new QProductServiceParam().serviceId.in(sids).findList();
+        List<ProductServiceParam> serviceParamList = new QProductServiceParam().serviceId.in(sids).deviceId.eq(productSvcParam.getProdId()).findList();
         Map<Long, List<ProductServiceParam>> map = serviceParamList.parallelStream().collect(Collectors.groupingBy(ProductServiceParam::getServiceId));
         productServiceDtoList.forEach(productServiceDto -> {
             if (null != map.get(productServiceDto.getId())) {
@@ -200,10 +200,11 @@ public class ProductSvcService implements CommandLineRunner {
         DB.update(productService);
 
         //重新保存服务参数
-        new QProductServiceParam().serviceId.eq(productServiceDto.getId()).delete();
+        new QProductServiceParam().serviceId.eq(productServiceDto.getId()).deviceId.eq(productServiceDto.getRelationId()).delete();
         if (ToolUtil.isNotEmpty(productServiceDto.getProductServiceParamList())) {
             for (ProductServiceParam productServiceParam : productServiceDto.getProductServiceParamList()) {
                 productServiceParam.setServiceId(productServiceDto.getId());
+                productServiceParam.setDeviceId(productServiceDto.getRelationId());
             }
             DB.saveAll(productServiceDto.getProductServiceParamList());
         }
