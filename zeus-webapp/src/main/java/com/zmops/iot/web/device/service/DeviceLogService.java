@@ -20,19 +20,16 @@ import com.zmops.iot.web.alarm.service.AlarmService;
 import com.zmops.iot.web.device.dto.DeviceLogDto;
 import com.zmops.iot.web.device.dto.DeviceRelationDto;
 import com.zmops.iot.web.device.dto.param.DeviceLogParam;
-import com.zmops.iot.web.device.service.work.DeviceServiceLogWorker;
-import com.zmops.iot.web.device.service.work.ScenesLogWorker;
-import com.zmops.zeus.server.async.callback.ICallback;
-import com.zmops.zeus.server.async.executor.Async;
-import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
+import com.zmops.iot.web.event.applicationEvent.DeviceSceneLogEvent;
+import com.zmops.iot.web.event.applicationEvent.DeviceServiceLogEvent;
+import com.zmops.iot.web.event.applicationEvent.dto.LogEventData;
 import io.ebean.DB;
 import io.ebean.PagedList;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -41,19 +38,16 @@ import java.util.stream.Collectors;
 @Service
 public class DeviceLogService {
 
-    private static final String LOG_TYPE_ALARM   = "告警日志";
-    private static final String LOG_TYPE_EVENT   = "事件日志";
+    private static final String LOG_TYPE_ALARM = "告警日志";
+    private static final String LOG_TYPE_EVENT = "事件日志";
     private static final String LOG_TYPE_SERVICE = "服务日志";
-    private static final String LOG_TYPE_SCENES  = "联动日志";
+    private static final String LOG_TYPE_SCENES = "联动日志";
 
     @Autowired
     AlarmService alarmService;
 
     @Autowired
-    DeviceServiceLogWorker deviceServiceLogWorker;
-
-    @Autowired
-    ScenesLogWorker scenesLogWorker;
+    ApplicationEventPublisher publisher;
 
     public List<DeviceLogDto> list(String deviceId, String logType, Long timeFrom, Long timeTill) {
         List<DeviceLogDto> deviceLogDtoList = new ArrayList<>();
@@ -340,31 +334,10 @@ public class DeviceLogService {
      * 记录场景日志
      */
     public void recordSceneLog(Long eventRuleId, String type, Long userId) {
-        Map<String, Object> serviceLogInfo = new ConcurrentHashMap<>(3);
-        serviceLogInfo.put("eventRuleId", eventRuleId);
-        serviceLogInfo.put("triggerType", "自动".equals(type) ? "场景联动" : type);
-        if (null != userId) {
-            serviceLogInfo.put("triggerUser", userId);
-        }
 
-        WorkerWrapper<Map<String, Object>, Boolean> deviceServiceLogWork = new WorkerWrapper.Builder<Map<String, Object>, Boolean>().id("deviceServiceLogWorker")
-                .worker(deviceServiceLogWorker).param(serviceLogInfo).callback(ICallback.PRINT_EXCEPTION_STACK_TRACE)
-                .build();
+        publisher.publishEvent(new DeviceServiceLogEvent(this, LogEventData.builder().eventRuleId(eventRuleId).triggerType("自动".equals(type) ? "场景联动" : type).triggerUser(userId).build()));
 
-        Map<String, Object> scenesLogInfo = new ConcurrentHashMap<>(3);
-        scenesLogInfo.put("eventRuleId", eventRuleId);
-        scenesLogInfo.put("triggerType", type);
-        if (null != userId) {
-            scenesLogInfo.put("triggerUser", userId);
-        }
-        WorkerWrapper<Map<String, Object>, Boolean> scenesLogWork = new WorkerWrapper.Builder<Map<String, Object>, Boolean>().id("scenesLogWorker")
-                .worker(scenesLogWorker).param(scenesLogInfo).callback(ICallback.PRINT_EXCEPTION_STACK_TRACE)
-                .build();
+        publisher.publishEvent(new DeviceSceneLogEvent(this, LogEventData.builder().eventRuleId(eventRuleId).triggerType(type).triggerUser(userId).build()));
 
-        try {
-            Async.beginWork(1000, deviceServiceLogWork, scenesLogWork);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
     }
 }

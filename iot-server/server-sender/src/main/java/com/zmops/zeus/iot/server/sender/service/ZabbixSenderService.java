@@ -54,7 +54,7 @@ public class ZabbixSenderService implements Service {
 
         Socket trapperSocket = ZabbixSenderClient.getSocket();
 
-        int payloadLength = message.length();
+        int payloadLength = length(message);
         byte[] header = new byte[]{
                 'Z', 'B', 'X', 'D', '\1',
                 (byte) (payloadLength & 0xFF),
@@ -124,5 +124,24 @@ public class ZabbixSenderService implements Service {
 
         resultMap.put("response", result.get("response"));
         return gson.toJson(resultMap);
+    }
+
+    /**
+     * 计算字符串长度 中文3个字节
+     * @param value
+     * @return
+     */
+    public static int length(String value) {
+        int valueLength = 0;
+        String chinese = "[\u0391-\uFFE5]";
+        for (int i = 0; i < value.length(); i++) {
+            String temp = value.substring(i, i + 1);
+            if (temp.matches(chinese)) {
+                valueLength += 3;
+            } else {
+                valueLength += 1;
+            }
+        }
+        return valueLength;
     }
 }

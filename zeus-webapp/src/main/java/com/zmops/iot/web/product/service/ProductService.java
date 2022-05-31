@@ -98,7 +98,7 @@ public class ProductService {
         if (ToolUtil.isNotEmpty(list)) {
             List<Long> productIds = list.parallelStream().map(ProductDto::getProductId).collect(Collectors.toList());
             List<Device> deviceList = new QDevice().select(QDevice.alias().productId, QDevice.alias().totalCount).productId.in(productIds).findList();
-            Map<Long, Long> map = deviceList.parallelStream().collect(Collectors.toMap(Device::getProductId, Device::getTotalCount));
+            Map<Long, Long> map = deviceList.parallelStream().collect(Collectors.toMap(Device::getProductId, Device::getTotalCount, (a, b) -> a));
             for (ProductDto productDto : list) {
                 productDto.setDeviceNum(Optional.ofNullable(map.get(productDto.getProductId())).orElse(0L));
             }

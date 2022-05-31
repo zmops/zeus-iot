@@ -162,6 +162,7 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     SERVICE_NOT_EXISTS(1602, "服务不存在"),
     PRODUCT_EVENT_HAS_DEPTED(1605, "服务已用于告警规则或场景联动,不能删除"),
     SERVICE_HAS_DUPLICATE(1606, "存在相同的动作服务"),
+    SERVICE_PARAM_NOT_EXISTS(1607, "服务未配置参数"),
 
     /**
      * 触发规则相关

@@ -269,7 +269,7 @@ public class DeviceEventRuleService {
      * @return 触发器ID
      */
     public String[] createZbxTrigger(String triggerName, String expression, Byte level) {
-        String res = zbxTrigger.triggerCreate(triggerName, expression, level);
+        String res = zbxTrigger.triggerCreate(triggerName, expression, level,0);
         return JSON.parseObject(res, TriggerIds.class).getTriggerids();
     }
 

@@ -11,24 +11,22 @@ import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.ToolUtil;
+import com.zmops.iot.web.event.applicationEvent.ProductServiceCreateEvent;
+import com.zmops.iot.web.event.applicationEvent.ProductServiceUpdateEvent;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductServiceDto;
 import com.zmops.iot.web.product.dto.param.ProductSvcParam;
-import com.zmops.iot.web.product.service.work.SaveProdSvcWorker;
-import com.zmops.iot.web.product.service.work.UpdateProdSvcWorker;
-import com.zmops.zeus.server.async.executor.Async;
-import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import io.ebean.DB;
 import io.ebean.DtoQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -40,10 +38,7 @@ import java.util.stream.Collectors;
 public class ProductSvcService implements CommandLineRunner {
 
     @Autowired
-    SaveProdSvcWorker saveProdSvcWorker;
-
-    @Autowired
-    UpdateProdSvcWorker updateProdSvcWorker;
+    ApplicationEventPublisher publisher;
 
     /**
      * 服务分页列表
@@ -164,14 +159,9 @@ public class ProductSvcService implements CommandLineRunner {
         }
 
         //同步到设备
+
         if (ToolUtil.isNum(productServiceDto.getRelationId())) {
-            WorkerWrapper<ProductServiceDto, Boolean> saveProdAttrWork =
-                    new WorkerWrapper.Builder<ProductServiceDto, Boolean>().worker(saveProdSvcWorker).param(productServiceDto).build();
-            try {
-                Async.beginWork(100, saveProdAttrWork);
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
+            publisher.publishEvent(new ProductServiceCreateEvent(this, productServiceDto));
         }
         updateService();
         return productServiceDto;
@@ -210,14 +200,10 @@ public class ProductSvcService implements CommandLineRunner {
         }
 
         //同步到设备
+
+
         if (ToolUtil.isNum(productServiceDto.getRelationId())) {
-            WorkerWrapper<ProductServiceDto, Boolean> updateProdSvcWork =
-                    new WorkerWrapper.Builder<ProductServiceDto, Boolean>().worker(updateProdSvcWorker).param(productServiceDto).build();
-            try {
-                Async.beginWork(1000, updateProdSvcWork);
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
+            publisher.publishEvent(new ProductServiceUpdateEvent(this, productServiceDto));
         }
         updateService();
         return productServiceDto;
@@ -259,7 +245,7 @@ public class ProductSvcService implements CommandLineRunner {
      */
     private void updateService() {
         List<ProductService> serviceList = new QProductService().findList();
-        Map<Long, String> map = serviceList.parallelStream().collect(Collectors.toMap(ProductService::getId, ProductService::getName));
+        Map<Long, String> map = serviceList.parallelStream().collect(Collectors.toMap(ProductService::getId, ProductService::getName, (a, b) -> a));
         DefinitionsUtil.updateServiceCache(map);
 
         List<ProductServiceParam> serviceParamList = new QProductServiceParam().findList();

@@ -22,9 +22,9 @@ public class ProductEventTimeInterval {
 
     private Long eventRuleId;
 
-    private Integer startTime;
+    private String startTime;
 
-    private Integer endTime;
+    private String endTime;
 
     private String  dayOfWeeks;
 }

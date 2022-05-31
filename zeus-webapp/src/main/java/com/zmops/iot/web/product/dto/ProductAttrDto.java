@@ -54,6 +54,7 @@ public class ProductAttrDto {
     private List<ProductTag.Tag> tags;
 
     //预处理
+    @JsonIgnore
     private List<ProductAttr.ProcessingStep> processStepList;
 
     private Long templateId;

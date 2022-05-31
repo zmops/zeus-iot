@@ -103,7 +103,7 @@ public class HistoryService {
         //取出属性对应的ItemID
         List<String> zbxIds = list.parallelStream().map(ProductAttribute::getZbxId).collect(Collectors.toList());
         Map<String, List<ProductAttribute>> valueTypeMap = list.parallelStream().collect(Collectors.groupingBy(ProductAttribute::getValueType));
-        Map<String, ProductAttribute> itemIdMap = list.parallelStream().collect(Collectors.toMap(ProductAttribute::getZbxId, o -> o));
+        Map<String, ProductAttribute> itemIdMap = list.parallelStream().collect(Collectors.toMap(ProductAttribute::getZbxId, o -> o, (a, b) -> a));
         List<LatestDto> latestDtos = new ArrayList<>();
         if (null == timeFrom) {
             timeFrom = LocalDateTimeUtils.getSecondsByTime(LocalDateTimeUtils.getDayStart(LocalDateTime.now()));
@@ -121,7 +121,7 @@ public class HistoryService {
             String res = zbxValueMap.valueMapGet(valuemapids.toString());
             List<ValueMap> mappingList = JSONObject.parseArray(res, ValueMap.class);
             if (!CollectionUtils.isEmpty(mappingList)) {
-                mappings = mappingList.stream().collect(Collectors.toMap(ValueMap::getValuemapid, ValueMap::getMappings));
+                mappings = mappingList.stream().collect(Collectors.toMap(ValueMap::getValuemapid, ValueMap::getMappings, (a, b) -> a));
             }
         }
 
@@ -137,7 +137,7 @@ public class HistoryService {
                 if (null != valueMapid) {
                     List<Mapping> mappingList = finalMappings.get(valueMapid);
                     if (!CollectionUtils.isEmpty(mappingList)) {
-                        Map<String, String> mappingMap = mappingList.parallelStream().collect(Collectors.toMap(Mapping::getValue, Mapping::getNewvalue));
+                        Map<String, String> mappingMap = mappingList.parallelStream().collect(Collectors.toMap(Mapping::getValue, Mapping::getNewvalue, (a, b) -> a));
                         latestDto.setValue(mappingMap.get(latestDto.getValue()));
                     }
                 }

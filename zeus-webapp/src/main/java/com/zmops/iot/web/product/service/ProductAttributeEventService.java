@@ -12,22 +12,20 @@ import com.zmops.iot.domain.product.query.QProductEventExpression;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.ToolUtil;
+import com.zmops.iot.web.event.applicationEvent.ProductAttrCreateEvent;
+import com.zmops.iot.web.event.applicationEvent.ProductAttrUpdateEvent;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductAttr;
 import com.zmops.iot.web.product.dto.ProductAttrDto;
 import com.zmops.iot.web.product.dto.ProductTag;
 import com.zmops.iot.web.product.dto.param.ProductAttrParam;
-import com.zmops.iot.web.product.service.work.AsyncAttrEventZbxIdWorker;
-import com.zmops.iot.web.product.service.work.SaveProdAttrEventTriggerWorker;
-import com.zmops.iot.web.product.service.work.SaveProdAttrEventWorker;
-import com.zmops.iot.web.product.service.work.UpdateAttributeEventWorker;
 import com.zmops.zeus.driver.entity.ZbxItemInfo;
 import com.zmops.zeus.driver.entity.ZbxProcessingStep;
 import com.zmops.zeus.driver.service.ZbxItem;
-import com.zmops.zeus.server.async.executor.Async;
-import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import io.ebean.DB;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -37,22 +35,14 @@ import java.util.stream.Collectors;
  * @author yefei
  **/
 @Service
+@Slf4j
 public class ProductAttributeEventService {
 
     @Autowired
     private ZbxItem zbxItem;
 
     @Autowired
-    SaveProdAttrEventWorker saveProdAttrEventWorker;
-
-    @Autowired
-    AsyncAttrEventZbxIdWorker asyncAttrEventZbxIdWorker;
-
-    @Autowired
-    UpdateAttributeEventWorker updateAttributeEventWorker;
-
-    @Autowired
-    SaveProdAttrEventTriggerWorker saveProdAttrEventTriggerWorker;
+    ApplicationEventPublisher publisher;
 
     /**
      * 产品属性分页列表
@@ -173,20 +163,9 @@ public class ProductAttributeEventService {
         productAttributeEvent.setZbxId(zbxId);
         productAttributeEvent.save();
 
+        publisher.publishEvent(new ProductAttrCreateEvent(this, productAttr));
 
-        WorkerWrapper<ProductAttr, Boolean> saveProdAttrEventTriggerWork = new WorkerWrapper.Builder<ProductAttr, Boolean>()
-                .worker(saveProdAttrEventTriggerWorker).param(productAttr).build();
-
-        WorkerWrapper<ProductAttr, Boolean> asyncAttrEventZbxIdWork = new WorkerWrapper.Builder<ProductAttr, Boolean>()
-                .worker(asyncAttrEventZbxIdWorker).param(productAttr).build();
-        WorkerWrapper<ProductAttr, Boolean> saveProdAttrEventWork = new WorkerWrapper.Builder<ProductAttr, Boolean>()
-                .worker(saveProdAttrEventWorker).param(productAttr).next(asyncAttrEventZbxIdWork).build();
-
-        try {
-            Async.beginWork(10000, saveProdAttrEventWork, saveProdAttrEventTriggerWork);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        log.debug("------------------");
 
     }
 
@@ -291,14 +270,9 @@ public class ProductAttributeEventService {
 
         DB.update(productAttributeEvent);
 
-        WorkerWrapper<ProductAttr, Boolean> updateProdAttrWork = new WorkerWrapper.Builder<ProductAttr, Boolean>().worker(updateAttributeEventWorker).param(productAttr).build();
+        publisher.publishEvent(new ProductAttrUpdateEvent(this, productAttr));
 
-        try {
-            Async.beginWork(100, updateProdAttrWork);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        log.debug("----------------------");
         return productAttr;
     }
 

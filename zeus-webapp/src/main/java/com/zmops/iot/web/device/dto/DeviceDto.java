@@ -11,7 +11,6 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -79,4 +78,8 @@ public class DeviceDto {
     private Interface deviceInterface;
 
     private LocalDateTime latestOnline;
+
+    private String productCode;
+
+    private String method;
 }

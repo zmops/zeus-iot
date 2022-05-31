@@ -126,7 +126,7 @@ public class MacroController {
             });
             // 主机宏
             List<UserMacro> hostMacroList = JSONObject.parseArray(zbxMacro.macroGet(zbxId + ""), UserMacro.class);
-            Map<String, UserMacro> hostMacroMap = hostMacroList.parallelStream().collect(Collectors.toMap(UserMacro::getMacro, o -> o));
+            Map<String, UserMacro> hostMacroMap = hostMacroList.parallelStream().collect(Collectors.toMap(UserMacro::getMacro, o -> o, (a, b) -> a));
             //过滤模板宏中相同的KEY
             tempMacroList.removeIf(macro -> null != hostMacroMap.get(macro.getMacro()));
 

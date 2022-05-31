@@ -15,19 +15,18 @@ import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.util.ToolUtil;
+import com.zmops.iot.web.event.applicationEvent.ProductEventTriggerCreateEvent;
+import com.zmops.iot.web.event.applicationEvent.ProductEventTriggerUpdateEvent;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductEventDto;
 import com.zmops.iot.web.product.dto.ProductEventRule;
 import com.zmops.iot.web.product.dto.param.EventParm;
 import com.zmops.iot.web.product.service.ProductEventRuleService;
-import com.zmops.iot.web.product.service.work.SaveProductEventTriggerWorker;
-import com.zmops.iot.web.product.service.work.UpdateProductEventTriggerWorker;
 import com.zmops.zeus.driver.service.ZbxTrigger;
-import com.zmops.zeus.server.async.executor.Async;
-import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import io.ebean.DB;
 import io.ebean.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -59,10 +57,7 @@ public class ProductEventTriggerController {
     private static final String EXECUTE_TAG_NAME = "__execute__";
 
     @Autowired
-    SaveProductEventTriggerWorker saveProductEventTriggerWorker;
-
-    @Autowired
-    UpdateProductEventTriggerWorker updateProductEventTriggerWorker;
+    ApplicationEventPublisher publisher;
 
     /**
      * 触发器 分页列表
@@ -136,18 +131,7 @@ public class ProductEventTriggerController {
         productEventRuleService.updateProductEventRuleZbxId(eventRuleId, triggerIds);
 
         //step 6: 同步到产品下的设备
-        WorkerWrapper<ProductEventRule, Boolean> saveProductEventTriggerWork =
-                new WorkerWrapper.Builder<ProductEventRule, Boolean>().worker(saveProductEventTriggerWorker).param(eventRule).build();
-
-        try {
-            try {
-                Async.beginWork(1000, saveProductEventTriggerWork);
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        publisher.publishEvent(new ProductEventTriggerCreateEvent(this,eventRule));
 
 
         // 返回触发器ID
@@ -204,16 +188,9 @@ public class ProductEventTriggerController {
 
         zbxTrigger.triggerTagCreate(list.get(0).getZbxId(), tags);
 
-
         //step 4: 同步到产品下的设备
-        WorkerWrapper<ProductEventRule, Boolean> updateProductEventTriggerWork =
-                new WorkerWrapper.Builder<ProductEventRule, Boolean>().worker(updateProductEventTriggerWorker).param(eventRule).build();
+        publisher.publishEvent(new ProductEventTriggerUpdateEvent(this,eventRule));
 
-        try {
-            Async.beginWork(1000, updateProductEventTriggerWork);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
 
         return ResponseData.success(eventRule.getEventRuleId());
     }

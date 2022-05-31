@@ -9,20 +9,19 @@ import com.zmops.iot.domain.product.query.QProductEventRelation;
 import com.zmops.iot.domain.product.query.QProductEventService;
 import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.ToolUtil;
-import com.zmops.iot.web.device.service.work.DeviceServiceLogWorker;
+import com.zmops.iot.web.event.applicationEvent.DeviceServiceLogEvent;
+import com.zmops.iot.web.event.applicationEvent.dto.LogEventData;
 import com.zmops.iot.web.event.pgEvent.EventProcess;
 import com.zmops.iot.web.event.pgEvent.dto.EventDataDto;
-import com.zmops.zeus.server.async.executor.Async;
-import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -35,7 +34,7 @@ import java.util.stream.Collectors;
 public class ServiceEventProcess implements EventProcess {
 
     @Autowired
-    DeviceServiceLogWorker deviceServiceLogWorker;
+    ApplicationEventPublisher publisher;
 
     @Override
     public void process(EventDataDto eventData) {
@@ -48,22 +47,9 @@ public class ServiceEventProcess implements EventProcess {
             return;
         }
 
-        alarmInfo.put("eventRuleId", productEventRelationList.get(0).getEventRuleId());
-        alarmInfo.put("relationId", productEventRelationList.get(0).getRelationId());
-        alarmInfo.put("triggerType", "自动");
-
         //记录服务日志
-        WorkerWrapper<Map<String, Object>, Boolean> deviceServiceLogWork = new WorkerWrapper.Builder<Map<String, Object>, Boolean>()
-                .id("deviceServiceLogWorker")
-                .worker(deviceServiceLogWorker)
-                .param(alarmInfo)
-                .build();
-
-        try {
-            Async.beginWork(1000, deviceServiceLogWork);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+        publisher.publishEvent(new DeviceServiceLogEvent(this, LogEventData.builder().eventRuleId(productEventRelationList.get(0).getEventRuleId())
+                .relationId(productEventRelationList.get(0).getRelationId()).triggerType("自动").build()));
 
         //查询 告警规则 关联的 服务
         List<ProductEventService> productEventServiceList = new QProductEventService()
@@ -89,8 +75,8 @@ public class ServiceEventProcess implements EventProcess {
 
                 List<ProductServiceParam> paramList = DefinitionsUtil.getServiceParam(val.getServiceId());
                 if (ToolUtil.isNotEmpty(paramList)) {
-                    serviceMap.put("param", paramList.parallelStream()
-                            .collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue)));
+                    serviceMap.put("param", paramList.parallelStream().filter(o -> key.equals(o.getDeviceId()))
+                            .collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue, (a, b) -> a)));
                 }
                 serviceList.add(serviceMap);
             });

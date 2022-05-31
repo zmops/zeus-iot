@@ -117,13 +117,13 @@ public class ProtocolSvrService implements CommandLineRunner {
 
     public void updateProtocolServiceEvent() {
         List<ProtocolService> serviceList = new QProtocolService().findList();
-        Map<Long, String> map = serviceList.parallelStream().collect(Collectors.toMap(ProtocolService::getProtocolServiceId, ProtocolService::getName));
+        Map<Long, String> map = serviceList.parallelStream().collect(Collectors.toMap(ProtocolService::getProtocolServiceId, ProtocolService::getName, (a, b) -> a));
         DefinitionsUtil.updateProtocolServiceCache(map);
     }
 
     @Override
     public void run(String... args) throws Exception {
-        updateProtocolServiceEvent();
+        //updateProtocolServiceEvent();
     }
 
 }

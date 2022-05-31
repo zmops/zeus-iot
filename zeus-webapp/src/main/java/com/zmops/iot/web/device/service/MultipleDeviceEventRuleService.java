@@ -186,7 +186,7 @@ public class MultipleDeviceEventRuleService {
 
                 List<ProductServiceParam> paramList = DefinitionsUtil.getServiceParam(val.getServiceId());
                 if (ToolUtil.isNotEmpty(paramList)) {
-                    serviceMap.put("param", paramList.parallelStream().collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue)));
+                    serviceMap.put("param", paramList.parallelStream().filter(o->key.equals(o.getDeviceId())).collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue, (a, b) -> a)));
                 }
                 serviceList.add(serviceMap);
             });
@@ -332,6 +332,7 @@ public class MultipleDeviceEventRuleService {
 
             eventRule.getExpList().forEach(i -> {
                 ProductEventExpression exp = initEventExpression(i);
+                exp.setEventExpId(i.getEventExpId());
                 exp.setEventRuleId(eventRule.getEventRuleId());
                 expList.add(exp);
             });
@@ -399,7 +400,6 @@ public class MultipleDeviceEventRuleService {
 
     private ProductEventExpression initEventExpression(MultipleDeviceEventRule.Expression exp) {
         ProductEventExpression eventExpression = new ProductEventExpression();
-        eventExpression.setEventExpId(exp.getEventExpId());
         eventExpression.setCondition(exp.getCondition());
         eventExpression.setFunction(exp.getFunction());
         eventExpression.setScope(exp.getScope());
@@ -525,7 +525,7 @@ public class MultipleDeviceEventRuleService {
 
                 List<ProductServiceParam> paramList = DefinitionsUtil.getServiceParam(val.getServiceId());
                 if (ToolUtil.isNotEmpty(paramList)) {
-                    serviceMap.put("param", paramList.parallelStream().collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue)));
+                    serviceMap.put("param", paramList.parallelStream().filter(o->key.equals(o.getDeviceId())).collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue, (a, b) -> a)));
                 }
                 serviceList.add(serviceMap);
             });
@@ -557,7 +557,8 @@ public class MultipleDeviceEventRuleService {
             }
         }
 
-        long count = eventRule.getDeviceServices().parallelStream().map(MultipleDeviceEventRule.DeviceService::getServiceId).distinct().count();
+//        long count = eventRule.getDeviceServices().parallelStream().map(MultipleDeviceEventRule.DeviceService::getServiceId).distinct().count();
+        long count = eventRule.getDeviceServices().parallelStream().map(o-> (o.getExecuteDeviceId()+o.getServiceId()).hashCode()).distinct().count();
         if (count < eventRule.getDeviceServices().size()) {
             throw new ServiceException(BizExceptionEnum.SERVICE_HAS_DUPLICATE);
         }

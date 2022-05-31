@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,12 +57,12 @@ public class DeviceSvrService {
         serviceMap.put("name", productService.getName());
 
         List<ProductServiceParam> paramList = DefinitionsUtil.getServiceParam(serviceId);
-        Map<String, String> paramStr = new HashMap<>(paramList.size());
+        Map<String, String> paramStr = null;
         if (ToolUtil.isNotEmpty(paramList)) {
-            paramStr = paramList.parallelStream().collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue));
+            paramStr = paramList.parallelStream().filter(o -> deviceId.equals(o.getDeviceId())).collect(Collectors.toMap(ProductServiceParam::getKey, ProductServiceParam::getValue, (a, b) -> a));
 
             if (ToolUtil.isNotEmpty(serviceParams)) {
-                Map<String, String> userParam = serviceParams.parallelStream().collect(Collectors.toMap(ServiceParam::getKey, ServiceParam::getValue));
+                Map<String, String> userParam = serviceParams.parallelStream().collect(Collectors.toMap(ServiceParam::getKey, ServiceParam::getValue, (a, b) -> a));
                 for (Map.Entry<String, String> param : paramStr.entrySet()) {
                     if (userParam.get(param.getKey()) != null) {
                         param.setValue(userParam.get(param.getKey()));

@@ -74,12 +74,12 @@ public class ProtocolGatewayService {
 
     @Transactional
     public ProtocolGateway create(ProtocolGatewayParam protocolGatewayParam) {
-        ProtocolGateway ProtocolGateway = new ProtocolGateway();
-        ToolUtil.copyProperties(protocolGatewayParam, ProtocolGateway);
-        ProtocolGateway.setStatus("0");
-        DB.insert(ProtocolGateway);
+        ProtocolGateway protocolGateway = new ProtocolGateway();
+        ToolUtil.copyProperties(protocolGatewayParam, protocolGateway);
+        protocolGateway.setStatus("0");
+        DB.insert(protocolGateway);
 
-        saveMqtt(protocolGatewayParam.getProtocolGatewayMqttList(), ProtocolGateway.getProtocolGatewayId());
+        saveMqtt(protocolGatewayParam.getProtocolGatewayMqttList(), protocolGateway.getProtocolGatewayId());
 
         Map<String, Object> option = initOptionMap(protocolGatewayParam);
 
@@ -89,17 +89,17 @@ public class ProtocolGatewayService {
 //        protocolOption.setOptions(option);
 
         Map<String, Object> params = new HashMap<>(7);
-        params.put("routeId", ProtocolGateway.getProtocolGatewayId() + "");
-        params.put("name", ProtocolGateway.getName());
+        params.put("routeId", protocolGateway.getProtocolGatewayId() + "");
+        params.put("name", protocolGateway.getName());
         params.put("protocolServiceId", protocolGatewayParam.getProtocolServiceId() + "");
         params.put("protocolComponentId", protocolGatewayParam.getProtocolComponentId() + "");
-        params.put("status", ProtocolGateway.getStatus());
+        params.put("status", protocolGateway.getStatus());
         params.put("protocol", ProtocolEnum.getDescription(protocolGatewayParam.getProtocolType()));
         params.put("option", JSON.toJSONString(option));
         params.put("mqttList", JSON.toJSONString(protocolGatewayParam.getProtocolGatewayMqttList()));
 
         Forest.post("/protocol/gateway/createProtocolGateway").host("127.0.0.1").port(12800).addBody(params, "text/html;charset=utf-8").execute();
-        return ProtocolGateway;
+        return protocolGateway;
     }
 
     private Map<String, Object> initOptionMap(ProtocolGatewayParam protocolGatewayParam) {

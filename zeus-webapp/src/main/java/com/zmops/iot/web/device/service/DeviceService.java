@@ -8,7 +8,8 @@ import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.device.query.QDevicesGroups;
 import com.zmops.iot.domain.device.query.QTag;
 import com.zmops.iot.domain.product.Product;
-import com.zmops.iot.domain.product.query.*;
+import com.zmops.iot.domain.product.query.QProduct;
+import com.zmops.iot.enums.CommonStatus;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.DefinitionsUtil;
@@ -16,16 +17,12 @@ import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.device.dto.DeviceDto;
 import com.zmops.iot.web.device.dto.param.DeviceParam;
 import com.zmops.iot.web.device.dto.param.DeviceParams;
-import com.zmops.iot.web.device.service.work.*;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductTag;
 import com.zmops.zeus.driver.entity.Interface;
 import com.zmops.zeus.driver.service.ZbxHost;
 import com.zmops.zeus.driver.service.ZbxInterface;
 import com.zmops.zeus.driver.service.ZbxValueMap;
-import com.zmops.zeus.server.async.callback.ICallback;
-import com.zmops.zeus.server.async.executor.Async;
-import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import io.ebean.DB;
 import io.ebean.DtoQuery;
 import io.ebean.Query;
@@ -34,7 +31,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -42,30 +38,6 @@ import java.util.stream.Collectors;
  **/
 @Service
 public class DeviceService implements CommandLineRunner {
-
-    @Autowired
-    private SaveDeviceWorker saveDeviceWorker;
-
-    @Autowired
-    private SaveAttributeWorker saveAttributeWorker;
-
-    @Autowired
-    private SaveDeviceGrpWorker saveDeviceGrpWorker;
-
-    @Autowired
-    private SaveTagWorker saveTagWorker;
-
-    @Autowired
-    private SaveZbxHostWorker saveZbxHostWorker;
-
-    @Autowired
-    private UpdateAttrZbxIdWorker updateAttrZbxIdWorker;
-
-    @Autowired
-    private UpdateDeviceZbxIdWorker updateDeviceZbxIdWorker;
-
-    @Autowired
-    private SaveOtherWorker saveOtherWorker;
 
     @Autowired
     private ZbxHost zbxHost;
@@ -78,6 +50,9 @@ public class DeviceService implements CommandLineRunner {
 
     @Autowired
     ZbxInterface zbxInterface;
+
+    @Autowired
+    DeviceEventPublisher deviceEventPublisher;
 
     /**
      * 设备列表
@@ -104,11 +79,13 @@ public class DeviceService implements CommandLineRunner {
             qDevice.productId.in(deviceParams.getProductIds());
         }
         if (ToolUtil.isEmpty(deviceParams.getProductIds()) && ToolUtil.isNotEmpty(deviceParams.getProdTypes())) {
-            List<Long> productIdList = new QProduct().select(QProduct.Alias.productId).groupId.in(deviceParams.getProdTypes()).findSingleAttributeList();
+            List<Long> productIdList = new QProduct().select(QProduct.Alias.productId).groupId.in(
+                    deviceParams.getProdTypes()).findSingleAttributeList();
             qDevice.productId.in(productIdList);
         }
         if (ToolUtil.isNotEmpty(deviceParams.getDeviceGroupIds())) {
-            List<String> deviceList = new QDevicesGroups().select(QDevicesGroups.Alias.deviceId).deviceGroupId.in(deviceParams.getDeviceGroupIds()).findSingleAttributeList();
+            List<String> deviceList = new QDevicesGroups().select(QDevicesGroups.Alias.deviceId).deviceGroupId.in(
+                    deviceParams.getDeviceGroupIds()).findSingleAttributeList();
             qDevice.deviceId.in(deviceList);
         }
         return qDevice.findList();
@@ -121,7 +98,8 @@ public class DeviceService implements CommandLineRunner {
      */
     public List<String> getDeviceIds() {
         List<Long> devGroupIds = deviceGroupService.getDevGroupIds();
-        return new QDevicesGroups().select(QDevicesGroups.alias().deviceId).deviceGroupId.in(devGroupIds).findSingleAttributeList();
+        return new QDevicesGroups().select(QDevicesGroups.alias().deviceId).deviceGroupId.in(devGroupIds)
+                .findSingleAttributeList();
     }
 
     /**
@@ -201,7 +179,6 @@ public class DeviceService implements CommandLineRunner {
             count.setParameter("deviceGroupIds", devGroupIds);
         }
 
-
         List<DeviceDto> list = dto.setFirstRow((deviceParam.getPage() - 1) * deviceParam.getMaxRow())
                 .setMaxRows(deviceParam.getMaxRow()).findList();
 
@@ -229,8 +206,10 @@ public class DeviceService implements CommandLineRunner {
                 " d.tenant_id," +
                 " d.proxy_id," +
                 " P.NAME product_name, " +
+                " P.product_code product_code, " +
                 " ds.group_name, " +
-                " ds.groupIds  " +
+                " ds.groupIds," +
+                " m.method  " +
                 "FROM " +
                 " device d ")
                 .append(" LEFT JOIN product P ON P.product_id = d.product_id ")
@@ -245,7 +224,8 @@ public class DeviceService implements CommandLineRunner {
                         "   LEFT JOIN device_group dg ON dg.device_group_id = dgs.device_group_id   " +
                         " where dg.device_group_id in (:deviceGroupIds) " +
                         "  GROUP BY  d.device_id   " +
-                        "  ) ds ON ds.device_id = d.device_id ");
+                        "  ) ds ON ds.device_id = d.device_id ")
+                .append(" left join device_service_method m on m.device_id = d.device_id ");
     }
 
     /**
@@ -256,45 +236,13 @@ public class DeviceService implements CommandLineRunner {
      */
     public String create(DeviceDto deviceDto) {
 
-        WorkerWrapper<DeviceDto, Boolean> saveTagWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("saveTagWork")
-                .worker(saveTagWorker).param(deviceDto).build();
+        Device device = new Device();
+        ToolUtil.copyProperties(deviceDto, device);
 
-        WorkerWrapper<DeviceDto, Boolean> saveAttributeWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("saveAttributeWork")
-                .worker(saveAttributeWorker).param(deviceDto).build();
+        device.setStatus(CommonStatus.ENABLE.getCode());
+        DB.insert(device);
 
-        WorkerWrapper<DeviceDto, Boolean> saveDeviceGrpWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("saveDeviceGrpWork")
-                .worker(saveDeviceGrpWorker).param(deviceDto)
-                .build();
-
-        WorkerWrapper<DeviceDto, Boolean> updateAttrZbxIdWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("updateAttrZbxIdWork")
-                .worker(updateAttrZbxIdWorker).param(deviceDto)
-                .build();
-
-        WorkerWrapper<String, Boolean> updateDeviceZbxIdWork = new WorkerWrapper.Builder<String, Boolean>().id("updateDeviceZbxIdWork")
-                .worker(updateDeviceZbxIdWorker).param(deviceDto.getDeviceId())
-                .build();
-
-        WorkerWrapper<DeviceDto, Boolean> saveOtherWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("saveOtherWork")
-                .worker(saveOtherWorker).param(deviceDto)
-                .build();
-
-        WorkerWrapper<DeviceDto, String> saveZbxHostWork = new WorkerWrapper.Builder<DeviceDto, String>().id("saveZbxHostWork")
-                .worker(saveZbxHostWorker).param(deviceDto)
-                .next(updateAttrZbxIdWork, updateDeviceZbxIdWork, saveOtherWork)
-                .callback(ICallback.PRINT_EXCEPTION_STACK_TRACE)
-                .build();
-
-        WorkerWrapper<DeviceDto, Device> deviceWork = new WorkerWrapper.Builder<DeviceDto, Device>().id("saveDvice")
-                .worker(saveDeviceWorker).param(deviceDto)
-                .next(saveTagWork, saveAttributeWork, saveDeviceGrpWork, saveZbxHostWork)
-                .build();
-
-        try {
-
-            Async.beginWork(10000, deviceWork);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+        deviceEventPublisher.DeviceSaveEventPublish(deviceDto);
 
         updateDeviceNameCache(deviceDto.getDeviceId(), deviceDto.getName());
         return deviceDto.getDeviceId();
@@ -311,45 +259,16 @@ public class DeviceService implements CommandLineRunner {
         if (null == device) {
             throw new ServiceException(BizExceptionEnum.DEVICE_NOT_EXISTS);
         }
+        ToolUtil.copyProperties(deviceDto, device);
         deviceDto.setOldProductId(device.getProductId());
         deviceDto.setZbxId(device.getZbxId());
 
-        WorkerWrapper<DeviceDto, Boolean> saveTagWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("saveTagWork")
-                .worker(saveTagWorker).param(deviceDto).build();
+        DB.update(device);
 
-        WorkerWrapper<DeviceDto, Boolean> saveAttributeWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("saveAttributeWork")
-                .worker(saveAttributeWorker).param(deviceDto).build();
+        deviceEventPublisher.DeviceSaveEventPublish(deviceDto);
 
-        WorkerWrapper<DeviceDto, Boolean> saveDeviceGrpWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("saveDeviceGrpWork")
-                .worker(saveDeviceGrpWorker).param(deviceDto)
-                .build();
-
-        WorkerWrapper<DeviceDto, Boolean> updateAttrZbxIdWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("updateAttrZbxIdWork")
-                .worker(updateAttrZbxIdWorker)
-                .build();
-
-        WorkerWrapper<DeviceDto, Boolean> saveOtherWork = new WorkerWrapper.Builder<DeviceDto, Boolean>().id("saveOtherWork")
-                .worker(saveOtherWorker).param(deviceDto)
-                .build();
-
-        WorkerWrapper<DeviceDto, String> saveZbxHostWork = new WorkerWrapper.Builder<DeviceDto, String>().id("saveZbxHostWork")
-                .worker(saveZbxHostWorker).param(deviceDto)
-                .next(updateAttrZbxIdWork, saveOtherWork)
-                .build();
-
-        WorkerWrapper<DeviceDto, Device> deviceWork = new WorkerWrapper.Builder<DeviceDto, Device>().id("saveDvice")
-                .worker(saveDeviceWorker).param(deviceDto)
-                .next(saveTagWork, saveAttributeWork, saveDeviceGrpWork, saveZbxHostWork)
-                .build();
-
-        try {
-
-            Async.beginWork(10000, deviceWork);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
         updateDeviceNameCache(deviceDto.getDeviceId(), deviceDto.getName());
-        return deviceWork.getWorkResult().getResult().getDeviceId();
+        return deviceDto.getDeviceId();
     }
 
     /**
@@ -371,66 +290,8 @@ public class DeviceService implements CommandLineRunner {
             return deviceDto.getDeviceId();
         }
         String zbxId = device.getZbxId();
-        //删除标签
-        WorkerWrapper<String, Boolean> delTagWork = new WorkerWrapper.Builder<String, Boolean>().id("delTagWork")
-                .worker((deviceId, allWrappers) -> {
-                    new QTag().sid.eq(deviceId).delete();
-                    return true;
-                }).param(deviceDto.getDeviceId()).build();
 
-        //删除属性
-        WorkerWrapper<String, Boolean> delAttrWork = new WorkerWrapper.Builder<String, Boolean>().id("delAttrWork")
-                .worker((deviceId, allWrappers) -> {
-                    new QProductAttribute().productId.eq(deviceId).delete();
-                    return true;
-                }).param(deviceDto.getDeviceId()).build();
-
-        //删除设备组关联关系
-        WorkerWrapper<String, Boolean> delGropusWork = new WorkerWrapper.Builder<String, Boolean>().id("delGropusWork")
-                .worker((deviceId, allWrappers) -> {
-                    new QDevicesGroups().deviceId.eq(deviceId).delete();
-                    return true;
-                }).param(deviceDto.getDeviceId()).build();
-
-        //删除Zbx主机
-        WorkerWrapper<String, Boolean> delZbxWork = new WorkerWrapper.Builder<String, Boolean>().id("delZbxWork")
-                .worker((zbxid, allWrappers) -> {
-                    if (ToolUtil.isNotEmpty(zbxid)) {
-                        JSONArray jsonArray = JSONObject.parseArray(zbxHost.hostDetail(zbxId));
-                        if (jsonArray.size() > 0) {
-                            zbxHost.hostDelete(Collections.singletonList(zbxid));
-                        }
-                    }
-                    return true;
-                }).param(zbxId).build();
-
-        //删除其它关联信息
-        WorkerWrapper<String, Boolean> delOtherWork = new WorkerWrapper.Builder<String, Boolean>().id("delOtherWork")
-                .worker((deviceId, allWrappers) -> {
-                    new QProductStatusFunctionRelation().relationId.eq(deviceId).delete();
-                    new QProductServiceRelation().relationId.eq(deviceId).delete();
-                    new QProductEventRelation().relationId.eq(deviceId).delete();
-                    new QProductEventService().deviceId.eq(deviceId).delete();
-                    new QProductServiceParam().deviceId.eq(deviceId).delete();
-                    return true;
-                }).param(deviceDto.getDeviceId()).build();
-
-        //删除设备
-        WorkerWrapper<String, Boolean> delDeviceWork = new WorkerWrapper.Builder<String, Boolean>()
-                .id("delDeviceWork")
-                .worker((deviceId, allWrappers) -> {
-                    new QDevice().deviceId.eq(deviceId).delete();
-                    return true;
-                })
-                .param(deviceDto.getDeviceId())
-                .next(delTagWork, delAttrWork, delGropusWork, delZbxWork, delOtherWork).build();
-
-        try {
-
-            Async.beginWork(5000, delDeviceWork);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+        deviceEventPublisher.DeviceDeleteEventPublish(device.getDeviceId(), zbxId);
 
         //更新设备名称缓存
         removeDeviceNameCache(deviceDto.getDeviceId());
@@ -463,7 +324,7 @@ public class DeviceService implements CommandLineRunner {
         if (ToolUtil.isEmpty(zbxId)) {
             return;
         }
-        
+
         //同步到Zbx
         List<Tag> list = new QTag().sid.eq(productTag.getProductId()).findList();
 
@@ -525,7 +386,9 @@ public class DeviceService implements CommandLineRunner {
         }
         StringBuilder sql = generateBaseSql();
         sql.append(" where d.device_id=:deviceId");
-        DeviceDto deviceDto = DB.findDto(DeviceDto.class, sql.toString()).setParameter("deviceId", deviceId).setParameter("deviceGroupIds", devGroupIds).findOne();
+        DeviceDto deviceDto = DB.findDto(DeviceDto.class, sql.toString()).setParameter("deviceId", deviceId)
+                .setParameter("deviceGroupIds", devGroupIds).findOne();
+
         if (deviceDto == null) {
             throw new ServiceException(BizExceptionEnum.DEVICE_NOT_EXISTS);
         }
@@ -588,7 +451,8 @@ public class DeviceService implements CommandLineRunner {
         if (ToolUtil.isNotEmpty(zbxId)) {
             zbxHost.hostStatusUpdate(zbxId, "ENABLE".equals(status) ? "0" : "1");
         }
-        DB.update(Device.class).where().eq("device_id", deviceId).asUpdate().set("status", status).setNull("online").update();
+        DB.update(Device.class).where().eq("device_id", deviceId).asUpdate().set("status", status).setNull("online")
+                .update();
     }
 
     /**
@@ -596,7 +460,8 @@ public class DeviceService implements CommandLineRunner {
      */
     private void updateDeviceCache() {
         List<Device> deviceList = new QDevice().select(QDevice.Alias.deviceId, QDevice.Alias.name).findList();
-        Map<String, String> map = deviceList.parallelStream().collect(Collectors.toMap(Device::getDeviceId, Device::getName));
+        Map<String, String> map = deviceList.parallelStream()
+                .collect(Collectors.toMap(Device::getDeviceId, Device::getName, (a, b) -> a));
         DefinitionsUtil.updateDeviceCache(map);
     }
 
@@ -617,7 +482,6 @@ public class DeviceService implements CommandLineRunner {
         all.remove(deviceId);
         DefinitionsUtil.updateDeviceCache(all);
     }
-
 
     @Override
     public void run(String... args) throws Exception {

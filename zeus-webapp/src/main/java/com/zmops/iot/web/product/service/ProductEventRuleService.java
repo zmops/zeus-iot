@@ -191,7 +191,7 @@ public class ProductEventRuleService implements CommandLineRunner {
 
         List<Triggers> triggers = JSONObject.parseArray(s, Triggers.class);
 
-        Map<String, String> map = triggers.parallelStream().collect(Collectors.toMap(o -> o.hosts.get(0).host, Triggers::getTriggerid));
+        Map<String, String> map = triggers.parallelStream().collect(Collectors.toMap(o -> o.hosts.get(0).host, Triggers::getTriggerid, (a, b) -> a));
 
         List<ProductEventRelation> productEventRelationList = new QProductEventRelation().eventRuleId.eq(eventRuleId).findList();
 
@@ -214,7 +214,7 @@ public class ProductEventRuleService implements CommandLineRunner {
      * @return 触发器ID
      */
     public String[] createZbxTrigger(String triggerName, String expression, Byte level) {
-        String res = zbxTrigger.triggerCreate(triggerName, expression, level);
+        String res = zbxTrigger.triggerCreate(triggerName, expression, level,0);
         return JSON.parseObject(res, TriggerIds.class).getTriggerids();
     }
 
@@ -242,7 +242,7 @@ public class ProductEventRuleService implements CommandLineRunner {
         if (ToolUtil.isNotEmpty(eventRuleIdList)) {
             query.eventRuleId.in(eventRuleIdList);
         }
-        Map<Long, ProductEventRelation> productEventRelationMap = productEventRelationList.parallelStream().collect(Collectors.toMap(ProductEventRelation::getEventRuleId, o -> o));
+        Map<Long, ProductEventRelation> productEventRelationMap = productEventRelationList.parallelStream().collect(Collectors.toMap(ProductEventRelation::getEventRuleId, o -> o, (a, b) -> a));
 
 
         List<ProductEventDto> list = query.setFirstRow((eventParm.getPage() - 1) * eventParm.getMaxRow())
@@ -297,7 +297,7 @@ public class ProductEventRuleService implements CommandLineRunner {
 
     public void updateProductEvent() {
         List<ProductEvent> deviceList = new QProductEvent().findList();
-        Map<Long, String> map = deviceList.parallelStream().collect(Collectors.toMap(ProductEvent::getEventRuleId, ProductEvent::getEventRuleName));
+        Map<Long, String> map = deviceList.parallelStream().collect(Collectors.toMap(ProductEvent::getEventRuleId, ProductEvent::getEventRuleName, (a, b) -> a));
         DefinitionsUtil.updateProductEventCache(map);
     }
 

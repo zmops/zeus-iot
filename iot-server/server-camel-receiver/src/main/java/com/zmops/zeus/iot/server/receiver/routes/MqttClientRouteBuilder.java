@@ -1,10 +1,16 @@
 package com.zmops.zeus.iot.server.receiver.routes;
 
+import com.zmops.zeus.iot.server.h2.module.LocalH2Module;
+import com.zmops.zeus.iot.server.h2.service.InsertDAO;
 import com.zmops.zeus.iot.server.receiver.ReceiverServerRoute;
+import com.zmops.zeus.server.library.module.ModuleManager;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Message;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,16 +43,34 @@ public class MqttClientRouteBuilder extends ReceiverServerRoute {
             }
 
             String topicName = exchange.getIn().getHeader("CamelMqttTopic").toString();
-
+            InsertDAO localH2InsertDAO = ModuleManager.getInstance()
+                    .find(LocalH2Module.NAME).provider().getService(InsertDAO.class);
             //TODO 这里需要动态加载规则
+            ResultSet rs = localH2InsertDAO.queryRes("select pm.topic,pc.unique_id from protocol_gateway_mqtt pm left join protocol_component pc on pc.id=pm.protocol_component_id");
+            Map<String, String> map = new HashMap<>();
+            while (true) {
+                try {
+                    if (!rs.next()) {
+                        break;
+                    }
 
-            if ("zeus11".equals(topicName)) {
-                return "ArkBiz:mqtt?uniqueId=19890918";
+                    map.put(rs.getString(1), rs.getString(2));
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (map.containsKey(topicName)) {
+                return "ArkBiz:mqtt?uniqueId=" + map.get(topicName);
             }
 
-            if ("zeus22".equals(topicName)) {
-                return "ArkBiz:mqtt?uniqueId=20211225";
-            }
+//            if ("zeus11".equals(topicName)) {
+//                return "ArkBiz:mqtt?uniqueId=19890918";
+//            }
+//
+//            if ("zeus22".equals(topicName)) {
+//                return "ArkBiz:mqtt?uniqueId=20211225";
+//            }
 
             return null;
         }

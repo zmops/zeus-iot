@@ -146,8 +146,8 @@ public class MultipleDeviceEventRule {
     @Setter
     public static class TimeInterval {
         private String  dayOfWeeks;
-        private Integer startTime;
-        private Integer endTime;
+        private String startTime;
+        private String endTime;
 
         @Override
         public String toString() {

@@ -78,7 +78,7 @@ public class LatestService {
         }
 
         Map<String, List<ProductAttribute>> valueTypeMap = list.parallelStream().collect(Collectors.groupingBy(ProductAttribute::getValueType));
-        Map<String, ProductAttribute> itemIdMap = list.parallelStream().collect(Collectors.toMap(ProductAttribute::getZbxId, o -> o));
+        Map<String, ProductAttribute> itemIdMap = list.parallelStream().collect(Collectors.toMap(ProductAttribute::getZbxId, o -> o, (a, b) -> a));
         List<LatestDto> latestDtos;
         if (checkTDengine()) {
             latestDtos = queryLatestFromTD(deviceId, valueTypeMap);
@@ -94,7 +94,7 @@ public class LatestService {
             String res = zbxValueMap.valueMapGet(valuemapids.toString());
             List<ValueMap> mappingList = JSONObject.parseArray(res, ValueMap.class);
             if (!CollectionUtils.isEmpty(mappingList)) {
-                mappings = mappingList.stream().collect(Collectors.toMap(ValueMap::getValuemapid, ValueMap::getMappings));
+                mappings = mappingList.stream().collect(Collectors.toMap(ValueMap::getValuemapid, ValueMap::getMappings, (a, b) -> a));
             }
         }
 
@@ -112,7 +112,7 @@ public class LatestService {
                 if (null != valueMapid) {
                     List<Mapping> mappingList = finalMappings.get(valueMapid);
                     if (!CollectionUtils.isEmpty(mappingList)) {
-                        Map<String, String> mappingMap = mappingList.parallelStream().collect(Collectors.toMap(Mapping::getValue, Mapping::getNewvalue));
+                        Map<String, String> mappingMap = mappingList.parallelStream().collect(Collectors.toMap(Mapping::getValue, Mapping::getNewvalue, (a, b) -> a));
                         latestDto.setValue(mappingMap.get(latestDto.getValue()));
                     }
                 }
@@ -240,6 +240,6 @@ public class LatestService {
         if (ToolUtil.isEmpty(latestDtos)) {
             return new HashMap<>(0);
         }
-        return latestDtos.parallelStream().collect(Collectors.toMap(LatestDto::getKey, LatestDto::getValue));
+        return latestDtos.parallelStream().collect(Collectors.toMap(LatestDto::getKey, LatestDto::getValue, (a, b) -> a));
     }
 }

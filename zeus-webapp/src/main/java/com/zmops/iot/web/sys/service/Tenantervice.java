@@ -15,7 +15,6 @@ import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.ToolUtil;
-import com.zmops.iot.web.device.dto.DeviceGroupDto;
 import com.zmops.iot.web.device.dto.param.DeviceGroupParam;
 import com.zmops.iot.web.device.service.DeviceGroupService;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
@@ -197,7 +196,7 @@ public class Tenantervice implements CommandLineRunner {
         if (ToolUtil.isEmpty(list)) {
             return;
         }
-        DefinitionsUtil.updateTenantName(list.parallelStream().collect(Collectors.toMap(TenantInfo::getTenantId, TenantInfo::getName)));
+        DefinitionsUtil.updateTenantName(list.parallelStream().collect(Collectors.toMap(TenantInfo::getTenantId, TenantInfo::getName, (a, b) -> a)));
     }
 
     @Override

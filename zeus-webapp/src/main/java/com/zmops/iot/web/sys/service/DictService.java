@@ -139,7 +139,7 @@ public class DictService implements CommandLineRunner {
 
     private void updateDictionaries() {
         List<SysDictType> dictTypes = new QSysDictType().findList();
-        Map<Long, String> map = dictTypes.parallelStream().collect(Collectors.toMap(SysDictType::getDictTypeId, SysDictType::getCode));
+        Map<Long, String> map = dictTypes.parallelStream().collect(Collectors.toMap(SysDictType::getDictTypeId, SysDictType::getCode, (a, b) -> a));
         List<Long> collect = dictTypes.stream().map(SysDictType::getDictTypeId).collect(Collectors.toList());
         List<SysDict> dictList = new QSysDict().dictTypeId.in(collect).findList();
         Table<String, String, String> dictionaryValues = HashBasedTable.create();

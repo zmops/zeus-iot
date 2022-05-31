@@ -15,21 +15,15 @@ import com.zmops.iot.web.product.dto.ProductAttr;
 import com.zmops.iot.web.product.dto.ProductAttrDto;
 import com.zmops.iot.web.product.dto.ProductTag;
 import com.zmops.iot.web.product.dto.param.ProductAttrParam;
-import com.zmops.iot.web.product.service.work.AsyncAttrZbxIdWorker;
-import com.zmops.iot.web.product.service.work.SaveProdAttrWorker;
-import com.zmops.iot.web.product.service.work.UpdateAttributeWorker;
 import com.zmops.zeus.driver.entity.ZbxItemInfo;
 import com.zmops.zeus.driver.entity.ZbxProcessingStep;
 import com.zmops.zeus.driver.service.ZbxItem;
-import com.zmops.zeus.server.async.executor.Async;
-import com.zmops.zeus.server.async.wrapper.WorkerWrapper;
 import io.ebean.DB;
 import io.ebean.DtoQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -42,13 +36,7 @@ public class ProductModelService {
     private ZbxItem zbxItem;
 
     @Autowired
-    SaveProdAttrWorker saveProdAttrWorker;
-
-    @Autowired
-    AsyncAttrZbxIdWorker asyncAttrZbxIdWorker;
-
-    @Autowired
-    UpdateAttributeWorker updateProdAttrWorker;
+    ProductModelEventPublisher productModelEventPublisher;
 
     /**
      * 产品属性分页列表
@@ -143,6 +131,8 @@ public class ProductModelService {
         JSONArray itemInfo = JSONObject.parseArray(zbxItem.getItemInfo(attr.getZbxId(), null));
         attr.setTags(JSONObject.parseArray(itemInfo.getJSONObject(0).getString("tags"), ProductTag.Tag.class));
         attr.setProcessStepList(formatProcessStep(itemInfo.getJSONObject(0).getString("preprocessing")));
+
+
 //        String valuemap = itemInfo.getJSONObject(0).getString("valuemap");
 //
 //        if (ToolUtil.isNotEmpty(valuemap) && !"[]".equals(valuemap)) {
@@ -179,21 +169,23 @@ public class ProductModelService {
         productAttribute.setZbxId(zbxId);
         productAttribute.save();
 
+        productModelEventPublisher.productModelCreateEventPublish(productAttr);
 
-        WorkerWrapper<ProductAttr, Boolean> asyncAttrZbxIdWork = new WorkerWrapper.Builder<ProductAttr, Boolean>()
-                .worker(asyncAttrZbxIdWorker).param(productAttr).build();
-        WorkerWrapper<ProductAttr, Boolean> saveProdAttrWork = new WorkerWrapper.Builder<ProductAttr, Boolean>()
-                .worker(saveProdAttrWorker).param(productAttr).next(asyncAttrZbxIdWork).build();
 
-        try {
-            Async.beginWork(10000, saveProdAttrWork);
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
+//        WorkerWrapper<ProductAttr, Boolean> asyncAttrZbxIdWork = new WorkerWrapper.Builder<ProductAttr, Boolean>()
+//                .worker(asyncAttrZbxIdWorker).param(productAttr).build();
+//        WorkerWrapper<ProductAttr, Boolean> saveProdAttrWork = new WorkerWrapper.Builder<ProductAttr, Boolean>()
+//                .worker(saveProdAttrWorker).param(productAttr).next(asyncAttrZbxIdWork).build();
+//
+//        try {
+//            Async.beginWork(10000, saveProdAttrWork);
+//        } catch (ExecutionException | InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
     }
 
-    private ProductAttribute buildProdAttribute(ProductAttribute prodAttribute, ProductAttr productAttr) {
+    private void buildProdAttribute(ProductAttribute prodAttribute, ProductAttr productAttr) {
         prodAttribute.setProductId(productAttr.getProductId());
         prodAttribute.setName(productAttr.getAttrName());
         prodAttribute.setKey(productAttr.getKey());
@@ -205,8 +197,6 @@ public class ProductModelService {
         prodAttribute.setDepAttrId(productAttr.getDepAttrId());
         prodAttribute.setValuemapid(productAttr.getValuemapid());
         prodAttribute.setUnit(productAttr.getUnit());
-
-        return prodAttribute;
     }
 
     /**
@@ -231,7 +221,7 @@ public class ProductModelService {
                 ZbxProcessingStep step = new ZbxProcessingStep();
 
                 step.setType(i.getType());
-                step.setParams(i.getParams().replaceAll("\n","").replaceAll("\"", "\\\\\\\\\""));
+                step.setParams(i.getParams().replaceAll("\n", "").replaceAll("\"", "\\\\\\\\\""));
 
                 processingSteps.add(step);
             });
@@ -246,7 +236,7 @@ public class ProductModelService {
             delay = productAttr.getDelay() + productAttr.getUnit();
         }
         return zbxItem.createTrapperItem(itemName, productAttr.getKey(),
-                hostId, productAttr.getSource(), delay, productAttr.getMasterItemId(), productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap,null);
+                hostId, productAttr.getSource(), delay, productAttr.getMasterItemId(), productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap, null);
     }
 
     /**
@@ -257,6 +247,9 @@ public class ProductModelService {
      */
     public ProductAttr updateTrapperItem(ProductAttr productAttr) {
         ProductAttribute productAttribute = new QProductAttribute().attrId.eq(productAttr.getAttrId()).findOne();
+        if (null == productAttribute) {
+            productAttribute = new ProductAttribute();
+        }
         buildProdAttribute(productAttribute, productAttr);
         Product prod = new QProduct().productId.eq(Long.parseLong(productAttr.getProductId())).findOne();
         if (null == prod) {
@@ -269,7 +262,7 @@ public class ProductModelService {
                 ZbxProcessingStep step = new ZbxProcessingStep();
 
                 step.setType(i.getType());
-                step.setParams(i.getParams().replaceAll("\n","").replaceAll("\"", "\\\\\\\\\""));
+                step.setParams(i.getParams().replaceAll("\n", "").replaceAll("\"", "\\\\\\\\\""));
 
                 processingSteps.add(step);
             });
@@ -286,17 +279,19 @@ public class ProductModelService {
             delay = productAttr.getDelay() + productAttr.getUnit();
         }
         zbxItem.updateTrapperItem(productAttribute.getZbxId(), productAttr.getAttrId() + "", productAttr.getKey(),
-                hostId, productAttr.getSource(), delay, productAttr.getMasterItemId(), productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap,null);
+                hostId, productAttr.getSource(), delay, productAttr.getMasterItemId(), productAttr.getValueType(), productAttr.getUnits(), processingSteps, productAttr.getValuemapid(), tagMap, null);
 
         DB.update(productAttribute);
 
-        WorkerWrapper<ProductAttr, Boolean> updateProdAttrWork = new WorkerWrapper.Builder<ProductAttr, Boolean>().worker(updateProdAttrWorker).param(productAttr).build();
+        productModelEventPublisher.productModelUpdateEventPublish(productAttr);
 
-        try {
-            Async.beginWork(100, updateProdAttrWork);
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
+//        WorkerWrapper<ProductAttr, Boolean> updateProdAttrWork = new WorkerWrapper.Builder<ProductAttr, Boolean>().worker(updateProdAttrWorker).param(productAttr).build();
+//
+//        try {
+//            Async.beginWork(100, updateProdAttrWork);
+//        } catch (ExecutionException | InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
         return productAttr;
     }
@@ -316,8 +311,9 @@ public class ProductModelService {
         }
 
         //检查属性是否被告警规则引入
-        List<Long> attrIds = new QProductAttribute().select(QProductAttribute.alias().attrId).templateId.in(productAttr.getAttrIds()).findSingleAttributeList();
-        count = new QProductEventExpression().productAttrId.in(attrIds).findCount();
+//        List<Long> attrIds = new QProductAttribute().select(QProductAttribute.alias().attrId).templateId.in(productAttr.getAttrIds()).findSingleAttributeList();
+//        attrIds.addAll(productAttr.getAttrIds());
+        count = new QProductEventExpression().productAttrId.in(productAttr.getAttrIds()).findCount();
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_EVENT_HASDEPTED);
         }

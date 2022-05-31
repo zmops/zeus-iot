@@ -73,8 +73,12 @@ public class ProductTriggerService {
         long ruleId = IdUtil.getSnowflake().nextId();
         judgeRule.setRuleId(ruleId);
         //step 1:保存到zbx 建立上线及下线规则
+        String ruleCondition = judgeRule.getRuleCondition();
+        if(!ToolUtil.isNum(ruleCondition)){
+            ruleCondition = "\""+ruleCondition+"\"";
+        }
         String res = deviceStatusTrigger.createDeviceStatusTrigger(judgeRule.getRuleId() + "", judgeRule.getRelationId(),
-                judgeRule.getProductAttrKey(), judgeRule.getRuleCondition() + judgeRule.getUnit(), judgeRule.getRuleFunction(), judgeRule.getProductAttrKeyRecovery(),
+                judgeRule.getProductAttrKey(), ruleCondition + judgeRule.getUnit(), judgeRule.getRuleFunction(), judgeRule.getProductAttrKeyRecovery(),
                 judgeRule.getRuleConditionRecovery() + judgeRule.getUnitRecovery(), judgeRule.getRuleFunctionRecovery());
 
         String[] triggerIds = getTriggerId(res);
@@ -112,9 +116,9 @@ public class ProductTriggerService {
             }
             List<ZbxTriggerInfo> zbxTriggerInfoList = JSONObject.parseArray(triggerRes, ZbxTriggerInfo.class);
             Map<String, String> hostTriggerMap = zbxTriggerInfoList.parallelStream().filter(o -> o.getTags().parallelStream().anyMatch(t -> "__offline__".equals(t.getTag())))
-                    .collect(Collectors.toMap(o -> o.getHosts().get(0).getHost(), ZbxTriggerInfo::getTriggerid));
+                    .collect(Collectors.toMap(o -> o.getHosts().get(0).getHost(), ZbxTriggerInfo::getTriggerid, (a, b) -> a));
             Map<String, String> hostRecoveryTriggerMap = zbxTriggerInfoList.parallelStream().filter(o -> o.getTags().parallelStream().anyMatch(t -> "__online__".equals(t.getTag())))
-                    .collect(Collectors.toMap(o -> o.getHosts().get(0).getHost(), ZbxTriggerInfo::getTriggerid));
+                    .collect(Collectors.toMap(o -> o.getHosts().get(0).getHost(), ZbxTriggerInfo::getTriggerid, (a, b) -> a));
 
             //保存 设备与规则的关系
             deviceDtoList.forEach(deviceDto -> {
@@ -144,8 +148,12 @@ public class ProductTriggerService {
         if (null == relation) {
             return judgeRule.getRuleId();
         }
+        String ruleCondition = judgeRule.getRuleCondition();
+        if(!ToolUtil.isNum(ruleCondition)){
+            ruleCondition = "\""+ruleCondition+"\"";
+        }
         deviceStatusTrigger.updateDeviceStatusTrigger(relation.getZbxId(), judgeRule.getRuleId() + "", judgeRule.getRelationId(),
-                judgeRule.getProductAttrKey(), judgeRule.getRuleCondition() + judgeRule.getUnit(), judgeRule.getRuleFunction(), judgeRule.getProductAttrKeyRecovery(),
+                judgeRule.getProductAttrKey(), ruleCondition + judgeRule.getUnit(), judgeRule.getRuleFunction(), judgeRule.getProductAttrKeyRecovery(),
                 judgeRule.getRuleConditionRecovery() + judgeRule.getUnitRecovery(), judgeRule.getRuleFunctionRecovery(), relation.getZbxIdRecovery());
 
         ProductStatusFunction productStatusFunction = new ProductStatusFunction();

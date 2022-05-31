@@ -242,7 +242,12 @@ public class ToolUtil {
         try {
             Long.parseLong(obj.toString());
         } catch (Exception e) {
-            return false;
+            try {
+                Double.parseDouble(obj.toString());
+            }catch (Exception el){
+                return false;
+            }
+            return true;
         }
         return true;
     }

@@ -139,7 +139,7 @@ public class ProductTypeService implements CommandLineRunner {
         if (ToolUtil.isEmpty(list)) {
             return;
         }
-        DefinitionsUtil.updateProductType(list.parallelStream().collect(Collectors.toMap(ProductType::getId, ProductType::getName)));
+        DefinitionsUtil.updateProductType(list.parallelStream().collect(Collectors.toMap(ProductType::getId, ProductType::getName, (a, b) -> a)));
     }
 
     @Override

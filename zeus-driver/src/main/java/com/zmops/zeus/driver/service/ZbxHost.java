@@ -75,7 +75,7 @@ public interface ZbxHost {
      */
     @Post
     @JsonPath("/host/host.delete")
-    void hostDelete(@ParamName("hostIds") List<String> hostIds);
+    String hostDelete(@ParamName("hostIds") List<String> hostIds);
 
     /**
      * 查询主机详情
