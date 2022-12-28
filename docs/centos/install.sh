@@ -4,11 +4,11 @@
 ROOT_UID=0
 release=Centos
 basename=$(pwd)
-zabbixsrc=$basename/zabbix-5.4.3
+zabbixsrc=$basename/zabbix-5.0.30
 INSTALLDIR=/opt/zeus
 ZABBIX_HOME=$INSTALLDIR/zabbix
 PHP_CONF=/etc/opt/rh/rh-php73
-sqldir=$basename/zabbix-5.4.3/database/postgresql
+sqldir=$basename/zabbix-5.0.30/database/postgresql
 PGDATA=$INSTALLDIR/pgdata
 zeusurl=
 
@@ -209,7 +209,7 @@ function ZbxInstall() {
         groupadd --system zabbix || true
         useradd --system -g zabbix -d $INSTALLDIR/zabbix -s /sbin/nologin -c "Zabbix Monitoring System" zabbix || true
 
-        wget -c https://cdn.zabbix.com/zabbix/sources/stable/5.4/zabbix-5.4.3.tar.gz -o /dev/null -O - | tar -xz
+        wget -c https://cdn.zabbix.com/zabbix/sources/stable/5.0/zabbix-5.0.30.tar.gz -o /dev/null -O - | tar -xz
         logprint "下载zabbix源码失败，请检查网络。。。"
 
         cd "$zabbixsrc" && ./configure --prefix=$ZABBIX_HOME \
