@@ -324,6 +324,7 @@ function PHPInstall() {
         sed -i 's/;listen.owner = nobody/listen.owner = zeus/g' $PHP_CONF/php-fpm.d/www.conf
         sed -i 's/;listen.group = nobody/listen.group = zeus/g' $PHP_CONF/php-fpm.d/www.conf
         sed -i 's/\(^listen =\).*/\1\/var\/run\/php-fpm.sock/g' $PHP_CONF/php-fpm.d/www.conf
+        chmod 777 /var/opt/rh/rh-php73/lib/php/session -R
         echo -e "\033[32m  [ OK ] \033[0m"
 }
 
