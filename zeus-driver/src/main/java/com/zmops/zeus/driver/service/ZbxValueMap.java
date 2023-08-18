@@ -4,6 +4,7 @@ import com.dtflys.forest.annotation.BaseRequest;
 import com.dtflys.forest.annotation.Post;
 import com.zmops.zeus.driver.annotation.JsonPath;
 import com.zmops.zeus.driver.annotation.ParamName;
+import com.zmops.zeus.driver.inteceptor.JsonBodyBuildInterceptor;
 
 import java.util.Map;
 
@@ -12,7 +13,10 @@ import java.util.Map;
  * <p>
  * 值映射设置
  */
-@BaseRequest(baseURL = "${zbxApiUrl}")
+@BaseRequest(
+        baseURL = "http://${zbxServerIp}:${zbxServerPort}${zbxApiUrl}",
+        interceptor = JsonBodyBuildInterceptor.class
+)
 public interface ZbxValueMap {
 
     /**
@@ -55,4 +59,14 @@ public interface ZbxValueMap {
                           @ParamName("valueMapName") String valueMapName,
                           @ParamName("valMaps") Map<String, String> valMaps,
                           @ParamName("valueMapId") String valueMapId);
+
+    /**
+     * 删除值映射
+     *
+     * @param valuemapids 值映射ID
+     * @return String
+     */
+    @Post
+    @JsonPath("/valuemap/valuemap.get")
+    String valueMapGet(@ParamName("valuemapids") String valuemapids);
 }

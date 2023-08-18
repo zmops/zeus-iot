@@ -37,4 +37,6 @@ public class SysOperationLog {
     private String message;
 
     private LocalDateTime createTime;
+
+    private Long tenantId;
 }

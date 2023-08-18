@@ -3,17 +3,20 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>zeus-iot</artifactId>
+        <artifactId>zeus-webapp-bom</artifactId>
         <groupId>com.zmops</groupId>
         <version>1.0-beta</version>
+        <relativePath>../zeus-webapp-bom/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <packaging>jar</packaging>
     <artifactId>zeus-starter</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <frontend-maven-plugin.version>1.11.0</frontend-maven-plugin.version>
+        <ui.path>../zeus-iot-ui</ui.path>
     </properties>
 
     <dependencies>
@@ -44,29 +47,89 @@
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>
-            <artifactId>iot-alarm</artifactId>
+            <artifactId>zeus-message</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-pgevent</artifactId>
+            <version>3.11.4</version>
         </dependency>
     </dependencies>
 
     <build>
+        <finalName>zeus-webapp</finalName>
         <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*.*</include>
-                </includes>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
 
+        </resources>
         <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${compiler.version}</source>
+                    <target>${compiler.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <showWarnings>false</showWarnings>
+                </configuration>
+            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>com.github.eirslett</groupId>-->
+<!--                <artifactId>frontend-maven-plugin</artifactId>-->
+<!--                <version>${frontend-maven-plugin.version}</version>-->
+<!--                <configuration>-->
+<!--                    <workingDirectory>${ui.path}</workingDirectory>-->
+<!--                    <nodeVersion>v8.17.0</nodeVersion>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>install node and npm</id>-->
+<!--                        <goals>-->
+<!--                            <goal>install-node-and-npm</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                    <execution>-->
+<!--                        <id>npm install</id>-->
+<!--                        <goals>-->
+<!--                            <goal>npm</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <arguments>install &#45;&#45;registry=https://registry.npm.taobao.org/ &#45;&#45;unsafe-perm</arguments>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                    <execution>-->
+<!--                        <id>npm run build</id>-->
+<!--                        <goals>-->
+<!--                            <goal>npm</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <arguments>run build</arguments>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+<!--            <plugin>-->
+<!--                <artifactId>maven-resources-plugin</artifactId>-->
+<!--                <configuration>-->
+<!--                    <encoding>${project.build.sourceEncoding}</encoding>-->
+<!--                    <outputDirectory>${project.build.directory}/classes</outputDirectory>-->
+<!--                    <resources>-->
+<!--                        <resource>-->
+<!--                            <targetPath>${basedir}/target/classes/public</targetPath>-->
+<!--                            <directory>${ui.path}/dist</directory>-->
+<!--                        </resource>-->
+<!--                        <resource>-->
+<!--                            <targetPath>${basedir}/target/classes</targetPath>-->
+<!--                            <directory>src/main/resources</directory>-->
+<!--                        </resource>-->
+<!--                    </resources>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.3.12.RELEASE</version>
+                <version>${spring.boot.version}</version>
                 <configuration>
-                    <mainClass>com.zmops.iot.IOTApplication</mainClass>
+                    <mainClass>com.zmops.iot.IoTApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>

@@ -36,6 +36,16 @@ public class LoginUser implements UserDetails, Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public LoginUser() {
+        super();
+    }
+
+    public LoginUser(Long id, String token) {
+        super();
+        this.id = id;
+        this.zbxToken = token;
+    }
+
     /**
      * 用户主键ID
      */
@@ -56,6 +66,10 @@ public class LoginUser implements UserDetails, Serializable {
      */
     private String email;
 
+    /**
+     * 用户组
+     */
+    private Long userGroupId;
 
     /**
      * 角色集
@@ -81,6 +95,11 @@ public class LoginUser implements UserDetails, Serializable {
      * 拥有的权限
      */
     private Set<String> permissions;
+
+    /**
+     * 租户ID
+     */
+    private Long tenantId;
 
     /**
      * zabbix token

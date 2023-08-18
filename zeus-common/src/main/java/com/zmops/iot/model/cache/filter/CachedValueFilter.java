@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.zmops.iot.domain.BaseDto;
 import com.zmops.iot.util.DefinitionsUtil;
 import com.zmops.iot.util.LocalDateTimeUtils;
 
@@ -21,14 +20,8 @@ import java.util.Optional;
  */
 public class CachedValueFilter extends JsonSerializer<Object> {
 
-    public final static String SUFFIX = "Name";
-
     @Override
     public void serialize(Object object, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        if (!(object instanceof BaseDto)) {
-            return;
-        }
-
         jsonGenerator.writeStartObject();
         for (Field field : getAllFields(object.getClass())) {
 
@@ -43,17 +36,19 @@ public class CachedValueFilter extends JsonSerializer<Object> {
             if (value == null) {
                 continue;
             }
-            CachedValue[] cachedValues   = field.getAnnotationsByType(CachedValue.class);
-            JsonProperty  jsonProperties = field.getDeclaredAnnotation(JsonProperty.class);
-            String        fieldName      = field.getName();
+            CachedValue[] cachedValues = field.getAnnotationsByType(CachedValue.class);
+            JsonProperty jsonProperties = field.getDeclaredAnnotation(JsonProperty.class);
+            String fieldName = field.getName();
             if (null != jsonProperties) {
                 fieldName = jsonProperties.value();
             }
 
             if (value instanceof LocalDateTime) {
                 jsonGenerator.writeStringField(fieldName, LocalDateTimeUtils.dateToStr(value.toString()));
-            } else {
+            } else if (value instanceof String) {
                 jsonGenerator.writeStringField(fieldName, value.toString());
+            } else {
+                jsonGenerator.writeObjectField(fieldName, value);
             }
 
             if (cachedValues.length == 0) {
@@ -65,7 +60,7 @@ public class CachedValueFilter extends JsonSerializer<Object> {
                 String res = getCachedValue(cachedValue, value);
                 if (res != null) {
                     exists = true;
-                    jsonGenerator.writeStringField(fieldName + Optional.of(cachedValue.suffix()).orElse(SUFFIX), res);
+                    jsonGenerator.writeStringField(cachedValue.fieldName(), res);
                 } else {
                     exists = exists || cachedValue.type().isNullable();
                 }
@@ -108,6 +103,21 @@ public class CachedValueFilter extends JsonSerializer<Object> {
             case ProdType:
                 if (value instanceof Long) {
                     return DefinitionsUtil.getTypeName((long) value);
+                }
+                break;
+            case Tenant:
+                if (value instanceof Long) {
+                    return DefinitionsUtil.getTenantName((long) value);
+                }
+                break;
+            case Device:
+                if (value instanceof String) {
+                    return DefinitionsUtil.getDeviceName((String) value);
+                }
+                break;
+            case ProtocolService:
+                if (value instanceof Long) {
+                    return DefinitionsUtil.getProtocolServiceName((long) value);
                 }
                 break;
             default:

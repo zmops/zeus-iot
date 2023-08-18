@@ -14,7 +14,7 @@ import static com.zmops.iot.core.auth.exception.enums.AuthExceptionEnum.NO_PERMI
 public class PermissionException extends RuntimeException {
 
     private Integer code;
-    private String  errorMessage;
+    private String errorMessage;
 
     public PermissionException() {
         super(NO_PERMISSION.getMessage());

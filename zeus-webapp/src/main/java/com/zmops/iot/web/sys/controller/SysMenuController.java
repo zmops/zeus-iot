@@ -33,7 +33,7 @@ public class SysMenuController {
      */
     @RequestMapping("/list")
     public ResponseData getMenuList() {
-        LoginUser  user     = LoginContextHolder.getContext().getUser();
+        LoginUser user = LoginContextHolder.getContext().getUser();
         List<Long> roleList = user.getRoleList();
         if (ToolUtil.isEmpty(roleList)) {
             throw new ServiceException(BizExceptionEnum.USER_NOT_BIND_ROLE);
@@ -54,8 +54,8 @@ public class SysMenuController {
                 " ORDER BY" +
                 "       m1.menu_id ASC";
 
-        List<SqlRow>      menuList = DB.sqlQuery(sql).setParameter("roleIds", roleList).findList();
-        Map<String, List> map      = new HashMap<>(2);
+        List<SqlRow> menuList = DB.sqlQuery(sql).setParameter("roleIds", roleList).findList();
+        Map<String, List> map = new HashMap<>(2);
         map.put("menu", menuList.parallelStream().filter(x -> "Y".equals(x.getString("menu_flag"))).collect(Collectors.toList()));
         map.put("button", menuList.parallelStream().filter(x -> "N".equals(x.getString("menu_flag"))).map(x -> x.getString("url")).collect(Collectors.toList()));
         return ResponseData.success(map);

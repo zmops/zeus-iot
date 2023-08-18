@@ -2,8 +2,22 @@
     "jsonrpc": "2.0",
     "method": "host.update",
     "params": {
-        "hostid":"${hostid}"
-        "host": "${hostName}",
+        "hostid":"${hostid}",
+        <#if interfaces??>
+            "interfaces": [
+                {
+                    "type": ${interfaces.type},
+                    "main": ${interfaces.main},
+                    "useip": ${interfaces.useip},
+                    "ip": "${interfaces.ip}",
+                    "dns": "${interfaces.dns}",
+                    "port": "${interfaces.port}"
+                }
+            ],
+        </#if>
+        <#if proxyid??>
+        "proxy_hostid": "${proxyid}",
+        </#if>
         "groups": [
             <#if groupids??>
                 <#list groupids as groupid>

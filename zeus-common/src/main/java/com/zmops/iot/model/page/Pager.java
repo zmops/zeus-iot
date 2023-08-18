@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Data
 public class Pager<T> {
 
-    private Integer code    = 200;
+    private Integer code = 200;
     /**
      * 请求是否成功
      */

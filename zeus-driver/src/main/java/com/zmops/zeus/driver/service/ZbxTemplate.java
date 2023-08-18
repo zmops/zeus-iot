@@ -4,6 +4,7 @@ import com.dtflys.forest.annotation.BaseRequest;
 import com.dtflys.forest.annotation.Post;
 import com.zmops.zeus.driver.annotation.JsonPath;
 import com.zmops.zeus.driver.annotation.ParamName;
+import com.zmops.zeus.driver.inteceptor.JsonBodyBuildInterceptor;
 
 import java.util.Map;
 
@@ -11,7 +12,10 @@ import java.util.Map;
  * @author nantian created at 2021/8/3 15:47
  */
 
-@BaseRequest(baseURL = "${zbxApiUrl}")
+@BaseRequest(
+        baseURL = "http://${zbxServerIp}:${zbxServerPort}${zbxApiUrl}",
+        interceptor = JsonBodyBuildInterceptor.class
+)
 public interface ZbxTemplate {
 
     /**
@@ -55,6 +59,15 @@ public interface ZbxTemplate {
      * @param templateid 模板ID
      */
     @Post
-    @JsonPath("/template/template.get")
+    @JsonPath("/template/template.detail.get")
     String templateDetail(@ParamName("templateid") String templateid);
+
+    /**
+     * 查询模板信息
+     *
+     * @param templateid 模板ID
+     */
+    @Post
+    @JsonPath("/template/template.get")
+    String templateGet(@ParamName("templateid") String templateid);
 }

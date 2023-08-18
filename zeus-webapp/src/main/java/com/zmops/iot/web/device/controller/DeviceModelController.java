@@ -3,6 +3,7 @@ package com.zmops.iot.web.device.controller;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSON;
 import com.zmops.iot.domain.BaseEntity;
+import com.zmops.iot.domain.product.ProductAttribute;
 import com.zmops.iot.domain.product.query.QProductAttribute;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @author yefei
  * <p>
- * 设备物模型
+ * 设备属性
  */
 
 @RestController
@@ -34,6 +35,8 @@ public class DeviceModelController {
     @Autowired
     private DeviceModelService deviceModelService;
 
+    //依赖属性类型
+    private static final String ATTR_SOURCE_DEPEND = "18";
 
     /**
      * 设备物模型 分页列表
@@ -41,7 +44,7 @@ public class DeviceModelController {
      * @return ResponseData
      */
     @RequestMapping("/getAttrTrapperByPage")
-    public Pager<ProductAttrDto> prodModelAttributeList(@RequestBody ProductAttrParam productAttr) {
+    public Pager<ProductAttrDto> prodModelAttributeList(@Validated(BaseEntity.Get.class) @RequestBody ProductAttrParam productAttr) {
         return deviceModelService.prodModelAttributeList(productAttr);
     }
 
@@ -77,11 +80,22 @@ public class DeviceModelController {
             throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_KEY_EXISTS);
         }
 
+        if (ATTR_SOURCE_DEPEND.equals(productAttr.getSource())) {
+            if (productAttr.getDepAttrId() == null) {
+                throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_DEPTED_NULL);
+            }
+            ProductAttribute productAttribute = new QProductAttribute().attrId.eq(productAttr.getDepAttrId()).findOne();
+            if (null == productAttribute) {
+                throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_DEPTED_NOT_EXIST);
+            }
+            productAttr.setMasterItemId(productAttribute.getZbxId());
+        }
+
         Long attrId = IdUtil.getSnowflake().nextId();
         productAttr.setAttrId(attrId);
 
         String response = deviceModelService.createTrapperItem(productAttr);
-        String zbxId    = JSON.parseObject(response, TemplateIds.class).getItemids()[0];
+        String zbxId = JSON.parseObject(response, TemplateIds.class).getItemids()[0];
 
         deviceModelService.createProductAttr(productAttr, zbxId);
 
@@ -99,6 +113,17 @@ public class DeviceModelController {
                 .attrId.ne(productAttr.getAttrId()).findCount();
         if (i > 0) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_KEY_EXISTS);
+        }
+
+        if (ATTR_SOURCE_DEPEND.equals(productAttr.getSource())) {
+            if (productAttr.getDepAttrId() == null) {
+                throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_DEPTED_NULL);
+            }
+            ProductAttribute productAttribute = new QProductAttribute().attrId.eq(productAttr.getDepAttrId()).findOne();
+            if (null == productAttribute) {
+                throw new ServiceException(BizExceptionEnum.PRODUCT_ATTR_DEPTED_NOT_EXIST);
+            }
+            productAttr.setMasterItemId(productAttribute.getZbxId());
         }
 
         return ResponseData.success(deviceModelService.updateTrapperItem(productAttr));

@@ -48,7 +48,7 @@ public class JsonBodyBuildInterceptor implements Interceptor<String> {
             } else {
                 Annotation[][] paramAnnos = method.getMethod().getParameterAnnotations();
                 for (int i = 0; i < args.length; i++) {
-                    if (paramAnnos[i][0] instanceof ParamName) {
+                    if (paramAnnos[i].length > 0 && paramAnnos[i][0] instanceof ParamName) {
                         ParamName paramAnno = (ParamName) paramAnnos[i][0];
                         paramMap.put(paramAnno.value(), args[i]);
                     }
@@ -58,7 +58,7 @@ public class JsonBodyBuildInterceptor implements Interceptor<String> {
 
         JsonPath jsonPath = method.getMethod().getAnnotation(JsonPath.class);
         if (null != jsonPath && StringUtils.isNotBlank(jsonPath.value())) {
-            String body     = Objects.requireNonNull(JsonParseUtil.parse(jsonPath.value() + ".ftl", paramMap));
+            String body = Objects.requireNonNull(JsonParseUtil.parse(jsonPath.value() + ".ftl", paramMap));
             String sendBody = StringEscapeUtils.unescapeJava(body);
             log.debug("\n" + sendBody + "\n");
             request.replaceBody(sendBody);

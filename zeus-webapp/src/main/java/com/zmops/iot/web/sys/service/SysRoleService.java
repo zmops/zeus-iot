@@ -6,6 +6,7 @@ import com.zmops.iot.core.auth.model.LoginUser;
 import com.zmops.iot.core.tree.DefaultTreeBuildFactory;
 import com.zmops.iot.domain.sys.SysRole;
 import com.zmops.iot.domain.sys.SysRoleMenu;
+import com.zmops.iot.domain.sys.query.QSysMenu;
 import com.zmops.iot.domain.sys.query.QSysRole;
 import com.zmops.iot.domain.sys.query.QSysRoleMenu;
 import com.zmops.iot.domain.sys.query.QSysUser;
@@ -40,7 +41,7 @@ public class SysRoleService {
         if (ToolUtil.isNotEmpty(name)) {
             qSysRole.name.contains(name);
         }
-        return qSysRole.orderBy("create_time desc").findList();
+        return qSysRole.roleId.ne(1L).orderBy("create_time desc").findList();
     }
 
     /**
@@ -83,8 +84,8 @@ public class SysRoleService {
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.ROLE_HAS_BIND_USER);
         }
-        new QSysRoleMenu().roleId.in(sysRoleParam.getRoleIds()).delete();
-        new QSysRole().roleId.in(sysRoleParam.getRoleIds()).delete();
+        new QSysRoleMenu().roleId.in(sysRoleParam.getRoleIds()).roleId.ne(1L).delete();
+        new QSysRole().roleId.in(sysRoleParam.getRoleIds()).roleId.ne(1L).delete();
     }
 
     /**
@@ -94,6 +95,7 @@ public class SysRoleService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void bindMenu(RoleParam roleParam) {
+        checkRoleId(roleParam.getRoleId());
         checkMenuId(roleParam.getMenuIds());
         new QSysRoleMenu().roleId.eq(roleParam.getRoleId()).delete();
         List<SysRoleMenu> sysRoleMenuList = new ArrayList<>();
@@ -106,15 +108,27 @@ public class SysRoleService {
         DB.saveAll(sysRoleMenuList);
     }
 
+    private void checkRoleId(Long roleId) {
+        LoginUser user = LoginContextHolder.getContext().getUser();
+        if (null == user) {
+            return;
+        }
+        if (user.getRoleList().contains(roleId)) {
+            throw new ServiceException(BizExceptionEnum.CANNOT_MODIFY_OWNER_MENUS);
+        }
+    }
+
     /**
      * 检查授权的菜单 是否存在或是否有权授权此菜单
      */
     private void checkMenuId(List<Long> menuIds) {
         List<Long> paramMuenuIds = new ArrayList<>(menuIds);
-        LoginUser  user          = LoginContextHolder.getContext().getUser();
+        LoginUser user = LoginContextHolder.getContext().getUser();
         if (null == user) {
             throw new ServiceException(AuthExceptionEnum.NOT_LOGIN_ERROR);
         }
+        List<Long> adminMenuIds = new QSysMenu().select(QSysMenu.alias().menuId).adminFlag.eq("Y").findSingleAttributeList();
+        menuIds.removeAll(adminMenuIds);
         List<Long> lists = new QSysRoleMenu().select(QSysRoleMenu.Alias.menuId).menuId.in(menuIds).roleId.in(user.getRoleList()).findSingleAttributeList();
         paramMuenuIds.removeAll(lists);
         if (ToolUtil.isNotEmpty(paramMuenuIds)) {
@@ -156,11 +170,12 @@ public class SysRoleService {
                 "       LEFT JOIN sys_menu m2 ON m1.pcode = m2.CODE " +
                 " WHERE" +
                 "       m1.status = 'ENABLE' " +
-//                " AND " +
-//                "       m1.menu_id in (select menu_id from sys_role_menu where role_id in (:roleIds) )" +
+                " AND m1.admin_flag = 'N' " +
+                " AND " +
+                "       m1.menu_id in (select menu_id from sys_role_menu where role_id in (:roleIds))" +
                 " ORDER BY" +
                 "       m1.sort ASC";
-        List<TreeNode> allMenuList = DB.findDto(TreeNode.class, sql).findList();
+        List<TreeNode> allMenuList = DB.findDto(TreeNode.class, sql).setParameter("roleIds", user.getRoleList()).findList();
 
         //取被授权用户 已授权的菜单
         List<Long> selectMenuIdList = new QSysRoleMenu().select(QSysRoleMenu.Alias.menuId).roleId.eq(roleId).findSingleAttributeList();

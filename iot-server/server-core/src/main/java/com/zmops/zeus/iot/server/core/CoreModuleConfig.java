@@ -1,11 +1,8 @@
 package com.zmops.zeus.iot.server.core;
 
-import com.zmops.zeus.iot.server.library.module.ModuleConfig;
+import com.zmops.zeus.server.library.module.ModuleConfig;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author nantian created at 2021/8/16 22:29
@@ -19,13 +16,13 @@ public class CoreModuleConfig extends ModuleConfig {
     private String nameSpace;
 
     private String restHost;
-    private int    restPort;
+    private int restPort;
     private String restContextPath;
-    private int    restMinThreads            = 1;
-    private int    restMaxThreads            = 200;
-    private long   restIdleTimeOut           = 30000;
-    private int    restAcceptorPriorityDelta = 0;
-    private int    restAcceptQueueSize       = 0;
+    private int restMinThreads = 1;
+    private int restMaxThreads = 200;
+    private long restIdleTimeOut = 30000;
+    private int restAcceptorPriorityDelta = 0;
+    private int restAcceptQueueSize = 0;
 
 
     /**

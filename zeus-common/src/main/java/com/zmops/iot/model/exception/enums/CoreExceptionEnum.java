@@ -42,7 +42,8 @@ public enum CoreExceptionEnum implements AbstractBaseExceptionEnum {
     IO_ERROR(500, "流读取异常"),
     SERVICE_ERROR(500, "服务器异常"),
     REMOTE_SERVICE_NULL(404, "远程服务不存在"),
-    ASYNC_ERROR(5000, "数据在被别人修改，请稍后重试");
+    ASYNC_ERROR(5000, "数据在被别人修改，请稍后重试"),
+    REPEATED_SUBMIT(500,"请勿重复请求");
 
     CoreExceptionEnum(int code, String message) {
         this.code = code;

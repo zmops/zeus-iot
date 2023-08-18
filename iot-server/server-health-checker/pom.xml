@@ -15,7 +15,7 @@
         <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>library-module</artifactId>
-            <version>1.0-beta</version>
+            <version>1.0.3-RELEASE</version>
             <scope>compile</scope>
         </dependency>
 

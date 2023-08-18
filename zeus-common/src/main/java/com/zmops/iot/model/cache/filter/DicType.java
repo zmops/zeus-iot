@@ -10,17 +10,20 @@ public enum DicType {
     SysUserName(false),
     SysRole,
     ProdType,
+    Tenant,
+    Device,
+    ProtocolService,
     Dictionary;
 
 
     @Getter
     private boolean nullable;
 
-    DicType(){
+    DicType() {
         this.nullable = true;
     }
 
-    DicType(boolean nullable){
+    DicType(boolean nullable) {
         this.nullable = nullable;
     }
 }

@@ -13,7 +13,7 @@ import lombok.Data;
 public class AuthException extends RuntimeException {
 
     private Integer code;
-    private String  errorMessage;
+    private String errorMessage;
 
     public AuthException() {
         super("认证失败！");

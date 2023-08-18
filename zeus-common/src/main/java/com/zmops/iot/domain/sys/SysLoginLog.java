@@ -33,4 +33,6 @@ public class SysLoginLog {
     String message;
 
     String ipAddress;
+
+    private Long tenantId;
 }

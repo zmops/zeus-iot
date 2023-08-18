@@ -1,0 +1,18 @@
+FROM alpine:latest
+
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
+
+RUN apk update \
+	&& apk add --no-cache tzdata curl python2 openjdk8-jre bash postgresql-client \
+	&& cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+	&& echo Asia/Shanghai > /etc/timezone \
+	&& rm -rf /var/cache/apk/*
+
+ADD https://xxxxx/zeus-iot/zeus-iot-bin.tar.gz /
+RUN tar -xf zeus-iot-bin.tar.gz
+COPY log4j2.xml /zeus-iot-bin/config/log4j2.xml
+COPY docker-entrypoint.sh  /usr/bin/docker-entrypoint.sh
+EXPOSE 9090
+ENTRYPOINT ["/usr/bin/docker-entrypoint.sh"]
+
+

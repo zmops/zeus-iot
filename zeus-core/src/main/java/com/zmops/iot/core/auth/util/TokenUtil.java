@@ -22,8 +22,8 @@ public class TokenUtil {
      */
     public static String getToken() {
 
-        String             authToken = null;
-        HttpServletRequest request   = HttpContext.getRequest();
+        String authToken = null;
+        HttpServletRequest request = HttpContext.getRequest();
 
         //权限校验的头部
         String tokenHeader = getTokenHeaderName();

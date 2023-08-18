@@ -1,7 +1,8 @@
 package com.zmops.iot.web.sys.controller;
 
-import com.zmops.iot.domain.sys.SysLoginLog;
 import com.zmops.iot.model.page.Pager;
+import com.zmops.iot.web.auth.Permission;
+import com.zmops.iot.web.sys.dto.SysLoginLogDto;
 import com.zmops.iot.web.sys.service.LoginLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,13 +23,14 @@ public class LoginLogController {
     /**
      * 登录日志列表
      */
+    @Permission(code = "businessLog")
     @RequestMapping("/getLoginLogByPage")
     @ResponseBody
-    public Pager<SysLoginLog> list(@RequestParam(required = false) Long beginTime,
-                                   @RequestParam(required = false) Long endTime,
-                                   @RequestParam(required = false) String logName,
-                                   @RequestParam(required = false, defaultValue = "1") int page,
-                                   @RequestParam(required = false, defaultValue = "20") int maxRow) {
+    public Pager<SysLoginLogDto> list(@RequestParam(required = false) Long beginTime,
+                                      @RequestParam(required = false) Long endTime,
+                                      @RequestParam(required = false) String logName,
+                                      @RequestParam(required = false, defaultValue = "1") int page,
+                                      @RequestParam(required = false, defaultValue = "20") int maxRow) {
         return loginLogService.list(beginTime, endTime, logName, page, maxRow);
     }
 }

@@ -5,6 +5,7 @@ import com.dtflys.forest.annotation.Post;
 import com.zmops.zeus.driver.annotation.JsonPath;
 import com.zmops.zeus.driver.annotation.ParamName;
 import com.zmops.zeus.driver.entity.ZbxProcessingStep;
+import com.zmops.zeus.driver.inteceptor.JsonBodyBuildInterceptor;
 
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,10 @@ import java.util.Map;
  * @author nantian created at 2021/8/4 18:07
  */
 
-@BaseRequest(baseURL = "${zbxApiUrl}")
+@BaseRequest(
+        baseURL = "http://${zbxServerIp}:${zbxServerPort}${zbxApiUrl}",
+        interceptor = JsonBodyBuildInterceptor.class
+)
 public interface ZbxItem {
 
 
@@ -35,11 +39,15 @@ public interface ZbxItem {
     String createTrapperItem(@ParamName("itemName") String itemName,
                              @ParamName("itemKey") String itemKey,
                              @ParamName("hostId") String hostId,
+                             @ParamName("source") String source,
+                             @ParamName("delay") String delay,
+                             @ParamName("masterItemid") String masterItemid,
                              @ParamName("valueType") String valueType,
                              @ParamName("units") String units,
                              @ParamName("processList") List<ZbxProcessingStep> processingStepList,
                              @ParamName("valuemapid") String valuemapid,
-                             @ParamName("tagMap") Map<String, String> tagMap);
+                             @ParamName("tagMap") Map<String, String> tagMap,
+                             @ParamName("interfaceid") String interfaceid);
 
     /**
      * 修改 Zabbix Trapper ITEM
@@ -61,11 +69,15 @@ public interface ZbxItem {
                              @ParamName("itemName") String itemName,
                              @ParamName("itemKey") String itemKey,
                              @ParamName("hostId") String hostId,
+                             @ParamName("source") String source,
+                             @ParamName("delay") String delay,
+                             @ParamName("masterItemid") String masterItemid,
                              @ParamName("valueType") String valueType,
                              @ParamName("units") String units,
                              @ParamName("processList") List<ZbxProcessingStep> processingStepList,
                              @ParamName("valuemapid") String valuemapid,
-                             @ParamName("tagMap") Map<String, String> tagMap);
+                             @ParamName("tagMap") Map<String, String> tagMap,
+                             @ParamName("interfaceid") String interfaceid);
 
     /**
      * 删称 Zabbix Trapper ITEM
@@ -85,4 +97,24 @@ public interface ZbxItem {
     @Post
     @JsonPath("/item/item.get")
     String getItemInfo(@ParamName("itemId") String itemId, @ParamName("hostid") String hostid);
+
+    /**
+     * 根据item key 获取 ITEM 信息
+     *
+     * @param key key
+     * @return String
+     */
+    @Post
+    @JsonPath("/item/item.get")
+    String getItemList(@ParamName("key") String key, @ParamName("hostid") String hostid);
+
+    /**
+     * 根据item name 获取 ITEM 信息
+     *
+     * @param name name
+     * @return String
+     */
+    @Post
+    @JsonPath("/item/item.name.get")
+    String getItemListByName(@ParamName("name") String name);
 }

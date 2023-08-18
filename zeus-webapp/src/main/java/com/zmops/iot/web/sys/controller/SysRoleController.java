@@ -3,6 +3,7 @@ package com.zmops.iot.web.sys.controller;
 import com.zmops.iot.core.log.BussinessLog;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.model.response.ResponseData;
+import com.zmops.iot.web.auth.Permission;
 import com.zmops.iot.web.sys.dto.SysRoleDto;
 import com.zmops.iot.web.sys.dto.param.RoleParam;
 import com.zmops.iot.web.sys.service.SysRoleService;
@@ -38,6 +39,7 @@ public class SysRoleController {
     /**
      * 角色新增
      */
+    @Permission(code = "role")
     @RequestMapping("/create")
     @BussinessLog(value = "角色新增")
     public ResponseData create(@Validated(BaseEntity.Create.class) @RequestBody SysRoleDto sysRoleDto) {
@@ -47,6 +49,7 @@ public class SysRoleController {
     /**
      * 角色修改
      */
+    @Permission(code = "role")
     @RequestMapping("/update")
     @BussinessLog(value = "角色修改")
     public ResponseData update(@Validated(BaseEntity.Update.class) @RequestBody SysRoleDto sysRoleDto) {
@@ -56,6 +59,7 @@ public class SysRoleController {
     /**
      * 角色删除
      */
+    @Permission(code = "role")
     @RequestMapping("/delete")
     @BussinessLog(value = "角色删除")
     public ResponseData delete(@Validated(BaseEntity.Delete.class) @RequestBody RoleParam sysRoleParam) {
@@ -68,6 +72,7 @@ public class SysRoleController {
      *
      * @return
      */
+    @Permission(code = "role")
     @RequestMapping("/bindMenu")
     @BussinessLog(value = "角色绑定菜单")
     public ResponseData bindMenu(@Validated @RequestBody RoleParam roleParam) {
@@ -78,6 +83,7 @@ public class SysRoleController {
     /**
      * 角色已绑定的菜单
      */
+    @Permission(code = "role")
     @RequestMapping("/bindedMenu")
     public ResponseData bindMenu(@RequestParam(value = "roleId") Long roleId) {
         return ResponseData.success(sysRoleService.bindedMenu(roleId));

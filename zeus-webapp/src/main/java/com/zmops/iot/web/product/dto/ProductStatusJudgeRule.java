@@ -1,39 +1,60 @@
 package com.zmops.iot.web.product.dto;
 
+import com.zmops.iot.domain.BaseEntity;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
  * @author nantian created at 2021/8/5 16:06
  * <p>
- * 设备 离线/上线 规则
+ * 设备 离线/上线 规则  last(/Zabbix server/system.cpu.util[,user])>10
  */
 
 @Data
 public class ProductStatusJudgeRule {
 
-    @NotNull
-    private Long productAttrId; // 设备属性ID
 
-    @NotNull
-    private String ruleType; // 触发离线 还是 触发在线
+    @NotBlank(groups = {BaseEntity.Create.class})
+    private String relationId; // deviceid
 
-    @NotNull
-    private String ruleFunction; // nodata 或者 last 函数
+    @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Delete.class})
+    private Long ruleId; // 自动生成，trigger name
 
-    @NotNull
-    private String ruleValue;  // 时间 或者 值
+    private String ruleName;
+
+    //#####################  下线规则
+
+    @NotNull(groups = {BaseEntity.Create.class})
+    private Long attrId; // 设备属性ID
+
+    @NotBlank(groups = {BaseEntity.Create.class})
+    private String ruleFunction; // nodata 或者 > < = 函数
+
+    @NotBlank(groups = {BaseEntity.Create.class})
+    private String ruleCondition;  // 时间 或者 特定值
+
+    @NotNull(groups = {BaseEntity.Create.class})
+    private String unit; //单位 s m h 或空
+
+    @NotBlank(groups = {BaseEntity.Create.class})
+    private String productAttrKey; // 属性 Key
 
 
-    private String triggerName; // ID
-    private String itemKey;
-    private String hostName;
+    //#####################  上线规则
 
+    @NotNull(groups = {BaseEntity.Create.class})
+    private Long attrIdRecovery; // 设备属性ID
 
-    public static final String ON_LINE  = "online"; // 上线触发器
-    public static final String OFF_LINE = "offline"; // 离线触发器
-    public static final String NODATA   = "nodata";
-    public static final String LASTDATA = "lastdata";
+    @NotBlank(groups = {BaseEntity.Create.class})
+    private String ruleFunctionRecovery; // nodata 或者 > < = 函数
 
+    @NotBlank(groups = {BaseEntity.Create.class})
+    private String ruleConditionRecovery;  // 时间 或者 特定值
+
+    @NotBlank(groups = {BaseEntity.Create.class})
+    private String productAttrKeyRecovery; // 属性 Key
+
+    private String unitRecovery;
 }

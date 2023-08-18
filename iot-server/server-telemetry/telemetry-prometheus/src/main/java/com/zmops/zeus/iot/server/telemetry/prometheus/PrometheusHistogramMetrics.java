@@ -18,9 +18,9 @@
 
 package com.zmops.zeus.iot.server.telemetry.prometheus;
 
-import io.prometheus.client.Histogram;
 import com.zmops.zeus.iot.server.telemetry.api.HistogramMetrics;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsTag;
+import io.prometheus.client.Histogram;
 
 /**
  * HistogramMetrics metrics in Prometheus implementor.
@@ -30,7 +30,7 @@ public class PrometheusHistogramMetrics extends HistogramMetrics {
     private final double[] buckets;
 
     public PrometheusHistogramMetrics(String name, String tips, MetricsTag.Keys labels, MetricsTag.Values values,
-        double... buckets) {
+                                      double... buckets) {
         inner = new InnerMetricObject(name, tips, labels, values);
         this.buckets = buckets;
     }

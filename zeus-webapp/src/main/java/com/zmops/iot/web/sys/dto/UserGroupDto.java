@@ -15,11 +15,17 @@
  */
 package com.zmops.iot.web.sys.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.zmops.iot.domain.BaseEntity;
+import com.zmops.iot.model.cache.filter.CachedValue;
+import com.zmops.iot.model.cache.filter.CachedValueFilter;
+import com.zmops.iot.model.cache.filter.DicType;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 用户组传输bean
@@ -27,6 +33,7 @@ import javax.validation.constraints.NotNull;
  * @author yefei
  */
 @Data
+@JsonSerialize(using = CachedValueFilter.class)
 public class UserGroupDto {
 
     @NotNull(groups = BaseEntity.Update.class)
@@ -35,8 +42,26 @@ public class UserGroupDto {
     @NotBlank
     private String groupName;
 
+    @CachedValue(value = "STATUS", fieldName = "statusName")
     private String status;
 
     private String remark;
 
+    private List<Long> deviceGroupIds;
+
+    //列表返回的设备组ID
+    private String groupIds;
+
+    LocalDateTime createTime;
+
+    LocalDateTime updateTime;
+
+    @CachedValue(type = DicType.SysUserName, fieldName = "createUserName")
+    Long createUser;
+
+    @CachedValue(type = DicType.SysUserName, fieldName = "updateUserName")
+    Long updateUser;
+
+    @CachedValue(type = DicType.Tenant, fieldName = "tenantName")
+    private Long tenantId;
 }

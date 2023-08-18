@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -66,7 +67,7 @@ public abstract class AbstractCache<K, V> {
         try {
             cache.clear();
             cache.putAll(values);
-            view = Collections.unmodifiableMap(cache);
+            view = new ConcurrentHashMap<>(cache);
         } finally {
             writeLock.unlock();
         }

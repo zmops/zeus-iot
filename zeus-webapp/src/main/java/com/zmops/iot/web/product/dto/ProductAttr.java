@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,26 +31,28 @@ public class ProductAttr {
     private String key;
 
     private String units;
-    private String unitName;
 
     //来源：设备 trapper ，属性依赖 dependent
     @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private String source;
-    private String sourceName;
+
+    private Byte eventLevel = 1;
 
     private String remark;
 
     private Long depAttrId;
 
     @JsonIgnore
+    private String masterItemId;
+
+    @JsonIgnore
     private String zbxId;
 
     @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
-    private Long productId;
+    private String productId;
 
     @NotNull(groups = {BaseEntity.Update.class, BaseEntity.Create.class})
     private String valueType;
-    private String valueTypeName;
 
     private String valuemapid;
 
@@ -58,13 +61,17 @@ public class ProductAttr {
     //预处理
     private List<ProcessingStep> processStepList;
 
-    @NotNull(groups = BaseEntity.Delete.class)
+    @NotEmpty(groups = BaseEntity.Delete.class)
     private List<Long> attrIds;
+
+    private Integer delay;
+    //取数间隔单位
+    private String unit;
 
     LocalDateTime createTime;
     LocalDateTime updateTime;
-    Long          createUser;
-    Long          updateUser;
+    Long createUser;
+    Long updateUser;
 
     /**
      * 预处理步骤
@@ -93,13 +100,8 @@ public class ProductAttr {
                     paramStr.append(param).append("\\\\n");
                 }
                 return paramStr.substring(0, paramStr.length() - 3);
-            } else {
-                return "";
             }
+            return "";
         }
-
-//        public void setParams(String params){
-//            this.params = params.split("\\n");
-//        }
     }
 }

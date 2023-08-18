@@ -2,6 +2,7 @@ package com.zmops.iot.web.auth;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.convert.Convert;
+import com.zmops.iot.constant.ConstantsContext;
 import com.zmops.iot.core.auth.cache.SessionManager;
 import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.core.auth.exception.AuthException;
@@ -10,10 +11,11 @@ import com.zmops.iot.core.auth.jwt.JwtTokenUtil;
 import com.zmops.iot.core.auth.jwt.payload.JwtPayLoad;
 import com.zmops.iot.core.auth.model.LoginUser;
 import com.zmops.iot.core.util.HttpContext;
-import com.zmops.iot.core.util.RsaUtil;
 import com.zmops.iot.core.util.SaltUtil;
 import com.zmops.iot.domain.sys.SysUser;
 import com.zmops.iot.domain.sys.query.QSysUser;
+import com.zmops.iot.enums.CommonStatus;
+import com.zmops.iot.message.handler.MessageEventHandler;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.web.constant.state.ManagerStatus;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
@@ -24,6 +26,8 @@ import com.zmops.iot.web.sys.factory.UserFactory;
 import com.zmops.zeus.driver.service.ZbxUser;
 import io.ebean.DB;
 import io.ebean.SqlRow;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +53,8 @@ public class AuthService {
     @Autowired
     private ZbxUser zbxUser;
 
+    @Autowired
+    MessageEventHandler messageEventHandler;
 
     /**
      * 用户名 和  密码 登陆
@@ -58,6 +64,7 @@ public class AuthService {
      * @return
      */
     public LoginUserDto login(String username, String password) {
+
         SysUser user = new QSysUser().account.eq(username).findOne();
 
         // 账号不存在
@@ -72,13 +79,13 @@ public class AuthService {
 
         //验证账号密码是否正确
         try {
-            password = RsaUtil.decryptPwd(password);
-        } catch (Exception e) {
+            password = new String(Hex.decodeHex(password));
+        } catch (DecoderException e) {
             throw new AuthException(AuthExceptionEnum.USERNAME_PWD_ERROR);
         }
 
         String requestMd5 = SaltUtil.md5Encrypt(password, user.getSalt());
-        String dbMd5      = user.getPassword();
+        String dbMd5 = user.getPassword();
         if (dbMd5 == null || !dbMd5.equalsIgnoreCase(requestMd5)) {
             throw new AuthException(AuthExceptionEnum.USERNAME_PWD_ERROR);
         }
@@ -91,11 +98,12 @@ public class AuthService {
         if (i == 0) {
             throw new ServiceException(BizExceptionEnum.ZBX_TOKEN_SAVE_ERROR);
         }
-
-
+        //单点登录
+        if (CommonStatus.ENABLE.getCode().equals(ConstantsContext.getConstntsMap().get("ZEUS_SIGN_IN"))) {
+            messageEventHandler.sendDisconnectMsg(user.getUserId() + "");
+        }
         return LoginUserDto.buildLoginUser(user, login(user));
     }
-
 
     /**
      * 用户名 登陆
@@ -106,7 +114,7 @@ public class AuthService {
     public String login(SysUser user) {
 
         //记录登录日志
-        LogManager.me().executeLog(LogTaskFactory.loginLog(user.getUserId(), getIp()));
+        LogManager.me().executeLog(LogTaskFactory.loginLog(user.getUserId(), getIp(), user.getTenantId()));
 
         //TODO key的作用
         JwtPayLoad payLoad = new JwtPayLoad(user.getUserId(), user.getAccount(), "xxxx");
@@ -148,7 +156,8 @@ public class AuthService {
     public void logout(String token) {
 
         //记录退出日志
-        LogManager.me().executeLog(LogTaskFactory.exitLog(LoginContextHolder.getContext().getUser().getId(), getIp()));
+        LoginUser loginUser = LoginContextHolder.getContext().getUser();
+        LogManager.me().executeLog(LogTaskFactory.exitLog(loginUser.getId(), getIp(), loginUser.getTenantId()));
 
         //删除Auth相关cookies
         Cookie[] cookies = HttpContext.getRequest().getCookies();
@@ -245,7 +254,7 @@ public class AuthService {
             return false;
         }
         ArrayList<String> objects = CollectionUtil.newArrayList(roleNames);
-        String            join    = CollectionUtil.join(objects, ",");
+        String join = CollectionUtil.join(objects, ",");
         if (LoginContextHolder.getContext().hasAnyRoles(join)) {
             return true;
         }
@@ -255,11 +264,11 @@ public class AuthService {
 
     public boolean checkAll(String code) {
         HttpServletRequest request = HttpContext.getRequest();
-        LoginUser          user    = LoginContextHolder.getContext().getUser();
+        LoginUser user = LoginContextHolder.getContext().getUser();
         if (null == user) {
             return false;
         }
-        String       sql  = "select * from sys_menu where code = :code and menu_id in (SELECT menu_id from sys_role_menu where role_id = :roleId)";
+        String sql = "select * from sys_menu where code = :code and menu_id in (SELECT menu_id from sys_role_menu where role_id = :roleId)";
         List<SqlRow> list = DB.sqlQuery(sql).setParameter("code", code).setParameter("roleId", user.getRoleList().get(0)).findList();
         if (list.size() > 0) {
             return true;

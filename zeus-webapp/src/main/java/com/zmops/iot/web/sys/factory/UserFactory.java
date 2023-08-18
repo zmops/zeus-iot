@@ -74,6 +74,12 @@ public class UserFactory {
             if (ToolUtil.isNotEmpty(newUser.getPhone())) {
                 oldUser.setPhone(newUser.getPhone());
             }
+            if (ToolUtil.isNotEmpty(newUser.getStatus())) {
+                oldUser.setStatus(newUser.getStatus());
+            }
+            if (ToolUtil.isNotEmpty(newUser.getRemark())) {
+                oldUser.setRemark(newUser.getRemark());
+            }
             return oldUser;
         }
     }
@@ -104,6 +110,8 @@ public class UserFactory {
 
         loginUser.setId(user.getUserId());
         loginUser.setAccount(user.getAccount());
+        loginUser.setUserGroupId(user.getUserGroupId());
+        loginUser.setTenantId(user.getTenantId());
 //        loginUser.setDeptId(user.getDeptId());
 //        loginUser.setDeptName(ConstantFactory.me().getDeptName(user.getDeptId()));
         loginUser.setName(user.getName());

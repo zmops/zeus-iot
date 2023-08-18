@@ -3,7 +3,7 @@
     "method": "user.update",
     "params": {
         "userid": "${userId}",
-        "roleid": "2",
+        "roleid": "${roleId}",
         "usrgrps": [
             {
                 "usrgrpid": "${usrGrpId}"

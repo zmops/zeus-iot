@@ -5,8 +5,10 @@ import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.date.DateUtil;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.exception.enums.CoreExceptionEnum;
+import org.apache.logging.log4j.core.util.CronExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.core.env.Environment;
 
 import java.io.IOException;
@@ -17,11 +19,24 @@ import java.net.*;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * @author nantian created at 2021/7/29 17:03
  */
 public class ToolUtil {
+
+    /**
+     * 如果对象不是数字类型 就加上双引号返回
+     */
+    public static String addQuotes(String value) {
+        if (isNum(value)) {
+            return value;
+        }
+        return "\\\\\"" + value + "\\\\\"";
+    }
 
     /**
      * 默认密码盐长度
@@ -34,9 +49,9 @@ public class ToolUtil {
      * @author fengshuonan
      */
     public static String getRandomString(int length) {
-        String       base   = "abcdefghijklmnopqrstuvwxyz0123456789";
-        Random       random = new Random();
-        StringBuffer sb     = new StringBuffer();
+        String base = "abcdefghijklmnopqrstuvwxyz0123456789";
+        Random random = new Random();
+        StringBuffer sb = new StringBuffer();
         for (int i = 0; i < length; i++) {
             int number = random.nextInt(base.length());
             sb.append(base.charAt(number));
@@ -60,9 +75,9 @@ public class ToolUtil {
      */
     public static String md5Hex(String str) {
         try {
-            MessageDigest md5        = MessageDigest.getInstance("MD5");
-            byte[]        bs         = md5.digest(str.getBytes());
-            StringBuffer  md5StrBuff = new StringBuffer();
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            byte[] bs = md5.digest(str.getBytes());
+            StringBuffer md5StrBuff = new StringBuffer();
             for (int i = 0; i < bs.length; i++) {
                 if (Integer.toHexString(0xFF & bs[i]).length() == 1)
                     md5StrBuff.append("0").append(Integer.toHexString(0xFF & bs[i]));
@@ -94,9 +109,9 @@ public class ToolUtil {
      * @author stylefeng
      */
     public static String getCreateTimeBefore(int seconds) {
-        long             currentTimeInMillis = Calendar.getInstance().getTimeInMillis();
-        Date             date                = new Date(currentTimeInMillis - seconds * 1000);
-        SimpleDateFormat sdf                 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        long currentTimeInMillis = Calendar.getInstance().getTimeInMillis();
+        Date date = new Date(currentTimeInMillis - seconds * 1000);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(date);
     }
 
@@ -127,7 +142,7 @@ public class ToolUtil {
     public static String getApplicationName() {
         try {
             Environment environment = SpringContextHolder.getApplicationContext().getEnvironment();
-            String      property    = environment.getProperty("spring.application.name");
+            String property = environment.getProperty("spring.application.name");
             if (ToolUtil.isNotEmpty(property)) {
                 return property;
             } else {
@@ -225,9 +240,14 @@ public class ToolUtil {
      */
     public static boolean isNum(Object obj) {
         try {
-            Integer.parseInt(obj.toString());
+            Long.parseLong(obj.toString());
         } catch (Exception e) {
-            return false;
+            try {
+                Double.parseDouble(obj.toString());
+            }catch (Exception el){
+                return false;
+            }
+            return true;
         }
         return true;
     }
@@ -397,5 +417,53 @@ public class ToolUtil {
         }
         return true;
     }
+    
+    /**
+     * 将一个对象转换为另一个对象
+     *
+     * @param <T1>      要转换的对象
+     * @param <T2>      转换后的类
+     * @param oriList   要转换的对象
+     * @param castClass 转换后的对象
+     * @return 转换后的对象
+     */
+    public static <T1, T2> List<T2> convertBean(List<T1> oriList, Class<T2> castClass) {
+        if (isEmpty(oriList)) {
+            return Collections.emptyList();
+        }
+        List<T2> resList = new ArrayList<>();
+        oriList.forEach(orimodel -> {
+            try {
+                T2 returnModel = castClass.newInstance();
+                BeanUtils.copyProperties(orimodel, returnModel);
+                resList.add(returnModel);
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        });
+        return resList;
+    }
 
+    public static boolean validCron(String cron){
+        //String regEx = "(((^([0-9]|[0-5][0-9])(\\,|\\-|\\/){1}([0-9]|[0-5][0-9]))|^([0-9]|[0-5][0-9])|^(\\* ))((([0-9]|[0-5][0-9])(\\,|\\-|\\/){1}([0-9]|[0-5][0-9]) )|([0-9]|[0-5][0-9]) |(\\* ))((([0-9]|[01][0-9]|2[0-3])(\\,|\\-|\\/){1}([0-9]|[01][0-9]|2[0-3]) )|([0-9]|[01][0-9]|2[0-3]) |(\\* ))((([0-9]|[0-2][0-9]|3[01])(\\,|\\-|\\/){1}([0-9]|[0-2][0-9]|3[01]) )|(([0-9]|[0-2][0-9]|3[01]) )|(\\? )|(\\* )|(([1-9]|[0-2][0-9]|3[01])L )|([1-7]W )|(LW )|([1-7]\\#[1-4] ))((([1-9]|0[1-9]|1[0-2])(\\,|\\-|\\/){1}([1-9]|0[1-9]|1[0-2]) )|([1-9]|0[1-9]|1[0-2]) |(\\* ))(([1-7](\\,|\\-|\\/){1}[1-7])|([1-7])|(\\?)|(\\*)|(([1-7]L)|([1-7]\\#[1-4]))))|(((^([0-9]|[0-5][0-9])(\\,|\\-|\\/){1}([0-9]|[0-5][0-9]) )|^([0-9]|[0-5][0-9]) |^(\\* ))((([0-9]|[0-5][0-9])(\\,|\\-|\\/){1}([0-9]|[0-5][0-9]) )|([0-9]|[0-5][0-9]) |(\\* ))((([0-9]|[01][0-9]|2[0-3])(\\,|\\-|\\/){1}([0-9]|[01][0-9]|2[0-3]) )|([0-9]|[01][0-9]|2[0-3]) |(\\* ))((([0-9]|[0-2][0-9]|3[01])(\\,|\\-|\\/){1}([0-9]|[0-2][0-9]|3[01]) )|(([0-9]|[0-2][0-9]|3[01]) )|(\\? )|(\\* )|(([1-9]|[0-2][0-9]|3[01])L )|([1-7]W )|(LW )|([1-7]\\#[1-4] ))((([1-9]|0[1-9]|1[0-2])(\\,|\\-|\\/){1}([1-9]|0[1-9]|1[0-2]) )|([1-9]|0[1-9]|1[0-2]) |(\\* ))(([1-7](\\,|\\-|\\/){1}[1-7] )|([1-7] )|(\\? )|(\\* )|(([1-7]L )|([1-7]\\#[1-4]) ))((19[789][0-9]|20[0-9][0-9])\\-(19[789][0-9]|20[0-9][0-9])))";
+        //String tests = "0 0 0 L * ?";
+        return CronExpression.isValidExpression(cron);
+    }
+
+    public static boolean validDeviceName(String content){
+        return content.contains("\\") || content.contains("/");
+    }
+
+    /**
+     * List<Map<String,Object>> 根据相同key的值去重
+     * @param keyExtractor
+     * @param <T>
+     * @return
+     */
+    public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
+        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+    }
 }

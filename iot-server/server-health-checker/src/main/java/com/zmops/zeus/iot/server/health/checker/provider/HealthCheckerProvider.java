@@ -20,14 +20,12 @@ package com.zmops.zeus.iot.server.health.checker.provider;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import com.zmops.zeus.iot.server.health.checker.module.HealthCheckerModule;
-import com.zmops.zeus.iot.server.library.module.*;
-
 import com.zmops.zeus.iot.server.telemetry.TelemetryModule;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsCollector;
 import com.zmops.zeus.iot.server.telemetry.api.MetricsCreator;
+import com.zmops.zeus.server.library.module.*;
 import io.vavr.collection.Stream;
 import lombok.extern.slf4j.Slf4j;
-
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -41,12 +39,12 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class HealthCheckerProvider extends ModuleProvider {
-    private final AtomicDouble             score   = new AtomicDouble();
-    private final AtomicReference<String>  details = new AtomicReference<>();
-    private final HealthCheckerConfig      config  = new HealthCheckerConfig();
-    private       MetricsCollector         collector;
-    private       MetricsCreator           metricsCreator;
-    private       ScheduledExecutorService ses;
+    private final AtomicDouble score = new AtomicDouble();
+    private final AtomicReference<String> details = new AtomicReference<>();
+    private final HealthCheckerConfig config = new HealthCheckerConfig();
+    private MetricsCollector collector;
+    private MetricsCreator metricsCreator;
+    private ScheduledExecutorService ses;
 
     @Override
     public String name() {

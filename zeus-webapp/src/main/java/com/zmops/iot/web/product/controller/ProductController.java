@@ -4,13 +4,15 @@ import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSON;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.domain.device.Tag;
+import com.zmops.iot.domain.device.query.QDevice;
 import com.zmops.iot.domain.device.query.QTag;
 import com.zmops.iot.domain.product.Product;
-import com.zmops.iot.domain.product.query.QProduct;
+import com.zmops.iot.domain.product.query.*;
 import com.zmops.iot.model.exception.ServiceException;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.model.response.ResponseData;
 import com.zmops.iot.util.ToolUtil;
+import com.zmops.iot.web.auth.Permission;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.product.dto.ProductBasicInfo;
 import com.zmops.iot.web.product.dto.ProductDto;
@@ -44,6 +46,7 @@ public class ProductController {
     /**
      * 产品分页列表
      */
+    @Permission(code = "product_list")
     @PostMapping("/getProductByPage")
     public Pager<ProductDto> getProductByPage(@RequestBody ProductBasicInfo prodBasicInfo) {
         return productService.getProductByPage(prodBasicInfo);
@@ -52,6 +55,7 @@ public class ProductController {
     /**
      * 产品列表
      */
+    @Permission(code = "product_list")
     @PostMapping("/list")
     public ResponseData prodList(@RequestBody ProductBasicInfo prodBasicInfo) {
         return ResponseData.success(productService.prodList(prodBasicInfo));
@@ -60,24 +64,27 @@ public class ProductController {
     /**
      * 产品详情
      */
+    @Permission(code = "product_detail")
     @GetMapping("/detail")
-    public ResponseData prodDetail(@RequestParam("prodId") Long prodId) {
+    public ResponseData prodDetail(@RequestParam("productId") Long prodId) {
         return ResponseData.success(productService.prodDetail(prodId));
     }
 
     /**
      * 产品标签列表
      */
-    @GetMapping("/prodTag/list")
-    public ResponseData prodTagList(@RequestParam("prodId") Long prodId) {
+    @Permission(code = "product")
+    @GetMapping("/tag/list")
+    public ResponseData prodTagList(@RequestParam("productId") String prodId) {
         return ResponseData.success(productService.prodTagList(prodId));
     }
 
     /**
      * 值映射列表
      */
+    @Permission(code = "product")
     @GetMapping("/valueMap/list")
-    public ResponseData valueMapList(@RequestParam("prodId") Long prodId) {
+    public ResponseData valueMapList(@RequestParam("productId") Long prodId) {
         return ResponseData.success(productService.valueMapList(prodId));
     }
 
@@ -87,6 +94,7 @@ public class ProductController {
      * @param prodBasicInfo 产品基本信息
      * @return
      */
+    @Permission(code = "product_add")
     @PostMapping("/create")
     public ResponseData prodCreate(@RequestBody @Validated(value = BaseEntity.Create.class) ProductBasicInfo prodBasicInfo) {
 
@@ -96,13 +104,14 @@ public class ProductController {
         }
 
         // 第一步：创建模板
-        Long   prodId = IdUtil.getSnowflake().nextId();
+        Long prodId = IdUtil.getSnowflake().nextId();
         String result = productService.zbxTemplateCreate(prodId + "");
 
         // 第二步：创建产品
-        String  zbxId = JSON.parseObject(result, TemplateIds.class).getTemplateids()[0];
-        Product prod  = productService.createProduct(zbxId, prodId, prodBasicInfo);
-        return ResponseData.success(prod);
+        String zbxId = JSON.parseObject(result, TemplateIds.class).getTemplateids()[0];
+        productService.createProduct(zbxId, prodId, prodBasicInfo);
+        prodBasicInfo.setProductId(prodId);
+        return ResponseData.success(prodBasicInfo);
     }
 
 
@@ -111,6 +120,7 @@ public class ProductController {
      *
      * @return
      */
+    @Permission(code = "product_update")
     @PostMapping("/update")
     public ResponseData prodUpdate(@RequestBody @Validated(value = BaseEntity.Update.class)
                                            ProductBasicInfo prodBasicInfo) {
@@ -123,7 +133,7 @@ public class ProductController {
 
         Product product = productService.updateProduct(prodBasicInfo);
 
-        return ResponseData.success(product);
+        return ResponseData.success(prodBasicInfo);
     }
 
 
@@ -133,25 +143,48 @@ public class ProductController {
      * @param prodBasicInfo 产品基础信息
      * @return
      */
+    @Permission(code = "product_delete")
     @PostMapping("/delete")
     public ResponseData prodDelete(@RequestBody @Validated(value = BaseEntity.Delete.class)
                                            ProductBasicInfo prodBasicInfo) {
-
         //第一步：验证产品下 是否有设备存在
         Product product = new QProduct().productId.eq(prodBasicInfo.getProductId()).findOne();
         if (null == product) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }
-        // TODO 判断该产品下 是否有设备
+        int deviceNum = new QDevice().productId.eq(prodBasicInfo.getProductId()).findCount();
+        if (deviceNum > 0) {
+            throw new ServiceException(BizExceptionEnum.PRODUCT_HAS_BIND_DEVICE);
+        }
 
 
         //第二步：删除Zabbix对应的模板
-        String response   = productService.zbxTemplateDelete(product.getZbxId() + "");
-        String templateId = JSON.parseObject(response, TemplateIds.class).getTemplateids()[0];
-        if (templateId.equals(product.getZbxId())) {
-            log.info("产品模板删除成功，ID：{}", templateId);
+        productService.zbxTemplateDelete(product.getZbxId() + "");
+
+        //删除关联信息
+        List<Long> statusFunctionRuleIds = new QProductStatusFunctionRelation().select(QProductStatusFunctionRelation.alias().ruleId).relationId.eq(product.getProductId() + "").findSingleAttributeList();
+        if (ToolUtil.isNotEmpty(statusFunctionRuleIds)) {
+            new QProductStatusFunction().ruleId.in(statusFunctionRuleIds).delete();
+            new QProductStatusFunctionRelation().relationId.eq(product.getProductId() + "").delete();
         }
 
+        List<Long> serviceIds = new QProductServiceRelation().select(QProductServiceRelation.alias().serviceId).relationId.eq(product.getProductId() + "").findSingleAttributeList();
+        if (ToolUtil.isNotEmpty(serviceIds)) {
+            new QProductService().id.in(serviceIds).delete();
+            new QProductServiceParam().serviceId.in(serviceIds).delete();
+            new QProductServiceRelation().relationId.eq(product.getProductId() + "").delete();
+        }
+
+        List<Long> eventIds = new QProductEventRelation().select(QProductEventRelation.alias().eventRuleId).relationId.eq(product.getProductId() + "").findSingleAttributeList();
+        if (ToolUtil.isNotEmpty(eventIds)) {
+            new QProductEvent().eventRuleId.in(eventIds).delete();
+            new QProductEventExpression().eventRuleId.in(eventIds).delete();
+            new QProductEventService().eventRuleId.in(eventIds).delete();
+            new QProductEventRelation().relationId.eq(product.getProductId() + "").delete();
+        }
+
+        new QProductAttribute().productId.eq(product.getProductId() + "").delete();
+        new QProductAttributeEvent().productId.eq(product.getProductId() + "").delete();
 
         //第三步：删除产品
         boolean del = product.delete();
@@ -164,26 +197,31 @@ public class ProductController {
      *
      * @return
      */
+    @Permission(code = "product")
     @PostMapping("/tag/update")
     public ResponseData prodTagCreate(@RequestBody @Valid ProductTag productTag) {
 
-        Long    productId = productTag.getProductId();
-        Product product   = new QProduct().productId.eq(productId).findOne();
+        String productId = productTag.getProductId();
+        Product product = new QProduct().productId.eq(Long.parseLong(productId)).findOne();
 
         if (null == product) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }
+
         new QTag().sid.eq(productTag.getProductId()).delete();
+
         List<Tag> tags = new ArrayList<>();
         for (ProductTag.Tag tag : productTag.getProductTag()) {
-            tags.add(
-                    Tag.builder().sid(productTag.getProductId())
-                            .tag(tag.getTag()).value(tag.getValue())
-                            .build());
+            tags.add(Tag.builder()
+                    .sid(productTag.getProductId())
+                    .tag(tag.getTag()).value(tag.getValue())
+                    .build()
+            );
         }
+
         DB.saveAll(tags);
 
-        String response   = productService.updateTemplateTags(product.getZbxId(), productTag);
+        String response = productService.updateTemplateTags(product.getZbxId(), productTag);
         String templateId = JSON.parseObject(response, TemplateIds.class).getTemplateids()[0];
         if (templateId.equals(product.getZbxId())) {
             log.info("产品标签修改成功，ID：{}", templateId);
@@ -199,10 +237,11 @@ public class ProductController {
      * @param valueMap
      * @return
      */
-    @PostMapping("/valuemap/update")
+    @Permission(code = "product")
+    @PostMapping("/valueMap/update")
     public ResponseData prodValueMapCreate(@RequestBody @Validated(BaseEntity.Create.class) ValueMap valueMap) {
 
-        Product product = new QProduct().productId.eq(valueMap.getProductId()).findOne();
+        Product product = new QProduct().productId.eq(Long.parseLong(valueMap.getProductId())).findOne();
         if (null == product) {
             throw new ServiceException(BizExceptionEnum.PRODUCT_NOT_EXISTS);
         }
@@ -224,9 +263,10 @@ public class ProductController {
      * @param valueMap
      * @return
      */
-    @PostMapping("/valuemap/delete")
+    @Permission(code = "product")
+    @PostMapping("/valueMap/delete")
     public ResponseData prodValueMapDelete(@RequestBody @Validated(BaseEntity.Delete.class) ValueMap valueMap) {
-        String response   = productService.valueMapDelete(valueMap.getValuemapid());
+        String response = productService.valueMapDelete(valueMap.getValuemapid());
         String valuemapid = JSON.parseObject(response, TemplateIds.class).getValuemapids()[0];
         return ResponseData.success(valuemapid);
     }

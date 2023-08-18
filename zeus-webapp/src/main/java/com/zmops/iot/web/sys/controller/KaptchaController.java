@@ -55,7 +55,7 @@ public class KaptchaController {
         session.setAttribute(Constants.KAPTCHA_SESSION_KEY, capText);
 
         // create the image with the text
-        BufferedImage       bi  = producer.createImage(capText);
+        BufferedImage bi = producer.createImage(capText);
         ServletOutputStream out = null;
         try {
             out = response.getOutputStream();

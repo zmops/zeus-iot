@@ -56,4 +56,9 @@ public class SysConfig extends BaseEntity implements Serializable {
      */
     private String remark;
 
+    /**
+     * 是否可修改 ENABLE  DISABLE
+     */
+    private String status;
+
 }

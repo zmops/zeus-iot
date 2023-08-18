@@ -4,6 +4,7 @@ import com.dtflys.forest.annotation.BaseRequest;
 import com.dtflys.forest.annotation.Post;
 import com.zmops.zeus.driver.annotation.JsonPath;
 import com.zmops.zeus.driver.annotation.ParamName;
+import com.zmops.zeus.driver.inteceptor.JsonBodyBuildInterceptor;
 
 import java.util.List;
 
@@ -13,7 +14,10 @@ import java.util.List;
  * ZABBIX User 接口
  */
 
-@BaseRequest(baseURL = "${zbxApiUrl}")
+@BaseRequest(
+        baseURL = "http://${zbxServerIp}:${zbxServerPort}${zbxApiUrl}",
+        interceptor = JsonBodyBuildInterceptor.class
+)
 public interface ZbxUser {
 
     /**
@@ -39,7 +43,10 @@ public interface ZbxUser {
      */
     @Post
     @JsonPath("/user/userAdd")
-    String userAdd(@ParamName("name") String name, @ParamName("password") String password, @ParamName("usrGrpId") String usrGrpId);
+    String userAdd(@ParamName("name") String name,
+                   @ParamName("password") String password,
+                   @ParamName("usrGrpId") String usrGrpId,
+                   @ParamName("roleId") String roleId);
 
     /**
      * 用户修改
@@ -50,7 +57,9 @@ public interface ZbxUser {
      */
     @Post
     @JsonPath("/user/userUpdate")
-    String userUpdate(@ParamName("userId") String userId, @ParamName("usrGrpId") String usrGrpId);
+    String userUpdate(@ParamName("userId") String userId,
+                      @ParamName("usrGrpId") String usrGrpId,
+                      @ParamName("roleId") String roleId);
 
     /**
      * 用户删除
@@ -61,4 +70,24 @@ public interface ZbxUser {
     @Post
     @JsonPath("/user/userDelete")
     String userDelete(@ParamName("usrids") List<String> usrids);
+
+    /**
+     * 用户修改密码
+     *
+     * @param userId 用户id
+     * @param passwd 用户组ID
+     * @return 用户信息
+     */
+    @Post
+    @JsonPath("/user/userUpdatePwd")
+    String updatePwd(@ParamName("userId") String userId, @ParamName("passwd") String passwd);
+
+    /**
+     * 用户查询
+     *
+     * @return
+     */
+    @Post
+    @JsonPath("/user/userGet")
+    String getUser(@ParamName("userids") String userIds);
 }

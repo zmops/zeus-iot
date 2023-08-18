@@ -19,17 +19,16 @@
 package com.zmops.zeus.iot.server.health.checker.provider;
 
 import com.google.common.util.concurrent.AtomicDouble;
-import com.zmops.zeus.iot.server.library.module.Service;
+import com.zmops.zeus.server.library.module.Service;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-
 
 import java.util.concurrent.atomic.AtomicReference;
 
 @RequiredArgsConstructor
 public class HealthQueryService implements Service {
-    private final AtomicDouble            score;
+    private final AtomicDouble score;
     private final AtomicReference<String> details;
 
     public HealthStatus checkHealth() {
@@ -44,7 +43,7 @@ public class HealthQueryService implements Service {
     @Setter
     static class HealthStatus {
         // score == 0 means healthy, otherwise it's unhealthy.
-        private int    score;
+        private int score;
         private String details;
     }
 }

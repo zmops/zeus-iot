@@ -42,8 +42,8 @@
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>
-            <artifactId>library-server</artifactId>
-            <version>1.0-beta</version>
+            <artifactId>zeus-server-jetty</artifactId>
+            <version>1.0.3-RELEASE</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

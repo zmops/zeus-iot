@@ -3,10 +3,11 @@
     "method": "script.get",
     "params": {
         "output": [
-            "scriptid"
+            "scriptid",
+            "name"
         ],
         "search": {
-            "name": "__offline_status__" <#--在线状态-->
+            "name": "__" <#--在线状态-->
         }
     },
     "auth": "${userAuth}",

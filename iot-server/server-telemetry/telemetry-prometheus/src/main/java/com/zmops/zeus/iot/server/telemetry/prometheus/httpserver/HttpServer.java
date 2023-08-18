@@ -19,7 +19,8 @@
 package com.zmops.zeus.iot.server.telemetry.prometheus.httpserver;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.zmops.zeus.iot.server.library.server.ssl.HttpDynamicSslContext;
+import com.zmops.zeus.iot.server.telemetry.prometheus.PrometheusConfig;
+import com.zmops.zeus.server.ssl.HttpDynamicSslContext;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -28,8 +29,6 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import com.zmops.zeus.iot.server.telemetry.prometheus.PrometheusConfig;
 
 import java.util.Optional;
 import java.util.concurrent.ThreadFactory;
@@ -54,10 +53,10 @@ public final class HttpServer {
         }
 
         // Configure the server.
-        ThreadFactory   tf          = new ThreadFactoryBuilder().setDaemon(true).build();
-        EventLoopGroup  bossGroup   = new NioEventLoopGroup(1, tf);
-        EventLoopGroup  workerGroup = new NioEventLoopGroup(0, tf);
-        ServerBootstrap b           = new ServerBootstrap();
+        ThreadFactory tf = new ThreadFactoryBuilder().setDaemon(true).build();
+        EventLoopGroup bossGroup = new NioEventLoopGroup(1, tf);
+        EventLoopGroup workerGroup = new NioEventLoopGroup(0, tf);
+        ServerBootstrap b = new ServerBootstrap();
         b.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .handler(new LoggingHandler(LogLevel.INFO))

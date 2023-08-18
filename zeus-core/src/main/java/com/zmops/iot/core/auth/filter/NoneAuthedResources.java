@@ -11,9 +11,8 @@ public class NoneAuthedResources {
      * 前端接口资源
      */
     public static final String[] FRONTEND_RESOURCES = {
-            "/assets/**",
-            "/favicon.ico",
-            "/activiti-editor/**"
+            "/static/**",
+            "/favicon.ico"
     };
 
 
@@ -22,7 +21,9 @@ public class NoneAuthedResources {
      */
     public static final String[] NO_AUTH_API = {
             "/login",
-            "/rest/device/webhook"
+            "/device/status",
+            "/device/service",
+            "/device/problem"
     };
 
 
@@ -46,7 +47,7 @@ public class NoneAuthedResources {
             "/rest/login",
             // 登录接口放开过滤
             "/login",
-            "/hello",
+            "/device/service/execute",
 
             //oauth登录的接口
             "/oauth/render/*",

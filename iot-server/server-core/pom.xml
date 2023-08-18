@@ -14,7 +14,7 @@
         <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>library-module</artifactId>
-            <version>1.0-beta</version>
+            <version>1.0.3-RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>
@@ -28,7 +28,24 @@
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>
-            <artifactId>library-server</artifactId>
+            <artifactId>zeus-server-jetty</artifactId>
+            <version>1.0.3-RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>toolkit-datacarrier</artifactId>
+            <version>1.0.3-RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>server-camel-receiver</artifactId>
+            <version>1.0-beta</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>server-localdb</artifactId>
             <version>1.0-beta</version>
         </dependency>
     </dependencies>

@@ -3,6 +3,7 @@ package com.zmops.iot.web.sys.service;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.domain.device.DeviceGroup;
 import com.zmops.iot.domain.device.SysUserGrpDevGrp;
 import com.zmops.iot.domain.device.query.QDeviceGroup;
@@ -17,12 +18,14 @@ import com.zmops.iot.util.ToolUtil;
 import com.zmops.iot.web.exception.enums.BizExceptionEnum;
 import com.zmops.iot.web.sys.dto.UserGroupDto;
 import com.zmops.iot.web.sys.dto.param.UserGroupParam;
+import com.zmops.zeus.driver.entity.ZbxUserGrpInfo;
 import com.zmops.zeus.driver.service.ZbxUserGroup;
 import io.ebean.DB;
-import io.ebean.PagedList;
+import io.ebean.DtoQuery;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,15 +47,37 @@ public class SysUserGroupService {
      * @param userGroupParam
      * @return
      */
-    public Pager<SysUserGroup> userGroupPageList(UserGroupParam userGroupParam) {
-
+    public Pager<UserGroupDto> userGroupPageList(UserGroupParam userGroupParam) {
         QSysUserGroup qSysUserGroup = new QSysUserGroup();
+        StringBuilder sql = new StringBuilder("SELECT " +
+                " sug.group_name, sug.remark, sug.create_time, sug.create_user, sug.update_time, sug.update_user, sug.status, sug.user_group_id, sug.tenant_id," +
+                " dg.groupIds  " +
+                "FROM " +
+                " sys_user_group sug " +
+                " LEFT JOIN ( SELECT user_group_id, array_to_string( ARRAY_AGG ( device_group_id ), ',' ) groupIds FROM sys_usrgrp_devicegrp GROUP BY user_group_id ) dg " +
+                " ON dg.user_group_id = sug.user_group_id");
+        sql.append(" where 1=1 ");
         if (ToolUtil.isNotEmpty(userGroupParam.getGroupName())) {
+            sql.append(" and sug.group_name like  :groupName");
+        }
+        Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
+        if (null != tenantId) {
+            sql.append(" and sug.tenant_id =  :tenantId");
+        }
+        sql.append(" order by sug.create_time desc ");
+
+        DtoQuery<UserGroupDto> dto = DB.findDto(UserGroupDto.class, sql.toString());
+        if (ToolUtil.isNotEmpty(userGroupParam.getGroupName())) {
+            dto.setParameter("groupName", "%" + userGroupParam.getGroupName() + "%");
             qSysUserGroup.groupName.contains(userGroupParam.getGroupName());
         }
-        qSysUserGroup.setFirstRow((userGroupParam.getPage() - 1) * userGroupParam.getMaxRow()).setMaxRows(userGroupParam.getMaxRow());
-        PagedList<SysUserGroup> pagedList = qSysUserGroup.orderBy("create_time desc").findPagedList();
-        return new Pager<>(pagedList.getList(), pagedList.getTotalCount());
+        if (null != tenantId) {
+            dto.setParameter("tenantId", tenantId);
+            qSysUserGroup.tenantId.eq(tenantId);
+        }
+        List<UserGroupDto> list = dto.setFirstRow((userGroupParam.getPage() - 1) * userGroupParam.getMaxRow())
+                .setMaxRows(userGroupParam.getMaxRow()).findList();
+        return new Pager<>(list, qSysUserGroup.findCount());
     }
 
     /**
@@ -65,16 +90,22 @@ public class SysUserGroupService {
 //        if (ToolUtil.isNotEmpty(userGroupParam.getGroupName())) {
 //            qSysUserGroup.groupName.contains(userGroupParam.getGroupName());
 //        }
+        QSysUserGroup qSysUserGroup = new QSysUserGroup();
 
-        return new QSysUserGroup().findList();
+        Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
+        if (null != tenantId) {
+            qSysUserGroup.tenantId.eq(tenantId);
+        }
+        return qSysUserGroup.findList();
     }
 
     /**
      * 添加用戶組
      */
+    @Transactional(rollbackFor = Exception.class)
     public SysUserGroup createUserGroup(UserGroupDto userGroup) {
         // 判断用户组是否重复
-        checkByGroupName(userGroup.getGroupName(), -1L);
+        checkByGroupName(userGroup.getGroupName(), -1L, userGroup.getTenantId());
         long usrGrpId = IdUtil.getSnowflake().nextId();
 
         SysUserGroup newUserGroup = new SysUserGroup();
@@ -82,10 +113,14 @@ public class SysUserGroupService {
         newUserGroup.setUserGroupId(usrGrpId);
         newUserGroup.setStatus(CommonStatus.ENABLE.getCode());
         //回填 ZBX用户组ID
-        JSONObject result     = JSONObject.parseObject(zbxUserGroup.userGrpAdd(String.valueOf(usrGrpId)));
-        JSONArray  userGrpids = result.getJSONArray("usrgrpids");
+        JSONObject result = JSONObject.parseObject(zbxUserGroup.userGrpAdd(String.valueOf(usrGrpId)));
+        JSONArray userGrpids = result.getJSONArray("usrgrpids");
         newUserGroup.setZbxId(userGrpids.get(0).toString());
         DB.save(newUserGroup);
+
+        if (ToolUtil.isNotEmpty(userGroup.getDeviceGroupIds())) {
+            bindHostGrp(UserGroupParam.builder().userGroupId(usrGrpId).deviceGroupIds(userGroup.getDeviceGroupIds()).build());
+        }
 
         return newUserGroup;
     }
@@ -98,11 +133,14 @@ public class SysUserGroupService {
      */
     public SysUserGroup updateUserGroup(UserGroupDto userGroup) {
         // 判断用户组是否重复
-        checkByGroupName(userGroup.getGroupName(), userGroup.getUserGroupId());
+        checkByGroupName(userGroup.getGroupName(), userGroup.getUserGroupId(), userGroup.getTenantId());
 
         SysUserGroup newUserGroup = new SysUserGroup();
         BeanUtils.copyProperties(userGroup, newUserGroup);
         DB.update(newUserGroup);
+        
+        bindHostGrp(UserGroupParam.builder().userGroupId(userGroup.getUserGroupId()).deviceGroupIds(userGroup.getDeviceGroupIds()).build());
+
         return newUserGroup;
     }
 
@@ -112,12 +150,12 @@ public class SysUserGroupService {
      *
      * @param groupName
      */
-    private void checkByGroupName(String groupName, Long userGroupId) {
+    private void checkByGroupName(String groupName, Long userGroupId, Long tenantId) {
         int count;
         if (userGroupId > 0) {
-            count = new QSysUserGroup().groupName.equalTo(groupName).userGroupId.ne(userGroupId).findCount();
+            count = new QSysUserGroup().groupName.eq(groupName).tenantId.eq(tenantId).userGroupId.ne(userGroupId).findCount();
         } else {
-            count = new QSysUserGroup().groupName.equalTo(groupName).findCount();
+            count = new QSysUserGroup().groupName.eq(groupName).tenantId.eq(tenantId).findCount();
         }
         if (count > 0) {
             throw new ServiceException(BizExceptionEnum.USERGROUP_HAS_EXIST);
@@ -141,8 +179,14 @@ public class SysUserGroupService {
         }
 
         List<String> zbxUsrGrpIds = list.parallelStream().map(SysUserGroup::getZbxId).collect(Collectors.toList());
-        zbxUserGroup.userGrpDelete(zbxUsrGrpIds);
 
+        //删除 zbx 用户组数据
+        if (ToolUtil.isNotEmpty(zbxUsrGrpIds)) {
+            List<ZbxUserGrpInfo> zbxUserGrpList = JSONObject.parseArray(zbxUserGroup.getUserGrp(zbxUsrGrpIds.toString()), ZbxUserGrpInfo.class);
+            if (ToolUtil.isNotEmpty(zbxUserGrpList)) {
+                zbxUserGroup.userGrpDelete(zbxUserGrpList.parallelStream().map(ZbxUserGrpInfo::getUsrgrpid).collect(Collectors.toList()));
+            }
+        }
         // 删除 与设备组关联
         new QSysUserGrpDevGrp().userGroupId.in(userGroupParam.getUserGroupIds()).delete();
         new QSysUserGroup().userGroupId.in(userGroupParam.getUserGroupIds()).delete();
@@ -165,11 +209,12 @@ public class SysUserGroupService {
      * @param userGroup
      */
     public void bindHostGrp(UserGroupParam userGroup) {
-        //修改ZBX 用户组绑定主机组
-        String            usrGrpZbxId   = getZabUsrGrpId(userGroup.getUserGroupId());
-        List<DeviceGroup> list          = new QDeviceGroup().deviceGroupId.in(userGroup.getDeviceGroupIds()).findList();
-        List<String>      hostGrpZbxIds = list.parallelStream().map(DeviceGroup::getZbxId).collect(Collectors.toList());
-        zbxUserGroup.userGrpBindHostGroup(hostGrpZbxIds, usrGrpZbxId);
+        new QSysUserGrpDevGrp().userGroupId.eq(userGroup.getUserGroupId()).delete();
+
+        if (ToolUtil.isEmpty(userGroup.getDeviceGroupIds())) {
+            return;
+        }
+
         List<SysUserGrpDevGrp> lists = new ArrayList<>();
         for (Long deviceGroupId : userGroup.getDeviceGroupIds()) {
             SysUserGrpDevGrp devicesGroups = new SysUserGrpDevGrp();

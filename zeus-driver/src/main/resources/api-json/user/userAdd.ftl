@@ -4,7 +4,8 @@
     "params": {
         "username": "${name}",
         "passwd": "${password}",
-        "roleid": "2",
+        "roleid": "${roleId}",
+        "autologout":"0s",
         "usrgrps": [
             {
             "usrgrpid": "${usrGrpId}"

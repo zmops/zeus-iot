@@ -2,8 +2,8 @@
     "jsonrpc": "2.0",
     "method": "hostgroup.delete",
     "params": [
-        <#if hostgGroupIds??>
-            <#list hostgGroupIds as hostgroupid>
+        <#if hostGroupIds??>
+            <#list hostGroupIds as hostgroupid>
                 "${hostgroupid}"<#if hostgroupid_has_next>,</#if>
             </#list>
         </#if>

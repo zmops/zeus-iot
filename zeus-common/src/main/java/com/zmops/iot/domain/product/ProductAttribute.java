@@ -1,5 +1,6 @@
 package com.zmops.iot.domain.product;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.zmops.iot.domain.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -7,11 +8,11 @@ import lombok.EqualsAndHashCode;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Objects;
 
 /**
  * @author nantian created at 2021/8/5 13:03
  */
-
 @EqualsAndHashCode(callSuper = false)
 @Data
 @Entity
@@ -21,6 +22,7 @@ public class ProductAttribute extends BaseEntity {
     @Id
     private Long attrId; //属性ID
 
+    @JsonProperty("attrName")
     private String name; // 属性名称
 
     private String key; // 属性唯一Key
@@ -35,9 +37,15 @@ public class ProductAttribute extends BaseEntity {
 
     private Long depAttrId;
 
-    private Long productId; // 产品ID
+    private String productId; // 产品ID
 
     private String zbxId;  // Zabbix itemId
 
     private Long templateId;//继承的ID
+
+    private Integer delay;
+
+    private String unit;
+
+    private String valuemapid;
 }

@@ -1,9 +1,6 @@
 package com.zmops.zeus.iot.server.core;
 
-import com.zmops.zeus.iot.server.core.camel.CamelContextHolderService;
-import com.zmops.zeus.iot.server.core.server.JettyHandlerRegister;
-import com.zmops.zeus.iot.server.core.servlet.HttpItemTrapperHandler;
-import com.zmops.zeus.iot.server.library.module.ModuleDefine;
+import com.zmops.zeus.server.library.module.ModuleDefine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +19,6 @@ public class CoreModule extends ModuleDefine {
     @Override
     public Class<?>[] services() {
         List<Class<?>> classes = new ArrayList<>();
-
-        classes.add(JettyHandlerRegister.class);
-        classes.add(CamelContextHolderService.class);
-
         return classes.toArray(new Class[]{});
     }
 }

@@ -65,15 +65,15 @@ public class LogAop {
     private void handle(ProceedingJoinPoint point) throws Exception {
 
         //获取拦截的方法名
-        Signature       sig  = point.getSignature();
+        Signature sig = point.getSignature();
         MethodSignature msig = null;
         if (!(sig instanceof MethodSignature)) {
             throw new IllegalArgumentException("该注解只能用于方法");
         }
         msig = (MethodSignature) sig;
-        Object target        = point.getTarget();
+        Object target = point.getTarget();
         Method currentMethod = target.getClass().getMethod(msig.getName(), msig.getParameterTypes());
-        String methodName    = currentMethod.getName();
+        String methodName = currentMethod.getName();
 
         //如果当前用户未登录，不做日志
         LoginUser user = LoginContextHolder.getContext().getUser();
@@ -82,14 +82,14 @@ public class LogAop {
         }
 
         //获取拦截方法的参数
-        String   className = point.getTarget().getClass().getName();
-        Object[] params    = point.getArgs();
+        String className = point.getTarget().getClass().getName();
+        Object[] params = point.getArgs();
 
         //获取操作名称
-        BussinessLog annotation    = currentMethod.getAnnotation(BussinessLog.class);
-        String       bussinessName = annotation.value();
-        String       key           = annotation.key();
-        Class        dictClass     = annotation.dict();
+        BussinessLog annotation = currentMethod.getAnnotation(BussinessLog.class);
+        String bussinessName = annotation.value();
+        String key = annotation.key();
+        Class dictClass = annotation.dict();
 
         StringBuilder sb = new StringBuilder();
         for (Object param : params) {
@@ -109,6 +109,6 @@ public class LogAop {
 //            msg = Contrast.parseMutiKey(dictMap, key, parameters);
 //        }
 
-        LogManager.me().executeLog(LogTaskFactory.bussinessLog(user.getId(), bussinessName, className, methodName, msg));
+        LogManager.me().executeLog(LogTaskFactory.bussinessLog(user.getId(), bussinessName, className, methodName, msg,user.getTenantId()));
     }
 }

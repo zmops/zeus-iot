@@ -19,7 +19,7 @@
 package com.zmops.zeus.iot.server.health.checker.module;
 
 import com.zmops.zeus.iot.server.health.checker.provider.HealthQueryService;
-import com.zmops.zeus.iot.server.library.module.ModuleDefine;
+import com.zmops.zeus.server.library.module.ModuleDefine;
 
 /**
  * HealthCheckerModule intends to provide a channel to expose the healthy status of modules to external.

@@ -34,7 +34,7 @@ public class DeviceGroupController {
      * @return
      */
     @PostMapping("/getDeviceGrpByPage")
-    public Pager<DeviceGroup> getDeviceGrpByPage(@RequestBody DeviceGroupParam devGroupParam) {
+    public Pager<DeviceGroupDto> getDeviceGrpByPage(@RequestBody DeviceGroupParam devGroupParam) {
         return deviceGroupService.deviceGroupPageList(devGroupParam);
     }
 
@@ -55,7 +55,7 @@ public class DeviceGroupController {
      */
     @PostMapping("/create")
     @BussinessLog(value = "创建设备组")
-    public ResponseData createDeviceGroup(@Valid @RequestBody DeviceGroupDto deviceGroupDto) {
+    public ResponseData createDeviceGroup(@Validated(BaseEntity.Create.class) @RequestBody DeviceGroupParam deviceGroupDto) {
         return ResponseData.success(deviceGroupService.createDeviceGroup(deviceGroupDto));
     }
 
@@ -67,7 +67,7 @@ public class DeviceGroupController {
      */
     @PostMapping("/update")
     @BussinessLog(value = "更新设备组")
-    public ResponseData updateDeviceGroup(@Validated(BaseEntity.Update.class) @RequestBody DeviceGroupDto deviceGroupDto) {
+    public ResponseData updateDeviceGroup(@Validated(BaseEntity.Update.class) @RequestBody DeviceGroupParam deviceGroupDto) {
         return ResponseData.success(deviceGroupService.updateDeviceGroup(deviceGroupDto));
     }
 
@@ -78,7 +78,7 @@ public class DeviceGroupController {
      */
     @PostMapping("/delete")
     @BussinessLog(value = "删除设备组")
-    public ResponseData deleteDeviceGroup(@Valid @RequestBody DeviceGroupParam deviceGroupParam) {
+    public ResponseData deleteDeviceGroup(@Validated(BaseEntity.Delete.class) @RequestBody DeviceGroupParam deviceGroupParam) {
         deviceGroupService.deleteDeviceGroup(deviceGroupParam);
         return ResponseData.success();
     }

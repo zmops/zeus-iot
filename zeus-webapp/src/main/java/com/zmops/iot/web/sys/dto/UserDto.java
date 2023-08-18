@@ -15,7 +15,11 @@
  */
 package com.zmops.iot.web.sys.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.zmops.iot.domain.BaseEntity;
+import com.zmops.iot.model.cache.filter.CachedValue;
+import com.zmops.iot.model.cache.filter.CachedValueFilter;
+import com.zmops.iot.model.cache.filter.DicType;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -27,15 +31,16 @@ import javax.validation.constraints.NotNull;
  * @author stylefeng
  */
 @Data
+@JsonSerialize(using = CachedValueFilter.class)
 public class UserDto {
 
     @NotNull(groups = BaseEntity.Update.class)
     private Long userId;
 
-    @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
+    @NotBlank(groups = {BaseEntity.Create.class})
     private String account;
 
-    @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
+    @NotBlank(groups = {BaseEntity.Create.class})
     private String password;
 
     @NotBlank(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
@@ -48,15 +53,21 @@ public class UserDto {
     @NotNull(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
     private Long userGroupId;
 
+    @CachedValue(value = "STATUS", fieldName = "statusName")
     private String status;
 
     @NotNull(groups = {BaseEntity.Create.class, BaseEntity.Update.class})
     private Long roleId;
 
+    @CachedValue(type = DicType.Tenant, fieldName = "tenantName")
+    private Long tenantId;
     private String roleName;
     private String userGroupName;
-    private String createUser;
+    @CachedValue(type = DicType.SysUserName, fieldName = "createUserName")
+    private Long createUser;
     private String createTime;
-    private String updateUser;
+    @CachedValue(type = DicType.SysUserName, fieldName = "updateUserName")
+    private Long updateUser;
     private String updateTime;
+    private String remark;
 }

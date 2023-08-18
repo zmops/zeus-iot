@@ -1,5 +1,6 @@
 package com.zmops.iot.domain.product;
 
+import com.zmops.iot.domain.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -14,7 +15,7 @@ import javax.persistence.Table;
 @Data
 @Entity
 @Table(name = "product_type")
-public class ProductType {
+public class ProductType extends BaseEntity {
     @Id
     private Long id;
 
@@ -25,4 +26,6 @@ public class ProductType {
     private String name;
 
     private String remark;
+
+    private Long tenantId;
 }

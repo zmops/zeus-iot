@@ -1,9 +1,8 @@
 package com.zmops.zeus.iot.server.sender.provider;
 
-import com.zmops.zeus.iot.server.library.module.*;
 import com.zmops.zeus.iot.server.sender.module.ZabbixSenderModule;
-import com.zmops.zeus.iot.server.sender.provider.protocol.ZabbixSenderClient;
-import com.zmops.zeus.iot.server.sender.provider.service.ZabbixSenderService;
+import com.zmops.zeus.iot.server.sender.service.ZabbixSenderService;
+import com.zmops.zeus.server.library.module.*;
 import lombok.extern.slf4j.Slf4j;
 
 /**

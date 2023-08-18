@@ -77,4 +77,9 @@ public class SysMenu extends BaseEntity {
      * 菜单状态(字典)
      */
     private String status;
+
+    /**
+     * 是否超级管理员菜单
+     */
+    private String adminFlag;
 }

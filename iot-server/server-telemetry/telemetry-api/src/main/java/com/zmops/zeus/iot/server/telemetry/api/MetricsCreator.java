@@ -20,7 +20,7 @@ package com.zmops.zeus.iot.server.telemetry.api;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.zmops.zeus.iot.server.library.module.Service;
+import com.zmops.zeus.server.library.module.Service;
 
 
 /**

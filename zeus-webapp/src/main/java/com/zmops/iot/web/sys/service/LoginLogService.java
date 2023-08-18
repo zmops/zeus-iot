@@ -1,12 +1,14 @@
 package com.zmops.iot.web.sys.service;
 
-import com.zmops.iot.domain.sys.SysLoginLog;
+import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.domain.sys.query.QSysLoginLog;
 import com.zmops.iot.model.page.Pager;
 import com.zmops.iot.util.LocalDateTimeUtils;
 import com.zmops.iot.util.ToolUtil;
-import io.ebean.PagedList;
+import com.zmops.iot.web.sys.dto.SysLoginLogDto;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author yefei
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class LoginLogService {
 
-    public Pager<SysLoginLog> list(Long beginTime, Long endTime, String logName, int page, int maxRow) {
+    public Pager<SysLoginLogDto> list(Long beginTime, Long endTime, String logName, int page, int maxRow) {
         QSysLoginLog qSysLoginLog = new QSysLoginLog();
         if (ToolUtil.isNotEmpty(beginTime)) {
             qSysLoginLog.createTime.ge(LocalDateTimeUtils.getLDTByMilliSeconds(beginTime));
@@ -25,8 +27,12 @@ public class LoginLogService {
         if (ToolUtil.isNotEmpty(logName)) {
             qSysLoginLog.logName.eq(logName);
         }
+        Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
+        if (null != tenantId) {
+            qSysLoginLog.tenantId.eq(tenantId);
+        }
         qSysLoginLog.setFirstRow((page - 1) * maxRow).setMaxRows(maxRow);
-        PagedList<SysLoginLog> pagedList = qSysLoginLog.orderBy("create_time desc").findPagedList();
-        return new Pager<>(pagedList.getList(), pagedList.getTotalCount());
+        List<SysLoginLogDto> pagedList = qSysLoginLog.orderBy("create_time desc").asDto(SysLoginLogDto.class).findList();
+        return new Pager<>(pagedList, qSysLoginLog.findCount());
     }
 }

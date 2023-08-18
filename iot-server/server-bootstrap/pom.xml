@@ -16,17 +16,29 @@
             <artifactId>server-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>toolkit-util</artifactId>
+            <version>1.0.3-RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>server-web</artifactId>
+            <version>1.0-beta</version>
+        </dependency>
+
         <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>library-module</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.3-RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>1.26</version>
         </dependency>
-
         <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>server-health-checker</artifactId>
@@ -42,7 +54,6 @@
             <artifactId>telemetry-prometheus</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>server-sender</artifactId>
@@ -50,19 +61,44 @@
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>
-            <artifactId>http-receiver-plugin</artifactId>
+            <artifactId>server-tdengine-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>
-            <artifactId>tcp-receiver-plugin</artifactId>
+            <artifactId>server-transfer</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>
-            <artifactId>mqtt-receiver-plugin</artifactId>
+            <artifactId>server-none-storage</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>server-camel-receiver</artifactId>
+            <version>1.0-beta</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zmops</groupId>
+            <artifactId>server-localdb</artifactId>
+            <version>1.0-beta</version>
+        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.zmops.hello</groupId>-->
+<!--            <artifactId>zeus-ark-hello</artifactId>-->
+<!--            <version>1.0-beta</version>-->
+<!--            <classifier>ark-biz</classifier>-->
+<!--        </dependency>-->
+
+        <!--
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-zabbix-agent</artifactId>
+        </dependency>
+        -->
     </dependencies>
 
     <build>
@@ -86,17 +122,11 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <excludes>
-                        <exclude>application.yml</exclude>
                         <exclude>log4j2.xml</exclude>
                     </excludes>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-    </properties>
 
 </project>

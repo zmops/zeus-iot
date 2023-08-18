@@ -47,11 +47,11 @@ public class PermissionAop {
 
     @Around("cutPermission()")
     public Object doPermission(ProceedingJoinPoint point) throws Throwable {
-        MethodSignature ms          = (MethodSignature) point.getSignature();
-        Method          method      = ms.getMethod();
-        Permission      permission  = method.getAnnotation(Permission.class);
-        String[]        permissions = permission.value();
-        String          code        = permission.code();
+        MethodSignature ms = (MethodSignature) point.getSignature();
+        Method method = ms.getMethod();
+        Permission permission = method.getAnnotation(Permission.class);
+        String[] permissions = permission.value();
+        String code = permission.code();
         if (permissions.length == 0 && StringUtils.isNotBlank(code)) {
             //检查全体角色
             boolean result = authService.checkAll(code);

@@ -27,4 +27,5 @@ public class DeviceGroup extends BaseEntity {
 
     String remark;
 
+    private Long tenantId;
 }

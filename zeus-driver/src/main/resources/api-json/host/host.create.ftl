@@ -3,6 +3,21 @@
     "method": "host.create",
     "params": {
         "host": "${hostName}",
+        <#if interfaces??>
+        "interfaces": [
+            {
+                "type": ${interfaces.type},
+                "main": ${interfaces.main},
+                "useip": ${interfaces.useip},
+                "ip": "${interfaces.ip}",
+                "dns": "",
+                "port": "${interfaces.port}"
+            }
+        ],
+        </#if>
+        <#if proxyid??>
+        "proxy_hostid":"${proxyid}",
+        </#if>
         "groups": [
             <#if groupids??>
                 <#list groupids as groupid>

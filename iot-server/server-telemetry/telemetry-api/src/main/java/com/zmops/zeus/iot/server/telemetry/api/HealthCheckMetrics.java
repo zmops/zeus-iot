@@ -18,7 +18,7 @@
 
 package com.zmops.zeus.iot.server.telemetry.api;
 
-import com.zmops.zeus.iot.server.library.util.HealthChecker;
+import com.zmops.zeus.server.library.util.HealthChecker;
 import lombok.extern.slf4j.Slf4j;
 
 

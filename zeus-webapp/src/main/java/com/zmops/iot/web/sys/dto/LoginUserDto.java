@@ -30,6 +30,8 @@ public class LoginUserDto {
 
     private String account;
 
+    private Long tenantId;
+
     private String name;
 
     private String token;

@@ -3,6 +3,7 @@ package com.zmops.iot.web.sys.controller;
 import com.zmops.iot.core.log.BussinessLog;
 import com.zmops.iot.domain.BaseEntity;
 import com.zmops.iot.model.response.ResponseData;
+import com.zmops.iot.web.auth.Permission;
 import com.zmops.iot.web.sys.dto.param.DictParam;
 import com.zmops.iot.web.sys.service.DictService;
 import com.zmops.iot.web.sys.service.DictTypeService;
@@ -28,6 +29,7 @@ public class DictController {
     /**
      * 新增字典项
      */
+    @Permission(code = "dict")
     @RequestMapping("/create")
     @BussinessLog("新增字典项")
     public ResponseData addItem(@Validated(BaseEntity.Create.class) @RequestBody DictParam dictParam) {
@@ -37,6 +39,7 @@ public class DictController {
     /**
      * 编辑字典项
      */
+    @Permission(code = "dict")
     @RequestMapping("/update")
     @BussinessLog("编辑字典项")
     public ResponseData editItem(@Validated(BaseEntity.Update.class) @RequestBody DictParam dictParam) {
@@ -48,6 +51,7 @@ public class DictController {
      *
      * @author stylefeng
      */
+    @Permission(code = "dict")
     @RequestMapping("/delete")
     @BussinessLog("删除字典项")
     public ResponseData delete(@Validated(BaseEntity.MassRemove.class) @RequestBody DictParam dictParam) {
@@ -58,6 +62,7 @@ public class DictController {
     /**
      * 获取某个字典类型下的所有字典
      */
+    @Permission(code = "dict")
     @ResponseBody
     @RequestMapping("/listDicts")
     public ResponseData listDicts(@RequestParam("dictTypeId") Long dictTypeId) {

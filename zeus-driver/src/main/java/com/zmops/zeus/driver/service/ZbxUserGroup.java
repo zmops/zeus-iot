@@ -4,6 +4,7 @@ import com.dtflys.forest.annotation.BaseRequest;
 import com.dtflys.forest.annotation.Post;
 import com.zmops.zeus.driver.annotation.JsonPath;
 import com.zmops.zeus.driver.annotation.ParamName;
+import com.zmops.zeus.driver.inteceptor.JsonBodyBuildInterceptor;
 
 import java.util.List;
 
@@ -13,7 +14,10 @@ import java.util.List;
  * ZABBIX UserGrp 接口
  */
 
-@BaseRequest(baseURL = "${zbxApiUrl}")
+@BaseRequest(
+        baseURL = "http://${zbxServerIp}:${zbxServerPort}${zbxApiUrl}",
+        interceptor = JsonBodyBuildInterceptor.class
+)
 public interface ZbxUserGroup {
 
 
@@ -49,4 +53,8 @@ public interface ZbxUserGroup {
     @JsonPath("/usergroup/userGroupBindHostGroup")
     String userGrpBindHostGroup(@ParamName("hostGroupIds") List<String> hostGroupIds,
                                 @ParamName("userGroupId") String userGroupId);
+
+    @Post
+    @JsonPath("/usergroup/userGroupGet")
+    String getUserGrp(@ParamName("usrgrpids") String usrgrpids);
 }

@@ -6,13 +6,24 @@
         "name": "${itemName}",
         "key_": "${itemKey}",
         "hostid": "${hostId}",
-        "type": 2,  <#--zabbix trapper-->
+        <#if interfaceid??>
+            "interfaceid": "${interfaceid}",
+        </#if>
+        "type": ${source},
+        <#if delay??>
+            "delay":"${delay}",
+        </#if>
+        <#if source == '18'>
+            "master_itemid":${masterItemid},
+        </#if>
         "value_type": ${valueType},
-        <#if valuemapid??>
+        <#if valuemapid?? && valuemapid != ''>
             "valuemapid":${valuemapid},
         </#if>
         <#if valueType == '0' || valueType == '3'>
-            "units": "${units}",
+            <#if units??>
+                "units": "${units}",
+            </#if>
         </#if>
         "preprocessing": [
         <#if processList??>

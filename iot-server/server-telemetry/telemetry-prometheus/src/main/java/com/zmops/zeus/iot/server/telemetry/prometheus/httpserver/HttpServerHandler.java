@@ -42,8 +42,8 @@ import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 @Slf4j
 public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 
-    private final CollectorRegistry   registry = CollectorRegistry.defaultRegistry;
-    private final StringBuilderWriter buf      = new StringBuilderWriter();
+    private final CollectorRegistry registry = CollectorRegistry.defaultRegistry;
+    private final StringBuilderWriter buf = new StringBuilderWriter();
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {

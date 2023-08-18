@@ -1,0 +1,13 @@
+{
+  "job": {
+    "id": 1,
+    "dir": {
+      "path": ""
+    }
+  },
+  "proxy": {
+    "bid": "bid10",
+    "tid": "bid10"
+  },
+  "op": "add"
+}

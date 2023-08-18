@@ -20,6 +20,11 @@ public class SysConfigInit implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
+        initConfigConst();
+
+    }
+
+    public void initConfigConst(){
         //初始化所有的常量
         List<SysConfig> list = DB.find(SysConfig.class).findList();
 
@@ -30,6 +35,5 @@ public class SysConfigInit implements CommandLineRunner {
 
             log.info("初始化常量" + list.size() + "条！");
         }
-
     }
 }

@@ -3,9 +3,10 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>zeus-iot</artifactId>
+        <artifactId>zeus-webapp-bom</artifactId>
         <groupId>com.zmops</groupId>
         <version>1.0-beta</version>
+        <relativePath>../zeus-webapp-bom/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -23,19 +24,42 @@
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>
-            <artifactId>iot-alarm</artifactId>
+            <artifactId>zeus-message</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>zeus-driver</artifactId>
             <version>1.0-beta</version>
-            <scope>compile</scope>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.zmops</groupId>-->
+<!--            <artifactId>toolkit-async</artifactId>-->
+<!--            <version>1.0.3-RELEASE</version>-->
+<!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.zmops</groupId>
-            <artifactId>toolkit-async</artifactId>
-            <version>1.0-beta</version>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.nats</groupId>
+            <artifactId>jnats</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.taosdata.jdbc</groupId>
+            <artifactId>taos-jdbcdriver</artifactId>
+            <version>2.0.31</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-core</artifactId>
+            <version>3.11.4</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
@@ -55,7 +79,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <tiles>
-                        <tile>io.ebean.tile:enhancement:12.9.3</tile>
+                        <tile>io.ebean.tile:enhancement:12.11.3</tile>
                     </tiles>
                 </configuration>
             </plugin>

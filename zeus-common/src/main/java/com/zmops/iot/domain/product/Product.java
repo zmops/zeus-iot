@@ -4,7 +4,9 @@ import com.zmops.iot.domain.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * @author nantian created at 2021/8/3 20:08
@@ -37,4 +39,8 @@ public class Product extends BaseEntity {
 
     private String zbxId;
 
+    private Long tenantId;
+
+    private String icon;
+    
 }

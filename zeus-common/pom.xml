@@ -3,9 +3,10 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>zeus-iot</artifactId>
+        <artifactId>zeus-webapp-bom</artifactId>
         <groupId>com.zmops</groupId>
         <version>1.0-beta</version>
+        <relativePath>../zeus-webapp-bom/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -30,7 +31,7 @@
         <dependency>
             <groupId>io.ebean</groupId>
             <artifactId>querybean-generator</artifactId>
-            <version>12.9.3</version>
+            <version>12.13.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -49,7 +50,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <tiles>
-                        <tile>io.ebean.tile:enhancement:12.9.3</tile>
+                        <tile>io.ebean.tile:enhancement:12.11.3</tile>
                     </tiles>
                 </configuration>
             </plugin>

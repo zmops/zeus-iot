@@ -10,12 +10,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>server-sender</artifactId>
+
     <dependencies>
         <dependency>
             <groupId>com.zmops</groupId>
             <artifactId>library-module</artifactId>
-            <version>1.0-beta</version>
-            <scope>compile</scope>
+            <version>1.0.3-RELEASE</version>
         </dependency>
     </dependencies>
 

@@ -1,4 +1,17 @@
-# 核心模块
+# Apache Camel Protocol Entry
+camel-receiver:
+  selector: default
+  default:
+    version: v1.0.0
+
+# Zabbix Trapper Sender
+zabbix-sender:
+  selector: ${ZS_RECEIVER_ZABBIX_SENDER:default}
+  default:
+    port: ${ZS_RECEIVER_ZABBIX_PORT:10051}
+    host: ${ZS_RECEIVER_ZABBIX_HOST:127.0.0.1}
+
+# core module config
 core:
   selector: ${ZS_CORE:default}
   default:
@@ -13,44 +26,42 @@ core:
     restAcceptQueueSize: ${ZS_CORE_REST_JETTY_QUEUE_SIZE:0}
     httpMaxRequestHeaderSize: ${ZS_CORE_HTTP_MAX_REQUEST_HEADER_SIZE:8192}
 
-# 健康检查
+# local db h2, must be default
+local-h2:
+  selector: default
+  default:
+    version: v1.0.0
+
+# ndjson file read realtime
+server-transfer:
+  selector: ${ZS_SERVER_TRANSFER:-}
+  default:
+    name: ${ZS_TRANSFER_NAME:zeus-transfer}
+    pattern: ${ZS_TRANSFER_PATTERN:/home/data/history-history-syncer-[0-9]{1}.ndjson}
+    fileMaxWait: ${ZS_TRANSFER_FILE_MAXWAIT:30}
+
+# tdengine storage realtime
+storage:
+  selector: ${ZS_STORAGE:none}
+  none:
+  tdengine:
+    url: ${ZS_STORAGE_TDENGINE_URL:jdbc:TAOS://127.0.0.1:6030/zeus_data} # TDEngine jdbcUrl
+    user: ${ZS_STORAGE_TDENGINE_USER:root}
+    password: ${ZS_STORAGE_TDENGINE_PASSWORD:taosdata}
+
+# health check
 health-checker:
   selector: ${ZS_HEALTH_CHECKER:default}
   default:
     checkIntervalSeconds: ${ZS_HEALTH_CHECKER_INTERVAL_SECONDS:5}
 
-# 健康遥测
+# health telemetry
 telemetry:
   selector: ${ZS_TELEMETRY:prometheus}
   none:
   prometheus:
     host: ${ZS_TELEMETRY_PROMETHEUS_HOST:0.0.0.0}
-    port: ${ZS_TELEMETRY_PROMETHEUS_PORT:1234}
+    port: ${ZS_TELEMETRY_PROMETHEUS_PORT:12900}
     sslEnabled: ${ZS_TELEMETRY_PROMETHEUS_SSL_ENABLED:false}
     sslKeyPath: ${ZS_TELEMETRY_PROMETHEUS_SSL_KEY_PATH:""}
     sslCertChainPath: ${ZS_TELEMETRY_PROMETHEUS_SSL_CERT_CHAIN_PATH:""}
-
-# Zabbix Trapper Sender
-zabbix-sender:
-  selector: ${ZS_RECEIVER_ZABBIX_SENDER:default}
-  default:
-    host: 172.16.3.72
-    port: 10051
-
-# Http Server
-receiver-http:
-  selector: ${ZS_RECEIVER_HTTP:-}
-  default:
-    port: 9010
-
-# TCP Server
-receiver-tcp:
-  selector: ${ZS_RECEIVER_TCP:-}
-  default:
-    port: 9020
-
-#  MQTT Client
-receiver-mqtt:
-  selector: ${ZS_RECEIVER_MQTT:-}
-  default:
-    port: 1883

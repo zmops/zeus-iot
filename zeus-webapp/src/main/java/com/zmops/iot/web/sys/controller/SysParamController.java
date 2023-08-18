@@ -2,6 +2,7 @@ package com.zmops.iot.web.sys.controller;
 
 import com.zmops.iot.core.log.BussinessLog;
 import com.zmops.iot.model.response.ResponseData;
+import com.zmops.iot.web.auth.Permission;
 import com.zmops.iot.web.sys.dto.SysParamDto;
 import com.zmops.iot.web.sys.service.SysParamService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ public class SysParamController {
     /**
      * 参数列表
      */
+    @Permission(code = "sysParam")
     @GetMapping("/list")
     public ResponseData list() {
         return ResponseData.success(sysParamService.list());
@@ -31,6 +33,7 @@ public class SysParamController {
     /**
      * 参数修改
      */
+    @Permission(code = "sysParam")
     @PostMapping("/update")
     @BussinessLog(value = "系统参数修改")
     public ResponseData update(@Validated @RequestBody SysParamDto sysParamDto) {

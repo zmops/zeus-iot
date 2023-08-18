@@ -3,6 +3,7 @@ package com.zmops.iot.web.product.service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zmops.iot.constant.ConstantsContext;
+import com.zmops.iot.core.auth.context.LoginContextHolder;
 import com.zmops.iot.domain.device.Device;
 import com.zmops.iot.domain.device.Tag;
 import com.zmops.iot.domain.device.query.QDevice;
@@ -65,6 +66,10 @@ public class ProductService {
         if (ToolUtil.isNotEmpty(prodBasicInfo.getProdName())) {
             qProduct.name.contains(prodBasicInfo.getProdName());
         }
+        Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
+        if (null != tenantId) {
+            qProduct.tenantId.eq(tenantId);
+        }
         return qProduct.orderBy(" create_time desc").findList();
     }
 
@@ -83,14 +88,17 @@ public class ProductService {
         if (ToolUtil.isNotEmpty(prodBasicInfo.getProdName())) {
             qProduct.name.contains(prodBasicInfo.getProdName());
         }
-
+        Long tenantId = LoginContextHolder.getContext().getUser().getTenantId();
+        if (null != tenantId) {
+            qProduct.tenantId.eq(tenantId);
+        }
         List<ProductDto> list = qProduct.setFirstRow((prodBasicInfo.getPage() - 1) * prodBasicInfo.getMaxRow())
                 .setMaxRows(prodBasicInfo.getMaxRow()).orderBy(" create_time desc").asDto(ProductDto.class).findList();
 
         if (ToolUtil.isNotEmpty(list)) {
-            List<Long>      productIds = list.parallelStream().map(ProductDto::getProductId).collect(Collectors.toList());
-            List<Device>    deviceList = new QDevice().select(QDevice.alias().productId, QDevice.alias().totalCount).productId.in(productIds).findList();
-            Map<Long, Long> map        = deviceList.parallelStream().collect(Collectors.toMap(Device::getProductId, Device::getTotalCount));
+            List<Long> productIds = list.parallelStream().map(ProductDto::getProductId).collect(Collectors.toList());
+            List<Device> deviceList = new QDevice().select(QDevice.alias().productId, QDevice.alias().totalCount).productId.in(productIds).findList();
+            Map<Long, Long> map = deviceList.parallelStream().collect(Collectors.toMap(Device::getProductId, Device::getTotalCount, (a, b) -> a));
             for (ProductDto productDto : list) {
                 productDto.setDeviceNum(Optional.ofNullable(map.get(productDto.getProductId())).orElse(0L));
             }
@@ -119,8 +127,12 @@ public class ProductService {
      * @param templdateId 模板ID
      * @return
      */
-    public String zbxTemplateDelete(String templdateId) {
-        return zbxTemplate.templateDelete(templdateId);
+    public void zbxTemplateDelete(String templdateId) {
+
+        JSONArray jsonArray = JSONObject.parseArray(zbxTemplate.templateGet(templdateId));
+        if (jsonArray.size() > 0) {
+            zbxTemplate.templateDelete(templdateId);
+        }
     }
 
     /**
@@ -219,7 +231,8 @@ public class ProductService {
         product.setRemark(prodBasicInfo.getRemark());
         product.setType(prodBasicInfo.getProdType());
         product.setGroupId(prodBasicInfo.getGroupId());
-
+        product.setTenantId(prodBasicInfo.getTenantId());
+        product.setIcon(prodBasicInfo.getIcon());
         return product;
     }
 
@@ -241,7 +254,7 @@ public class ProductService {
      * @param prodId
      * @return
      */
-    public List<Tag> prodTagList(Long prodId) {
+    public List<Tag> prodTagList(String prodId) {
         QTag tag = QTag.alias();
         return new QTag().select(tag.id, tag.sid, tag.tag, tag.value).sid.eq(prodId).orderBy(" create_time desc").findList();
     }

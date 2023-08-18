@@ -43,6 +43,11 @@ public class LocalDateTimeUtils {
         return time.atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
     }
 
+    // 获取指定日期的秒
+    public static Long getSecondsByStr(String date) {
+        return getSecondsByTime(dateToStamp(date));
+    }
+
     /**
      * 根据秒获取时间
      *
@@ -108,7 +113,7 @@ public class LocalDateTimeUtils {
 
     // 获取一天的开始时间，2017,7,22 00:00
     public static LocalDateTime getDayStart(LocalDateTime time) {
-        return time.withHour(0).withMinute(0).withSecond(0).withNano(0);
+        return time.withHour(0).withMinute(0).withSecond(1).withNano(0);
     }
 
     // 获取一天的结束时间，2017,7,22 23:59:59.999999999
@@ -119,7 +124,7 @@ public class LocalDateTimeUtils {
     /*
      * 时间戳转 LocalDateTime
      */
-    public static LocalDateTime convertDateToLocalDateTime(Long time) {
+    public static LocalDateTime convertDateToLocalDateTime(Integer time) {
         if (time == null) {
             return null;
         }
@@ -134,6 +139,16 @@ public class LocalDateTimeUtils {
             return null;
         }
         return LocalDateTimeUtils.formatTime(LocalDateTimeUtils.getLDTByMilliSeconds(time), pattern);
+    }
+
+    /*
+     * 秒转 String
+     */
+    public static String convertTimeToString(Integer time, String pattern) {
+        if (time == null) {
+            return null;
+        }
+        return LocalDateTimeUtils.formatTime(LocalDateTimeUtils.getLDTBySeconds(time), pattern);
     }
 
     public static LocalDateTime dateToStamp(String str) {
@@ -178,6 +193,6 @@ public class LocalDateTimeUtils {
     }
 
     public static void main(String[] args) {
-        System.out.println(formatTime(dateToStamp("2021-08-18T14:25:38.059")));
+        System.out.println(formatTime(getDayStart(LocalDateTime.now())));
     }
 }

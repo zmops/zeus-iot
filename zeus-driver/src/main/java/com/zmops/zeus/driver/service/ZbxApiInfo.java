@@ -3,12 +3,16 @@ package com.zmops.zeus.driver.service;
 import com.dtflys.forest.annotation.BaseRequest;
 import com.dtflys.forest.annotation.Post;
 import com.zmops.zeus.driver.annotation.JsonPath;
+import com.zmops.zeus.driver.inteceptor.JsonBodyBuildInterceptor;
 
 /**
  * @author nantian created at 2021/8/3 11:58
  */
 
-@BaseRequest(baseURL = "${zbxApiUrl}")
+@BaseRequest(
+        baseURL = "http://${zbxServerIp}:${zbxServerPort}${zbxApiUrl}",
+        interceptor = JsonBodyBuildInterceptor.class
+)
 public interface ZbxApiInfo {
 
     /**

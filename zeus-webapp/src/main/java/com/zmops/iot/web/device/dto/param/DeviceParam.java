@@ -3,8 +3,6 @@ package com.zmops.iot.web.device.dto.param;
 import com.zmops.iot.web.sys.dto.param.BaseQueryParam;
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * @author yefei
  **/

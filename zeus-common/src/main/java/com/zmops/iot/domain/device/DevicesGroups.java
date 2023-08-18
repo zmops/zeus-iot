@@ -20,7 +20,7 @@ public class DevicesGroups {
     @Id
     private Long id;
 
-    private Long deviceId;
+    private String deviceId;
 
     private Long deviceGroupId;
 }

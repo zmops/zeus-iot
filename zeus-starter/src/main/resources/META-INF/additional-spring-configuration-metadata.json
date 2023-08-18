@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "socketio.server.host",
+      "type": "java.lang.String",
+      "description": "socketio host."
+    },
+    {
+      "name": "socketio.server.port",
+      "type": "java.lang.String",
+      "description": "socketio port."
+    }
+  ]
+}

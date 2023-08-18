@@ -2,30 +2,31 @@ package com.zmops.iot.web.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.zmops.iot.domain.BaseDto;
 import com.zmops.iot.model.cache.filter.CachedValue;
 import com.zmops.iot.model.cache.filter.CachedValueFilter;
 import com.zmops.iot.model.cache.filter.DicType;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 /**
  * @author yefei
  **/
 @Data
 @JsonSerialize(using = CachedValueFilter.class)
-public class ProductDto implements BaseDto {
+public class ProductDto {
 
 
     private Long productId;
 
-    @CachedValue(type = DicType.ProdType)
+    @CachedValue(type = DicType.ProdType, fieldName = "groupName")
     private Long groupId;
 
     @JsonProperty("prodName")
     private String name;
 
     @JsonProperty("prodType")
-    @CachedValue(value = "DEVICE_TYPE")
+    @CachedValue(value = "DEVICE_TYPE", fieldName = "typeName")
     private String type;
 
     private String manufacturer;
@@ -39,16 +40,19 @@ public class ProductDto implements BaseDto {
 
     private String zbxId;
 
-    @CachedValue(type = DicType.SysUserName)
-    private String createUser;
-    private String createTime;
-    @CachedValue(type = DicType.SysUserName)
-    private String updateUser;
-    private String updateTime;
+
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
+    @CachedValue(type = DicType.SysUserName, fieldName = "createUserName")
+    private Long          createUser;
+    @CachedValue(type = DicType.SysUserName, fieldName = "updateUserName")
+    private Long          updateUser;
 
     private Long deviceNum;
 
-//    private List<ProductTag.Tag> productTag;
-//    private JSONArray            valueMaps;
+    @CachedValue(type = DicType.Tenant, fieldName = "tenantName")
+    private Long tenantId;
+
+    private String icon;
 
 }

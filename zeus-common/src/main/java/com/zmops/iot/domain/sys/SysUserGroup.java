@@ -29,4 +29,5 @@ public class SysUserGroup extends BaseEntity {
 
     String remark;
 
+    private Long tenantId;
 }

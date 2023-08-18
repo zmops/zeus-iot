@@ -16,8 +16,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.util.List;
-
 /**
  * @author nantian created at 2021/7/29 22:54
  */
@@ -52,8 +50,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         //自定义退出
         httpSecurity.logout().disable();
 
-        //禁用匿名用户
-        httpSecurity.anonymous().disable();
 
         httpSecurity.exceptionHandling().authenticationEntryPoint(unauthorizedHandler);
 
@@ -83,10 +79,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 // 静态资源放开过滤
                 .and().ignoring().antMatchers(HttpMethod.GET,
-                "/assets/**",
-                "/favicon.ico",
-                "/activiti-editor/**"
-        );
+                        "/static/**",
+                        "/favicon.ico"
+                );
 
     }
 }

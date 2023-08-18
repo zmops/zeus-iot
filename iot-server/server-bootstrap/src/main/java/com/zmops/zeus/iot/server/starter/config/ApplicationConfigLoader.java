@@ -18,13 +18,13 @@
 
 package com.zmops.zeus.iot.server.starter.config;
 
-import com.zmops.zeus.iot.server.library.util.CollectionUtils;
-import com.zmops.zeus.iot.server.library.util.ResourceUtils;
-import com.zmops.zeus.iot.server.library.module.ApplicationConfiguration;
-import com.zmops.zeus.iot.server.library.module.ProviderNotFoundException;
-import com.zmops.zeus.iot.server.util.PropertyPlaceholderHelper;
-import lombok.extern.slf4j.Slf4j;
 
+import com.zmops.zeus.server.library.module.ApplicationConfiguration;
+import com.zmops.zeus.server.library.module.ProviderNotFoundException;
+import com.zmops.zeus.server.library.util.CollectionUtils;
+import com.zmops.zeus.server.library.util.ResourceUtils;
+import com.zmops.zeus.server.util.PropertyPlaceholderHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileNotFoundException;
@@ -44,7 +44,7 @@ import java.util.Properties;
 @Slf4j
 public class ApplicationConfigLoader implements ConfigLoader<ApplicationConfiguration> {
     private static final String DISABLE_SELECTOR = "-";
-    private static final String SELECTOR         = "selector";
+    private static final String SELECTOR = "selector";
 
     private final Yaml yaml = new Yaml();
 
@@ -59,23 +59,21 @@ public class ApplicationConfigLoader implements ConfigLoader<ApplicationConfigur
     @SuppressWarnings("unchecked")
     private void loadConfig(ApplicationConfiguration configuration) throws ConfigFileNotFoundException {
         try {
-            Reader                           applicationReader = ResourceUtils.read("application.yml");
-            Map<String, Map<String, Object>> moduleConfig      = yaml.loadAs(applicationReader, Map.class);
+            Reader applicationReader = ResourceUtils.read("application.yml");
+            Map<String, Map<String, Object>> moduleConfig = yaml.loadAs(applicationReader, Map.class);
 
             if (CollectionUtils.isNotEmpty(moduleConfig)) {
                 selectConfig(moduleConfig);
                 moduleConfig.forEach((moduleName, providerConfig) -> {
                     if (providerConfig.size() > 0) {
                         log.info("Get a module define from application.yml, module name: {}", moduleName);
-                        ApplicationConfiguration.ModuleConfiguration moduleConfiguration = configuration.addModule(
-                                moduleName);
+                        ApplicationConfiguration.ModuleConfiguration moduleConfiguration = configuration.addModule(moduleName);
                         providerConfig.forEach((providerName, config) -> {
-                            log.info(
-                                    "Get a provider define belong to {} module, provider name: {}", moduleName,
-                                    providerName
-                            );
+                            log.info("Get a provider define belong to {} module, provider name: {}", moduleName, providerName);
+
                             final Map<String, ?> propertiesConfig = (Map<String, ?>) config;
-                            final Properties     properties       = new Properties();
+                            final Properties properties = new Properties();
+
                             if (propertiesConfig != null) {
                                 propertiesConfig.forEach((propertyName, propertyValue) -> {
                                     if (propertyValue instanceof Map) {
@@ -91,6 +89,7 @@ public class ApplicationConfigLoader implements ConfigLoader<ApplicationConfigur
                                     }
                                 });
                             }
+
                             moduleConfiguration.addProviderConfiguration(providerName, properties);
                         });
                     } else {
@@ -103,10 +102,9 @@ public class ApplicationConfigLoader implements ConfigLoader<ApplicationConfigur
         }
     }
 
-    private void replacePropertyAndLog(final Object propertyName, final Object propertyValue, final Properties target,
-                                       final Object providerName) {
-        final String valueString = PropertyPlaceholderHelper.INSTANCE
-                .replacePlaceholders(propertyValue + "", target);
+    private void replacePropertyAndLog(final Object propertyName, final Object propertyValue, final Properties target, final Object providerName) {
+        final String valueString = PropertyPlaceholderHelper.INSTANCE.replacePlaceholders(propertyValue + "", target);
+
         if (valueString != null) {
             if (valueString.trim().length() == 0) {
                 target.replace(propertyName, valueString);
@@ -136,16 +134,20 @@ public class ApplicationConfigLoader implements ConfigLoader<ApplicationConfigur
     private void selectConfig(final Map<String, Map<String, Object>> moduleConfiguration) {
         Iterator<Map.Entry<String, Map<String, Object>>> moduleIterator = moduleConfiguration.entrySet().iterator();
         while (moduleIterator.hasNext()) {
-            Map.Entry<String, Map<String, Object>> entry          = moduleIterator.next();
-            final String                           moduleName     = entry.getKey();
-            final Map<String, Object>              providerConfig = entry.getValue();
+            Map.Entry<String, Map<String, Object>> entry = moduleIterator.next();
+
+            final String moduleName = entry.getKey();
+            final Map<String, Object> providerConfig = entry.getValue();
+
             if (!providerConfig.containsKey(SELECTOR)) {
                 continue;
             }
+
             final String selector = (String) providerConfig.get(SELECTOR);
             final String resolvedSelector = PropertyPlaceholderHelper.INSTANCE.replacePlaceholders(
                     selector, System.getProperties()
             );
+
             providerConfig.entrySet().removeIf(e -> !resolvedSelector.equals(e.getKey()));
 
             if (!providerConfig.isEmpty()) {
@@ -171,27 +173,32 @@ public class ApplicationConfigLoader implements ConfigLoader<ApplicationConfigur
         if (moduleAndConfigSeparator <= 0) {
             return;
         }
-        String                                       moduleName            = key.substring(0, moduleAndConfigSeparator);
-        String                                       providerSettingSubKey = key.substring(moduleAndConfigSeparator + 1);
-        ApplicationConfiguration.ModuleConfiguration moduleConfiguration   = configuration.getModuleConfiguration(moduleName);
+        String moduleName = key.substring(0, moduleAndConfigSeparator);
+        String providerSettingSubKey = key.substring(moduleAndConfigSeparator + 1);
+
+        ApplicationConfiguration.ModuleConfiguration moduleConfiguration = configuration.getModuleConfiguration(moduleName);
         if (moduleConfiguration == null) {
             return;
         }
+
         int providerAndConfigSeparator = providerSettingSubKey.indexOf('.');
         if (providerAndConfigSeparator <= 0) {
             return;
         }
+
         String providerName = providerSettingSubKey.substring(0, providerAndConfigSeparator);
-        String settingKey   = providerSettingSubKey.substring(providerAndConfigSeparator + 1);
+        String settingKey = providerSettingSubKey.substring(providerAndConfigSeparator + 1);
         if (!moduleConfiguration.has(providerName)) {
             return;
         }
+
         Properties providerSettings = moduleConfiguration.getProviderConfiguration(providerName);
         if (!providerSettings.containsKey(settingKey)) {
             return;
         }
-        Object   originValue = providerSettings.get(settingKey);
-        Class<?> type        = originValue.getClass();
+
+        Object originValue = providerSettings.get(settingKey);
+        Class<?> type = originValue.getClass();
         if (type.equals(int.class) || type.equals(Integer.class))
             providerSettings.put(settingKey, Integer.valueOf(value));
         else if (type.equals(String.class))
@@ -204,8 +211,12 @@ public class ApplicationConfigLoader implements ConfigLoader<ApplicationConfigur
             return;
         }
 
-        log.info("The setting has been override by key: {}, value: {}, in {} provider of {} module through {}", settingKey,
-                value, providerName, moduleName, "System.properties"
+        log.info("The setting has been override by key: {}, value: {}, in {} provider of {} module through {}",
+                settingKey,
+                value,
+                providerName,
+                moduleName,
+                "System.properties"
         );
     }
 }
