@@ -37,11 +37,9 @@ public class DeviceTriggerActionHandler extends JettyJsonHandler {
      *
      * @param req
      * @return JsonElement
-     * @throws ArgumentsParseException ex
-     * @throws IOException             ex
      */
     @Override
-    protected JsonElement doPost(HttpServletRequest req) throws ArgumentsParseException, IOException {
+    public JsonElement doPost(HttpServletRequest req) throws IOException {
 
         String request = getJsonBody(req);
         log.info("action command ： {}", request);

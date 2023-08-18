@@ -40,7 +40,7 @@ public class HttpItemTrapperHandler extends JettyJsonHandler {
     }
 
     @Override
-    protected JsonElement doPost(HttpServletRequest req) throws ArgumentsParseException, IOException {
+    public JsonElement doPost(HttpServletRequest req) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(req.getInputStream()));
 
         String line;
@@ -60,5 +60,10 @@ public class HttpItemTrapperHandler extends JettyJsonHandler {
         ZabbixTrapper zabbixTrapper       = new ZabbixTrapper(valueList);
         zabbixSenderService.sendData(gson.toJson(zabbixTrapper));
         return requestJson;
+    }
+
+    @Override
+    public String getJsonBody(HttpServletRequest req) throws IOException {
+        return null;
     }
 }
